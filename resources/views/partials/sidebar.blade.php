@@ -42,6 +42,14 @@
                     <span class="font-medium">Settings</span>
                 </a>
             </li>
+            
+            <li>
+                <a href="{{ route('users.index') }}" 
+                   class="flex items-center gap-3 p-3 rounded-lg transition-colors {{ request()->routeIs('users.*') ? 'bg-primary text-primary-content' : 'hover:bg-base-200' }}">
+                    <i data-lucide="users" class="w-5 h-5"></i>
+                    <span class="font-medium">User Management</span>
+                </a>
+            </li>
         </ul>
         
         <div class="divider"></div>

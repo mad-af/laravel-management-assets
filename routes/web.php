@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\UserController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -52,4 +53,7 @@ Route::prefix('dashboard')->group(function () {
     Route::get('/settings', function () {
         return view('dashboard.settings');
     })->name('dashboard.settings');
+    
+    // User Management Routes
+    Route::resource('users', UserController::class);
 });
