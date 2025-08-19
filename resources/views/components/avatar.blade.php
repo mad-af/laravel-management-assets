@@ -35,7 +35,7 @@
         $avatarClasses .= ' ' . $statusClasses[$status];
     }
     if ($placeholder) {
-        $avatarClasses .= ' placeholder';
+        $avatarClasses .= ' avatar-placeholder';
     }
     if ($class) {
         $avatarClasses .= ' ' . $class;
@@ -44,7 +44,7 @@
     $innerClasses = $sizeClasses[$size] . ' ' . $shapeClasses[$shape] . ' flex items-center justify-center';
 @endphp
 
-           
+                      
 <div class="{{ $avatarClasses }}">
     <div class="{{ $innerClasses }}{{ $placeholder ? ' bg-neutral text-neutral-content' : '' }}">
         @if($src)
