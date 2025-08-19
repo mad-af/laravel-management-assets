@@ -1,19 +1,19 @@
 @extends('layouts.dashboard')
 
-@section('title', 'User Management')
+@section('title', 'Asset Management')
 
 @section('content')
     <div class="space-y-6">
         <!-- Page Header -->
         <div class="flex justify-between items-center">
             <div>
-                <h1 class="text-3xl font-bold text-base-content">User Management</h1>
+                <h1 class="text-3xl font-bold text-base-content">Asset Management</h1>
                 <p class="mt-1 text-base-content/70">Kelola data pengguna sistem.</p>
             </div>
             <div>
-                <a href="{{ route('users.create') }}" class="btn btn-primary btn-sm">
+                <a href="{{ route('assets.create') }}" class="btn btn-primary btn-sm">
                     <i data-lucide="plus" class="mr-2 w-4 h-4"></i>
-                    Tambah User
+                    Tambah Asset
                 </a>
             </div>
         </div>
@@ -25,20 +25,20 @@
             </div>
         @endif
 
-        <!-- Users Table -->
+        <!-- assets Table -->
         <div class="shadow-xl card bg-base-100">
             <div class="card-body">
                 <h2 class="mb-4 text-lg font-semibold card-title">Daftar Pengguna</h2>
-                <x-users.table :users="$users" />
+                <x-assets.table :assets="$assets" />
 
-                @if($users->hasPages())
+                @if($assets->hasPages())
                     <div class="mt-6">
-                        {{ $users->links() }}
+                        {{ $assets->links() }}
                     </div>
                 @endif
             </div>
         </div>
     </div>
 
-    <x-users.scripts />
+    <x-assets.scripts />
 @endsection
