@@ -32,7 +32,7 @@
                 {{-- @php
                 dd($users);
                 @endphp --}}
-                <x-user-table :users="$users" />
+                <x-users.table :users="$users" />
 
                 @if($users->hasPages())
                     <div class="mt-6">
@@ -43,5 +43,5 @@
         </div>
     </div>
 
-    <x-user-scripts />
+    <x-users.scripts />
 @endsection
