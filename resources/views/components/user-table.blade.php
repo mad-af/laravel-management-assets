@@ -31,7 +31,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#" onclick="openEditDrawer({{ $user->id }}, '{{ $user->name }}', '{{ $user->email }}'); document.activeElement.blur()">
+                                    <a href="{{ route('users.edit', $user) }}">
                                         <i data-lucide="edit" class="w-4 h-4"></i>
                                         Edit
                                     </a>
@@ -58,17 +58,3 @@
         </tbody>
     </table>
 </div>
-
-<script>
-    function openEditDrawer(userId, userName, userEmail) {
-        // Update URL with edit parameter
-        const url = new URL(window.location);
-        url.searchParams.set('edit', userId);
-        window.history.pushState({}, '', url);
-        
-        // Dispatch custom event to open drawer
-        document.dispatchEvent(new CustomEvent('openEditDrawer', {
-            detail: { userId, userName, userEmail }
-        }));
-    }
-</script>

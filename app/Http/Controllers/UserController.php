@@ -23,8 +23,7 @@ class UserController extends Controller
      */
     public function create()
     {
-        // Not needed - using drawer in index view
-        return redirect()->route('users.index');
+        return view('dashboard.users.create');
     }
 
     /**
@@ -59,8 +58,7 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        // Not needed - using drawer in index view
-        return redirect()->route('users.index');
+        return view('dashboard.users.edit', compact('user'));
     }
 
     /**

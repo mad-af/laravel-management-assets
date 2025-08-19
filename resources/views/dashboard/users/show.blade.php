@@ -15,7 +15,6 @@
                 <p class="mt-1 text-base-content/70">Informasi lengkap pengguna sistem.</p>
             </div>
         </div>
-        
     </div>
 
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
@@ -30,6 +29,4 @@
         </div>
     </div>
 </div>
-
-<x-user-edit-drawer />
 @endsection

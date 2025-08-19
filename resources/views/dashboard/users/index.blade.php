@@ -10,15 +10,11 @@
                 <h1 class="text-3xl font-bold text-base-content">User Management</h1>
                 <p class="mt-1 text-base-content/70">Kelola data pengguna sistem.</p>
             </div>
-            <div class="flex gap-2">
-                <button class="btn btn-primary btn-sm" onclick="openCreateDrawer()">
+            <div>
+                <a href="{{ route('users.create') }}" class="btn btn-primary btn-sm">
                     <i data-lucide="plus" class="mr-2 w-4 h-4"></i>
                     Tambah User
-                </button>
-                <button class="btn btn-outline btn-sm">
-                    <i data-lucide="download" class="mr-2 w-4 h-4"></i>
-                    Export
-                </button>
+                </a>
             </div>
         </div>
 
@@ -33,9 +29,9 @@
         <div class="shadow-xl card bg-base-100">
             <div class="card-body">
                 <h2 class="mb-4 text-lg font-semibold card-title">Daftar Pengguna</h2>
-{{-- @php
-    dd($users);
-@endphp --}}
+                {{-- @php
+                dd($users);
+                @endphp --}}
                 <x-user-table :users="$users" />
 
                 @if($users->hasPages())
@@ -47,7 +43,5 @@
         </div>
     </div>
 
-    <x-user-create-drawer />
-    <x-user-edit-drawer />
     <x-user-scripts />
 @endsection
