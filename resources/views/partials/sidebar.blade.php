@@ -2,54 +2,69 @@
     <div class="p-4">
         <h2 class="mb-8 text-2xl font-bold text-primary">Dashboard</h2>
         
+        @php
+            $menuItems = [
+                [
+                    'route' => 'dashboard',
+                    'routeCheck' => 'dashboard',
+                    'icon' => 'home',
+                    'label' => 'Dashboard'
+                ],
+                [
+                    'route' => 'dashboard.tables',
+                    'routeCheck' => 'dashboard.tables',
+                    'icon' => 'table',
+                    'label' => 'Tables'
+                ],
+                [
+                    'route' => 'dashboard.forms',
+                    'routeCheck' => 'dashboard.forms',
+                    'icon' => 'file-text',
+                    'label' => 'Forms'
+                ],
+                [
+                    'route' => 'dashboard.components',
+                    'routeCheck' => 'dashboard.components',
+                    'icon' => 'puzzle',
+                    'label' => 'Components'
+                ],
+                [
+                    'route' => 'dashboard.settings',
+                    'routeCheck' => 'dashboard.settings',
+                    'icon' => 'settings',
+                    'label' => 'Settings'
+                ],
+                [
+                    'route' => 'users.index',
+                    'routeCheck' => 'users.*',
+                    'icon' => 'users',
+                    'label' => 'User Management'
+                ],
+                // [
+                //     'route' => 'categories.index',
+                //     'routeCheck' => 'categories.*',
+                //     'icon' => 'folder',
+                //     'label' => 'Categories'
+                // ],
+                // [
+                //     'route' => 'locations.index',
+                //     'routeCheck' => 'locations.*',
+                //     'icon' => 'map-pin',
+                //     'label' => 'Locations'
+                // ]
+            ];
+        @endphp
+
         <ul class="p-0 w-full menu">
-            <li>
-                <a href="{{ route('dashboard') }}" 
-                   class="flex items-center gap-3 p-3 rounded-lg transition-colors {{ request()->routeIs('dashboard') ? 'bg-primary text-primary-content' : 'hover:bg-base-200' }}">
-                    <i data-lucide="home" class="w-5 h-5"></i>
-                    <span class="font-medium">Dashboard</span>
-                </a>
-            </li>
-            
-            <li>
-                <a href="{{ route('dashboard.tables') }}" 
-                   class="flex items-center gap-3 p-3 rounded-lg transition-colors {{ request()->routeIs('dashboard.tables') ? 'bg-primary text-primary-content' : 'hover:bg-base-200' }}">
-                    <i data-lucide="table" class="w-5 h-5"></i>
-                    <span class="font-medium">Tables</span>
-                </a>
-            </li>
-            
-            <li>
-                <a href="{{ route('dashboard.forms') }}" 
-                   class="flex items-center gap-3 p-3 rounded-lg transition-colors {{ request()->routeIs('dashboard.forms') ? 'bg-primary text-primary-content' : 'hover:bg-base-200' }}">
-                    <i data-lucide="file-text" class="w-5 h-5"></i>
-                    <span class="font-medium">Forms</span>
-                </a>
-            </li>
-            
-            <li>
-                <a href="{{ route('dashboard.components') }}" 
-                   class="flex items-center gap-3 p-3 rounded-lg transition-colors {{ request()->routeIs('dashboard.components') ? 'bg-primary text-primary-content' : 'hover:bg-base-200' }}">
-                    <i data-lucide="puzzle" class="w-5 h-5"></i>
-                    <span class="font-medium">Components</span>
-                </a>
-            </li>
-            
-            <li>
-                <a href="{{ route('dashboard.settings') }}" 
-                   class="flex items-center gap-3 p-3 rounded-lg transition-colors {{ request()->routeIs('dashboard.settings') ? 'bg-primary text-primary-content' : 'hover:bg-base-200' }}">
-                    <i data-lucide="settings" class="w-5 h-5"></i>
-                    <span class="font-medium">Settings</span>
-                </a>
-            </li>
-            
-            <li>
-                <a href="{{ route('users.index') }}" 
-                   class="flex items-center gap-3 p-3 rounded-lg transition-colors {{ request()->routeIs('users.*') ? 'bg-primary text-primary-content' : 'hover:bg-base-200' }}">
-                    <i data-lucide="users" class="w-5 h-5"></i>
-                    <span class="font-medium">User Management</span>
-                </a>
-            </li>
+            @foreach($menuItems as $item)
+                <li>
+                    <a href="{{ route($item['route']) }}" 
+                       class="flex items-center gap-3 p-3 rounded-lg transition-colors {{ request()->routeIs($item['routeCheck']) ? 'bg-primary text-primary-content' : 'hover:bg-base-200' }}">
+                        <i data-lucide="{{ $item['icon'] }}" class="w-5 h-5"></i>
+                        <span class="font-medium">{{ $item['label'] }}</span>
+                    </a>
+                </li>
+            @endforeach
         </ul>
         
         <div class="divider"></div>
