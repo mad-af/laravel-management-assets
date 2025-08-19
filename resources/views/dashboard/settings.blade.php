@@ -136,7 +136,7 @@
             <h2 class="card-title text-lg font-semibold mb-4">Security Settings</h2>
             <div class="space-y-4">
                 <div class="alert alert-info">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <i data-lucide="info" class="stroke-current shrink-0 w-6 h-6"></i>
                     <span>Last login: January 15, 2024 at 2:30 PM</span>
                 </div>
                 
@@ -245,7 +245,7 @@
             <h2 class="card-title text-lg font-semibold mb-4 text-error">Danger Zone</h2>
             <div class="space-y-4">
                 <div class="alert alert-warning">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16c-.77.833.192 2.5 1.732 2.5z" /></svg>
+                    <i data-lucide="alert-triangle" class="stroke-current shrink-0 h-6 w-6"></i>
                     <span>These actions cannot be undone. Please be careful.</span>
                 </div>
                 
