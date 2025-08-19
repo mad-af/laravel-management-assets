@@ -8,12 +8,12 @@
         <h2 class="mb-4 text-lg font-semibold card-title">Aksi Cepat</h2>
         
         <div class="space-y-3">
-            <button class="justify-start w-full btn btn-warning" onclick="openEditDrawer({{ $user->id }}, '{{ $user->name }}', '{{ $user->email }}')">
-                <i data-lucide="edit" class="mr-2 w-4 h-4"></i>
+            <a href="{{ route('users.edit', $user) }}" class="justify-start w-full btn">
+                <i data-lucide="edit-3" class="mr-2 w-4 h-4"></i>
                 Edit User
-            </button>
+            </a>
             
-            <button class="justify-start w-full btn btn-info" onclick="copyToClipboard('{{ $user->email }}')">
+            <button class="justify-start w-full btn" onclick="copyToClipboard('{{ $user->email }}')">
                 <i data-lucide="copy" class="mr-2 w-4 h-4"></i>
                 Copy Email
             </button>
@@ -23,7 +23,7 @@
             <form action="{{ route('users.destroy', $user) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus user ini?')">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="justify-start w-full btn btn-error">
+                <button type="submit" class="justify-start w-full btn text-error">
                     <i data-lucide="trash-2" class="mr-2 w-4 h-4"></i>
                     Hapus User
                 </button>

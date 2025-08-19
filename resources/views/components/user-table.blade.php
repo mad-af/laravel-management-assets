@@ -37,7 +37,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="#" onclick="deleteUser({{ $user->id }}); document.activeElement.blur()"
+                                    <a onclick="deleteUser({{ $user->id }}); document.activeElement.blur()"
                                         class="text-error">
                                         <i data-lucide="trash-2" class="w-4 h-4"></i>
                                         Delete
