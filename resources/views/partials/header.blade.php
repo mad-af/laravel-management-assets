@@ -45,11 +45,13 @@
                 <div tabindex="0" role="button" class="btn btn-ghost btn-circle">
                     <i data-lucide="palette" class="w-5 h-5"></i>
                 </div>
-                <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
-                    <li><a onclick="document.documentElement.setAttribute('data-theme', 'light')">Light</a></li>
-                    <li><a onclick="document.documentElement.setAttribute('data-theme', 'dark')">Dark</a></li>
-                    <li><a onclick="document.documentElement.setAttribute('data-theme', 'cupcake')">Cupcake</a></li>
-                    <li><a onclick="document.documentElement.setAttribute('data-theme', 'corporate')">Corporate</a></li>
+                <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-48 p-2 shadow-2xl border border-base-300">
+                    <li><a class="theme-option" onclick="changeTheme('light')">☀️ Light</a></li>
+                    <li><a class="theme-option" onclick="changeTheme('dark')">🌙 Dark</a></li>
+                    <li><a class="theme-option" onclick="changeTheme('cupcake')">🧁 Cupcake</a></li>
+                    <li><a class="theme-option" onclick="changeTheme('corporate')">🏢 Corporate</a></li>
+                    <li><a class="theme-option" onclick="changeTheme('synthwave')">🌆 Synthwave</a></li>
+                    <li><a class="theme-option" onclick="changeTheme('dracula')">🧛 Dracula</a></li>
                 </ul>
             </div>
             

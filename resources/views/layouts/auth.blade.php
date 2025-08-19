@@ -22,6 +22,15 @@
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 </head>
 <body class="font-sans antialiased bg-base-200">
+    <!-- Theme initialization script -->
+    <script>
+        // Initialize theme before page renders to prevent flash
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+    
     <div class="min-h-screen flex items-center justify-center p-4">
         <div class="w-full max-w-md">
             @yield('content')

@@ -12,5 +12,5 @@
 
 /* DaisyUI components akan otomatis tersedia melalui plugin */
 @plugin "daisyui" {
-  themes: "all";
+    themes: "all";
 }

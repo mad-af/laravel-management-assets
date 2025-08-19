@@ -1,23 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Dashboard') - Laravel Dashboard</title>
+    
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <!-- Lucide Icons CDN -->
-    @if(config('app.debug'))
-        <!-- Development version (unminified) -->
-        <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-    @else
-        <!-- Production version (minified) -->
-        <script src="https://unpkg.com/lucide@latest"></script>
-    @endif
 </head>
 
 <body>
     <div class="drawer lg:drawer-open">
+        <!-- Theme initialization script -->
+        <script>
+            // Initialize theme before page renders to prevent flash
+            (function() {
+                const savedTheme = localStorage.getItem('theme') || 'light';
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            })();
+        </script>
         <input id="drawer-toggle" type="checkbox" class="drawer-toggle" />
 
         <!-- Page content -->
@@ -37,6 +38,9 @@
             @include('partials.sidebar')
         </div>
     </div>
+    
+    <!-- Lucide Icons CDN - Load after DOM -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 </body>
 
 </html>
