@@ -48,11 +48,7 @@
         
         <div class="p-3">
             <div class="flex gap-3 items-center">
-                <div class="avatar placeholder">
-                    <div class="w-10 rounded-full bg-neutral text-neutral-content">
-                        <span class="text-sm">U</span>
-                    </div>
-                </div>
+                <x-avatar initials="U" size="md" placeholder="true" />
                 <div>
                     <p class="font-medium">User Name</p>
                     <p class="text-sm opacity-70">Administrator</p>

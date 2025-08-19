@@ -16,11 +16,7 @@
             <h2 class="card-title text-lg font-semibold mb-4">Profile Settings</h2>
             <form class="space-y-4">
                 <div class="flex items-center gap-4">
-                    <div class="avatar">
-                        <div class="w-24 rounded-full">
-                            <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" alt="Profile" />
-                        </div>
-                    </div>
+                    <x-avatar src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" size="3xl" alt="Profile" />
                     <div>
                         <button type="button" class="btn btn-primary btn-sm">Change Avatar</button>
                         <button type="button" class="btn btn-ghost btn-sm">Remove</button>

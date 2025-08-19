@@ -194,11 +194,7 @@
                 
                 <div class="stat">
                     <div class="stat-figure text-secondary">
-                        <div class="avatar online">
-                            <div class="w-16 rounded-full">
-                                <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" />
-                            </div>
-                        </div>
+                        <x-avatar src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp" size="xl" status="online" />
                     </div>
                     <div class="stat-value">86%</div>
                     <div class="stat-title">Tasks done</div>

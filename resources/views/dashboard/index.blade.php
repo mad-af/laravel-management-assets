@@ -78,11 +78,7 @@
                                 <tr>
                                     <td>
                                         <div class="flex items-center gap-3">
-                                            <div class="avatar placeholder">
-                                                <div class="bg-neutral text-neutral-content rounded-full w-8">
-                                                    <span class="text-xs">JD</span>
-                                                </div>
-                                            </div>
+                                            <x-avatar initials="JD" size="sm" placeholder="true" />
                                             <div>
                                                 <div class="font-bold">John Doe</div>
                                                 <div class="text-sm opacity-50">john@example.com</div>
@@ -96,11 +92,7 @@
                                 <tr>
                                     <td>
                                         <div class="flex items-center gap-3">
-                                            <div class="avatar placeholder">
-                                                <div class="bg-neutral text-neutral-content rounded-full w-8">
-                                                    <span class="text-xs">JS</span>
-                                                </div>
-                                            </div>
+                                            <x-avatar initials="JS" size="sm" placeholder="true" />
                                             <div>
                                                 <div class="font-bold">Jane Smith</div>
                                                 <div class="text-sm opacity-50">jane@example.com</div>
@@ -114,11 +106,7 @@
                                 <tr>
                                     <td>
                                         <div class="flex items-center gap-3">
-                                            <div class="avatar placeholder">
-                                                <div class="bg-neutral text-neutral-content rounded-full w-8">
-                                                    <span class="text-xs">MB</span>
-                                                </div>
-                                            </div>
+                                            <x-avatar initials="MB" size="sm" placeholder="true" />
                                             <div>
                                                 <div class="font-bold">Mike Brown</div>
                                                 <div class="text-sm opacity-50">mike@example.com</div>
@@ -167,33 +155,21 @@
                     <h2 class="card-title text-lg font-semibold mb-4">Recent Users</h2>
                     <div class="space-y-3">
                         <div class="flex items-center gap-3">
-                            <div class="avatar placeholder">
-                                <div class="bg-neutral text-neutral-content rounded-full w-8">
-                                    <span class="text-xs">JD</span>
-                                </div>
-                            </div>
+                            <x-avatar initials="JD" size="sm" placeholder="true" />
                             <div class="flex-1">
                                 <p class="font-medium text-sm">John Doe</p>
                                 <p class="text-xs opacity-70">2 minutes ago</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-3">
-                            <div class="avatar placeholder">
-                                <div class="bg-neutral text-neutral-content rounded-full w-8">
-                                    <span class="text-xs">JS</span>
-                                </div>
-                            </div>
+                            <x-avatar initials="JS" size="sm" placeholder="true" />
                             <div class="flex-1">
                                 <p class="font-medium text-sm">Jane Smith</p>
                                 <p class="text-xs opacity-70">5 minutes ago</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-3">
-                            <div class="avatar placeholder">
-                                <div class="bg-neutral text-neutral-content rounded-full w-8">
-                                    <span class="text-xs">MB</span>
-                                </div>
-                            </div>
+                            <x-avatar initials="MB" size="sm" placeholder="true" />
                             <div class="flex-1">
                                 <p class="font-medium text-sm">Mike Brown</p>
                                 <p class="text-xs opacity-70">10 minutes ago</p>

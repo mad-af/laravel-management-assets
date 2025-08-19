@@ -41,11 +41,7 @@
                             </th>
                             <td>
                                 <div class="flex items-center gap-3">
-                                    <div class="avatar">
-                                        <div class="mask mask-squircle w-12 h-12">
-                                            <img src="https://img.daisyui.com/images/profile/demo/2@94.webp" alt="Avatar" />
-                                        </div>
-                                    </div>
+                                    <x-avatar src="https://img.daisyui.com/images/profile/demo/2@94.webp" size="lg" shape="squircle" alt="Avatar" />
                                     <div>
                                         <div class="font-bold">Hart Hagerty</div>
                                         <div class="text-sm opacity-50">United States</div>
@@ -79,11 +75,7 @@
                             </th>
                             <td>
                                 <div class="flex items-center gap-3">
-                                    <div class="avatar">
-                                        <div class="mask mask-squircle w-12 h-12">
-                                            <img src="https://img.daisyui.com/images/profile/demo/3@94.webp" alt="Avatar" />
-                                        </div>
-                                    </div>
+                                    <x-avatar src="https://img.daisyui.com/images/profile/demo/3@94.webp" size="lg" shape="squircle" alt="Avatar" />
                                     <div>
                                         <div class="font-bold">Brice Swyre</div>
                                         <div class="text-sm opacity-50">China</div>
@@ -117,11 +109,7 @@
                             </th>
                             <td>
                                 <div class="flex items-center gap-3">
-                                    <div class="avatar">
-                                        <div class="mask mask-squircle w-12 h-12">
-                                            <img src="https://img.daisyui.com/images/profile/demo/4@94.webp" alt="Avatar" />
-                                        </div>
-                                    </div>
+                                    <x-avatar src="https://img.daisyui.com/images/profile/demo/4@94.webp" size="lg" shape="squircle" alt="Avatar" />
                                     <div>
                                         <div class="font-bold">Marjy Ferencz</div>
                                         <div class="text-sm opacity-50">Russia</div>
