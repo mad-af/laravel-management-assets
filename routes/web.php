@@ -75,7 +75,9 @@ Route::prefix('dashboard')->group(function () {
     
     // Category Management Routes
     Route::resource('categories', CategoryController::class);
+    Route::patch('categories/{category}/activate', [CategoryController::class, 'activate'])->name('categories.activate');
     
     // Location Management Routes
     Route::resource('locations', LocationController::class);
+    Route::patch('locations/{location}/activate', [LocationController::class, 'activate'])->name('locations.activate');
 });

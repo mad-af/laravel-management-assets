@@ -13,7 +13,7 @@ class LocationController extends Controller
      */
     public function index()
     {
-        $locations = Location::active()->withCount('assets')->paginate(10);
+        $locations = Location::withCount('assets')->paginate(10);
         return view('dashboard.locations.index', compact('locations'));
     }
 
@@ -100,5 +100,16 @@ class LocationController extends Controller
 
         return redirect()->route('locations.index')
             ->with('success', 'Location deactivated successfully.');
+    }
+
+    /**
+     * Activate the specified resource.
+     */
+    public function activate(Location $location)
+    {
+        $location->update(['is_active' => true]);
+
+        return redirect()->route('locations.index')
+            ->with('success', 'Location activated successfully.');
     }
 }

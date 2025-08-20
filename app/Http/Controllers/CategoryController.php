@@ -13,7 +13,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::active()->withCount('assets')->paginate(10);
+        $categories = Category::withCount('assets')->paginate(10);
         return view('dashboard.categories.index', compact('categories'));
     }
 
@@ -98,5 +98,16 @@ class CategoryController extends Controller
 
         return redirect()->route('categories.index')
             ->with('success', 'Category deactivated successfully.');
+    }
+
+    /**
+     * Activate the specified resource.
+     */
+    public function activate(Category $category)
+    {
+        $category->update(['is_active' => true]);
+
+        return redirect()->route('categories.index')
+            ->with('success', 'Category activated successfully.');
     }
 }

@@ -34,4 +34,40 @@
             }
         }, 100);
     }
+
+    function activateCategory(categorieId) {
+        // Close all dropdowns first
+        const dropdownTriggers = document.querySelectorAll('.dropdown [tabindex="0"][role="button"]');
+        dropdownTriggers.forEach(trigger => {
+            trigger.blur();
+        });
+        
+        // Small delay to ensure dropdown closes before showing confirm dialog
+        setTimeout(() => {
+            if (confirm('Apakah Anda yakin ingin mengaktifkan categorie ini?')) {
+                // Buat form untuk activate
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/dashboard/categories/${categorieId}/activate`;
+
+                // Tambahkan CSRF token
+                const csrfToken = document.createElement('input');
+                csrfToken.type = 'hidden';
+                csrfToken.name = '_token';
+                csrfToken.value = '{{ csrf_token() }}';
+                form.appendChild(csrfToken);
+
+                // Tambahkan method PATCH
+                const methodInput = document.createElement('input');
+                methodInput.type = 'hidden';
+                methodInput.name = '_method';
+                methodInput.value = 'PATCH';
+                form.appendChild(methodInput);
+
+                // Submit form
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }, 100);
+    }
 </script>
