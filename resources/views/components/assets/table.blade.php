@@ -26,17 +26,17 @@
                             <div class="text-sm text-gray-500">{{ Str::limit($asset->description, 50) }}</div>
                         @endif
                     </td>
-                    <td>
-                        <span class="badge badge-outline">{{ $asset->category->name ?? 'N/A' }}</span>
+                    <td class="min-w-0">
+                        <span class="text-xs whitespace-nowrap badge badge-outline">{{ $asset->category->name ?? 'N/A' }}</span>
                     </td>
-                    <td>
-                        <span class="badge badge-outline">{{ $asset->location->name ?? 'N/A' }}</span>
+                    <td class="min-w-0">
+                        <span class="text-xs whitespace-nowrap badge badge-outline">{{ $asset->location->name ?? 'N/A' }}</span>
                     </td>
-                    <td>
-                        <span class="badge {{ $asset->status_badge_color }}">{{ ucfirst($asset->status) }}</span>
+                    <td class="min-w-0">
+                        <span class="badge {{ $asset->status_badge_color }} text-xs whitespace-nowrap">{{ ucfirst($asset->status) }}</span>
                     </td>
-                    <td>
-                        <span class="badge {{ $asset->condition_badge_color }}">{{ ucfirst($asset->condition) }}</span>
+                    <td class="min-w-0">
+                        <span class="badge {{ $asset->condition_badge_color }} text-xs whitespace-nowrap">{{ ucfirst($asset->condition) }}</span>
                     </td>
                     <td>
                         <span class="font-medium">{{ $asset->formatted_value }}</span>

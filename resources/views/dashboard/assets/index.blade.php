@@ -44,8 +44,10 @@
         <!-- Assets Table -->
         <div class="shadow-xl card bg-base-100">
             <div class="card-body">
-                <h2 class="mb-4 text-lg font-semibold card-title">Daftar Pengguna</h2>
-                <x-assets.table :assets="$assets" />
+                <h2 class="mb-4 text-lg font-semibold card-title">Daftar Aset</h2>
+                <div>
+                    <x-assets.table :assets="$assets" class="overflow-x-auto" />
+                </div>
 
                 @if($assets->hasPages())
                     <div class="mt-6">

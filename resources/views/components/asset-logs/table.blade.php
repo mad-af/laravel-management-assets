@@ -69,8 +69,8 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="6" class="text-center py-8">
-                        <div class="flex flex-col items-center justify-center space-y-2">
+                    <td colspan="6" class="py-8 text-center">
+                        <div class="flex flex-col justify-center items-center space-y-2">
                             <i data-lucide="file-text" class="w-12 h-12 text-gray-400"></i>
                             <p class="text-gray-500">No asset logs found</p>
                         </div>
