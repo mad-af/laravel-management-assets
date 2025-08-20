@@ -10,30 +10,30 @@
                     'icon' => 'home',
                     'label' => 'Dashboard'
                 ],
-                [
-                    'route' => 'dashboard.tables',
-                    'routeCheck' => 'dashboard.tables',
-                    'icon' => 'table',
-                    'label' => 'Tables'
-                ],
-                [
-                    'route' => 'dashboard.forms',
-                    'routeCheck' => 'dashboard.forms',
-                    'icon' => 'file-text',
-                    'label' => 'Forms'
-                ],
-                [
-                    'route' => 'dashboard.components',
-                    'routeCheck' => 'dashboard.components',
-                    'icon' => 'puzzle',
-                    'label' => 'Components'
-                ],
-                [
-                    'route' => 'dashboard.settings',
-                    'routeCheck' => 'dashboard.settings',
-                    'icon' => 'settings',
-                    'label' => 'Settings'
-                ],
+                // [
+                //     'route' => 'dashboard.tables',
+                //     'routeCheck' => 'dashboard.tables',
+                //     'icon' => 'table',
+                //     'label' => 'Tables'
+                // ],
+                // [
+                //     'route' => 'dashboard.forms',
+                //     'routeCheck' => 'dashboard.forms',
+                //     'icon' => 'file-text',
+                //     'label' => 'Forms'
+                // ],
+                // [
+                //     'route' => 'dashboard.components',
+                //     'routeCheck' => 'dashboard.components',
+                //     'icon' => 'puzzle',
+                //     'label' => 'Components'
+                // ],
+                // [
+                //     'route' => 'dashboard.settings',
+                //     'routeCheck' => 'dashboard.settings',
+                //     'icon' => 'settings',
+                //     'label' => 'Settings'
+                // ],
                 [
                     'route' => 'users.index',
                     'routeCheck' => 'users.*',
