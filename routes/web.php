@@ -68,10 +68,10 @@ Route::prefix('dashboard')->group(function () {
     Route::get('assets/statistics', [AssetController::class, 'statistics'])->name('assets.statistics');
     
     // Asset Log Routes
-    Route::resource('asset-logs', AssetLogController::class)->only(['index', 'show']);
     Route::get('asset-logs/export', [AssetLogController::class, 'export'])->name('asset-logs.export');
     Route::get('asset-logs/statistics', [AssetLogController::class, 'statistics'])->name('asset-logs.statistics');
     Route::get('assets/{asset}/logs', [AssetLogController::class, 'forAsset'])->name('assets.logs');
+    Route::resource('asset-logs', AssetLogController::class)->only(['index', 'show']);
     
     // Category Management Routes
     Route::resource('categories', CategoryController::class);
