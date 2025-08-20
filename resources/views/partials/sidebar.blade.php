@@ -35,23 +35,35 @@
                 //     'label' => 'Settings'
                 // ],
                 [
+                    'route' => 'assets.index',
+                    'routeCheck' => 'assets.*',
+                    'icon' => 'package',
+                    'label' => 'Asset Management'
+                ],
+                [
+                    'route' => 'asset-logs.index',
+                    'routeCheck' => 'asset-logs.*',
+                    'icon' => 'file-text',
+                    'label' => 'Asset Logs'
+                ],
+                [
                     'route' => 'users.index',
                     'routeCheck' => 'users.*',
                     'icon' => 'users',
                     'label' => 'User Management'
                 ],
-                // [
-                //     'route' => 'categories.index',
-                //     'routeCheck' => 'categories.*',
-                //     'icon' => 'folder',
-                //     'label' => 'Categories'
-                // ],
-                // [
-                //     'route' => 'locations.index',
-                //     'routeCheck' => 'locations.*',
-                //     'icon' => 'map-pin',
-                //     'label' => 'Locations'
-                // ]
+                [
+                    'route' => 'categories.index',
+                    'routeCheck' => 'categories.*',
+                    'icon' => 'folder',
+                    'label' => 'Categories'
+                ],
+                [
+                    'route' => 'locations.index',
+                    'routeCheck' => 'locations.*',
+                    'icon' => 'map-pin',
+                    'label' => 'Locations'
+                ]
             ];
         @endphp
 

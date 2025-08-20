@@ -5,6 +5,10 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AssetController;
+use App\Http\Controllers\AssetLogController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\LocationController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -56,4 +60,22 @@ Route::prefix('dashboard')->group(function () {
     
     // User Management Routes
     Route::resource('users', UserController::class);
+    
+    // Asset Management Routes
+    Route::resource('assets', AssetController::class);
+    Route::patch('assets/{asset}/status', [AssetController::class, 'updateStatus'])->name('assets.update-status');
+    Route::get('assets/export', [AssetController::class, 'export'])->name('assets.export');
+    Route::get('assets/statistics', [AssetController::class, 'statistics'])->name('assets.statistics');
+    
+    // Asset Log Routes
+    Route::resource('asset-logs', AssetLogController::class)->only(['index', 'show']);
+    Route::get('asset-logs/export', [AssetLogController::class, 'export'])->name('asset-logs.export');
+    Route::get('asset-logs/statistics', [AssetLogController::class, 'statistics'])->name('asset-logs.statistics');
+    Route::get('assets/{asset}/logs', [AssetLogController::class, 'forAsset'])->name('assets.logs');
+    
+    // Category Management Routes
+    Route::resource('categories', CategoryController::class);
+    
+    // Location Management Routes
+    Route::resource('locations', LocationController::class);
 });
