@@ -12,7 +12,7 @@
                 </a>
                 <div>
                     <h1 class="text-3xl font-bold text-base-content">Edit Category</h1>
-                    <p class="mt-1 text-base-content/70">Perbarui informasi pengguna {{ $categorie->name }}.</p>
+                    <p class="mt-1 text-base-content/70">Perbarui informasi kategori {{ $category->name }}.</p>
                 </div>
             </div>
         </div>
@@ -36,34 +36,19 @@
                     </div>
                 @endif
 
-                <form action="{{ route('categories.update', $categorie) }}" method="POST" class="space-y-4">
+                <form action="{{ route('categories.update', $category) }}" method="POST" class="space-y-4">
                     @csrf
                     @method('PUT')
 
                     <!-- Name Field -->
                     <div class="form-control">
                         <label class="block mb-1 label">
-                            <span class="label-text">Nama Lengkap</span>
+                            <span class="label-text">Nama Kategori</span>
                             <span class="label-text-alt text-error">*</span>
                         </label>
-                        <input type="text" name="name" value="{{ old('name', $categorie->name) }}" placeholder="John Doe" 
+                        <input type="text" name="name" value="{{ old('name', $category->name) }}" placeholder="Electronics" 
                                class="input input-bordered @error('name') input-error @enderror" required />
                         @error('name')
-                            <label class="label">
-                                <span class="label-text-alt text-error">{{ $message }}</span>
-                            </label>
-                        @enderror
-                    </div>
-
-                    <!-- Email Field -->
-                    <div class="form-control">
-                        <label class="block mb-1 label">
-                            <span class="label-text">Email</span>
-                            <span class="label-text-alt text-error">*</span>
-                        </label>
-                        <input type="email" name="email" value="{{ old('email', $categorie->email) }}" placeholder="john.doe@example.com" 
-                               class="input input-bordered @error('email') input-error @enderror" required />
-                        @error('email')
                             <label class="label">
                                 <span class="label-text-alt text-error">{{ $message }}</span>
                             </label>

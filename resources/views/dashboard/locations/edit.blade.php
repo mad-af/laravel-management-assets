@@ -12,7 +12,7 @@
                 </a>
                 <div>
                     <h1 class="text-3xl font-bold text-base-content">Edit Location</h1>
-                    <p class="mt-1 text-base-content/70">Perbarui informasi pengguna {{ $location->name }}.</p>
+                    <p class="mt-1 text-base-content/70">Perbarui informasi lokasi {{ $location->name }}.</p>
                 </div>
             </div>
         </div>
@@ -43,27 +43,12 @@
                     <!-- Name Field -->
                     <div class="form-control">
                         <label class="block mb-1 label">
-                            <span class="label-text">Nama Lengkap</span>
+                            <span class="label-text">Nama Lokasi</span>
                             <span class="label-text-alt text-error">*</span>
                         </label>
-                        <input type="text" name="name" value="{{ old('name', $location->name) }}" placeholder="John Doe" 
+                        <input type="text" name="name" value="{{ old('name', $location->name) }}" placeholder="Gedung A - Lantai 1" 
                                class="input input-bordered @error('name') input-error @enderror" required />
                         @error('name')
-                            <label class="label">
-                                <span class="label-text-alt text-error">{{ $message }}</span>
-                            </label>
-                        @enderror
-                    </div>
-
-                    <!-- Email Field -->
-                    <div class="form-control">
-                        <label class="block mb-1 label">
-                            <span class="label-text">Email</span>
-                            <span class="label-text-alt text-error">*</span>
-                        </label>
-                        <input type="email" name="email" value="{{ old('email', $location->email) }}" placeholder="john.doe@example.com" 
-                               class="input input-bordered @error('email') input-error @enderror" required />
-                        @error('email')
                             <label class="label">
                                 <span class="label-text-alt text-error">{{ $message }}</span>
                             </label>

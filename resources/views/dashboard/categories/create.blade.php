@@ -12,7 +12,7 @@
                 </a>
                 <div>
                     <h1 class="text-3xl font-bold text-base-content">Tambah Category Baru</h1>
-                    <p class="mt-1 text-base-content/70">Buat akun pengguna baru untuk sistem.</p>
+                    <p class="mt-1 text-base-content/70">Buat kategori baru untuk sistem manajemen asset.</p>
                 </div>
             </div>
         </div>
@@ -42,27 +42,12 @@
                     <!-- Name Field -->
                     <div class="form-control">
                         <label class="block mb-1 label">
-                            <span class="label-text">Nama Lengkap</span>
+                            <span class="label-text">Nama Kategori</span>
                             <span class="label-text-alt text-error">*</span>
                         </label>
-                        <input type="text" name="name" value="{{ old('name') }}" placeholder="John Doe" 
+                        <input type="text" name="name" value="{{ old('name') }}" placeholder="Elektronik" 
                                class="input input-bordered @error('name') input-error @enderror" required />
                         @error('name')
-                            <label class="label">
-                                <span class="label-text-alt text-error">{{ $message }}</span>
-                            </label>
-                        @enderror
-                    </div>
-
-                    <!-- Email Field -->
-                    <div class="form-control">
-                        <label class="block mb-1 label">
-                            <span class="label-text">Email</span>
-                            <span class="label-text-alt text-error">*</span>
-                        </label>
-                        <input type="email" name="email" value="{{ old('email') }}" placeholder="john.doe@example.com" 
-                               class="input input-bordered @error('email') input-error @enderror" required />
-                        @error('email')
                             <label class="label">
                                 <span class="label-text-alt text-error">{{ $message }}</span>
                             </label>

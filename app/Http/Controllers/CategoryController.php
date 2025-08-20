@@ -13,7 +13,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::withCount('assets')->paginate(10);
+        $categories = Category::active()->withCount('assets')->paginate(10);
         return view('dashboard.categories.index', compact('categories'));
     }
 
@@ -32,12 +32,10 @@ class CategoryController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255|unique:categories,name',
-            'description' => 'nullable|string|max:1000'
         ]);
 
         Category::create([
             'name' => $request->name,
-            'description' => $request->description
         ]);
 
         return redirect()->route('categories.index')
@@ -86,19 +84,19 @@ class CategoryController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Deactivate the specified resource.
      */
     public function destroy(Category $category)
     {
         // Check if category has assets
         if ($category->assets()->count() > 0) {
             return redirect()->route('categories.index')
-                ->with('error', 'Cannot delete category that has assets assigned to it.');
+                ->with('error', 'Cannot deactivate category that has assets assigned to it.');
         }
 
-        $category->delete();
+        $category->update(['is_active' => false]);
 
         return redirect()->route('categories.index')
-            ->with('success', 'Category deleted successfully.');
+            ->with('success', 'Category deactivated successfully.');
     }
 }

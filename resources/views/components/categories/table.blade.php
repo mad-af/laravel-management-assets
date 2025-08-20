@@ -6,17 +6,15 @@
             <tr>
                 <th>ID</th>
                 <th>Name</th>
-                <th>Email</th>
                 <th>Created At</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
             @forelse($categories as $categorie)
-                <tr data-categorie-id="{{ $categorie->id }}" data-categorie-name="{{ $categorie->name }}" data-categorie-email="{{ $categorie->email }}">
+                <tr data-categorie-id="{{ $categorie->id }}" data-categorie-name="{{ $categorie->name }}">
                     <td>{{ $categorie->id }}</td>
                     <td>{{ $categorie->name }}</td>
-                    <td>{{ $categorie->email }}</td>
                     <td>{{ $categorie->created_at->format('d M Y') }}</td>
                     <td>
                         <div class="dropdown dropdown-end">
@@ -25,7 +23,8 @@
                             </div>
                             <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
                                 <li>
-                                    <a href="{{ route('categories.show', $categorie) }}" onclick="document.activeElement.blur()">
+                                    <a href="{{ route('categories.show', $categorie) }}"
+                                        onclick="document.activeElement.blur()">
                                         <i data-lucide="eye" class="w-4 h-4"></i>
                                         View
                                     </a>
@@ -40,7 +39,7 @@
                                     <a onclick="deleteCategory({{ $categorie->id }}); document.activeElement.blur()"
                                         class="text-error">
                                         <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                        Delete
+                                        Deactivate
                                     </a>
                                 </li>
                             </ul>
@@ -50,7 +49,7 @@
             @empty
                 <tr>
                     <td colspan="5" class="py-4 text-center text-muted">
-                        <i data-lucide="categories" class="block mx-auto mb-3 w-12 h-12"></i>
+                        <i data-lucide="folder" class="block mx-auto mb-3 w-12 h-12"></i>
                         No categories found
                     </td>
                 </tr>

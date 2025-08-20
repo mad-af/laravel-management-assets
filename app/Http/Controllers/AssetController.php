@@ -51,8 +51,8 @@ class AssetController extends Controller
         }
 
         $assets = $query->orderBy('created_at', 'desc')->paginate(15);
-        $categories = Category::orderBy('name')->get();
-        $locations = Location::orderBy('name')->get();
+        $categories = Category::active()->orderBy('name')->get();
+        $locations = Location::active()->orderBy('name')->get();
 
         return view('dashboard.assets.index', compact('assets', 'categories', 'locations'));
     }
@@ -62,8 +62,8 @@ class AssetController extends Controller
      */
     public function create(): View
     {
-        $categories = Category::orderBy('name')->get();
-        $locations = Location::orderBy('name')->get();
+        $categories = Category::active()->orderBy('name')->get();
+        $locations = Location::active()->orderBy('name')->get();
 
         return view('dashboard.assets.create', compact('categories', 'locations'));
     }
@@ -106,8 +106,8 @@ class AssetController extends Controller
      */
     public function edit(Asset $asset): View
     {
-        $categories = Category::orderBy('name')->get();
-        $locations = Location::orderBy('name')->get();
+        $categories = Category::active()->orderBy('name')->get();
+        $locations = Location::active()->orderBy('name')->get();
 
         return view('dashboard.assets.edit', compact('asset', 'categories', 'locations'));
     }

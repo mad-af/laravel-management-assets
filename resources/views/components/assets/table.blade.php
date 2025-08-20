@@ -4,20 +4,43 @@
     <table class="table table-striped table-hover">
         <thead class="table-dark">
             <tr>
-                <th>ID</th>
+                <th>Code</th>
                 <th>Name</th>
-                <th>Email</th>
-                <th>Created At</th>
+                <th>Category</th>
+                <th>Location</th>
+                <th>Status</th>
+                <th>Condition</th>
+                <th>Value</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
             @forelse($assets as $asset)
-                <tr data-asset-id="{{ $asset->id }}" data-asset-name="{{ $asset->name }}" data-asset-email="{{ $asset->email }}">
-                    <td>{{ $asset->id }}</td>
-                    <td>{{ $asset->name }}</td>
-                    <td>{{ $asset->email }}</td>
-                    <td>{{ $asset->created_at->format('d M Y') }}</td>
+                <tr data-asset-id="{{ $asset->id }}" data-asset-code="{{ $asset->code }}" data-asset-name="{{ $asset->name }}">
+                    <td>
+                        <span class="font-mono text-sm">{{ $asset->code }}</span>
+                    </td>
+                    <td>
+                        <div class="font-medium">{{ $asset->name }}</div>
+                        @if($asset->description)
+                            <div class="text-sm text-gray-500">{{ Str::limit($asset->description, 50) }}</div>
+                        @endif
+                    </td>
+                    <td>
+                        <span class="badge badge-outline">{{ $asset->category->name ?? 'N/A' }}</span>
+                    </td>
+                    <td>
+                        <span class="badge badge-outline">{{ $asset->location->name ?? 'N/A' }}</span>
+                    </td>
+                    <td>
+                        <span class="badge {{ $asset->status_badge_color }}">{{ ucfirst($asset->status) }}</span>
+                    </td>
+                    <td>
+                        <span class="badge {{ $asset->condition_badge_color }}">{{ ucfirst($asset->condition) }}</span>
+                    </td>
+                    <td>
+                        <span class="font-medium">{{ $asset->formatted_value }}</span>
+                    </td>
                     <td>
                         <div class="dropdown dropdown-end">
                             <div tabindex="0" role="button" class="btn btn-sm btn-ghost">
@@ -49,8 +72,8 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="5" class="py-4 text-center text-muted">
-                        <i data-lucide="assets" class="block mx-auto mb-3 w-12 h-12"></i>
+                    <td colspan="8" class="py-4 text-center text-muted">
+                        <i data-lucide="package" class="block mx-auto mb-3 w-12 h-12"></i>
                         No assets found
                     </td>
                 </tr>

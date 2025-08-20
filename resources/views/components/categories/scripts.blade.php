@@ -8,8 +8,8 @@
         
         // Small delay to ensure dropdown closes before showing confirm dialog
         setTimeout(() => {
-            if (confirm('Apakah Anda yakin ingin menghapus categorie ini?')) {
-                // Buat form untuk delete
+            if (confirm('Apakah Anda yakin ingin menonaktifkan categorie ini?')) {
+                // Buat form untuk deactivate
                 const form = document.createElement('form');
                 form.method = 'POST';
                 form.action = `/dashboard/categories/${categorieId}`;

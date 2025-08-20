@@ -12,12 +12,22 @@ class Location extends Model
 
     protected $fillable = [
         'name',
+        'is_active',
     ];
 
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+        'is_active' => 'boolean',
     ];
+
+    /**
+     * Scope a query to only include active locations.
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
 
     /**
      * Get the assets for the location.

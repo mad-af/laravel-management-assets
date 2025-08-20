@@ -13,7 +13,7 @@ class LocationController extends Controller
      */
     public function index()
     {
-        $locations = Location::withCount('assets')->paginate(10);
+        $locations = Location::active()->withCount('assets')->paginate(10);
         return view('dashboard.locations.index', compact('locations'));
     }
 
@@ -32,14 +32,10 @@ class LocationController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255|unique:locations,name',
-            'description' => 'nullable|string|max:1000',
-            'address' => 'nullable|string|max:500'
         ]);
 
         Location::create([
             'name' => $request->name,
-            'description' => $request->description,
-            'address' => $request->address
         ]);
 
         return redirect()->route('locations.index')
@@ -90,19 +86,19 @@ class LocationController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Deactivate the specified resource.
      */
     public function destroy(Location $location)
     {
         // Check if location has assets
         if ($location->assets()->count() > 0) {
             return redirect()->route('locations.index')
-                ->with('error', 'Cannot delete location that has assets assigned to it.');
+                ->with('error', 'Cannot deactivate location that has assets assigned to it.');
         }
 
-        $location->delete();
+        $location->update(['is_active' => false]);
 
         return redirect()->route('locations.index')
-            ->with('success', 'Location deleted successfully.');
+            ->with('success', 'Location deactivated successfully.');
     }
 }

@@ -50,11 +50,11 @@
                 </div>
             </div>
             <div class="flex gap-2 justify-end pt-4">
-                <button type="submit" class="btn btn-primary">
+                <button type="submit" class="btn btn-primary btn-sm">
                     <i data-lucide="filter" class="mr-2 w-4 h-4"></i>
                     Filter
                 </button>
-                <a href="{{ route('assets.index') }}" class="btn btn-ghost">
+                <a href="{{ route('assets.index') }}" class="btn btn-ghost btn-sm">
                     Clear
                 </a>
             </div>

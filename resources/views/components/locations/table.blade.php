@@ -6,17 +6,15 @@
             <tr>
                 <th>ID</th>
                 <th>Name</th>
-                <th>Email</th>
                 <th>Created At</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
             @forelse($locations as $location)
-                <tr data-location-id="{{ $location->id }}" data-location-name="{{ $location->name }}" data-location-email="{{ $location->email }}">
+                <tr data-location-id="{{ $location->id }}" data-location-name="{{ $location->name }}">
                     <td>{{ $location->id }}</td>
                     <td>{{ $location->name }}</td>
-                    <td>{{ $location->email }}</td>
                     <td>{{ $location->created_at->format('d M Y') }}</td>
                     <td>
                         <div class="dropdown dropdown-end">
@@ -25,7 +23,8 @@
                             </div>
                             <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
                                 <li>
-                                    <a href="{{ route('locations.show', $location) }}" onclick="document.activeElement.blur()">
+                                    <a href="{{ route('locations.show', $location) }}"
+                                        onclick="document.activeElement.blur()">
                                         <i data-lucide="eye" class="w-4 h-4"></i>
                                         View
                                     </a>
@@ -40,7 +39,7 @@
                                     <a onclick="deleteLocation({{ $location->id }}); document.activeElement.blur()"
                                         class="text-error">
                                         <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                        Delete
+                                        Deactivate
                                     </a>
                                 </li>
                             </ul>
@@ -50,7 +49,7 @@
             @empty
                 <tr>
                     <td colspan="5" class="py-4 text-center text-muted">
-                        <i data-lucide="locations" class="block mx-auto mb-3 w-12 h-12"></i>
+                        <i data-lucide="map-pin" class="block mx-auto mb-3 w-12 h-12"></i>
                         No locations found
                     </td>
                 </tr>

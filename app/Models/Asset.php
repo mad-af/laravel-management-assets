@@ -118,7 +118,7 @@ class Asset extends Model
      */
     public function getFormattedValueAttribute(): string
     {
-        return '$' . number_format($this->value, 2);
+        return 'Rp ' . number_format($this->value, 0, ',', '.');
     }
 
     /**
