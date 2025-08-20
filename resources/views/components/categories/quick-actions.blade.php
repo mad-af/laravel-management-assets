@@ -13,11 +13,6 @@
                 Edit Category
             </a>
             
-            <button class="justify-start w-full btn" onclick="copyToClipboard('{{ $categorie->email }}')">
-                <i data-lucide="copy" class="mr-2 w-4 h-4"></i>
-                Copy Email
-            </button>
-            
             <div class="divider"></div>
             
             <form action="{{ route('categories.destroy', $categorie) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus categorie ini?')">

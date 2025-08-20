@@ -69,6 +69,25 @@
                         @enderror
                     </div>
 
+                    <!-- Role Field -->
+                    <div class="form-control">
+                        <label class="block mb-1 label">
+                            <span class="label-text">Role</span>
+                            <span class="label-text-alt text-error">*</span>
+                        </label>
+                        <select name="role" class="select select-bordered @error('role') select-error @enderror" required>
+                             <option value="">Pilih Role</option>
+                             <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+                             <option value="staff" {{ old('role') == 'staff' ? 'selected' : '' }}>Staff</option>
+                             <option value="auditor" {{ old('role') == 'auditor' ? 'selected' : '' }}>Auditor</option>
+                         </select>
+                        @error('role')
+                            <label class="label">
+                                <span class="label-text-alt text-error">{{ $message }}</span>
+                            </label>
+                        @enderror
+                    </div>
+
                     <!-- Form Actions -->
                     <div class="flex gap-2 justify-end pt-4">
                         <a href="{{ route('users.index') }}" class="btn btn-ghost">

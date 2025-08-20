@@ -20,12 +20,12 @@
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
             <!-- Category Info Card -->
             <div class="lg:col-span-2">
-                <x-categories.detail-card :categorie="$categorie" />
+                <x-categories.detail-card :categorie="$category" />
             </div>
 
             <!-- Quick Actions Card -->
             <div class="lg:col-span-1">
-                <x-categories.quick-actions :categorie="$categorie" />
+                <x-categories.quick-actions :categorie="$category" />
             </div>
         </div>
     </div>

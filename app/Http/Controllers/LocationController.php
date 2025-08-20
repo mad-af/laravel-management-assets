@@ -48,7 +48,7 @@ class LocationController extends Controller
     public function show(Location $location)
     {
         $location->load(['assets' => function($query) {
-            $query->with(['category', 'assetLogs' => function($q) {
+            $query->with(['category', 'logs' => function($q) {
                 $q->latest()->limit(5)->with('user');
             }]);
         }]);

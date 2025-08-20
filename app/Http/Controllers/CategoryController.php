@@ -48,7 +48,7 @@ class CategoryController extends Controller
     public function show(Category $category)
     {
         $category->load(['assets' => function($query) {
-            $query->with(['location', 'assetLogs' => function($q) {
+            $query->with(['location', 'logs' => function($q) {
                 $q->latest()->limit(5)->with('user');
             }]);
         }]);

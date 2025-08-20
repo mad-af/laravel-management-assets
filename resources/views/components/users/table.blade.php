@@ -7,6 +7,7 @@
                 <th>ID</th>
                 <th>Name</th>
                 <th>Email</th>
+                <th>Role</th>
                 <th>Created At</th>
                 <th>Actions</th>
             </tr>
@@ -17,6 +18,17 @@
                     <td>{{ $user->id }}</td>
                     <td>{{ $user->name }}</td>
                     <td>{{ $user->email }}</td>
+                    <td>
+                        @if($user->role === 'admin')
+                            <span class="badge badge-primary">Admin</span>
+                        @elseif($user->role === 'staff')
+                            <span class="badge badge-secondary">Staff</span>
+                        @elseif($user->role === 'auditor')
+                            <span class="badge badge-accent">Auditor</span>
+                        @else
+                            <span class="badge badge-ghost">{{ ucfirst($user->role) }}</span>
+                        @endif
+                    </td>
                     <td>{{ $user->created_at->format('d M Y') }}</td>
                     <td>
                         <div class="dropdown dropdown-end">
@@ -49,7 +61,7 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="5" class="py-4 text-center text-muted">
+                    <td colspan="6" class="py-4 text-center text-muted">
                         <i data-lucide="users" class="block mx-auto mb-3 w-12 h-12"></i>
                         No users found
                     </td>

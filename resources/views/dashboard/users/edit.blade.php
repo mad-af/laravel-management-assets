@@ -46,8 +46,8 @@
                             <span class="label-text">Nama Lengkap</span>
                             <span class="label-text-alt text-error">*</span>
                         </label>
-                        <input type="text" name="name" value="{{ old('name', $user->name) }}" placeholder="John Doe" 
-                               class="input input-bordered @error('name') input-error @enderror" required />
+                        <input type="text" name="name" value="{{ old('name', $user->name) }}" placeholder="John Doe"
+                            class="input input-bordered @error('name') input-error @enderror" required />
                         @error('name')
                             <label class="label">
                                 <span class="label-text-alt text-error">{{ $message }}</span>
@@ -61,9 +61,29 @@
                             <span class="label-text">Email</span>
                             <span class="label-text-alt text-error">*</span>
                         </label>
-                        <input type="email" name="email" value="{{ old('email', $user->email) }}" placeholder="john.doe@example.com" 
-                               class="input input-bordered @error('email') input-error @enderror" required />
+                        <input type="email" name="email" value="{{ old('email', $user->email) }}"
+                            placeholder="john.doe@example.com"
+                            class="input input-bordered @error('email') input-error @enderror" required />
                         @error('email')
+                            <label class="label">
+                                <span class="label-text-alt text-error">{{ $message }}</span>
+                            </label>
+                        @enderror
+                    </div>
+
+                    <!-- Role Field -->
+                    <div class="form-control">
+                        <label class="block mb-1 label">
+                            <span class="label-text">Role</span>
+                            <span class="label-text-alt text-error">*</span>
+                        </label>
+                        <select name="role" class="select select-bordered @error('role') select-error @enderror" required>
+                             <option value="">Pilih Role</option>
+                             <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Admin</option>
+                             <option value="staff" {{ old('role', $user->role) == 'staff' ? 'selected' : '' }}>Staff</option>
+                             <option value="auditor" {{ old('role', $user->role) == 'auditor' ? 'selected' : '' }}>Auditor</option>
+                         </select>
+                        @error('role')
                             <label class="label">
                                 <span class="label-text-alt text-error">{{ $message }}</span>
                             </label>

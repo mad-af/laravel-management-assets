@@ -25,27 +25,18 @@
             
             <div class="form-control">
                 <label class="label">
-                    <span class="font-semibold label-text">Email</span>
+                    <span class="font-semibold label-text">Status</span>
                 </label>
                 <div class="p-3 rounded-lg bg-base-200">
-                    {{ $location->email }}
-                </div>
-            </div>
-            
-            <div class="form-control">
-                <label class="label">
-                    <span class="font-semibold label-text">Status Email</span>
-                </label>
-                <div class="p-3 rounded-lg bg-base-200">
-                    @if($location->email_verified_at)
+                    @if($location->is_active)
                         <span class="badge badge-success">
                             <i data-lucide="check-circle" class="mr-1 w-4 h-4"></i>
-                            Terverifikasi
+                            Aktif
                         </span>
                     @else
-                        <span class="badge badge-warning">
-                            <i data-lucide="clock" class="mr-1 w-4 h-4"></i>
-                            Belum Terverifikasi
+                        <span class="badge badge-error">
+                            <i data-lucide="x-circle" class="mr-1 w-4 h-4"></i>
+                            Tidak Aktif
                         </span>
                     @endif
                 </div>

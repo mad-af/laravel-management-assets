@@ -34,6 +34,23 @@
             
             <div class="form-control">
                 <label class="label">
+                    <span class="font-semibold label-text">Role</span>
+                </label>
+                <div class="p-3 rounded-lg bg-base-200">
+                    @if($user->role === 'admin')
+                        <span class="badge badge-primary">Admin</span>
+                    @elseif($user->role === 'staff')
+                        <span class="badge badge-secondary">Staff</span>
+                    @elseif($user->role === 'auditor')
+                        <span class="badge badge-accent">Auditor</span>
+                    @else
+                        <span class="badge badge-ghost">{{ ucfirst($user->role) }}</span>
+                    @endif
+                </div>
+            </div>
+            
+            <div class="form-control">
+                <label class="label">
                     <span class="font-semibold label-text">Status Email</span>
                 </label>
                 <div class="p-3 rounded-lg bg-base-200">
