@@ -1,6 +1,6 @@
 @props(['users', 'class' => ''])
 
-<div class="table-responsive {{ $class }}">
+<div class="overflow-x-auto {{ $class }}">
     <table class="table table-striped table-hover">
         <thead class="table-dark">
             <tr>
@@ -20,43 +20,43 @@
                     <td>{{ $user->email }}</td>
                     <td>
                         @if($user->role === 'admin')
-                            <span class="badge badge-primary">Admin</span>
+                            <span class="text-xs whitespace-nowrap badge badge-primary">Admin</span>
                         @elseif($user->role === 'staff')
-                            <span class="badge badge-secondary">Staff</span>
+                            <span class="text-xs whitespace-nowrap badge badge-secondary">Staff</span>
                         @elseif($user->role === 'auditor')
-                            <span class="badge badge-accent">Auditor</span>
+                            <span class="text-xs whitespace-nowrap badge badge-accent">Auditor</span>
                         @else
-                            <span class="badge badge-ghost">{{ ucfirst($user->role) }}</span>
+                            <span class="text-xs whitespace-nowrap badge badge-ghost">{{ ucfirst($user->role) }}</span>
                         @endif
                     </td>
                     <td>{{ $user->created_at->format('d M Y') }}</td>
                     <td>
-                        <div class="dropdown dropdown-end">
-                            <div tabindex="0" role="button" class="btn btn-sm btn-ghost">
-                                <i data-lucide="more-vertical" class="w-4 h-4"></i>
-                            </div>
-                            <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
-                                <li>
-                                    <a href="{{ route('users.show', $user) }}" onclick="document.activeElement.blur()">
-                                        <i data-lucide="eye" class="w-4 h-4"></i>
-                                        View
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('users.edit', $user) }}">
-                                        <i data-lucide="edit" class="w-4 h-4"></i>
-                                        Edit
-                                    </a>
-                                </li>
-                                <li>
-                                    <a onclick="deleteUser({{ $user->id }}); document.activeElement.blur()"
-                                        class="text-error">
-                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                        Delete
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
+                        <button class="btn btn-sm btn-ghost" popovertarget="user-dropdown-{{ $user->id }}"
+                            style="anchor-name: --user-anchor-{{ $user->id }}">
+                            <i data-lucide="more-vertical" class="w-4 h-4"></i>
+                        </button>
+                        <ul class="w-52 shadow-lg dropdown dropdown-left dropdown-center menu rounded-box bg-base-100"
+                            popover id="user-dropdown-{{ $user->id }}"
+                            style="position-anchor: --user-anchor-{{ $user->id }}">
+                            <li>
+                                <a href="{{ route('users.show', $user) }}" onclick="document.activeElement.blur()">
+                                    <i data-lucide="eye" class="w-4 h-4"></i>
+                                    View
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('users.edit', $user) }}" onclick="document.activeElement.blur()">
+                                    <i data-lucide="edit" class="w-4 h-4"></i>
+                                    Edit
+                                </a>
+                            </li>
+                            <li>
+                                <a onclick="deleteUser({{ $user->id }}); document.activeElement.blur()" class="text-error">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                    Delete
+                                </a>
+                            </li>
+                        </ul>
                     </td>
                 </tr>
             @empty

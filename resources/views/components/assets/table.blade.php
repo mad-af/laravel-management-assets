@@ -47,32 +47,31 @@
                         <span class="font-medium">{{ $asset->formatted_value }}</span>
                     </td>
                     <td>
-                        <div class="dropdown dropdown-end">
-                            <div tabindex="0" role="button" class="btn btn-sm btn-ghost">
-                                <i data-lucide="more-vertical" class="w-4 h-4"></i>
-                            </div>
-                            <ul tabindex="0" class="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
-                                <li>
-                                    <a href="{{ route('assets.show', $asset) }}" onclick="document.activeElement.blur()">
-                                        <i data-lucide="eye" class="w-4 h-4"></i>
-                                        View
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('assets.edit', $asset) }}">
-                                        <i data-lucide="edit" class="w-4 h-4"></i>
-                                        Edit
-                                    </a>
-                                </li>
-                                <li>
-                                    <a onclick="deleteAsset({{ $asset->id }}); document.activeElement.blur()"
-                                        class="text-error">
-                                        <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                        Delete
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
+                        <button class="btn btn-sm btn-ghost" popovertarget="asset-dropdown-{{ $asset->id }}"
+                            style="anchor-name: --asset-anchor-{{ $asset->id }}">
+                            <i data-lucide="more-vertical" class="w-4 h-4"></i>
+                        </button>
+                        <ul class="w-52 shadow-lg dropdown dropdown-left dropdown-center menu rounded-box bg-base-100" popover
+                            id="asset-dropdown-{{ $asset->id }}" style="position-anchor: --asset-anchor-{{ $asset->id }}">
+                            <li>
+                                <a href="{{ route('assets.show', $asset) }}" onclick="document.activeElement.blur()">
+                                    <i data-lucide="eye" class="w-4 h-4"></i>
+                                    View
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('assets.edit', $asset) }}" onclick="document.activeElement.blur()">
+                                    <i data-lucide="edit" class="w-4 h-4"></i>
+                                    Edit
+                                </a>
+                            </li>
+                            <li>
+                                <a onclick="deleteAsset({{ $asset->id }}); document.activeElement.blur()" class="text-error">
+                                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                    Delete
+                                </a>
+                            </li>
+                        </ul>
                     </td>
                 </tr>
             @empty
