@@ -1,3 +1,5 @@
+@props(['asset'])
+
 <script>
     function deleteAsset(assetId) {
         // Close all dropdowns first

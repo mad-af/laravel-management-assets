@@ -38,4 +38,6 @@
             <x-assets.activity-log :asset="$asset" />
         </div>
     </div>
+
+    <x-assets.scripts :asset="$asset" />
 @endsection

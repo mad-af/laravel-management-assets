@@ -16,9 +16,11 @@
                 Edit Asset
             </a>
             
-            <button class="justify-start w-full btn" onclick="updateStatusAsset('maintenance')">
+            <button class="justify-start w-full btn {{ $asset->status === 'maintenance' ? 'btn-disabled' : '' }}" 
+                    onclick="updateStatusAsset('maintenance')" 
+                    {{ $asset->status === 'maintenance' ? 'disabled' : '' }}>
                 <i data-lucide="settings" class="mr-2 w-4 h-4"></i>
-                Mark as Maintenance
+                {{ $asset->status === 'maintenance' ? 'Maintenance Unavailable' : 'Mark as Maintenance' }}
             </button>
             
             <div class="divider"></div>

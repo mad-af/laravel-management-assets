@@ -79,7 +79,7 @@ class AssetController extends Controller
             'name' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'location_id' => 'required|exists:locations,id',
-            'status' => 'required|in:active,inactive,maintenance,disposed',
+            'status' => 'required|in:active,damaged,lost,maintenance,checked_out',
             'condition' => 'required|in:excellent,good,fair,poor',
             'value' => 'required|numeric|min:0',
             'purchase_date' => 'nullable|date',
@@ -133,7 +133,7 @@ class AssetController extends Controller
             'name' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'location_id' => 'required|exists:locations,id',
-            'status' => 'required|in:active,inactive,maintenance,disposed',
+            'status' => 'required|in:active,damaged,lost,maintenance,checked_out',
             'condition' => 'required|in:excellent,good,fair,poor',
             'value' => 'required|numeric|min:0',
             'purchase_date' => 'nullable|date',
@@ -153,7 +153,7 @@ class AssetController extends Controller
     public function updateStatus(Request $request, Asset $asset): RedirectResponse
     {
         $validated = $request->validate([
-            'status' => 'required|in:active,inactive,maintenance,disposed',
+            'status' => 'required|in:active,damaged,lost,maintenance,checked_out',
         ]);
 
         $oldStatus = $asset->status;

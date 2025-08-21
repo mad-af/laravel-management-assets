@@ -114,7 +114,7 @@ class Asset extends Model
             'active' => 'badge-success',
             'damaged' => 'badge-warning',
             'lost' => 'badge-error',
-            'under_maintenance' => 'badge-info',
+            'maintenance' => 'badge-info',
             'checked_out' => 'badge-primary',
             default => 'badge-ghost',
         };
