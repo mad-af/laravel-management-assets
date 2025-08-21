@@ -15,6 +15,7 @@ class Asset extends Model
 
     protected $fillable = [
         'code',
+        'tag_code',
         'name',
         'category_id',
         'location_id',
@@ -23,11 +24,13 @@ class Asset extends Model
         'value',
         'purchase_date',
         'description',
+        'last_seen_at',
     ];
 
     protected $casts = [
         'value' => 'decimal:2',
         'purchase_date' => 'date',
+        'last_seen_at' => 'datetime',
     ];
 
     /**
@@ -52,6 +55,22 @@ class Asset extends Model
     public function logs(): HasMany
     {
         return $this->hasMany(AssetLog::class)->orderBy('created_at', 'desc');
+    }
+
+    /**
+     * Get the asset loans for the asset.
+     */
+    public function loans(): HasMany
+    {
+        return $this->hasMany(AssetLoan::class)->orderBy('checkout_at', 'desc');
+    }
+
+    /**
+     * Get the current active loan for the asset.
+     */
+    public function currentLoan(): HasMany
+    {
+        return $this->hasMany(AssetLoan::class)->whereNull('checkin_at');
     }
 
     /**
@@ -93,9 +112,10 @@ class Asset extends Model
     {
         return match($this->status) {
             'active' => 'badge-success',
-            'inactive' => 'badge-warning',
-            'maintenance' => 'badge-info',
-            'disposed' => 'badge-error',
+            'damaged' => 'badge-warning',
+            'lost' => 'badge-error',
+            'under_maintenance' => 'badge-info',
+            'checked_out' => 'badge-primary',
             default => 'badge-ghost',
         };
     }
