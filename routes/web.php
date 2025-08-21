@@ -58,6 +58,7 @@ Route::prefix('dashboard')->middleware('auth')->group(function () {
     Route::get('asset-logs/export', [AssetLogController::class, 'export'])->name('asset-logs.export');
     Route::get('asset-logs/statistics', [AssetLogController::class, 'statistics'])->name('asset-logs.statistics');
     Route::get('assets/{asset}/logs', [AssetLogController::class, 'forAsset'])->name('assets.logs');
+    Route::get('asset-logs/for-asset/{asset}', [AssetLogController::class, 'forAsset'])->name('asset-logs.for-asset');
     Route::resource('asset-logs', AssetLogController::class)->only(['index', 'show']);
     
     // Category Management Routes

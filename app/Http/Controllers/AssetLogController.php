@@ -55,14 +55,41 @@ class AssetLogController extends Controller
     /**
      * Display asset logs for a specific asset.
      */
-    public function forAsset(Asset $asset): View
+    public function forAsset(Request $request, Asset $asset): View
     {
-        $logs = AssetLog::with(['user'])
+        $query = AssetLog::with(['user'])
             ->forAsset($asset->id)
-            ->orderBy('created_at', 'desc')
-            ->paginate(15);
+            ->orderBy('created_at', 'desc');
 
-        return view('dashboard.asset-logs.for-asset', compact('asset', 'logs'));
+        // Apply filters
+        if ($request->filled('action')) {
+            $query->byAction($request->get('action'));
+        }
+
+        if ($request->filled('user_id')) {
+            $query->byUser($request->get('user_id'));
+        }
+
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->get('date_from'));
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->get('date_to'));
+        }
+
+        $logs = $query->paginate(15);
+
+        // Get available actions for filter dropdown
+        $actions = AssetLog::select('action')
+            ->distinct()
+            ->orderBy('action')
+            ->pluck('action');
+
+        // Get users for filter dropdown
+        $users = User::orderBy('name')->get(['id', 'name']);
+
+        return view('dashboard.asset-logs.for-asset', compact('asset', 'logs', 'actions', 'users'));
     }
 
     /**
@@ -71,8 +98,9 @@ class AssetLogController extends Controller
     public function show(AssetLog $assetLog): View
     {
         $assetLog->load(['asset', 'user']);
+        $log = $assetLog;
 
-        return view('dashboard.asset-logs.show', compact('assetLog'));
+        return view('dashboard.asset-logs.show', compact('log'));
     }
 
     /**

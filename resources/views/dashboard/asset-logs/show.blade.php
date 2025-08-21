@@ -16,12 +16,6 @@
                 </div>
             </div>
             <div class="flex gap-2">
-                @if($log->asset)
-                    <a href="{{ route('assets.show', $log->asset) }}" class="btn btn-outline btn-sm">
-                        <i data-lucide="eye" class="mr-2 w-4 h-4"></i>
-                        Lihat Asset
-                    </a>
-                @endif
                 <a href="{{ route('asset-logs.for-asset', $log->asset_id) }}" class="btn btn-outline btn-sm">
                     <i data-lucide="history" class="mr-2 w-4 h-4"></i>
                     Riwayat Asset
@@ -32,7 +26,7 @@
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
             <!-- Log Detail Card -->
             <div class="lg:col-span-2">
-                <x-asset-logs.detail-card :log="$log" />
+                <x-asset-logs.detail-card :assetLog="$log" />
             </div>
 
             <!-- Asset Info Card -->
@@ -51,7 +45,7 @@
                                 </div>
                                 <div>
                                     <label class="text-sm font-medium text-base-content/70">Kode Asset</label>
-                                    <p class="text-base-content font-mono">{{ $log->asset->code }}</p>
+                                    <p class="font-mono text-base-content">{{ $log->asset->code }}</p>
                                 </div>
                                 <div>
                                     <label class="text-sm font-medium text-base-content/70">Kategori</label>
@@ -77,7 +71,7 @@
                                 </div>
                             </div>
                             <div class="mt-6">
-                                <a href="{{ route('assets.show', $log->asset) }}" class="btn btn-primary btn-sm w-full">
+                                <a href="{{ route('assets.show', $log->asset) }}" class="w-full btn btn-primary btn-sm">
                                     <i data-lucide="external-link" class="mr-2 w-4 h-4"></i>
                                     Lihat Detail Asset
                                 </a>
@@ -88,7 +82,7 @@
                     <div class="shadow-xl card bg-base-100">
                         <div class="card-body">
                             <div class="text-center text-base-content/70">
-                                <i data-lucide="alert-triangle" class="mx-auto w-12 h-12 mb-4"></i>
+                                <i data-lucide="alert-triangle" class="mx-auto mb-4 w-12 h-12"></i>
                                 <p>Asset tidak ditemukan atau telah dihapus.</p>
                             </div>
                         </div>

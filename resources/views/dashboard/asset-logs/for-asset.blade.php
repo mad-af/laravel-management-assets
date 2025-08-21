@@ -37,13 +37,13 @@
         <!-- Asset Info Summary -->
         <div class="shadow-xl card bg-base-100">
             <div class="card-body">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
                     <div class="text-center">
                         <div class="text-2xl font-bold text-primary">{{ $asset->name }}</div>
                         <div class="text-sm text-base-content/70">Nama Asset</div>
                     </div>
                     <div class="text-center">
-                        <div class="text-2xl font-bold text-secondary font-mono">{{ $asset->code }}</div>
+                        <div class="font-mono text-2xl font-bold text-secondary">{{ $asset->code }}</div>
                         <div class="text-sm text-base-content/70">Kode Asset</div>
                     </div>
                     <div class="text-center">
@@ -144,9 +144,9 @@
                         </div>
                     @endif
                 @else
-                    <div class="text-center py-12">
-                        <i data-lucide="history" class="mx-auto w-16 h-16 text-base-content/30 mb-4"></i>
-                        <h3 class="text-lg font-medium text-base-content/70 mb-2">Belum Ada Aktivitas</h3>
+                    <div class="py-12 text-center">
+                        <i data-lucide="history" class="mx-auto mb-4 w-16 h-16 text-base-content/30"></i>
+                        <h3 class="mb-2 text-lg font-medium text-base-content/70">Belum Ada Aktivitas</h3>
                         <p class="text-base-content/50">Asset ini belum memiliki riwayat aktivitas.</p>
                     </div>
                 @endif
