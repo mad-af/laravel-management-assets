@@ -3,12 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Asset;
+use App\Models\AssetLog;
 use App\Models\Category;
 use App\Models\Location;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\View\View;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\View\View;
 
 class AssetController extends Controller
 {
@@ -87,6 +88,16 @@ class AssetController extends Controller
 
         $asset = Asset::create($validated);
 
+        // Log asset creation
+        if (Auth::check()) {
+            AssetLog::create([
+                'asset_id' => $asset->id,
+                'user_id' => Auth::id(),
+                'action' => 'created',
+                'notes' => 'Asset created successfully',
+            ]);
+        }
+
         return redirect()->route('assets.index')
             ->with('success', 'Asset created successfully.');
     }
@@ -129,7 +140,30 @@ class AssetController extends Controller
             'description' => 'nullable|string|max:1000',
         ]);
 
+        // Track changes before update
+        $originalData = $asset->getOriginal();
         $asset->update($validated);
+        $changedFields = [];
+        
+        foreach ($validated as $key => $value) {
+            if (isset($originalData[$key]) && $originalData[$key] != $value) {
+                $changedFields[$key] = [
+                    'old' => $originalData[$key],
+                    'new' => $value
+                ];
+            }
+        }
+
+        // Log asset update
+        if (Auth::check()) {
+            AssetLog::create([
+                'asset_id' => $asset->id,
+                'user_id' => Auth::id(),
+                'action' => 'updated',
+                'changed_fields' => $changedFields,
+                'notes' => 'Asset updated successfully',
+            ]);
+        }
 
         return redirect()->route('assets.show', $asset)
             ->with('success', 'Asset updated successfully.');
@@ -171,6 +205,17 @@ class AssetController extends Controller
      */
     public function destroy(Asset $asset): RedirectResponse
     {
+        
+        // Log asset deletion before deleting
+        if (Auth::check()) {
+            AssetLog::create([
+                'asset_id' => $asset->id,
+                'user_id' => Auth::id(),
+                'action' => 'deleted',
+                'notes' => 'Asset deleted: ' . $asset->name,
+            ]);
+        }
+
         $assetName = $asset->name;
         $asset->delete();
 
@@ -217,6 +262,16 @@ class AssetController extends Controller
         }
 
         $assets = $query->orderBy('created_at', 'desc')->get();
+
+        // Log export action
+        if (Auth::check()) {
+            AssetLog::create([
+                'asset_id' => null, // This is a bulk action
+                'user_id' => Auth::id(),
+                'action' => 'exported',
+                'notes' => 'Assets exported to CSV (' . $assets->count() . ' records)',
+            ]);
+        }
 
         $filename = 'assets_' . date('Y-m-d_H-i-s') . '.csv';
         
