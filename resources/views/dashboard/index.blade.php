@@ -115,7 +115,16 @@
                                                     @endif
                                                 </td>
                                                 <td>
-                                                    <span class="badge badge-primary badge-sm">
+                                                    @php
+                                                        $actionColors = [
+                                                            'created' => 'badge-success',
+                                                            'updated' => 'badge-info',
+                                                            'deleted' => 'badge-error',
+                                                            'status_changed' => 'badge-warning'
+                                                        ];
+                                                        $colorClass = $actionColors[$log->action] ?? 'badge-neutral';
+                                                    @endphp
+                                                    <span class="badge {{ $colorClass }}">
                                                         {{ ucfirst(str_replace('_', ' ', $log->action)) }}
                                                     </span>
                                                 </td>
@@ -201,7 +210,8 @@
                                         <div class="flex-1">
                                             <p class="text-sm font-medium">{{ $asset->name }}</p>
                                             <p class="text-xs opacity-70">{{ $asset->code }} •
-                                                {{ $asset->created_at->diffForHumans() }}</p>
+                                                {{ $asset->created_at->diffForHumans() }}
+                                            </p>
                                         </div>
                                         <div
                                             class="badge badge-{{ $asset->status === 'active' ? 'success' : ($asset->status === 'maintenance' ? 'warning' : 'error') }} badge-sm">
