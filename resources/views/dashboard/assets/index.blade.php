@@ -46,7 +46,7 @@
             <div class="card-body">
                 <h2 class="mb-4 text-lg font-semibold card-title">Daftar Aset</h2>
                 <div>
-                    <x-assets.table :assets="$assets" class="overflow-x-auto" />
+                    <x-assets.table :assets="$assets" />
                 </div>
 
                 @if($assets->hasPages())
