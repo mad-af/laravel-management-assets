@@ -38,9 +38,29 @@
       @endif
       </td>
       <td>
-        <div class="max-w-xs truncate" title="{{ $log->formattedChanges }}">
-        {{ $log->formattedChanges }}
+        @if($log->changed_fields)
+        <div class="max-w-xs text-sm">
+        @php
+      $changedFields = is_string($log->changed_fields)
+        ? json_decode($log->changed_fields, true)
+        : $log->changed_fields;
+      @endphp
+        @if(is_array($changedFields))
+        @foreach($changedFields as $field => $change)
+        <div class="mb-1 truncate">
+        <strong>{{ ucfirst($field) }}:</strong>
+        <span class="text-red-500">{{ $change['old'] ?? 'N/A' }}</span>
+        →
+        <span class="text-green-500">{{ $change['new'] ?? 'N/A' }}</span>
         </div>
+        @endforeach
+      @else
+      <span class="text-gray-500">Invalid change data format</span>
+      @endif
+        </div>
+      @else
+      <span class="text-gray-500">No changes recorded</span>
+      @endif
       </td>
       <td>{{ $log->created_at->format('d M Y H:i') }}</td>
       <td>

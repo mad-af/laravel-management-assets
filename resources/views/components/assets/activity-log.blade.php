@@ -40,14 +40,23 @@
                                 <td>
                                     @if($log->changed_fields)
                                         <div class="text-sm">
-                                            @foreach(json_decode($log->changed_fields, true) as $field => $change)
-                                                <div class="mb-1">
-                                                    <strong>{{ ucfirst($field) }}:</strong>
-                                                    <span class="text-red-500">{{ $change['old'] ?? 'N/A' }}</span>
-                                                    →
-                                                    <span class="text-green-500">{{ $change['new'] ?? 'N/A' }}</span>
-                                                </div>
-                                            @endforeach
+                                            @php
+                                                $changedFields = is_string($log->changed_fields) 
+                                                    ? json_decode($log->changed_fields, true) 
+                                                    : $log->changed_fields;
+                                            @endphp
+                                            @if(is_array($changedFields))
+                                                @foreach($changedFields as $field => $change)
+                                                    <div class="mb-1">
+                                                        <strong>{{ ucfirst($field) }}:</strong>
+                                                        <span class="text-red-500">{{ $change['old'] ?? 'N/A' }}</span>
+                                                        →
+                                                        <span class="text-green-500">{{ $change['new'] ?? 'N/A' }}</span>
+                                                    </div>
+                                                @endforeach
+                                            @else
+                                                <span class="text-gray-500">Invalid change data format</span>
+                                            @endif
                                         </div>
                                     @else
                                         <span class="text-gray-500">No changes recorded</span>

@@ -162,7 +162,7 @@ class Asset extends Model
                     $asset->logs()->create([
                         'user_id' => Auth::id(),
                         'action' => 'updated',
-                        'changed_fields' => json_encode($changes),
+                        'changed_fields' => $changes,
                         'notes' => 'Asset updated',
                     ]);
                 }

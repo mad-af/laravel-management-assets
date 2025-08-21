@@ -140,30 +140,8 @@ class AssetController extends Controller
             'description' => 'nullable|string|max:1000',
         ]);
 
-        // Track changes before update
-        $originalData = $asset->getOriginal();
+        // Update asset - logging handled by model observer
         $asset->update($validated);
-        $changedFields = [];
-        
-        foreach ($validated as $key => $value) {
-            if (isset($originalData[$key]) && $originalData[$key] != $value) {
-                $changedFields[$key] = [
-                    'old' => $originalData[$key],
-                    'new' => $value
-                ];
-            }
-        }
-
-        // Log asset update
-        if (Auth::check()) {
-            AssetLog::create([
-                'asset_id' => $asset->id,
-                'user_id' => Auth::id(),
-                'action' => 'updated',
-                'changed_fields' => $changedFields,
-                'notes' => 'Asset updated successfully',
-            ]);
-        }
 
         return redirect()->route('assets.show', $asset)
             ->with('success', 'Asset updated successfully.');
@@ -181,20 +159,7 @@ class AssetController extends Controller
         $oldStatus = $asset->status;
         $asset->update(['status' => $validated['status']]);
 
-        // Log the status change
-        if (Auth::check()) {
-            $asset->logs()->create([
-                'user_id' => Auth::id(),
-                'action' => 'status_changed',
-                'changed_fields' => json_encode([
-                    'status' => [
-                        'old' => $oldStatus,
-                        'new' => $validated['status']
-                    ]
-                ]),
-                'notes' => "Status changed from {$oldStatus} to {$validated['status']}",
-            ]);
-        }
+        // Update status - logging handled by model observer
 
         return redirect()->route('assets.show', $asset)
             ->with('success', 'Asset status updated successfully.');
@@ -206,15 +171,7 @@ class AssetController extends Controller
     public function destroy(Asset $asset): RedirectResponse
     {
         
-        // Log asset deletion before deleting
-        if (Auth::check()) {
-            AssetLog::create([
-                'asset_id' => $asset->id,
-                'user_id' => Auth::id(),
-                'action' => 'deleted',
-                'notes' => 'Asset deleted: ' . $asset->name,
-            ]);
-        }
+        // Asset deletion - logging handled by model observer
 
         $assetName = $asset->name;
         $asset->delete();

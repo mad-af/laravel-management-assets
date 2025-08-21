@@ -54,16 +54,27 @@
             <div class="md:col-span-2">
                 <label class="text-sm font-semibold text-base-content/70">Changed Fields</label>
                 <div class="mt-1 space-y-2">
-                    @foreach($assetLog->changed_fields as $field => $change)
-                        <div class="flex justify-between items-center p-2 bg-base-200 rounded">
-                            <span class="font-medium text-base-content">{{ ucfirst($field) }}:</span>
-                            <div class="text-sm">
-                                <span class="text-red-500">{{ $change['old'] ?? 'N/A' }}</span>
-                                <i data-lucide="arrow-right" class="w-4 h-4 mx-2 inline"></i>
-                                <span class="text-green-500">{{ $change['new'] ?? 'N/A' }}</span>
+                    @php
+                        $changedFields = is_string($assetLog->changed_fields) 
+                            ? json_decode($assetLog->changed_fields, true) 
+                            : $assetLog->changed_fields;
+                    @endphp
+                    @if(is_array($changedFields))
+                        @foreach($changedFields as $field => $change)
+                            <div class="flex justify-between items-center p-2 bg-base-200 rounded">
+                                <span class="font-medium text-base-content">{{ ucfirst($field) }}:</span>
+                                <div class="text-sm">
+                                    <span class="text-red-500">{{ $change['old'] ?? 'N/A' }}</span>
+                                    <i data-lucide="arrow-right" class="w-4 h-4 mx-2 inline"></i>
+                                    <span class="text-green-500">{{ $change['new'] ?? 'N/A' }}</span>
+                                </div>
                             </div>
+                        @endforeach
+                    @else
+                        <div class="p-2 bg-base-200 rounded text-center text-base-content/50">
+                            Invalid change data format
                         </div>
-                    @endforeach
+                    @endif
                 </div>
             </div>
             @endif

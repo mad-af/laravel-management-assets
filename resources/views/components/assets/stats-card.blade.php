@@ -34,9 +34,9 @@
                             $totalYears = $purchaseDate->diffInYears($now);
 
                             if ($totalYears >= 1) {
-                                $display = '~' . number_format(round($totalDays / 365.25, 1), 1) . ' years';
+                                $display = number_format(round($totalDays / 365.25, 1), 1) . ' years';
                             } elseif ($totalMonths >= 1) {
-                                $display = '~' . number_format(round($totalDays / 30.44, 1), 1) . ' months';
+                                $display = number_format(round($totalDays / 30.44, 1), 1) . ' months';
                             } else {
                                 $display = number_format($totalDays, 1) . ' days';
                             }

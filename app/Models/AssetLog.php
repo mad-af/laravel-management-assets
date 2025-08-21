@@ -85,8 +85,17 @@ class AssetLog extends Model
             return 'No changes recorded';
         }
 
+        // Handle both string JSON and array formats
+        $changedFields = is_string($this->changed_fields) 
+            ? json_decode($this->changed_fields, true) 
+            : $this->changed_fields;
+
+        if (!is_array($changedFields)) {
+            return 'Invalid change data format';
+        }
+
         $changes = [];
-        foreach ($this->changed_fields as $field => $change) {
+        foreach ($changedFields as $field => $change) {
             $oldValue = $change['old'] ?? 'N/A';
             $newValue = $change['new'] ?? 'N/A';
             $changes[] = ucfirst($field) . ": {$oldValue} → {$newValue}";
