@@ -14,30 +14,33 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-// Authentication Routes
-Route::get('/login', function () {
-    return view('auth.login');
-})->name('login');
+// Authentication Routes (only for guests)
+Route::middleware('guest')->group(function () {
+    Route::get('/login', function () {
+        return view('auth.login');
+    })->name('login');
 
-Route::post('/login', [LoginController::class, 'authenticate'])->name('login.authenticate');
+    Route::post('/login', [LoginController::class, 'authenticate'])->name('login.authenticate');
 
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+    // Password Reset Routes
+    Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])
+        ->name('password.request');
 
-// Password Reset Routes
-Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])
-    ->name('password.request');
+    Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])
+        ->name('password.email');
 
-Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])
-    ->name('password.email');
+    Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])
+        ->name('password.reset');
 
-Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])
-    ->name('password.reset');
+    Route::post('/reset-password', [ResetPasswordController::class, 'reset'])
+        ->name('password.update');
+});
 
-Route::post('/reset-password', [ResetPasswordController::class, 'reset'])
-    ->name('password.update');
+// Logout route (for authenticated users)
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
 
 // Dashboard Routes
-Route::prefix('dashboard')->group(function () {
+Route::prefix('dashboard')->middleware('auth')->group(function () {
     Route::get('/', function () {
         return view('dashboard.index');
     })->name('dashboard');

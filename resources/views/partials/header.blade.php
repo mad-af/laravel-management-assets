@@ -58,12 +58,31 @@
             <!-- User menu -->
             <div class="dropdown dropdown-end">
                 <div tabindex="0" role="button" class="btn btn-ghost btn-circle">
-                    <x-avatar initials="U" size="sm" placeholder="true" />
+                    @auth
+                        <x-avatar initials="{{ substr(Auth::user()->name, 0, 2) }}" size="sm" placeholder="true" />
+                    @else
+                        <x-avatar initials="U" size="sm" placeholder="true" />
+                    @endauth
                 </div>
                 <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
-                    <li><a>Profile</a></li>
-                    <li><a>Settings</a></li>
-                    <li><a>Logout</a></li>
+                    @auth
+                        <li class="menu-title">
+                            <span>{{ Auth::user()->name }}</span>
+                        </li>
+                        <li><a href="#">Profile</a></li>
+                        <li><a href="#">Settings</a></li>
+                        <li>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="w-full text-left">
+                                    <i data-lucide="log-out" class="w-4 h-4 mr-2"></i>
+                                    Logout
+                                </button>
+                            </form>
+                        </li>
+                    @else
+                        <li><a href="{{ route('login') }}">Login</a></li>
+                    @endauth
                 </ul>
             </div>
         </div>

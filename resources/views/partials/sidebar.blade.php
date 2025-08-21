@@ -83,11 +83,19 @@
         
         <div class="p-3">
             <div class="flex gap-3 items-center">
-                <x-avatar initials="U" size="md" placeholder="true" />
-                <div>
-                    <p class="font-medium">User Name</p>
-                    <p class="text-sm opacity-70">Administrator</p>
-                </div>
+                @auth
+                    <x-avatar initials="{{ substr(Auth::user()->name, 0, 2) }}" size="md" placeholder="true" />
+                    <div>
+                        <p class="font-medium">{{ Auth::user()->name }}</p>
+                        <p class="text-sm opacity-70">{{ ucfirst(Auth::user()->role ?? 'User') }}</p>
+                    </div>
+                @else
+                    <x-avatar initials="U" size="md" placeholder="true" />
+                    <div>
+                        <p class="font-medium">Guest</p>
+                        <p class="text-sm opacity-70">Not logged in</p>
+                    </div>
+                @endauth
             </div>
         </div>
     </div>
