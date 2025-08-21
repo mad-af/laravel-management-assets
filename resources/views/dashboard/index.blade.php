@@ -3,182 +3,222 @@
 @section('title', 'Dashboard')
 
 @section('content')
-<div class="space-y-6">
-    <!-- Page Header -->
-    <div class="flex justify-between items-center">
-        <div>
-            <h1 class="text-3xl font-bold text-base-content">Dashboard</h1>
-            <p class="text-base-content/70 mt-1">Welcome back! Here's what's happening.</p>
+    <div class="space-y-6">
+        <!-- Page Header -->
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold text-base-content">Asset Management Dashboard</h1>
+                <p class="mt-1 text-base-content/70">Selamat datang! Berikut adalah ringkasan sistem manajemen aset Anda.
+                </p>
+            </div>
+            <div class="flex gap-2">
+                <a href="{{ route('assets.create') }}" class="btn btn-primary btn-sm">
+                    <i data-lucide="plus" class="mr-2 w-4 h-4"></i>
+                    Tambah Asset
+                </a>
+            </div>
         </div>
-        <div class="flex gap-2">
-            <button class="btn btn-primary btn-sm">
-                <i data-lucide="plus" class="w-4 h-4 mr-2"></i>
-                New Item
-            </button>
-            <button class="btn btn-outline btn-sm">
-                <i data-lucide="download" class="w-4 h-4 mr-2"></i>
-                Export
-            </button>
-        </div>
-    </div>
 
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div class="stats bg-base-100 shadow">
-            <div class="stat">
-                <div class="stat-title">Total Users</div>
-                <div class="stat-value text-primary">1,234</div>
-                <div class="stat-desc text-success">+12% from last month</div>
-            </div>
-        </div>
-        
-        <div class="stats bg-base-100 shadow">
-            <div class="stat">
-                <div class="stat-title">Revenue</div>
-                <div class="stat-value text-primary">$45,678</div>
-                <div class="stat-desc text-success">+8% from last month</div>
-            </div>
-        </div>
-        
-        <div class="stats bg-base-100 shadow">
-            <div class="stat">
-                <div class="stat-title">Orders</div>
-                <div class="stat-value text-primary">892</div>
-                <div class="stat-desc text-error">-3% from last month</div>
-            </div>
-        </div>
-        
-        <div class="stats bg-base-100 shadow">
-            <div class="stat">
-                <div class="stat-title">Products</div>
-                <div class="stat-value text-primary">156</div>
-                <div class="stat-desc text-success">+5% from last month</div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Main Content Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Recent Activity -->
-        <div class="lg:col-span-2">
-            <div class="card bg-base-100 shadow-xl">
-                <div class="card-body">
-                    <h2 class="card-title text-lg font-semibold mb-4">Recent Activity</h2>
-                    <div class="overflow-x-auto">
-                        <table class="table table-zebra">
-                            <thead>
-                                <tr>
-                                    <th>User</th>
-                                    <th>Action</th>
-                                    <th>Time</th>
-                                    <th>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>
-                                        <div class="flex items-center gap-3">
-                                            <x-avatar initials="JD" size="sm" placeholder="true" />
-                                            <div>
-                                                <div class="font-bold">John Doe</div>
-                                                <div class="text-sm opacity-50">john@example.com</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>Created new order</td>
-                                    <td>2 minutes ago</td>
-                                    <td><span class="badge badge-success badge-sm">Success</span></td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="flex items-center gap-3">
-                                            <x-avatar initials="JS" size="sm" placeholder="true" />
-                                            <div>
-                                                <div class="font-bold">Jane Smith</div>
-                                                <div class="text-sm opacity-50">jane@example.com</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>Updated profile</td>
-                                    <td>5 minutes ago</td>
-                                    <td><span class="badge badge-info badge-sm">Info</span></td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <div class="flex items-center gap-3">
-                                            <x-avatar initials="MB" size="sm" placeholder="true" />
-                                            <div>
-                                                <div class="font-bold">Mike Brown</div>
-                                                <div class="text-sm opacity-50">mike@example.com</div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>Deleted item</td>
-                                    <td>10 minutes ago</td>
-                                    <td><span class="badge badge-warning badge-sm">Warning</span></td>
-                                </tr>
-                            </tbody>
-                        </table>
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <div class="shadow stats bg-base-100">
+                <div class="stat">
+                    <div class="stat-figure text-primary">
+                        <i data-lucide="package" class="w-8 h-8"></i>
                     </div>
+                    <div class="stat-title">Total Assets</div>
+                    <div class="stat-value text-primary">{{ \App\Models\Asset::count() }}</div>
+                    <div class="stat-desc">Semua aset dalam sistem</div>
+                </div>
+            </div>
+
+            <div class="shadow stats bg-base-100">
+                <div class="stat">
+                    <div class="stat-figure text-success">
+                        <i data-lucide="check-circle" class="w-8 h-8"></i>
+                    </div>
+                    <div class="stat-title">Active Assets</div>
+                    <div class="stat-value text-success">{{ \App\Models\Asset::where('status', 'active')->count() }}</div>
+                    <div class="stat-desc">Aset yang sedang aktif</div>
+                </div>
+            </div>
+
+            <div class="shadow stats bg-base-100">
+                <div class="stat">
+                    <div class="stat-figure text-info">
+                        <i data-lucide="folder" class="w-8 h-8"></i>
+                    </div>
+                    <div class="stat-title">Categories</div>
+                    <div class="stat-value text-info">{{ \App\Models\Category::where('is_active', true)->count() }}</div>
+                    <div class="stat-desc">Kategori aktif</div>
+                </div>
+            </div>
+
+            <div class="shadow stats bg-base-100">
+                <div class="stat">
+                    <div class="stat-figure text-warning">
+                        <i data-lucide="map-pin" class="w-8 h-8"></i>
+                    </div>
+                    <div class="stat-title">Locations</div>
+                    <div class="stat-value text-warning">{{ \App\Models\Location::where('is_active', true)->count() }}</div>
+                    <div class="stat-desc">Lokasi aktif</div>
                 </div>
             </div>
         </div>
 
-        <!-- Quick Info -->
-        <div class="space-y-6">
-            <div class="card bg-base-100 shadow-xl">
-                <div class="card-body">
-                    <h2 class="card-title text-lg font-semibold mb-4">System Status</h2>
-                    <div class="space-y-4">
-                        <div class="flex justify-between items-center">
-                            <span>Server Status</span>
-                            <div class="badge badge-success">Online</div>
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            <!-- Recent Activity -->
+            <div class="lg:col-span-2">
+                <div class="shadow-xl card bg-base-100">
+                    <div class="card-body">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-lg font-semibold card-title">Aktivitas Terbaru</h2>
+                            <a href="{{ route('asset-logs.index') }}" class="btn btn-ghost btn-sm">
+                                Lihat Semua
+                                <i data-lucide="arrow-right" class="ml-2 w-4 h-4"></i>
+                            </a>
                         </div>
-                        <div class="flex justify-between items-center">
-                            <span>Database</span>
-                            <div class="badge badge-success">Connected</div>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span>Cache</span>
-                            <div class="badge badge-warning">Clearing</div>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span>Storage</span>
-                            <div class="badge badge-info">75% Used</div>
+                        <div class="overflow-x-auto">
+                            @php
+                                $recentLogs = \App\Models\AssetLog::with(['asset', 'user'])
+                                    ->orderBy('created_at', 'desc')
+                                    ->limit(5)
+                                    ->get();
+                            @endphp
+
+                            @if($recentLogs->count() > 0)
+                                <table class="table table-zebra">
+                                    <thead>
+                                        <tr>
+                                            <th>Asset</th>
+                                            <th>Aksi</th>
+                                            <th>User</th>
+                                            <th>Waktu</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($recentLogs as $log)
+                                            <tr>
+                                                <td>
+                                                    @if($log->asset)
+                                                        <div class="flex gap-3 items-center">
+                                                            {{-- <x-avatar initials="{{ substr($log->asset->name, 0, 2) }}" size="sm"
+                                                                placeholder="true" /> --}}
+                                                            <div>
+                                                                <div class="font-bold">{{ $log->asset->name }}</div>
+                                                                <div class="text-sm opacity-50">{{ $log->asset->code }}</div>
+                                                            </div>
+                                                        </div>
+                                                    @else
+                                                        <span class="text-base-content/50">Asset Deleted</span>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    <span class="badge badge-primary badge-sm">
+                                                        {{ ucfirst(str_replace('_', ' ', $log->action)) }}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    @if($log->user)
+                                                        <div class="flex gap-2 items-center">
+                                                            <x-avatar initials="{{ substr($log->user->name, 0, 2) }}" size="xs"
+                                                                placeholder="true" />
+                                                            <span class="text-sm">{{ $log->user->name }}</span>
+                                                        </div>
+                                                    @else
+                                                        <span class="text-sm text-base-content/50">System</span>
+                                                    @endif
+                                                </td>
+                                                <td class="text-sm">{{ $log->created_at->diffForHumans() }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            @else
+                                <div class="py-8 text-center text-base-content/50">
+                                    <i data-lucide="activity" class="mx-auto mb-2 w-12 h-12"></i>
+                                    <p>Belum ada aktivitas</p>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="card bg-base-100 shadow-xl">
-                <div class="card-body">
-                    <h2 class="card-title text-lg font-semibold mb-4">Recent Users</h2>
-                    <div class="space-y-3">
-                        <div class="flex items-center gap-3">
-                            <x-avatar initials="JD" size="sm" placeholder="true" />
-                            <div class="flex-1">
-                                <p class="font-medium text-sm">John Doe</p>
-                                <p class="text-xs opacity-70">2 minutes ago</p>
+            <!-- Quick Info -->
+            <div class="space-y-6">
+                <div class="shadow-xl card bg-base-100">
+                    <div class="card-body">
+                        <h2 class="mb-4 text-lg font-semibold card-title">Status Asset</h2>
+                        <div class="space-y-4">
+                            @php
+                                $activeCount = \App\Models\Asset::where('status', 'active')->count();
+                                $inactiveCount = \App\Models\Asset::where('status', 'inactive')->count();
+                                $maintenanceCount = \App\Models\Asset::where('status', 'maintenance')->count();
+                                $disposedCount = \App\Models\Asset::where('status', 'disposed')->count();
+                            @endphp
+                            <div class="flex justify-between items-center">
+                                <span>Active</span>
+                                <div class="badge badge-success">{{ $activeCount }}</div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span>Inactive</span>
+                                <div class="badge badge-warning">{{ $inactiveCount }}</div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span>Maintenance</span>
+                                <div class="badge badge-info">{{ $maintenanceCount }}</div>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span>Disposed</span>
+                                <div class="badge badge-error">{{ $disposedCount }}</div>
                             </div>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <x-avatar initials="JS" size="sm" placeholder="true" />
-                            <div class="flex-1">
-                                <p class="font-medium text-sm">Jane Smith</p>
-                                <p class="text-xs opacity-70">5 minutes ago</p>
-                            </div>
+                    </div>
+                </div>
+
+                <div class="shadow-xl card bg-base-100">
+                    <div class="card-body">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-lg font-semibold card-title">Asset Terbaru</h2>
+                            <a href="{{ route('assets.index') }}" class="btn btn-ghost btn-sm">
+                                Lihat Semua
+                            </a>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <x-avatar initials="MB" size="sm" placeholder="true" />
-                            <div class="flex-1">
-                                <p class="font-medium text-sm">Mike Brown</p>
-                                <p class="text-xs opacity-70">10 minutes ago</p>
-                            </div>
+                        <div class="space-y-3">
+                            @php
+                                $recentAssets = \App\Models\Asset::with(['category', 'location'])
+                                    ->orderBy('created_at', 'desc')
+                                    ->limit(3)
+                                    ->get();
+                            @endphp
+
+                            @if($recentAssets->count() > 0)
+                                @foreach($recentAssets as $asset)
+                                    <div class="flex gap-3 items-center">
+                                        <x-avatar initials="{{ substr($asset->name, 0, 2) }}" size="sm" placeholder="true" />
+                                        <div class="flex-1">
+                                            <p class="text-sm font-medium">{{ $asset->name }}</p>
+                                            <p class="text-xs opacity-70">{{ $asset->code }} •
+                                                {{ $asset->created_at->diffForHumans() }}</p>
+                                        </div>
+                                        <div
+                                            class="badge badge-{{ $asset->status === 'active' ? 'success' : ($asset->status === 'maintenance' ? 'warning' : 'error') }} badge-sm">
+                                            {{ ucfirst($asset->status) }}
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @else
+                                <div class="py-4 text-center text-base-content/50">
+                                    <i data-lucide="package" class="mx-auto mb-2 w-8 h-8"></i>
+                                    <p class="text-sm">Belum ada asset</p>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 @endsection
