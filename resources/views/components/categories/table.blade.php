@@ -29,7 +29,7 @@
                             style="anchor-name: --category-anchor-{{ $categorie->id }}">
                             <i data-lucide="more-vertical" class="w-4 h-4"></i>
                         </button>
-                        <ul class="w-52 border shadow-lg dropdown dropdown-left dropdown-center menu rounded-box bg-base-100"
+                        <ul class="w-52 shadow-lg dropdown dropdown-left dropdown-center menu rounded-box bg-base-100"
                             popover id="category-dropdown-{{ $categorie->id }}"
                             style="position-anchor: --category-anchor-{{ $categorie->id }}">
                             @if($categorie->is_active)

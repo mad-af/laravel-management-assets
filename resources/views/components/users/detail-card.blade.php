@@ -5,7 +5,10 @@
 
 <div class="shadow-xl card bg-base-100 {{ $class }}">
     <div class="card-body">
-        <h2 class="mb-6 text-lg font-semibold card-title">Informasi User</h2>
+        <h3 class="flex gap-2 items-center mb-6 card-title text-base-content">
+            <i data-lucide="info" class="w-5 h-5"></i>
+            Informasi User
+        </h3>
         
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div class="form-control">

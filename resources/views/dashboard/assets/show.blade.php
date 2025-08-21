@@ -26,7 +26,7 @@
             <!-- Quick Actions & Stats -->
             <div class="space-y-6">
                 <!-- Quick Actions -->
-                <x-assets.actions-card :asset="$asset" />
+                <x-assets.quick-actions :asset="$asset" />
 
                 <!-- Asset Stats -->
                 <x-assets.stats-card :asset="$asset" />

@@ -29,7 +29,7 @@
                             style="anchor-name: --location-anchor-{{ $location->id }}">
                             <i data-lucide="more-vertical" class="w-4 h-4"></i>
                         </button>
-                        <ul class="w-52 border shadow-lg dropdown dropdown-left dropdown-center menu rounded-box bg-base-100"
+                        <ul class="w-52 shadow-lg dropdown dropdown-left dropdown-center menu rounded-box bg-base-100"
                             popover id="location-dropdown-{{ $location->id }}"
                             style="position-anchor: --location-anchor-{{ $location->id }}">
                             @if($location->is_active)

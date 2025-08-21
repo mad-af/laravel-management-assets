@@ -34,4 +34,35 @@
             }
         }, 100);
     }
+
+    function updateStatusAsset(status) {
+        if (confirm(`Are you sure you want to mark this asset as ${status}?`)) {
+            // Create a form and submit it
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ route("assets.update-status", $asset) }}';
+
+            const csrfToken = document.createElement('input');
+            csrfToken.type = 'hidden';
+            csrfToken.name = '_token';
+            csrfToken.value = '{{ csrf_token() }}';
+
+            const methodField = document.createElement('input');
+            methodField.type = 'hidden';
+            methodField.name = '_method';
+            methodField.value = 'PATCH';
+
+            const statusField = document.createElement('input');
+            statusField.type = 'hidden';
+            statusField.name = 'status';
+            statusField.value = status;
+
+            form.appendChild(csrfToken);
+            form.appendChild(methodField);
+            form.appendChild(statusField);
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+    }
 </script>

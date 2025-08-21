@@ -5,20 +5,24 @@
 
 <div class="shadow-xl card bg-base-100 {{ $class }}">
     <div class="card-body">
-        <h2 class="mb-4 text-lg font-semibold card-title">Aksi Cepat</h2>
+        <h3 class="mb-6 card-title text-base-content">
+    <i data-lucide="zap" class="w-5 h-5 mr"></i>
+            Aksi Cepat
+        </h3>
         
         <div class="space-y-3">
             <a href="{{ route('users.edit', $user) }}" class="justify-start w-full btn">
-                <i data-lucide="edit-3" class="mr-2 w-4 h-4"></i>
+    <i data-lucide="edit-3" class="mr-2 w-4 h-4"></i>
                 Edit User
             </a>
             
             <button class="justify-start w-full btn" onclick="copyToClipboard('{{ $user->email }}')">
-                <i data-lucide="copy" class="mr-2 w-4 h-4"></i>
+    <i data-lucide="copy" class="mr-2 w-4 h-4"></i>
                 Copy Email
-            </button>
+</button>
             
-            <div class="divider"></div>
+
+                           <div class="divider"></div>
             
             <form action="{{ route('users.destroy', $user) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus user ini?')">
                 @csrf
@@ -30,11 +34,11 @@
             </form>
         </div>
     </div>
-</div>
-
-<script>
-function copyToClipboard(text) {
-    navigator.clipboard.writeText(text).then(function() {
+    </div>
+    
+     <script>
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(function() {
         alert('Email berhasil disalin!');
     });
 }

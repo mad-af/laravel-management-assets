@@ -3,7 +3,10 @@
 <div class="shadow-xl card bg-base-100 {{ $class }}">
     <div class="card-body">
         <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl card-title">Activity Log</h3>
+            <h3 class="flex gap-2 items-center mb-6 card-title text-base-content">
+                <i data-lucide="file-text" class="w-5 h-5"></i>
+                Asset Information
+            </h3>
             <a href="{{ route('asset-logs.export', $asset) }}" class="btn btn-outline btn-sm">
                 <i data-lucide="download" class="mr-2 w-4 h-4"></i>
                 Export Log
