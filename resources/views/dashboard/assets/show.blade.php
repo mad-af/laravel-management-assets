@@ -7,7 +7,7 @@
         <!-- Header -->
         <div class="flex justify-between items-center">
             <div class="flex gap-4 items-center">
-                <a href="{{ route('locations.index') }}" class="btn btn-ghost btn-sm">
+                <a href="{{ route('assets.index') }}" class="btn btn-ghost btn-sm">
                     <i data-lucide="arrow-left" class="mr-2 w-4 h-4"></i>
                 </a>
                 <div>
