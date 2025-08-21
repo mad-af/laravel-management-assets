@@ -13,7 +13,10 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::withCount('assets')->paginate(10);
+        $categories = Category::withCount('assets')
+            ->orderBy('is_active', 'desc')
+            ->orderBy('name')
+            ->paginate(10);
         return view('dashboard.categories.index', compact('categories'));
     }
 

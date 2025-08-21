@@ -13,7 +13,10 @@ class LocationController extends Controller
      */
     public function index()
     {
-        $locations = Location::withCount('assets')->paginate(10);
+        $locations = Location::withCount('assets')
+            ->orderBy('is_active', 'desc')
+            ->orderBy('name')
+            ->paginate(10);
         return view('dashboard.locations.index', compact('locations'));
     }
 
