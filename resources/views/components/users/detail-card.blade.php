@@ -1,92 +1,60 @@
-@props([
-    'user',
-    'class' => ''
-])
+@props(['user', 'class' => ''])
 
 <div class="shadow-xl card bg-base-100 {{ $class }}">
     <div class="card-body">
         <h3 class="flex gap-2 items-center mb-6 card-title text-base-content">
             <i data-lucide="info" class="w-5 h-5"></i>
-            Informasi User
+            User Information
         </h3>
-        
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div class="form-control">
-                <label class="label">
-                    <span class="font-semibold label-text">Profil</span>
-                </label>
-                <div class="p-4 rounded-lg bg-base-200">
-                    <div class="flex gap-4 items-center">
-                        <x-avatar initials="{{ substr($user->name, 0, 2) }}" size="lg" placeholder="true" />
-                        <div>
-                            <div class="text-lg font-bold">{{ $user->name }}</div>
-                            <div class="text-sm opacity-70">ID: {{ $user->id }}</div>
-                        </div>
-                    </div>
+
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div>
+                <label class="text-sm font-semibold text-base-content/70">Name</label>
+                <div class="flex gap-4 items-center mt-1">
+                    <x-avatar initials="{{ substr($user->name, 0, 2) }}" size="sm" placeholder="true" />
+                    <p class="text-base-content">{{ $user->name }}</p>
                 </div>
             </div>
-            
-            <div class="form-control">
-                <label class="label">
-                    <span class="font-semibold label-text">Email</span>
-                </label>
-                <div class="p-3 rounded-lg bg-base-200">
-                    {{ $user->email }}
-                </div>
+
+            <div>
+                <label class="text-sm font-semibold text-base-content/70">Email</label>
+                <p class="mt-1 text-base-content">{{ $user->email }}</p>
             </div>
-            
-            <div class="form-control">
-                <label class="label">
-                    <span class="font-semibold label-text">Role</span>
-                </label>
-                <div class="p-3 rounded-lg bg-base-200">
+
+            <div>
+                <label class="text-sm font-semibold text-base-content/70">Role</label>
+                <p class="mt-1">
                     @if($user->role === 'admin')
-                        <span class="badge badge-primary">Admin</span>
+                        <span class="badge badge-primary badge-sm">Admin</span>
                     @elseif($user->role === 'staff')
-                        <span class="badge badge-secondary">Staff</span>
+                        <span class="badge badge-secondary badge-sm">Staff</span>
                     @elseif($user->role === 'auditor')
-                        <span class="badge badge-accent">Auditor</span>
+                        <span class="badge badge-accent badge-sm">Auditor</span>
                     @else
-                        <span class="badge badge-ghost">{{ ucfirst($user->role) }}</span>
+                        <span class="badge badge-ghost badge-sm">{{ ucfirst($user->role) }}</span>
                     @endif
-                </div>
+                </p>
             </div>
-            
-            <div class="form-control">
-                <label class="label">
-                    <span class="font-semibold label-text">Status Email</span>
-                </label>
-                <div class="p-3 rounded-lg bg-base-200">
+
+            <div>
+                <label class="text-sm font-semibold text-base-content/70">Email Status</label>
+                <p class="mt-1">
                     @if($user->email_verified_at)
-                        <span class="badge badge-success">
-                            <i data-lucide="check-circle" class="mr-1 w-4 h-4"></i>
-                            Terverifikasi
-                        </span>
+                        <span class="badge badge-success badge-sm">Verified</span>
                     @else
-                        <span class="badge badge-warning">
-                            <i data-lucide="clock" class="mr-1 w-4 h-4"></i>
-                            Belum Terverifikasi
-                        </span>
+                        <span class="badge badge-warning badge-sm">Unverified</span>
                     @endif
-                </div>
+                </p>
             </div>
-            
-            <div class="form-control">
-                <label class="label">
-                    <span class="font-semibold label-text">Tanggal Dibuat</span>
-                </label>
-                <div class="p-3 rounded-lg bg-base-200">
-                    {{ $user->created_at->format('d F Y, H:i') }} WIB
-                </div>
+
+            <div>
+                <label class="text-sm font-semibold text-base-content/70">Created At</label>
+                <p class="mt-1 text-base-content">{{ $user->created_at->format('M d, Y H:i') }}</p>
             </div>
-            
-            <div class="form-control">
-                <label class="label">
-                    <span class="font-semibold label-text">Terakhir Diperbarui</span>
-                </label>
-                <div class="p-3 rounded-lg bg-base-200">
-                    {{ $user->updated_at->format('d F Y, H:i') }} WIB
-                </div>
+
+            <div>
+                <label class="text-sm font-semibold text-base-content/70">Last Updated</label>
+                <p class="mt-1 text-base-content">{{ $user->updated_at->format('M d, Y H:i') }}</p>
             </div>
         </div>
     </div>

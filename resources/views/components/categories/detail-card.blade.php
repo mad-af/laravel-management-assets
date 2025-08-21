@@ -1,66 +1,39 @@
-@props([
-    'categorie',
-    'class' => ''
-])
+@props(['categorie', 'class' => ''])
 
 <div class="shadow-xl card bg-base-100 {{ $class }}">
     <div class="card-body">
         <h3 class="flex gap-2 items-center mb-6 card-title text-base-content">
             <i data-lucide="info" class="w-5 h-5"></i>
-            Informasi Category
+            Category Information
         </h3>
-        
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div class="form-control">
-                <label class="label">
-                    <span class="font-semibold label-text">Profil</span>
-                </label>
-                <div class="p-4 rounded-lg bg-base-200">
-                    <div class="flex gap-4 items-center">
-                        <x-avatar initials="{{ substr($categorie->name, 0, 2) }}" size="lg" placeholder="true" />
-                        <div>
-                            <div class="text-lg font-bold">{{ $categorie->name }}</div>
-                            <div class="text-sm opacity-70">ID: {{ $categorie->id }}</div>
-                        </div>
-                    </div>
+
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div>
+                <label class="text-sm font-semibold text-base-content/70">Category Name</label>
+                <div class="flex gap-4 items-center mt-1">
+                    <p class="text-base-content">{{ $categorie->name }}</p>
                 </div>
             </div>
-            
-            <div class="form-control">
-                <label class="label">
-                    <span class="font-semibold label-text">Status</span>
-                </label>
-                <div class="p-3 rounded-lg bg-base-200">
+
+            <div>
+                <label class="text-sm font-semibold text-base-content/70">Status</label>
+                <p class="mt-1">
                     @if($categorie->is_active)
-                        <span class="badge badge-success">
-                            <i data-lucide="check-circle" class="mr-1 w-4 h-4"></i>
-                            Aktif
-                        </span>
+                        <span class="badge badge-success badge-sm">Active</span>
                     @else
-                        <span class="badge badge-error">
-                            <i data-lucide="x-circle" class="mr-1 w-4 h-4"></i>
-                            Tidak Aktif
-                        </span>
+                        <span class="badge badge-error badge-sm">Inactive</span>
                     @endif
-                </div>
+                </p>
             </div>
-            
-            <div class="form-control">
-                <label class="label">
-                    <span class="font-semibold label-text">Tanggal Dibuat</span>
-                </label>
-                <div class="p-3 rounded-lg bg-base-200">
-                    {{ $categorie->created_at->format('d F Y, H:i') }} WIB
-                </div>
+
+            <div>
+                <label class="text-sm font-semibold text-base-content/70">Created At</label>
+                <p class="mt-1 text-base-content">{{ $categorie->created_at->format('M d, Y H:i') }}</p>
             </div>
-            
-            <div class="form-control">
-                <label class="label">
-                    <span class="font-semibold label-text">Terakhir Diperbarui</span>
-                </label>
-                <div class="p-3 rounded-lg bg-base-200">
-                    {{ $categorie->updated_at->format('d F Y, H:i') }} WIB
-                </div>
+
+            <div>
+                <label class="text-sm font-semibold text-base-content/70">Last Updated</label>
+                <p class="mt-1 text-base-content">{{ $categorie->updated_at->format('M d, Y H:i') }}</p>
             </div>
         </div>
     </div>
