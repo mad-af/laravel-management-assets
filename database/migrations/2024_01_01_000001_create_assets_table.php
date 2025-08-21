@@ -12,11 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('assets', function (Blueprint $table) {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('code')->unique();
             $table->string('name');
-            $table->foreignId('category_id')->constrained()->onDelete('cascade');
-            $table->foreignId('location_id')->constrained()->onDelete('cascade');
+            $table->foreignUuid('category_id')->constrained()->onDelete('cascade');
+            $table->foreignUuid('location_id')->constrained()->onDelete('cascade');
             $table->enum('status', ['active', 'inactive', 'maintenance', 'disposed'])->default('active');
             $table->enum('condition', ['excellent', 'good', 'fair', 'poor'])->default('good');
             $table->decimal('value', 15, 2);
