@@ -66,6 +66,12 @@
                                 </a>
                             </li>
                             <li>
+                                <a onclick="printQRBarcode('{{ $asset->code }}', '{{ $asset->name }}'); document.activeElement.blur()">
+                                    <i data-lucide="qr-code" class="w-4 h-4"></i>
+                                    Print QR/Barcode
+                                </a>
+                            </li>
+                            <li>
                                 <a onclick="deleteAsset({{ $asset->id }}); document.activeElement.blur()" class="text-error">
                                     <i data-lucide="trash-2" class="w-4 h-4"></i>
                                     Delete
