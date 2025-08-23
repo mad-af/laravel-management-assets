@@ -41,6 +41,12 @@
                     'label' => 'Asset Management'
                 ],
                 [
+                    'route' => 'scanners.index',
+                    'routeCheck' => 'scanners.*',
+                    'icon' => 'scan-line',
+                    'label' => 'QR/Barcode Scanner'
+                ],
+                [
                     'route' => 'asset-logs.index',
                     'routeCheck' => 'asset-logs.*',
                     'icon' => 'file-text',

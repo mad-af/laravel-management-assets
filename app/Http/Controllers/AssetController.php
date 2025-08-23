@@ -10,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use Illuminate\Http\JsonResponse;
 
 class AssetController extends Controller
 {
@@ -306,5 +307,74 @@ class AssetController extends Controller
         ];
 
         return response()->json($stats);
+    }
+
+    /**
+     * Search for asset by code (for scanner API)
+     */
+    public function searchByCode(Request $request): JsonResponse
+    {
+        $code = $request->get('code');
+        
+        if (!$code) {
+            return response()->json([
+                'found' => false,
+                'message' => 'Kode tidak boleh kosong'
+            ], 400);
+        }
+
+        // Search by tag_code first, then by code
+        $asset = Asset::with(['category', 'location'])
+            ->where('tag_code', $code)
+            ->orWhere('code', $code)
+            ->first();
+
+        if ($asset) {
+            // Update last_seen_at
+            $asset->update(['last_seen_at' => now()]);
+            
+            // Log the scan activity
+            AssetLog::create([
+                'asset_id' => $asset->id,
+                'user_id' => Auth::id(),
+                'action' => 'scanned',
+                'description' => 'Asset scanned via QR/Barcode scanner',
+                'metadata' => json_encode([
+                    'scanned_code' => $code,
+                    'scan_timestamp' => now()->toISOString(),
+                    'user_agent' => $request->userAgent(),
+                    'ip_address' => $request->ip()
+                ])
+            ]);
+
+            return response()->json([
+                'found' => true,
+                'asset' => [
+                    'id' => $asset->id,
+                    'name' => $asset->name,
+                    'code' => $asset->code,
+                    'tag_code' => $asset->tag_code,
+                    'status' => $asset->status,
+                    'condition' => $asset->condition,
+                    'description' => $asset->description,
+                    'purchase_date' => $asset->purchase_date?->format('Y-m-d'),
+                    'purchase_price' => $asset->purchase_price,
+                    'category' => $asset->category ? [
+                        'id' => $asset->category->id,
+                        'name' => $asset->category->name
+                    ] : null,
+                    'location' => $asset->location ? [
+                        'id' => $asset->location->id,
+                        'name' => $asset->location->name
+                    ] : null,
+                    'last_seen_at' => $asset->last_seen_at?->format('Y-m-d H:i:s')
+                ]
+            ]);
+        }
+
+        return response()->json([
+            'found' => false,
+            'message' => 'Asset dengan kode tersebut tidak ditemukan'
+        ]);
     }
 }

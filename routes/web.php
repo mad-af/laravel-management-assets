@@ -68,4 +68,14 @@ Route::prefix('dashboard')->middleware('auth')->group(function () {
     // Location Management Routes
     Route::resource('locations', LocationController::class);
     Route::patch('locations/{location}/activate', [LocationController::class, 'activate'])->name('locations.activate');
+    
+    // Scanner Routes
+    Route::get('scanners', function () {
+        return view('dashboard.scanners.index');
+    })->name('scanners.index');
+});
+
+// API Routes for Scanner
+Route::prefix('api')->middleware('auth')->group(function () {
+    Route::get('assets/search', [AssetController::class, 'searchByCode'])->name('api.assets.search');
 });
