@@ -73,7 +73,7 @@ initTheme();
 window.changeTheme = changeTheme;
 
 // Print QR/Barcode function
-function printQRBarcode(assetCode, assetName) {
+function printQRBarcode(tagCode, assetName, assetCode, purchaseYear) {
     // Create a new window for printing
     const printWindow = window.open('', '_blank', 'width=800,height=600');
     
@@ -82,7 +82,7 @@ function printQRBarcode(assetCode, assetName) {
         <!DOCTYPE html>
         <html>
         <head>
-            <title>Print QR Code & Barcode - ${assetCode}</title>
+            <title>Print QR Code & Barcode - ${tagCode}</title>
             <style>
                 body {
                     font-family: Arial, sans-serif;
@@ -127,8 +127,10 @@ function printQRBarcode(assetCode, assetName) {
             <div class="print-container">
                 <div class="asset-info">
                     <h2>Asset Information</h2>
-                    <p><strong>Code:</strong> ${assetCode}</p>
+                    <p><strong>Tag Code:</strong> ${tagCode}</p>
                     <p><strong>Name:</strong> ${assetName}</p>
+                    <p><strong>Code:</strong> ${assetCode}</p>
+                    ${purchaseYear ? `<p><strong>Purchase Year:</strong> ${purchaseYear}</p>` : ''}
                 </div>
                 
                 <div class="code-section">
@@ -155,9 +157,9 @@ function printQRBarcode(assetCode, assetName) {
     
     // Wait for the window to load, then generate codes
     printWindow.onload = function() {
-        // Generate QR Code
+        // Generate QR Code using tag_code
         const qrCanvas = printWindow.document.getElementById('qrcode');
-        QRCode.toCanvas(qrCanvas, assetCode, {
+        QRCode.toCanvas(qrCanvas, tagCode, {
             width: 200,
             height: 200,
             margin: 2
@@ -165,9 +167,9 @@ function printQRBarcode(assetCode, assetName) {
             if (error) console.error('QR Code generation error:', error);
         });
         
-        // Generate Barcode
+        // Generate Barcode using tag_code
         const barcodeSvg = printWindow.document.getElementById('barcode');
-        JsBarcode(barcodeSvg, assetCode, {
+        JsBarcode(barcodeSvg, tagCode, {
             format: "CODE128",
             width: 2,
             height: 100,

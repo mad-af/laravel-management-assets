@@ -66,7 +66,7 @@
                                 </a>
                             </li>
                             <li>
-                                <a onclick="printQRBarcode('{{ $asset->code }}', '{{ $asset->name }}'); document.activeElement.blur()">
+                                <a onclick="printQRBarcode('{{ $asset->tag_code }}', '{{ $asset->name }}', '{{ $asset->code }}', '{{ $asset->purchase_date ? $asset->purchase_date->format('Y') : '' }}'); document.activeElement.blur()">
                                     <i data-lucide="qr-code" class="w-4 h-4"></i>
                                     Print QR/Barcode
                                 </a>

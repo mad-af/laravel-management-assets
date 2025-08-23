@@ -160,7 +160,9 @@ class Asset extends Model
 
         static::creating(function ($asset) {
             if (empty($asset->tag_code)) {
-                $asset->tag_code = (string) Str::ulid();
+                $ulid = (string) Str::ulid(); // 26 char
+                $short = substr($ulid, 0, 6) . substr($ulid, -6); // 12 char
+                $asset->tag_code = $short;
             }
         });
 
