@@ -104,6 +104,28 @@ class DatabaseSeeder extends Seeder
                 'purchase_date' => '2022-05-20',
                 'description' => 'PC untuk sistem inventory gudang',
             ],
+            [
+                'code' => 'ELEC-001',
+                'name' => 'Printer Canon Pixma',
+                'category_id' => Category::where('name', 'Elektronik')->first()->id,
+                'location_id' => $officeLocation->id,
+                'status' => 'active',
+                'condition' => 'good',
+                'value' => 2500000.00,
+                'purchase_date' => '2023-11-15',
+                'description' => 'Printer untuk keperluan kantor',
+            ],
+            [
+                'code' => 'FURN-002',
+                'name' => 'Kursi Ergonomis',
+                'category_id' => $furnitureCategory->id,
+                'location_id' => $jakartaLocation->id,
+                'status' => 'active',
+                'condition' => 'excellent',
+                'value' => 1200000.00,
+                'purchase_date' => '2024-02-01',
+                'description' => 'Kursi kerja untuk karyawan',
+            ],
         ];
 
         foreach ($assets as $assetData) {

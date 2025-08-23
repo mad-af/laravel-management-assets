@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class Asset extends Model
 {
@@ -156,6 +157,12 @@ class Asset extends Model
     protected static function boot()
     {
         parent::boot();
+
+        static::creating(function ($asset) {
+            if (empty($asset->tag_code)) {
+                $asset->tag_code = (string) Str::ulid();
+            }
+        });
 
         static::created(function ($asset) {
             if (Auth::check()) {
