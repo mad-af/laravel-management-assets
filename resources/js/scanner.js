@@ -65,15 +65,11 @@ class QRBarcodeScanner {
     // Asset action buttons
     document.getElementById('view-asset')?.addEventListener('click', (e) => {
       const assetId = e.target.dataset.assetId;
-      if (assetId) window.location.href = `/assets/${assetId}`;
+      if (assetId) window.location.href = `/dashboard/assets/${assetId}`;
     });
     document.getElementById('edit-asset')?.addEventListener('click', (e) => {
       const assetId = e.target.dataset.assetId;
-      if (assetId) window.location.href = `/assets/${assetId}/edit`;
-    });
-    document.getElementById('create-asset')?.addEventListener('click', () => {
-      const scannedCode = this.elements.scannedCode.textContent;
-      if (scannedCode) window.location.href = `/assets/create?code=${encodeURIComponent(scannedCode)}`;
+      if (assetId) window.location.href = `/dashboard/assets/${assetId}/edit`;
     });
   }
 
@@ -196,12 +192,7 @@ class QRBarcodeScanner {
 
     const statusBadge = document.getElementById('asset-status');
     statusBadge.textContent = asset.status || '-';
-    statusBadge.className = `badge ${
-      asset.status === 'available' ? 'badge-success' :
-      asset.status === 'in_use' ? 'badge-warning' :
-      asset.status === 'maintenance' ? 'badge-error' :
-      'badge-neutral'
-    }`;
+    statusBadge.className = `badge ${asset.status_badge_color || 'badge-ghost'}`;
 
     document.getElementById('view-asset').dataset.assetId = asset.id;
     document.getElementById('edit-asset').dataset.assetId = asset.id;

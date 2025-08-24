@@ -35,12 +35,13 @@
                         <i data-lucide="camera" class="w-5 h-5"></i>
                         Scanner Kamera
                     </h2>
-                    
+
                     <!-- Camera Preview -->
                     <div class="overflow-hidden relative rounded-lg bg-base-200" style="aspect-ratio: 4/3;">
                         <video id="scanner-video" class="object-cover w-full h-full" autoplay muted playsinline></video>
                         <div id="scanner-overlay" class="flex absolute inset-0 justify-center items-center">
-                            <div class="rounded-lg border-2 border-dashed border-primary" style="width: 250px; height: 250px;">
+                            <div class="rounded-lg border-2 border-dashed border-primary"
+                                style="width: 250px; height: 250px;">
                                 <div class="flex justify-center items-center w-full h-full text-primary">
                                     <div class="text-center">
                                         <i data-lucide="scan-line" class="mx-auto mb-2 w-12 h-12"></i>
@@ -142,12 +143,6 @@
                                     <div class="text-xs">Kode yang dipindai tidak terdaftar dalam sistem.</div>
                                 </div>
                             </div>
-                            <div class="justify-end mt-4 card-actions">
-                                <button class="btn btn-primary btn-sm" id="create-asset">
-                                    <i data-lucide="plus" class="w-4 h-4"></i>
-                                    Buat Aset Baru
-                                </button>
-                            </div>
                         </div>
                     </div>
 
@@ -168,7 +163,7 @@
                     <i data-lucide="history" class="w-5 h-5"></i>
                     Riwayat Scan Terakhir
                 </h2>
-                
+
                 <div class="overflow-x-auto">
                     <table class="table table-zebra">
                         <thead>
@@ -193,21 +188,5 @@
         </div>
     </div>
 
-    <!-- Scanner Scripts -->
-    @vite('resources/js/scanner.js')
-    <script type="module">
-        // Initialize scanner when DOM is loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            if (window.QRBarcodeScanner) {
-                window.scanner = new window.QRBarcodeScanner();
-            }
-        });
-        
-        // Cleanup on page unload
-        window.addEventListener('beforeunload', () => {
-            if (window.scanner) {
-                window.scanner.destroy();
-            }
-        });
-    </script>
+    <x-scanners.scripts />
 @endsection
