@@ -96,4 +96,16 @@ class UserController extends Controller
         return redirect()->route('users.index')
             ->with('success', 'User berhasil dihapus!');
     }
+
+    /**
+     * Get users for API (JSON response)
+     */
+    public function apiIndex()
+    {
+        $users = User::select('id', 'name', 'email')
+            ->orderBy('name')
+            ->get();
+
+        return response()->json($users);
+    }
 }

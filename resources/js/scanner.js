@@ -79,6 +79,26 @@ class QRBarcodeScanner {
         }
       }
     });
+
+    // Checkout and Checkin drawer buttons
+    document.getElementById('checkout-btn')?.addEventListener('click', () => {
+      this.openCheckoutDrawer();
+    });
+
+    document.getElementById('checkin-btn')?.addEventListener('click', () => {
+      this.openCheckinDrawer();
+    });
+
+    // Form submissions
+    document.getElementById('checkout-form')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      this.handleCheckoutSubmit();
+    });
+
+    document.getElementById('checkin-form')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      this.handleCheckinSubmit();
+    });
   }
 
   async startScanning() {
@@ -349,6 +369,179 @@ class QRBarcodeScanner {
     }
   }
 
+  openCheckoutDrawer() {
+    if (!this.currentAsset) {
+      this.updateStatus('error', 'Tidak ada asset yang dipilih');
+      return;
+    }
+
+    // Set default values
+    const now = new Date();
+    const checkoutDate = now.toISOString().slice(0, 16);
+    const dueDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 16); // 7 days from now
+
+    document.getElementById('checkout-date').value = checkoutDate;
+    document.getElementById('checkout-due-date').value = dueDate;
+
+    // Load borrowers
+    this.loadBorrowers();
+
+    // Open drawer
+    const drawerToggle = document.getElementById('checkout-drawer-toggle');
+    if (drawerToggle) {
+      drawerToggle.checked = true;
+    }
+  }
+
+  openCheckinDrawer() {
+    if (!this.currentAsset) {
+      this.updateStatus('error', 'Tidak ada asset yang dipilih');
+      return;
+    }
+
+    // Set default values
+    const now = new Date();
+    const checkinDate = now.toISOString().slice(0, 16);
+
+    document.getElementById('checkin-date').value = checkinDate;
+
+    // Open drawer
+    const drawerToggle = document.getElementById('checkin-drawer-toggle');
+    if (drawerToggle) {
+      drawerToggle.checked = true;
+    }
+  }
+
+  async loadBorrowers() {
+    try {
+      const response = await fetch('/api/users');
+      const users = await response.json();
+      
+      const select = document.getElementById('checkout-borrower');
+      select.innerHTML = '<option disabled selected>Select borrower</option>';
+      
+      users.forEach(user => {
+        const option = document.createElement('option');
+        option.value = user.id;
+        option.textContent = user.name;
+        select.appendChild(option);
+      });
+    } catch (error) {
+      console.error('Error loading borrowers:', error);
+      this.updateStatus('error', 'Gagal memuat daftar peminjam');
+    }
+  }
+
+  async handleCheckoutSubmit() {
+    // Clear previous error messages
+    this.clearFormErrors('checkout-form');
+
+    const formData = {
+      asset_id: this.currentAsset.id,
+      borrower_id: document.getElementById('checkout-borrower').value,
+      checkout_at: document.getElementById('checkout-date').value,
+      due_at: document.getElementById('checkout-due-date').value,
+      condition_out: document.getElementById('checkout-condition').value,
+      notes: document.getElementById('checkout-notes').value
+    };
+
+    // Client-side validation
+    const validationErrors = this.validateCheckoutForm(formData);
+    if (validationErrors.length > 0) {
+      this.displayFormErrors('checkout-form', validationErrors);
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/assets/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify(formData)
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        this.updateStatus('success', result.message || 'Asset berhasil di-checkout');
+        document.getElementById('checkout-drawer-toggle').checked = false;
+        document.getElementById('checkout-form').reset();
+        
+        // Update asset info display
+        if (result.data) {
+          this.currentAsset = result.data;
+          this.displayAssetInfo(this.currentAsset);
+        }
+      } else {
+        // Handle validation errors from server
+        if (result.errors) {
+          this.displayFormErrors('checkout-form', result.errors);
+        } else {
+          this.updateStatus('error', result.message || 'Gagal checkout asset');
+        }
+      }
+    } catch (error) {
+      console.error('Error during checkout:', error);
+      this.updateStatus('error', 'Terjadi kesalahan saat checkout asset');
+    }
+  }
+
+  async handleCheckinSubmit() {
+    // Clear previous error messages
+    this.clearFormErrors('checkin-form');
+
+    const formData = {
+      asset_id: this.currentAsset.id,
+      checkin_at: document.getElementById('checkin-date').value,
+      condition_in: document.getElementById('checkin-condition').value,
+      notes: document.getElementById('checkin-notes').value
+    };
+
+    // Client-side validation
+    const validationErrors = this.validateCheckinForm(formData);
+    if (validationErrors.length > 0) {
+      this.displayFormErrors('checkin-form', validationErrors);
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/assets/checkin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify(formData)
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        this.updateStatus('success', result.message || 'Asset berhasil di-checkin');
+        document.getElementById('checkin-drawer-toggle').checked = false;
+        document.getElementById('checkin-form').reset();
+        
+        // Update asset info display
+        if (result.data) {
+          this.currentAsset = result.data;
+          this.displayAssetInfo(this.currentAsset);
+        }
+      } else {
+        // Handle validation errors from server
+        if (result.errors) {
+          this.displayFormErrors('checkin-form', result.errors);
+        } else {
+          this.updateStatus('error', result.message || 'Gagal checkin asset');
+        }
+      }
+    } catch (error) {
+      console.error('Error during checkin:', error);
+      this.updateStatus('error', 'Terjadi kesalahan saat checkin asset');
+    }
+  }
+
   _onVisibilityChange() {
     if (document.hidden) {
       // Auto-stop when tab is hidden to ensure camera is released
@@ -359,6 +552,117 @@ class QRBarcodeScanner {
   destroy() {
     this.stopScanning();
     document.removeEventListener('visibilitychange', this._onVisibilityChange);
+  }
+
+  // Form validation methods
+  validateCheckoutForm(formData) {
+    const errors = [];
+
+    if (!formData.borrower_id) {
+      errors.push({ field: 'borrower_id', message: 'Peminjam harus dipilih' });
+    }
+
+    if (!formData.checkout_at) {
+      errors.push({ field: 'checkout_at', message: 'Tanggal checkout harus diisi' });
+    }
+
+    if (!formData.due_at) {
+      errors.push({ field: 'due_at', message: 'Tanggal jatuh tempo harus diisi' });
+    }
+
+    if (formData.checkout_at && formData.due_at) {
+      const checkoutDate = new Date(formData.checkout_at);
+      const dueDate = new Date(formData.due_at);
+      if (dueDate <= checkoutDate) {
+        errors.push({ field: 'due_at', message: 'Tanggal jatuh tempo harus setelah tanggal checkout' });
+      }
+    }
+
+    if (!formData.condition_out) {
+      errors.push({ field: 'condition_out', message: 'Kondisi asset harus dipilih' });
+    }
+
+    return errors;
+  }
+
+  validateCheckinForm(formData) {
+    const errors = [];
+
+    if (!formData.checkin_at) {
+      errors.push({ field: 'checkin_at', message: 'Tanggal checkin harus diisi' });
+    }
+
+    if (!formData.condition_in) {
+      errors.push({ field: 'condition_in', message: 'Kondisi asset harus dipilih' });
+    }
+
+    return errors;
+  }
+
+  clearFormErrors(formId) {
+    const form = document.getElementById(formId);
+    if (!form) return;
+
+    // Remove existing error messages
+    const errorElements = form.querySelectorAll('.error-message');
+    errorElements.forEach(el => el.remove());
+
+    // Remove error classes from inputs
+    const inputs = form.querySelectorAll('.input-error, .select-error');
+    inputs.forEach(input => {
+      input.classList.remove('input-error', 'select-error');
+    });
+  }
+
+  displayFormErrors(formId, errors) {
+    const form = document.getElementById(formId);
+    if (!form) return;
+
+    errors.forEach(error => {
+      let fieldName = error.field;
+      let message = error.message;
+
+      // Handle server validation errors format
+      if (typeof error === 'object' && !error.field) {
+        fieldName = Object.keys(error)[0];
+        message = error[fieldName][0] || error[fieldName];
+      }
+
+      // Map field names to actual input IDs
+      const fieldMap = {
+        'borrower_id': 'checkout-borrower',
+        'checkout_at': 'checkout-date',
+        'due_at': 'checkout-due-date',
+        'condition_out': 'checkout-condition',
+        'checkin_at': 'checkin-date',
+        'condition_in': 'checkin-condition'
+      };
+
+      const inputId = fieldMap[fieldName] || fieldName;
+      const input = document.getElementById(inputId);
+
+      if (input) {
+        // Add error class to input
+        if (input.tagName === 'SELECT') {
+          input.classList.add('select-error');
+        } else {
+          input.classList.add('input-error');
+        }
+
+        // Create and insert error message
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message text-error text-sm mt-1';
+        errorDiv.textContent = message;
+
+        // Insert after the input's parent (form-control)
+        const formControl = input.closest('.form-control');
+        if (formControl) {
+          formControl.appendChild(errorDiv);
+        } else {
+          input.parentNode.insertBefore(errorDiv, input.nextSibling);
+        }
+      }
+    });
   }
 }
 

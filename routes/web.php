@@ -79,4 +79,7 @@ Route::prefix('dashboard')->middleware('auth')->group(function () {
 Route::prefix('api')->middleware('auth')->group(function () {
     Route::get('assets/search', [AssetController::class, 'searchByCode'])->name('api.assets.search');
     Route::patch('assets/{asset}/status', [AssetController::class, 'updateStatusApi'])->name('api.update-status');
+    Route::post('assets/checkout', [AssetController::class, 'checkout'])->name('api.assets.checkout');
+    Route::post('assets/checkin', [AssetController::class, 'checkin'])->name('api.assets.checkin');
+    Route::get('users', [UserController::class, 'apiIndex'])->name('api.users.index');
 });

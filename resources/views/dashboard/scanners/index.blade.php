@@ -3,7 +3,12 @@
 @section('title', 'QR/Barcode Scanner')
 
 @section('content')
-    <div class="space-y-6">
+    <!-- Checkout Drawer -->
+    <div class="drawer drawer-end">
+        <input id="checkout-drawer-toggle" type="checkbox" class="drawer-toggle" />
+        <div class="drawer-content">
+            <!-- Main content -->
+            <div class="space-y-6">
         <!-- Page Header -->
         <div class="flex justify-between items-center">
             <div>
@@ -134,7 +139,7 @@
                                             <i data-lucide="settings" class="mr-2 w-4 h-4"></i>
                                             Maintenance
                                         </button>
-                                        <button class="justify-start w-full btn-primary btn update-status-btn" data-status="checked_out" title="Check Out">
+                                        <button id="checkout-btn" class="justify-start w-full btn-primary btn" title="Check Out">
                                             <i data-lucide="upload" class="mr-2 w-4 h-4"></i>
                                             Check Out
                                         </button>
@@ -142,7 +147,7 @@
                                     
                                     <!-- Check In button - only show when asset status is checked_out -->
                                     <div id="checkin-button-container" class="hidden">
-                                        <button class="justify-center w-full btn-success btn update-status-btn" data-status="active" title="Check In (Active)">
+                                        <button id="checkin-btn" class="justify-center w-full btn-success btn" title="Check In">
                                             <i data-lucide="download" class="mr-2 w-4 h-4"></i>
                                             Check In
                                         </button>
@@ -207,6 +212,135 @@
                         </tbody>
                     </table>
                 </div>
+            </div>
+        </div>
+        </div>
+        <!-- Drawer side for checkout -->
+        <div class="drawer-side">
+            <label for="checkout-drawer-toggle" aria-label="close sidebar" class="drawer-overlay"></label>
+            <div class="p-4 w-80 min-h-full bg-base-200">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold">Check Out Asset</h3>
+                    <label for="checkout-drawer-toggle" class="btn btn-sm btn-circle btn-ghost">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </label>
+                </div>
+                
+                <form id="checkout-form" class="space-y-4">
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Borrower</span>
+                            <span class="label-text-alt text-error">*</span>
+                        </label>
+                        <select id="checkout-borrower" class="w-full select select-bordered" required>
+                            <option disabled selected>Select borrower</option>
+                            <!-- Options will be populated via JavaScript -->
+                        </select>
+                    </div>
+                    
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Checkout Date</span>
+                            <span class="label-text-alt text-error">*</span>
+                        </label>
+                        <input type="datetime-local" id="checkout-date" class="input input-bordered" required />
+                    </div>
+                    
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Due Date</span>
+                            <span class="label-text-alt text-error">*</span>
+                        </label>
+                        <input type="datetime-local" id="checkout-due-date" class="input input-bordered" required />
+                    </div>
+                    
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Condition Out</span>
+                            <span class="label-text-alt text-error">*</span>
+                        </label>
+                        <select id="checkout-condition" class="w-full select select-bordered" required>
+                            <option disabled selected>Select condition</option>
+                            <option value="excellent">Excellent</option>
+                            <option value="good">Good</option>
+                            <option value="fair">Fair</option>
+                            <option value="poor">Poor</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Notes</span>
+                        </label>
+                        <textarea id="checkout-notes" class="textarea textarea-bordered" placeholder="Additional notes..."></textarea>
+                    </div>
+                    
+                    <div class="flex gap-2 mt-6">
+                        <button type="submit" class="flex-1 btn btn-primary">
+                            <i data-lucide="check" class="mr-2 w-4 h-4"></i>
+                            Check Out
+                        </button>
+                        <label for="checkout-drawer-toggle" class="flex-1 btn btn-ghost">Cancel</label>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkin Drawer -->
+    <div class="drawer drawer-end">
+        <input id="checkin-drawer-toggle" type="checkbox" class="drawer-toggle" />
+        <div class="drawer-content">
+            <!-- This drawer content is empty as it's a separate drawer -->
+        </div>
+        <div class="drawer-side">
+            <label for="checkin-drawer-toggle" aria-label="close sidebar" class="drawer-overlay"></label>
+            <div class="p-4 w-80 min-h-full bg-base-200">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold">Check In Asset</h3>
+                    <label for="checkin-drawer-toggle" class="btn btn-sm btn-circle btn-ghost">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </label>
+                </div>
+                
+                <form id="checkin-form" class="space-y-4">
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Check In Date</span>
+                            <span class="label-text-alt text-error">*</span>
+                        </label>
+                        <input type="datetime-local" id="checkin-date" class="input input-bordered" required />
+                    </div>
+                    
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Condition In</span>
+                            <span class="label-text-alt text-error">*</span>
+                        </label>
+                        <select id="checkin-condition" class="w-full select select-bordered" required>
+                            <option disabled selected>Select condition</option>
+                            <option value="excellent">Excellent</option>
+                            <option value="good">Good</option>
+                            <option value="fair">Fair</option>
+                            <option value="poor">Poor</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-control">
+                        <label class="label">
+                            <span class="label-text">Notes</span>
+                        </label>
+                        <textarea id="checkin-notes" class="textarea textarea-bordered" placeholder="Additional notes about return condition..."></textarea>
+                    </div>
+                    
+                    <div class="flex gap-2 mt-6">
+                        <button type="submit" class="flex-1 btn btn-success">
+                            <i data-lucide="check" class="mr-2 w-4 h-4"></i>
+                            Check In
+                        </button>
+                        <label for="checkin-drawer-toggle" class="flex-1 btn btn-ghost">Cancel</label>
+                    </div>
+                </form>
             </div>
         </div>
     </div>

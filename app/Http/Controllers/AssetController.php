@@ -410,4 +410,153 @@ class AssetController extends Controller
             'message' => 'Asset dengan kode tersebut tidak ditemukan'
         ]);
     }
+
+    /**
+     * Checkout an asset via API.
+     */
+    public function checkout(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'asset_id' => 'required|exists:assets,id',
+            'borrower_id' => 'required|exists:users,id',
+            'checkout_at' => 'required|date',
+            'due_at' => 'required|date|after:checkout_at',
+            'condition_out' => 'required|in:excellent,good,fair,poor',
+            'notes' => 'nullable|string|max:1000',
+        ]);
+
+        $asset = Asset::findOrFail($validated['asset_id']);
+
+        // Check if asset is available for checkout
+        if ($asset->status === 'checked_out') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Asset sudah dalam status checked out'
+            ], 400);
+        }
+
+        if (in_array($asset->status, ['damaged', 'lost', 'maintenance'])) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Asset tidak dapat di-checkout karena status: ' . $asset->status
+            ], 400);
+        }
+
+        // Create asset loan record
+        $loan = \App\Models\AssetLoan::create([
+            'asset_id' => $validated['asset_id'],
+            'borrower_id' => $validated['borrower_id'],
+            'checkout_at' => $validated['checkout_at'],
+            'due_at' => $validated['due_at'],
+            'condition_out' => $validated['condition_out'],
+            'notes' => $validated['notes'],
+        ]);
+
+        // Update asset status
+        $asset->update(['status' => 'checked_out']);
+
+        // Log the checkout
+        AssetLog::create([
+            'asset_id' => $asset->id,
+            'user_id' => Auth::id(),
+            'action' => 'checked_out',
+            'notes' => 'Asset checked out to user ID: ' . $validated['borrower_id'],
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Asset berhasil di-checkout',
+            'data' => [
+                'asset' => [
+                    'id' => $asset->id,
+                    'code' => $asset->code,
+                    'name' => $asset->name,
+                    'status' => $asset->status,
+                    'status_badge_color' => $asset->status_badge_color
+                ],
+                'loan' => $loan
+            ]
+        ]);
+    }
+
+    /**
+     * Checkin an asset via API.
+     */
+    public function checkin(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'asset_id' => 'required|exists:assets,id',
+            'checkin_at' => 'required|date',
+            'condition_in' => 'required|in:excellent,good,fair,poor',
+            'notes' => 'nullable|string|max:1000',
+        ]);
+
+        $asset = Asset::findOrFail($validated['asset_id']);
+
+        // Check if asset is checked out
+        if ($asset->status !== 'checked_out') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Asset tidak dalam status checked out'
+            ], 400);
+        }
+
+        // Find active loan
+        $loan = \App\Models\AssetLoan::where('asset_id', $validated['asset_id'])
+            ->whereNull('checkin_at')
+            ->first();
+
+        if (!$loan) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak ditemukan record peminjaman aktif untuk asset ini'
+            ], 400);
+        }
+
+        // Update loan record
+        $loan->update([
+            'checkin_at' => $validated['checkin_at'],
+            'condition_in' => $validated['condition_in'],
+            'notes' => $loan->notes . ($validated['notes'] ? '\n\nCheckin Notes: ' . $validated['notes'] : ''),
+        ]);
+
+        // Determine new asset status based on condition
+        $newStatus = 'active';
+        if (in_array($validated['condition_in'], ['poor'])) {
+            $newStatus = 'maintenance';
+        } elseif (in_array($validated['condition_in'], ['fair'])) {
+            $newStatus = 'damaged';
+        }
+
+        // Update asset status and condition
+        $asset->update([
+            'status' => $newStatus,
+            'condition' => $validated['condition_in']
+        ]);
+
+        // Log the checkin
+        AssetLog::create([
+            'asset_id' => $asset->id,
+            'user_id' => Auth::id(),
+            'action' => 'checked_in',
+            'notes' => 'Asset checked in with condition: ' . $validated['condition_in'],
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Asset berhasil di-checkin',
+            'data' => [
+                'asset' => [
+                    'id' => $asset->id,
+                    'code' => $asset->code,
+                    'name' => $asset->name,
+                    'status' => $asset->status,
+                    'status_badge_color' => $asset->status_badge_color,
+                    'condition' => $asset->condition,
+                    'condition_badge_color' => $asset->condition_badge_color
+                ],
+                'loan' => $loan
+            ]
+        ]);
+    }
 }
