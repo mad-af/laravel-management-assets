@@ -418,7 +418,7 @@ class AssetController extends Controller
     {
         $validated = $request->validate([
             'asset_id' => 'required|exists:assets,id',
-            'borrower_id' => 'required|exists:users,id',
+            'borrower_name' => 'required|string|max:255',
             'checkout_at' => 'required|date',
             'due_at' => 'required|date|after:checkout_at',
             'condition_out' => 'required|in:excellent,good,fair,poor',

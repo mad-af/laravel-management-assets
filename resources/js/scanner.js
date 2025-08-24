@@ -383,8 +383,8 @@ class QRBarcodeScanner {
     document.getElementById('checkout-date').value = checkoutDate;
     document.getElementById('checkout-due-date').value = dueDate;
 
-    // Load borrowers
-    this.loadBorrowers();
+    // Clear borrower name field
+    document.getElementById('checkout-borrower').value = '';
 
     // Open drawer
     const drawerToggle = document.getElementById('checkout-drawer-toggle');
@@ -412,25 +412,7 @@ class QRBarcodeScanner {
     }
   }
 
-  async loadBorrowers() {
-    try {
-      const response = await fetch('/api/users');
-      const users = await response.json();
-      
-      const select = document.getElementById('checkout-borrower');
-      select.innerHTML = '<option disabled selected>Select borrower</option>';
-      
-      users.forEach(user => {
-        const option = document.createElement('option');
-        option.value = user.id;
-        option.textContent = user.name;
-        select.appendChild(option);
-      });
-    } catch (error) {
-      console.error('Error loading borrowers:', error);
-      this.updateStatus('error', 'Gagal memuat daftar peminjam');
-    }
-  }
+  // loadBorrowers function removed - now using direct text input for borrower name
 
   async handleCheckoutSubmit() {
     // Clear previous error messages
@@ -438,7 +420,7 @@ class QRBarcodeScanner {
 
     const formData = {
       asset_id: this.currentAsset.id,
-      borrower_id: document.getElementById('checkout-borrower').value,
+      borrower_name: document.getElementById('checkout-borrower').value,
       checkout_at: document.getElementById('checkout-date').value,
       due_at: document.getElementById('checkout-due-date').value,
       condition_out: document.getElementById('checkout-condition').value,
@@ -558,8 +540,8 @@ class QRBarcodeScanner {
   validateCheckoutForm(formData) {
     const errors = [];
 
-    if (!formData.borrower_id) {
-      errors.push({ field: 'borrower_id', message: 'Peminjam harus dipilih' });
+    if (!formData.borrower_name || formData.borrower_name.trim() === '') {
+      errors.push({ field: 'borrower_name', message: 'Nama peminjam harus diisi' });
     }
 
     if (!formData.checkout_at) {

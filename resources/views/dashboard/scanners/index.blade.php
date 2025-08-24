@@ -229,13 +229,10 @@
                 <form id="checkout-form" class="space-y-4">
                     <div class="form-control">
                         <label class="label">
-                            <span class="label-text">Borrower</span>
+                            <span class="label-text">Borrower Name</span>
                             <span class="label-text-alt text-error">*</span>
                         </label>
-                        <select id="checkout-borrower" class="w-full select select-bordered" required>
-                            <option disabled selected>Select borrower</option>
-                            <!-- Options will be populated via JavaScript -->
-                        </select>
+                        <input type="text" id="checkout-borrower" class="input input-bordered" placeholder="Enter borrower name" required />
                     </div>
                     
                     <div class="form-control">

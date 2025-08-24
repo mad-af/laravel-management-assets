@@ -65,19 +65,5 @@ class User extends Authenticatable
         return $this->hasMany(AssetLog::class);
     }
 
-    /**
-     * Get the asset loans where this user is the borrower.
-     */
-    public function assetLoans(): HasMany
-    {
-        return $this->hasMany(AssetLoan::class, 'borrower_id');
-    }
-
-    /**
-     * Get the active asset loans for the user.
-     */
-    public function activeLoans(): HasMany
-    {
-        return $this->hasMany(AssetLoan::class, 'borrower_id')->whereNull('checkin_at');
-    }
+    // Note: AssetLoan relationships removed as we now use borrower_name string instead of borrower_id foreign key
 }

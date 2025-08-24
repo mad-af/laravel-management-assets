@@ -13,7 +13,7 @@ class AssetLoan extends Model
 
     protected $fillable = [
         'asset_id',
-        'borrower_id',
+        'borrower_name',
         'checkout_at',
         'due_at',
         'checkin_at',
@@ -36,13 +36,7 @@ class AssetLoan extends Model
         return $this->belongsTo(Asset::class);
     }
 
-    /**
-     * Get the user who borrowed the asset.
-     */
-    public function borrower(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'borrower_id');
-    }
+
 
     /**
      * Check if the loan is overdue.
