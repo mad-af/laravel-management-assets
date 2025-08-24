@@ -67,9 +67,17 @@ class QRBarcodeScanner {
       const assetId = e.target.dataset.assetId;
       if (assetId) window.location.href = `/dashboard/assets/${assetId}`;
     });
-    document.getElementById('edit-asset')?.addEventListener('click', (e) => {
-      const assetId = e.target.dataset.assetId;
-      if (assetId) window.location.href = `/dashboard/assets/${assetId}/edit`;
+
+    // Status update buttons
+    document.addEventListener('click', (e) => {
+      if (e.target.classList.contains('update-status-btn') || e.target.closest('.update-status-btn')) {
+        const button = e.target.classList.contains('update-status-btn') ? e.target : e.target.closest('.update-status-btn');
+        const status = button.dataset.status;
+        const assetId = this.currentAsset?.id;
+        if (assetId && status) {
+          this.updateAssetStatus(assetId, status);
+        }
+      }
     });
   }
 
@@ -182,6 +190,7 @@ class QRBarcodeScanner {
   }
 
   displayAssetInfo(asset) {
+    this.currentAsset = asset; // Store current asset for status updates
     this.elements.assetNotFound.classList.add('hidden');
     this.elements.assetInfo.classList.remove('hidden');
 
@@ -195,12 +204,81 @@ class QRBarcodeScanner {
     statusBadge.className = `badge ${asset.status_badge_color || 'badge-ghost'}`;
 
     document.getElementById('view-asset').dataset.assetId = asset.id;
-    document.getElementById('edit-asset').dataset.assetId = asset.id;
+    
+    // Show/hide buttons based on asset status
+    const maintenanceCheckoutContainer = document.getElementById('maintenance-checkout-button-container');
+    const checkinContainer = document.getElementById('checkin-button-container');
+    
+    // Hide maintenance and checkout buttons if status is maintenance or checked_out
+    if (asset.status === 'maintenance' || asset.status === 'checked_out') {
+      maintenanceCheckoutContainer.classList.add('hidden');
+    } else {
+      maintenanceCheckoutContainer.classList.remove('hidden');
+    }
+    
+    // Show check-in button only if status is checked_out
+    if (asset.status === 'checked_out') {
+      checkinContainer.classList.remove('hidden');
+    } else {
+      checkinContainer.classList.add('hidden');
+    }
   }
 
   displayAssetNotFound() {
     this.elements.assetInfo.classList.add('hidden');
     this.elements.assetNotFound.classList.remove('hidden');
+  }
+
+  async updateAssetStatus(assetId, status) {
+    try {
+      const response = await fetch(`/api/assets/${assetId}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        },
+        body: JSON.stringify({ status })
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        // Update the current asset status
+        this.currentAsset.status = data.data.new_status;
+        
+        // Update status badge
+        const statusBadge = document.getElementById('asset-status');
+        statusBadge.textContent = data.data.new_status;
+        statusBadge.className = `badge ${badgeColors[data.data.asset.status_badge_color] || 'badge-ghost'}`;
+        
+        // Update button visibility based on new status
+        const checkinContainer = document.getElementById('checkin-button-container');
+        const maintenanceCheckoutContainer = document.getElementById('maintenance-checkout-button-container');
+        
+        // Hide maintenance and checkout buttons if status is maintenance or checked_out
+        if (data.data.new_status === 'maintenance' || data.data.new_status === 'checked_out') {
+          maintenanceCheckoutContainer.classList.add('hidden');
+        } else {
+          maintenanceCheckoutContainer.classList.remove('hidden');
+        }
+        
+        // Show check-in button only if status is checked_out
+        if (data.data.new_status === 'checked_out') {
+          checkinContainer.classList.remove('hidden');
+        } else {
+          checkinContainer.classList.add('hidden');
+        }
+        
+        // Show success message
+        this.updateStatus('success', data.message);
+        
+      } else {
+        this.updateStatus('error', data.message || 'Gagal mengubah status aset');
+      }
+    } catch (error) {
+      console.error('Error updating asset status:', error);
+      this.updateStatus('error', 'Terjadi kesalahan saat mengubah status aset');
+    }
   }
 
   addToScanHistory(code) {

@@ -78,4 +78,5 @@ Route::prefix('dashboard')->middleware('auth')->group(function () {
 // API Routes for Scanner
 Route::prefix('api')->middleware('auth')->group(function () {
     Route::get('assets/search', [AssetController::class, 'searchByCode'])->name('api.assets.search');
+    Route::patch('assets/{asset}/status', [AssetController::class, 'updateStatusApi'])->name('api.update-status');
 });

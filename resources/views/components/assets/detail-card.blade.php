@@ -35,30 +35,14 @@
             <div>
                 <label class="text-sm font-semibold text-base-content/70">Status</label>
                 <p class="mt-1">
-                    @if($asset->status === 'active')
-                        <span class="badge badge-success badge-sm">Active</span>
-                    @elseif($asset->status === 'inactive')
-                        <span class="badge badge-warning badge-sm">Inactive</span>
-                    @elseif($asset->status === 'maintenance')
-                        <span class="badge badge-info badge-sm">Maintenance</span>
-                    @else
-                        <span class="badge badge-error badge-sm">Disposed</span>
-                    @endif
+                    <span class="badge {{ $asset->status_badge_color }} badge-sm">{{ ucfirst(str_replace('_', ' ', $asset->status)) }}</span>
                 </p>
             </div>
 
             <div>
                 <label class="text-sm font-semibold text-base-content/70">Condition</label>
                 <p class="mt-1">
-                    @if($asset->condition === 'excellent')
-                        <span class="badge badge-success badge-sm">Excellent</span>
-                    @elseif($asset->condition === 'good')
-                        <span class="badge badge-primary badge-sm">Good</span>
-                    @elseif($asset->condition === 'fair')
-                        <span class="badge badge-warning badge-sm">Fair</span>
-                    @else
-                        <span class="badge badge-error badge-sm">Poor</span>
-                    @endif
+                    <span class="badge {{ $asset->condition_badge_color }} badge-sm">{{ ucfirst($asset->condition) }}</span>
                 </p>
             </div>
 

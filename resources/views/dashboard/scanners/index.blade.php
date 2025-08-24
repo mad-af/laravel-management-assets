@@ -122,15 +122,38 @@
                                 </div>
                             </div>
 
-                            <div class="justify-end mt-4 card-actions">
-                                <button class="btn btn-outline btn-sm" id="view-asset">
-                                    <i data-lucide="eye" class="w-4 h-4"></i>
-                                    Lihat Detail
-                                </button>
-                                <button class="btn btn-primary btn-sm" id="edit-asset">
-                                    <i data-lucide="edit" class="w-4 h-4"></i>
-                                    Edit Aset
-                                </button>
+                            <div class="divider">Quick Actions</div>
+
+                            <!-- Asset Actions -->
+                            <div class="mt-4 space-y-3">
+                                <!-- Quick Status Update Actions -->
+                                <div class="space-y-2">
+                                    <!-- Maintenance and Checkout buttons side by side -->
+                                    <div id="maintenance-checkout-button-container" class="grid grid-cols-2 gap-2">
+                                        <button class="justify-start w-full btn update-status-btn" data-status="maintenance" title="Set to Maintenance">
+                                            <i data-lucide="settings" class="mr-2 w-4 h-4"></i>
+                                            Maintenance
+                                        </button>
+                                        <button class="justify-start w-full btn-primary btn update-status-btn" data-status="checked_out" title="Check Out">
+                                            <i data-lucide="upload" class="mr-2 w-4 h-4"></i>
+                                            Check Out
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- Check In button - only show when asset status is checked_out -->
+                                    <div id="checkin-button-container" class="hidden">
+                                        <button class="justify-center w-full btn-success btn update-status-btn" data-status="active" title="Check In (Active)">
+                                            <i data-lucide="download" class="mr-2 w-4 h-4"></i>
+                                            Check In
+                                        </button>
+                                    </div>
+                                    
+                                    <!-- View Detail button -->
+                                    <button class="justify-center w-full btn" id="view-asset" title="View Detail">
+                                        <i data-lucide="eye" class="mr-2 w-4 h-4"></i>
+                                        View Detail
+                                    </button>
+                                </div>
                             </div>
                         </div>
 

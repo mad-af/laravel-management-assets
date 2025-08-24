@@ -167,6 +167,37 @@ class AssetController extends Controller
     }
 
     /**
+     * Update the asset status via API.
+     */
+    public function updateStatusApi(Request $request, Asset $asset): JsonResponse
+    {
+        $validated = $request->validate([
+            'status' => 'required|in:active,damaged,lost,maintenance,checked_out',
+        ]);
+
+        $oldStatus = $asset->status;
+        $asset->update(['status' => $validated['status']]);
+
+        // Update status - logging handled by model observer
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Asset status updated successfully.',
+            'data' => [
+                'old_status' => $oldStatus,
+                'new_status' => $validated['status'],
+                'asset' => [
+                    'id' => $asset->id,
+                    'code' => $asset->code,
+                    'name' => $asset->name,
+                    'status' => $asset->status,
+                    'status_badge_color' => $asset->status_badge_color
+                ]
+            ]
+        ]);
+    }
+
+    /**
      * Remove the specified resource from storage.
      */
     public function destroy(Asset $asset): RedirectResponse
