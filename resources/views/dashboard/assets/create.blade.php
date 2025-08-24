@@ -121,9 +121,10 @@
                             <select name="status" class="select select-bordered @error('status') select-error @enderror" required>
                                 <option value="">Pilih Status</option>
                                 <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active</option>
-                                <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                <option value="damaged" {{ old('status') == 'damaged' ? 'selected' : '' }}>Damaged</option>
+                                <option value="lost" {{ old('status') == 'lost' ? 'selected' : '' }}>Lost</option>
                                 <option value="maintenance" {{ old('status') == 'maintenance' ? 'selected' : '' }}>Maintenance</option>
-                                <option value="disposed" {{ old('status') == 'disposed' ? 'selected' : '' }}>Disposed</option>
+                                <option value="checked_out" {{ old('status') == 'checked_out' ? 'selected' : '' }}>Checked Out</option>
                             </select>
                             @error('status')
                                 <label class="label">
