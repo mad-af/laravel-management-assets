@@ -445,7 +445,7 @@ class AssetController extends Controller
         // Create asset loan record
         $loan = \App\Models\AssetLoan::create([
             'asset_id' => $validated['asset_id'],
-            'borrower_id' => $validated['borrower_id'],
+            'borrower_name' => $validated['borrower_name'],
             'checkout_at' => $validated['checkout_at'],
             'due_at' => $validated['due_at'],
             'condition_out' => $validated['condition_out'],
@@ -460,7 +460,7 @@ class AssetController extends Controller
             'asset_id' => $asset->id,
             'user_id' => Auth::id(),
             'action' => 'checked_out',
-            'notes' => 'Asset checked out to user ID: ' . $validated['borrower_id'],
+            'notes' => 'Asset checked out to: ' . $validated['borrower_name'],
         ]);
 
         return response()->json([

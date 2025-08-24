@@ -378,7 +378,7 @@ class QRBarcodeScanner {
     // Set default values
     const now = new Date();
     const checkoutDate = now.toISOString().slice(0, 16);
-    const dueDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 16); // 7 days from now
+    const dueDate = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 16); // 30 days from now
 
     document.getElementById('checkout-date').value = checkoutDate;
     document.getElementById('checkout-due-date').value = dueDate;
@@ -423,7 +423,7 @@ class QRBarcodeScanner {
       borrower_name: document.getElementById('checkout-borrower').value,
       checkout_at: document.getElementById('checkout-date').value,
       due_at: document.getElementById('checkout-due-date').value,
-      condition_out: document.getElementById('checkout-condition').value,
+      condition_out: document.querySelector('input[name="checkout-condition"]:checked')?.value,
       notes: document.getElementById('checkout-notes').value
     };
 
@@ -477,7 +477,7 @@ class QRBarcodeScanner {
     const formData = {
       asset_id: this.currentAsset.id,
       checkin_at: document.getElementById('checkin-date').value,
-      condition_in: document.getElementById('checkin-condition').value,
+      condition_in: document.querySelector('input[name="checkin-condition"]:checked')?.value,
       notes: document.getElementById('checkin-notes').value
     };
 
@@ -633,7 +633,7 @@ class QRBarcodeScanner {
 
         // Create and insert error message
         const errorDiv = document.createElement('div');
-        errorDiv.className = 'error-message text-error text-sm mt-1';
+        errorDiv.className = 'mt-1 text-sm error-message text-error';
         errorDiv.textContent = message;
 
         // Insert after the input's parent (form-control)
