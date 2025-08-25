@@ -35,16 +35,16 @@
                 //     'label' => 'Settings'
                 // ],
                 [
-                    'route' => 'assets.index',
-                    'routeCheck' => 'assets.*',
-                    'icon' => 'package',
-                    'label' => 'Asset Management'
-                ],
-                [
                     'route' => 'scanners.index',
                     'routeCheck' => 'scanners.*',
                     'icon' => 'scan-line',
                     'label' => 'QR/Barcode Scanner'
+                ],
+                [
+                    'route' => 'assets.index',
+                    'routeCheck' => 'assets.*',
+                    'icon' => 'package',
+                    'label' => 'Asset Management'
                 ],
                 [
                     'route' => 'asset-logs.index',

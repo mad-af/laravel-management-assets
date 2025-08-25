@@ -222,84 +222,84 @@
             <!-- This drawer content is empty as it's a separate drawer -->
         </div>
         <div class="drawer-side">
-        <label for="checkout-drawer-toggle" aria-label="close sidebar" class="drawer-overlay"></label>
-        <div class="p-4 w-80 min-h-full bg-base-200">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold">Check Out Asset</h3>
-                <label for="checkout-drawer-toggle" class="btn btn-sm btn-circle btn-ghost">
-                    <i data-lucide="x" class="w-4 h-4"></i>
-                </label>
-            </div>
-
-            <form id="checkout-form" class="space-y-4">
-                <div class="form-control">
-                    <label class="mb-2 label">
-                        <span class="label-text">Borrower Name</span>
-                        <span class="label-text-alt text-error">*</span>
+            <label for="checkout-drawer-toggle" aria-label="close sidebar" class="drawer-overlay"></label>
+            <div class="p-4 w-80 min-h-full bg-base-200">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-bold">Check Out Asset</h3>
+                    <label for="checkout-drawer-toggle" class="btn btn-sm btn-circle btn-ghost">
+                        <i data-lucide="x" class="w-4 h-4"></i>
                     </label>
-                    <input type="text" id="checkout-borrower" class="input input-bordered" placeholder="Enter borrower name"
-                        required />
                 </div>
 
-                <div class="form-control">
-                    <label class="mb-2 label">
-                        <span class="label-text">Checkout Date</span>
-                        <span class="label-text-alt text-error">*</span>
-                    </label>
-                    <input type="datetime-local" id="checkout-date" class="input input-bordered" required />
-                </div>
-
-                <div class="form-control">
-                    <label class="mb-2 label">
-                        <span class="label-text">Due Date</span>
-                        <span class="label-text-alt text-error">*</span>
-                    </label>
-                    <input type="datetime-local" id="checkout-due-date" class="input input-bordered" required />
-                </div>
-
-                <div class="form-control">
-                    <label class="mb-2 label">
-                        <span class="label-text">Condition Out</span>
-                        <span class="label-text-alt text-error">*</span>
-                    </label>
-                    <div class="flex flex-col gap-2">
-                        <label class="gap-3 justify-start cursor-pointer label">
-                            <input type="radio" name="checkout-condition" value="excellent" class="radio-sm" required />
-                            <span class="label-text">Excellent</span>
+                <form id="checkout-form" class="space-y-4">
+                    <div class="form-control">
+                        <label class="mb-2 label">
+                            <span class="label-text">Borrower Name</span>
+                            <span class="label-text-alt text-error">*</span>
                         </label>
-                        <label class="gap-3 justify-start cursor-pointer label">
-                            <input type="radio" name="checkout-condition" value="good" class="radio-sm" required />
-                            <span class="label-text">Good</span>
-                        </label>
-                        <label class="gap-3 justify-start cursor-pointer label">
-                            <input type="radio" name="checkout-condition" value="fair" class="radio-sm" required />
-                            <span class="label-text">Fair</span>
-                        </label>
-                        <label class="gap-3 justify-start cursor-pointer label">
-                            <input type="radio" name="checkout-condition" value="poor" class="radio-sm" required />
-                            <span class="label-text">Poor</span>
-                        </label>
+                        <input type="text" id="checkout-borrower" class="input input-bordered"
+                            placeholder="Enter borrower name" required />
                     </div>
-                </div>
 
-                <div class="form-control">
-                    <label class="mb-2 label">
-                        <span class="label-text">Notes</span>
-                    </label>
-                    <textarea id="checkout-notes" class="textarea textarea-bordered"
-                        placeholder="Additional notes..."></textarea>
-                </div>
+                    <div class="form-control">
+                        <label class="mb-2 label">
+                            <span class="label-text">Checkout Date</span>
+                            <span class="label-text-alt text-error">*</span>
+                        </label>
+                        <input type="datetime-local" id="checkout-date" class="input input-bordered" required />
+                    </div>
 
-                <div class="flex gap-2 mt-6">
-                    <button type="submit" class="flex-1 btn btn-primary">
-                        <i data-lucide="check" class="mr-2 w-4 h-4"></i>
-                        Check Out
-                    </button>
-                    <label for="checkout-drawer-toggle" class="flex-1 btn btn-ghost">Cancel</label>
-                </div>
-            </form>
+                    <div class="form-control">
+                        <label class="mb-2 label">
+                            <span class="label-text">Due Date</span>
+                            <span class="label-text-alt text-error">*</span>
+                        </label>
+                        <input type="datetime-local" id="checkout-due-date" class="input input-bordered" required />
+                    </div>
+
+                    <div class="form-control">
+                        <label class="mb-2 label">
+                            <span class="label-text">Condition Out</span>
+                            <span class="label-text-alt text-error">*</span>
+                        </label>
+                        <div class="flex flex-col gap-2">
+                            <label class="gap-3 justify-start cursor-pointer label">
+                                <input type="radio" name="checkout-condition" value="excellent" class="radio-sm" required />
+                                <span class="label-text">Excellent</span>
+                            </label>
+                            <label class="gap-3 justify-start cursor-pointer label">
+                                <input type="radio" name="checkout-condition" value="good" class="radio-sm" required />
+                                <span class="label-text">Good</span>
+                            </label>
+                            <label class="gap-3 justify-start cursor-pointer label">
+                                <input type="radio" name="checkout-condition" value="fair" class="radio-sm" required />
+                                <span class="label-text">Fair</span>
+                            </label>
+                            <label class="gap-3 justify-start cursor-pointer label">
+                                <input type="radio" name="checkout-condition" value="poor" class="radio-sm" required />
+                                <span class="label-text">Poor</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-control">
+                        <label class="mb-2 label">
+                            <span class="label-text">Notes</span>
+                        </label>
+                        <textarea id="checkout-notes" class="textarea textarea-bordered"
+                            placeholder="Additional notes..."></textarea>
+                    </div>
+
+                    <div class="flex gap-2 mt-6">
+                        <button type="submit" class="flex-1 btn btn-sm btn-primary">
+                            <i data-lucide="upload" class="mr-2 w-4 h-4"></i>
+                            Check Out
+                        </button>
+                        <label for="checkout-drawer-toggle" class="flex-1 btn btn-sm btn-ghost">Cancel</label>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
     </div>
 
     <!-- Checkin Drawer -->
@@ -361,11 +361,11 @@
                     </div>
 
                     <div class="flex gap-2 mt-6">
-                        <button type="submit" class="flex-1 btn btn-success">
-                            <i data-lucide="check" class="mr-2 w-4 h-4"></i>
+                        <button type="submit" class="flex-1 btn btn-sm btn-success">
+                            <i data-lucide="download" class="mr-2 w-4 h-4"></i>
                             Check In
                         </button>
-                        <label for="checkin-drawer-toggle" class="flex-1 btn btn-ghost">Cancel</label>
+                        <label for="checkin-drawer-toggle" class="flex-1 btn btn-sm btn-ghost">Cancel</label>
                     </div>
                 </form>
             </div>
