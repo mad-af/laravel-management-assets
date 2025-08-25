@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AssetController;
+use App\Http\Controllers\AssetLoanController;
 use App\Http\Controllers\AssetLogController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\LocationController;
@@ -53,6 +54,10 @@ Route::prefix('dashboard')->middleware('auth')->group(function () {
     Route::patch('assets/{asset}/status', [AssetController::class, 'updateStatus'])->name('assets.update-status');
     Route::get('assets/export', [AssetController::class, 'export'])->name('assets.export');
     Route::get('assets/statistics', [AssetController::class, 'statistics'])->name('assets.statistics');
+    
+    // Asset Loan Routes
+    Route::resource('asset-loans', AssetLoanController::class);
+    Route::patch('asset-loans/{assetLoan}/checkin', [AssetLoanController::class, 'checkin'])->name('asset-loans.checkin');
     
     // Asset Log Routes
     Route::get('asset-logs/export', [AssetLogController::class, 'export'])->name('asset-logs.export');

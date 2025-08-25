@@ -47,6 +47,12 @@
                     'label' => 'Asset Management'
                 ],
                 [
+                    'route' => 'asset-loans.index',
+                    'routeCheck' => 'asset-loans.*',
+                    'icon' => 'clipboard-list',
+                    'label' => 'Asset Loans'
+                ],
+                [
                     'route' => 'asset-logs.index',
                     'routeCheck' => 'asset-logs.*',
                     'icon' => 'file-text',
