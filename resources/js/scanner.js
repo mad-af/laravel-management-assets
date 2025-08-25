@@ -263,34 +263,11 @@ class QRBarcodeScanner {
       const data = await response.json();
 
       if (response.ok && data.success) {
-        // Update the current asset status
-        this.currentAsset.status = data.data.new_status;
-        
-        // Update status badge
-        const statusBadge = document.getElementById('asset-status');
-        statusBadge.textContent = data.data.new_status;
-        statusBadge.className = `badge ${badgeColors[data.data.asset.status_badge_color] || 'badge-ghost'}`;
-        
-        // Update button visibility based on new status
-        const checkinContainer = document.getElementById('checkin-button-container');
-        const maintenanceCheckoutContainer = document.getElementById('maintenance-checkout-button-container');
-        
-        // Hide maintenance and checkout buttons if status is maintenance or checked_out
-        if (data.data.new_status === 'maintenance' || data.data.new_status === 'checked_out') {
-          maintenanceCheckoutContainer.classList.add('hidden');
-        } else {
-          maintenanceCheckoutContainer.classList.remove('hidden');
-        }
-        
-        // Show check-in button only if status is checked_out
-        if (data.data.new_status === 'checked_out') {
-          checkinContainer.classList.remove('hidden');
-        } else {
-          checkinContainer.classList.add('hidden');
-        }
-        
         // Show success message
         this.updateStatus('success', data.message);
+        
+        // Refresh asset data to get latest information
+        await this.refreshAssetData();
         
       } else {
         this.updateStatus('error', data.message || 'Gagal mengubah status aset');
@@ -298,6 +275,24 @@ class QRBarcodeScanner {
     } catch (error) {
       console.error('Error updating asset status:', error);
       this.updateStatus('error', 'Terjadi kesalahan saat mengubah status aset');
+    }
+  }
+
+  async refreshAssetData() {
+    if (!this.currentAsset || !this.currentAsset.code) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/assets/search?code=${encodeURIComponent(this.currentAsset.code)}`);
+      const data = await response.json();
+
+      if (data.found && data.asset) {
+        this.currentAsset = data.asset;
+        this.displayAssetInfo(this.currentAsset);
+      }
+    } catch (error) {
+      console.error('Error refreshing asset data:', error);
     }
   }
 
@@ -451,11 +446,8 @@ class QRBarcodeScanner {
         document.getElementById('checkout-drawer-toggle').checked = false;
         document.getElementById('checkout-form').reset();
         
-        // Update asset info display
-        if (result.data) {
-          this.currentAsset = result.data;
-          this.displayAssetInfo(this.currentAsset);
-        }
+        // Refresh asset data to get latest information
+        await this.refreshAssetData();
       } else {
         // Handle validation errors from server
         if (result.errors) {
@@ -505,11 +497,8 @@ class QRBarcodeScanner {
         document.getElementById('checkin-drawer-toggle').checked = false;
         document.getElementById('checkin-form').reset();
         
-        // Update asset info display
-        if (result.data) {
-          this.currentAsset = result.data;
-          this.displayAssetInfo(this.currentAsset);
-        }
+        // Refresh asset data to get latest information
+        await this.refreshAssetData();
       } else {
         // Handle validation errors from server
         if (result.errors) {
