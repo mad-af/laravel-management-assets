@@ -6,12 +6,8 @@
         </label>
 
         <div class="hidden flex-1 lg:flex">
-            <livewire:breadcrumb-component 
-                :pageTitle="$pageTitle ?? null" 
-                :pageDescription="$pageDescription ?? null" 
-                :backRoute="$backRoute ?? null" 
-                :showBreadcrumbs="true" 
-            />
+            <livewire:breadcrumb-component :pageTitle="$pageTitle ?? null" :pageDescription="$pageDescription ?? null"
+                :backRoute="$backRoute ?? null" :showBreadcrumbs="true" />
         </div>
     </x-slot:brand>
 
@@ -21,7 +17,7 @@
             <x-slot:trigger>
                 <x-button icon="o-swatch" class="btn-ghost btn-circle" />
             </x-slot:trigger>
-            
+
             <x-menu-item title="☀️ Light" onclick="changeTheme('light')" />
             <x-menu-item title="🌙 Dark" onclick="changeTheme('dark')" />
             <x-menu-item title="🧁 Cupcake" onclick="changeTheme('cupcake')" />
@@ -33,20 +29,9 @@
         <!-- User menu -->
         <x-dropdown>
             <x-slot:trigger>
-                @auth
-                    <x-avatar initials="{{ substr(Auth::user()->name, 0, 2) }}" size="sm" placeholder="true" />
-                @else
-                    <x-avatar initials="U" size="sm" placeholder="true" />
-                @endauth
+                <x-avatar placeholder="{{ substr(Auth::user()->name, 0, 2) }}" class="!w-8 !h-8 cursor-pointer" />
             </x-slot:trigger>
-            
-            @auth
-                <x-menu-item title="Help & Support" icon="o-question-mark-circle" />
-                <x-menu-separator />
-                <x-menu-item title="Sign Out" icon="o-arrow-right-on-rectangle" onclick="logout()" class="text-error" />
-            @else
-                <x-menu-item title="Sign In" icon="o-arrow-right-on-rectangle" link="{{ route('login') }}" />
-            @endauth
+                <x-menu-item title="Edit Password" icon="o-key" link="/profile/password" />
         </x-dropdown>
     </x-slot:actions>
 </x-nav>
