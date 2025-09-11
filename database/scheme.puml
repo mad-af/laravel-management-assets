@@ -1,0 +1,168 @@
+@startuml Laravel Asset Management ERD
+!define table(x) class x << (T,#FFAAAA) >>
+!define pk(x) <u>x</u>
+!define fk(x) <i>x</i>
+
+title Laravel Asset Management System - Entity Relationship Diagram
+
+' Main Business Tables
+table(users) {
+  pk(id) : UUID
+  name : VARCHAR
+  email : VARCHAR [UNIQUE]
+  role : ENUM(admin, staff, auditor) [DEFAULT: staff]
+  email_verified_at : TIMESTAMP [NULL]
+  password : VARCHAR
+  remember_token : VARCHAR [NULL]
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+table(categories) {
+  pk(id) : UUID
+  name : VARCHAR [UNIQUE]
+  is_active : BOOLEAN [DEFAULT: true]
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+table(locations) {
+  pk(id) : UUID
+  name : VARCHAR [UNIQUE]
+  is_active : BOOLEAN [DEFAULT: true]
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+table(assets) {
+  pk(id) : UUID
+  code : VARCHAR [UNIQUE]
+  tag_code : VARCHAR [UNIQUE, NULL]
+  name : VARCHAR
+  fk(category_id) : UUID
+  fk(location_id) : UUID
+  status : ENUM(active, damaged, lost, maintenance, checked_out) [DEFAULT: active]
+  condition : ENUM(excellent, good, fair, poor) [DEFAULT: good]
+  value : DECIMAL(15,2)
+  purchase_date : DATE [NULL]
+  description : TEXT [NULL]
+  last_seen_at : TIMESTAMP [NULL]
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+table(asset_logs) {
+  pk(id) : UUID
+  fk(asset_id) : UUID
+  fk(user_id) : UUID
+  action : VARCHAR
+  changed_fields : JSON [NULL]
+  notes : TEXT [NULL]
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+table(asset_loans) {
+  pk(id) : UUID
+  fk(asset_id) : UUID
+  borrower_name : VARCHAR
+  checkout_at : TIMESTAMP
+  due_at : TIMESTAMP
+  checkin_at : TIMESTAMP [NULL]
+  condition_out : VARCHAR
+  condition_in : VARCHAR [NULL]
+  notes : TEXT [NULL]
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+' Laravel System Tables
+table(password_reset_tokens) {
+  pk(email) : VARCHAR
+  token : VARCHAR
+  created_at : TIMESTAMP [NULL]
+}
+
+table(sessions) {
+  pk(id) : VARCHAR
+  fk(user_id) : UUID [NULL]
+  ip_address : VARCHAR(45) [NULL]
+  user_agent : TEXT [NULL]
+  payload : LONGTEXT
+  last_activity : INTEGER
+}
+
+table(cache) {
+  pk(key) : VARCHAR
+  value : MEDIUMTEXT
+  expiration : INTEGER
+}
+
+table(cache_locks) {
+  pk(key) : VARCHAR
+  owner : VARCHAR
+  expiration : INTEGER
+}
+
+table(jobs) {
+  pk(id) : BIGINT
+  queue : VARCHAR
+  payload : LONGTEXT
+  attempts : TINYINT
+  reserved_at : INTEGER [NULL]
+  available_at : INTEGER
+  created_at : INTEGER
+}
+
+table(job_batches) {
+  pk(id) : VARCHAR
+  name : VARCHAR
+  total_jobs : INTEGER
+  pending_jobs : INTEGER
+  failed_jobs : INTEGER
+  failed_job_ids : LONGTEXT
+  options : MEDIUMTEXT [NULL]
+  cancelled_at : INTEGER [NULL]
+  created_at : INTEGER
+  finished_at : INTEGER [NULL]
+}
+
+table(failed_jobs) {
+  pk(id) : BIGINT
+  uuid : VARCHAR [UNIQUE]
+  connection : TEXT
+  queue : TEXT
+  payload : LONGTEXT
+  exception : LONGTEXT
+  failed_at : TIMESTAMP
+}
+
+' Relationships
+categories ||--o{ assets : "has many"
+locations ||--o{ assets : "has many"
+assets ||--o{ asset_logs : "has many"
+assets ||--o{ asset_loans : "has many"
+users ||--o{ asset_logs : "creates"
+users ||--o{ sessions : "has many"
+users ||--o{ password_reset_tokens : "has many"
+
+' Notes
+note right of assets
+  Core entity for asset management
+  Tracks physical assets with
+  categories, locations, and status
+end note
+
+note right of asset_loans
+  Tracks asset borrowing/lending
+  Uses borrower_name instead of
+  user reference for flexibility
+end note
+
+note right of asset_logs
+  Audit trail for all asset changes
+  Stores JSON of changed fields
+  for complete history tracking
+end note
+
+@enduml
