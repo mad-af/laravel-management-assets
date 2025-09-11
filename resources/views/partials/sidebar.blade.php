@@ -95,4 +95,4 @@
             </x-list-item>
         @endif
     </div>
-</div>
+</div>p-4 mt-auto border-base-content/10btn-circle btn-ghost btn-xs

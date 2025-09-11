@@ -80,7 +80,7 @@
                             <h2 class="text-xl md:text-2xl font-semibold leading-snug">Satu Dashboard untuk Semua Aset</h2>
                             <p class="text-sm opacity-80">Pantau, atur, dan audit aset secara terpusat. Mulai dari
                                 registrasi hingga penghapusan—semua dalam satu alur yang sederhana dan rapi.</p>
-                            <a href="/login" class="inline-flex gap-2 items-center mt-1 btn btn-primary btn-sm">
+                            <a href="{{ route('login') }}" class="inline-flex gap-2 items-center mt-1 btn btn-primary btn-sm">
                                 <i data-lucide="log-in" class="w-4 h-4"></i>
                                 <span>Login Demo</span>
                             </a>

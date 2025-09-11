@@ -41,8 +41,8 @@ Route::middleware('guest')->group(function () {
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
 
 // Dashboard Routes
-Route::prefix('dashboard')->middleware('auth')->group(function () {
-    Route::get('/', function () {
+Route::prefix('admin')->middleware('auth')->group(function () {
+    Route::get('dashboard', function () {
         return view('dashboard.index');
     })->name('dashboard');
     
