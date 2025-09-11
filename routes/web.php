@@ -10,6 +10,7 @@ use App\Http\Controllers\AssetLoanController;
 use App\Http\Controllers\AssetLogController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\LocationController;
+use App\Http\Controllers\MaintenanceController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -78,6 +79,10 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('scanners', function () {
         return view('dashboard.scanners.index');
     })->name('scanners.index');
+
+    // Maintenance Routes
+    Route::get('maintenances', [MaintenanceController::class, 'index'])->name('maintenances.index');
+    
 });
 
 // API Routes for Scanner

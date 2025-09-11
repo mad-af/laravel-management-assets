@@ -6,9 +6,9 @@
             'label' => 'Dashboard'
         ],
         [
-            'route' => 'scanners.index',
-            'icon' => 'o-qr-code',
-            'label' => 'QR/Barcode Scanner'
+            'route' => 'maintenances.index',
+            'icon' => 'o-wrench-screwdriver',
+            'label' => 'Asset Maintenance'
         ],
         [
             'type' => 'submenu',
@@ -31,7 +31,12 @@
                     'label' => 'Asset Logs'
                 ]
             ]
-        ]
+        ],
+        [
+            'route' => 'scanners.index',
+            'icon' => 'o-qr-code',
+            'label' => 'QR/Barcode Scanner'
+        ],
     ];
 
     $masterDataMenuItems = [

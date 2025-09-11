@@ -25,7 +25,7 @@ enum MaintenancePriority: string
             self::LOW => 'badge-info',
             self::MEDIUM => 'badge-warning',
             self::HIGH => 'badge-error',
-            self::CRITICAL => 'badge-error',
+            self::CRITICAL => 'badge-error bg-error text-error-content',
         };
     }
 
