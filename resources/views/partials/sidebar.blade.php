@@ -53,7 +53,7 @@
     ];
 @endphp
 
-<div class="flex flex-col h-full border-r border-base-content/10">
+<div class="flex flex-col h-full border-r border-base-content/10 bg-base-100">
     {{-- Brand --}}
     <div class="p-4 border-b border-base-content/10">
         <h2 class="text-2xl font-bold text-primary">Dashboard</h2>

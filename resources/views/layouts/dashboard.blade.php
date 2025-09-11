@@ -27,7 +27,7 @@
         </x-slot:sidebar>
 
         {{-- CONTENT --}}
-        <x-slot:content>
+        <x-slot:content class="!p-0">
             @include('partials.header')
             <main class="flex-1 p-6 bg-base-200">
                 @yield('content')
