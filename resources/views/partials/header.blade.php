@@ -29,29 +29,9 @@
         <!-- User menu -->
         <x-dropdown>
             <x-slot:trigger>
-                <x-avatar placeholder="{{ substr(Auth::user()->name, 0, 2) }}" class="!w-8 !h-8 cursor-pointer" />
+                <x-avatar placeholder="{{ substr(Auth::user()->name, 0, 2) }}" class="!w-8 !h-8 cursor-pointer bg-primary" />
             </x-slot:trigger>
                 <x-menu-item title="Edit Password" icon="o-key" link="/profile/password" />
         </x-dropdown>
     </x-slot:actions>
 </x-nav>
-
-<script>
-    function logout() {
-        // Create a form dynamically and submit it
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = '{{ route("logout") }}';
-
-        // Add CSRF token
-        const csrfToken = document.createElement('input');
-        csrfToken.type = 'hidden';
-        csrfToken.name = '_token';
-        csrfToken.value = '{{ csrf_token() }}';
-        form.appendChild(csrfToken);
-
-        // Add to body and submit
-        document.body.appendChild(form);
-        form.submit();
-    }
-</script>
