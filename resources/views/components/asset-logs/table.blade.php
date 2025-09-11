@@ -28,10 +28,10 @@
                     <td>
                         @php
                             $actionColors = [
-                                'created' => 'badge-success',
-                                'updated' => 'badge-info',
-                                'deleted' => 'badge-error',
-                                'status_changed' => 'badge-warning'
+                                \App\Enums\AssetLogAction::CREATED->value => 'badge-success',
+                                \App\Enums\AssetLogAction::UPDATED->value => 'badge-info',
+                                \App\Enums\AssetLogAction::DELETED->value => 'badge-error',
+                                \App\Enums\AssetLogAction::STATUS_CHANGED->value => 'badge-warning'
                             ];
                             $colorClass = $actionColors[$log->action] ?? 'badge-neutral';
                         @endphp

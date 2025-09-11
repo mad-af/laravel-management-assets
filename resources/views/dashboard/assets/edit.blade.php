@@ -120,11 +120,11 @@
                             </label>
                             <select name="status" class="select select-bordered @error('status') select-error @enderror" required>
                                 <option value="">Pilih Status</option>
-                                <option value="active" {{ old('status', $asset->status) == 'active' ? 'selected' : '' }}>Active</option>
-                                <option value="damaged" {{ old('status', $asset->status) == 'damaged' ? 'selected' : '' }}>Damaged</option>
-                                <option value="lost" {{ old('status', $asset->status) == 'lost' ? 'selected' : '' }}>Lost</option>
-                                <option value="maintenance" {{ old('status', $asset->status) == 'maintenance' ? 'selected' : '' }}>Maintenance</option>
-                                <option value="checked_out" {{ old('status', $asset->status) == 'checked_out' ? 'selected' : '' }}>Checked Out</option>
+                                @foreach(App\Enums\AssetStatus::cases() as $status)
+                    <option value="{{ $status->value }}" {{ old('status', $asset->status->value) == $status->value ? 'selected' : '' }}>
+                        {{ $status->label() }}
+                    </option>
+                @endforeach
                             </select>
                             @error('status')
                                 <label class="label">
@@ -141,10 +141,11 @@
                             </label>
                             <select name="condition" class="select select-bordered @error('condition') select-error @enderror" required>
                                 <option value="">Pilih Kondisi</option>
-                                <option value="excellent" {{ old('condition', $asset->condition) == 'excellent' ? 'selected' : '' }}>Excellent</option>
-                                <option value="good" {{ old('condition', $asset->condition) == 'good' ? 'selected' : '' }}>Good</option>
-                                <option value="fair" {{ old('condition', $asset->condition) == 'fair' ? 'selected' : '' }}>Fair</option>
-                                <option value="poor" {{ old('condition', $asset->condition) == 'poor' ? 'selected' : '' }}>Poor</option>
+                                @foreach(App\Enums\AssetCondition::cases() as $condition)
+                            <option value="{{ $condition->value }}" {{ old('condition', $asset->condition->value) == $condition->value ? 'selected' : '' }}>
+                                {{ $condition->label() }}
+                            </option>
+                        @endforeach
                             </select>
                             @error('condition')
                                 <label class="label">

@@ -16,11 +16,11 @@
                 Edit Asset
             </a>
             
-            <button class="justify-start w-full btn {{ $asset->status === 'maintenance' ? 'btn-disabled' : '' }}" 
-                    onclick="updateStatusAsset('maintenance')" 
-                    {{ $asset->status === 'maintenance' ? 'disabled' : '' }}>
-                <i data-lucide="settings" class="mr-2 w-4 h-4"></i>
-                {{ $asset->status === 'maintenance' ? 'Maintenance Unavailable' : 'Mark as Maintenance' }}
+            <button class="justify-start w-full btn {{ $asset->status === \App\Enums\AssetStatus::MAINTENANCE ? 'btn-disabled' : '' }}"
+                onclick="updateStatusAsset('{{ \App\Enums\AssetStatus::MAINTENANCE->value }}')"
+                {{ $asset->status === \App\Enums\AssetStatus::MAINTENANCE ? 'disabled' : '' }}>
+                <i class="fas fa-wrench"></i>
+                {{ $asset->status === \App\Enums\AssetStatus::MAINTENANCE ? 'Maintenance Unavailable' : 'Mark as Maintenance' }}
             </button>
             
             <div class="divider"></div>

@@ -45,27 +45,27 @@
                     <td>
                         <div class="flex flex-col gap-1">
                             <span class="text-xs">Out:
-                                @if($assetLoan->condition_out === 'excellent')
-                                    <span class="badge badge-success badge-xs">Excellent</span>
-                                @elseif($assetLoan->condition_out === 'good')
-                                    <span class="badge badge-info badge-xs">Good</span>
-                                @elseif($assetLoan->condition_out === 'fair')
-                                    <span class="badge badge-warning badge-xs">Fair</span>
-                                @else
-                                    <span class="badge badge-error badge-xs">Poor</span>
-                                @endif
+                                @if($assetLoan->condition_out === \App\Enums\LoanCondition::EXCELLENT)
+                    <span class="badge badge-success badge-xs">{{ \App\Enums\LoanCondition::EXCELLENT->label() }}</span>
+                @elseif($assetLoan->condition_out === \App\Enums\LoanCondition::GOOD)
+                    <span class="badge badge-info badge-xs">{{ \App\Enums\LoanCondition::GOOD->label() }}</span>
+                @elseif($assetLoan->condition_out === \App\Enums\LoanCondition::FAIR)
+                    <span class="badge badge-warning badge-xs">{{ \App\Enums\LoanCondition::FAIR->label() }}</span>
+                @else
+                    <span class="badge badge-error badge-xs">{{ \App\Enums\LoanCondition::POOR->label() }}</span>
+                @endif
                             </span>
                             @if($assetLoan->condition_in)
                                 <span class="text-xs">In:
-                                    @if($assetLoan->condition_in === 'excellent')
-                                        <span class="badge badge-success badge-xs">Excellent</span>
-                                    @elseif($assetLoan->condition_in === 'good')
-                                        <span class="badge badge-info badge-xs">Good</span>
-                                    @elseif($assetLoan->condition_in === 'fair')
-                                        <span class="badge badge-warning badge-xs">Fair</span>
-                                    @else
-                                        <span class="badge badge-error badge-xs">Poor</span>
-                                    @endif
+                                    @if($assetLoan->condition_in === \App\Enums\LoanCondition::EXCELLENT)
+                        <span class="badge badge-success badge-xs">{{ \App\Enums\LoanCondition::EXCELLENT->label() }}</span>
+                    @elseif($assetLoan->condition_in === \App\Enums\LoanCondition::GOOD)
+                        <span class="badge badge-info badge-xs">{{ \App\Enums\LoanCondition::GOOD->label() }}</span>
+                    @elseif($assetLoan->condition_in === \App\Enums\LoanCondition::FAIR)
+                        <span class="badge badge-warning badge-xs">{{ \App\Enums\LoanCondition::FAIR->label() }}</span>
+                    @else
+                        <span class="badge badge-error badge-xs">{{ \App\Enums\LoanCondition::POOR->label() }}</span>
+                    @endif
                                 </span>
                             @endif
                         </div>

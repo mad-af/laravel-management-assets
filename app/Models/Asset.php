@@ -121,7 +121,7 @@ class Asset extends Model
             'damaged' => 'badge-warning',
             'lost' => 'badge-error',
             'maintenance' => 'badge-info',
-            'checked_out' => 'badge-primary',
+            AssetStatus::CHECKED_OUT->value => 'badge-primary',
             default => 'badge-ghost',
         };
     }
@@ -175,7 +175,7 @@ class Asset extends Model
             if (Auth::check()) {
                 $asset->logs()->create([
                     'user_id' => Auth::id(),
-                    'action' => 'created',
+                    'action' => AssetLogAction::CREATED,
                     'notes' => 'Asset created',
                 ]);
             }

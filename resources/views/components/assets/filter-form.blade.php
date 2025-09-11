@@ -41,11 +41,11 @@
                     </label>
                     <select name="status" class="select select-bordered">
                         <option value="">All Status</option>
-                        <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
-                        <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
-                        <option value="maintenance" {{ request('status') == 'maintenance' ? 'selected' : '' }}>Maintenance
-                        </option>
-                        <option value="disposed" {{ request('status') == 'disposed' ? 'selected' : '' }}>Disposed</option>
+                        @foreach(App\Enums\AssetStatus::cases() as $status)
+                            <option value="{{ $status->value }}" {{ request('status') == $status->value ? 'selected' : '' }}>
+                                {{ $status->label() }}
+                            </option>
+                        @endforeach
                     </select>
                 </div>
             </div>

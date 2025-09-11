@@ -35,7 +35,7 @@
             <div>
                 <label class="text-sm font-semibold text-base-content/70">Status</label>
                 <p class="mt-1">
-                    <span class="badge {{ $asset->status_badge_color }} badge-sm">{{ ucfirst(str_replace('_', ' ', $asset->status)) }}</span>
+                    <span class="badge {{ $asset->status_badge_color }} badge-sm">{{ ucfirst(str_replace('_', ' ', $asset->status->value)) }}</span>
                 </p>
             </div>
 

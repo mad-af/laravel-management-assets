@@ -19,14 +19,12 @@
                     <td>{{ $user->name }}</td>
                     <td>{{ $user->email }}</td>
                     <td>
-                        @if($user->role === 'admin')
-                            <span class="text-xs whitespace-nowrap badge badge-primary">Admin</span>
-                        @elseif($user->role === 'staff')
-                            <span class="text-xs whitespace-nowrap badge badge-secondary">Staff</span>
-                        @elseif($user->role === 'auditor')
-                            <span class="text-xs whitespace-nowrap badge badge-accent">Auditor</span>
-                        @else
-                            <span class="text-xs whitespace-nowrap badge badge-ghost">{{ ucfirst($user->role) }}</span>
+                        @if($user->role === App\Enums\UserRole::ADMIN)
+                            <span class="badge badge-error badge-sm">Admin</span>
+                        @elseif($user->role === App\Enums\UserRole::STAFF)
+                            <span class="badge badge-warning badge-sm">Staff</span>
+                        @elseif($user->role === App\Enums\UserRole::AUDITOR)
+                            <span class="badge badge-info badge-sm">Auditor</span>
                         @endif
                     </td>
                     <td>{{ $user->created_at->format('d M Y') }}</td>

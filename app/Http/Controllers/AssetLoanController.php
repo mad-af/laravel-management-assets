@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Asset;
 use App\Models\AssetLoan;
+use App\Models\AssetLog;
+use App\Enums\AssetStatus;
+use App\Enums\LoanCondition;
+use App\Enums\AssetLogAction;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -58,8 +62,8 @@ class AssetLoanController extends Controller
      */
     public function create(): View
     {
-        $assets = Asset::where('status', '!=', 'checked_out')
-                      ->whereNotIn('status', ['damaged', 'lost', 'maintenance'])
+        $assets = Asset::where('status', '!=', AssetStatus::CHECKED_OUT)
+                      ->whereNotIn('status', [AssetStatus::DAMAGED, AssetStatus::LOST, AssetStatus::MAINTENANCE])
                       ->orderBy('name')
                       ->get();
 
@@ -83,13 +87,13 @@ class AssetLoanController extends Controller
         $asset = Asset::findOrFail($validated['asset_id']);
 
         // Check if asset is available for checkout
-        if ($asset->status === 'checked_out') {
+        if ($asset->status === AssetStatus::CHECKED_OUT) {
             return redirect()->back()
                 ->withInput()
                 ->withErrors(['asset_id' => 'Asset sudah dalam status checked out']);
         }
 
-        if (in_array($asset->status, ['damaged', 'lost', 'maintenance'])) {
+        if (in_array($asset->status, [AssetStatus::DAMAGED, AssetStatus::LOST, AssetStatus::MAINTENANCE])) {
             return redirect()->back()
                 ->withInput()
                 ->withErrors(['asset_id' => 'Asset tidak dapat di-checkout karena status: ' . $asset->status]);
@@ -99,7 +103,7 @@ class AssetLoanController extends Controller
         $assetLoan = AssetLoan::create($validated);
 
         // Update asset status
-        $asset->update(['status' => 'checked_out']);
+        $asset->update(['status' => AssetStatus::CHECKED_OUT]);
 
         return redirect()->route('asset-loans.show', $assetLoan)
             ->with('success', 'Asset loan berhasil dibuat.');
@@ -146,18 +150,18 @@ class AssetLoanController extends Controller
         // Update asset status if checkin_at is provided
         if ($validated['checkin_at'] && !$assetLoan->getOriginal('checkin_at')) {
             // Asset is being returned
-            $newStatus = 'active';
+            $newStatus = AssetStatus::ACTIVE;
             if (isset($validated['condition_in'])) {
-                if (in_array($validated['condition_in'], ['poor'])) {
-                    $newStatus = 'maintenance';
-                } elseif (in_array($validated['condition_in'], ['fair'])) {
-                    $newStatus = 'damaged';
+                if (in_array($validated['condition_in'], [LoanCondition::POOR->value])) {
+                    $newStatus = AssetStatus::MAINTENANCE;
+                } elseif (in_array($validated['condition_in'], [LoanCondition::FAIR->value])) {
+                    $newStatus = AssetStatus::DAMAGED;
                 }
             }
             $assetLoan->asset->update(['status' => $newStatus]);
         } elseif (!$validated['checkin_at'] && $assetLoan->getOriginal('checkin_at')) {
             // Asset is being checked out again
-            $assetLoan->asset->update(['status' => 'checked_out']);
+            $assetLoan->asset->update(['status' => AssetStatus::CHECKED_OUT]);
         }
 
         return redirect()->route('asset-loans.show', $assetLoan)
@@ -171,7 +175,7 @@ class AssetLoanController extends Controller
     {
         // If loan is active, return asset to active status
         if ($assetLoan->isActive()) {
-            $assetLoan->asset->update(['status' => 'active']);
+            $assetLoan->asset->update(['status' => AssetStatus::ACTIVE]);
         }
 
         $assetLoan->delete();
@@ -199,11 +203,11 @@ class AssetLoanController extends Controller
         ]);
 
         // Determine new asset status based on condition
-        $newStatus = 'active';
-        if (in_array($validated['condition_in'], ['poor'])) {
-            $newStatus = 'maintenance';
-        } elseif (in_array($validated['condition_in'], ['fair'])) {
-            $newStatus = 'damaged';
+        $newStatus = AssetStatus::ACTIVE;
+        if (in_array($validated['condition_in'], [LoanCondition::POOR->value])) {
+            $newStatus = AssetStatus::MAINTENANCE;
+        } elseif (in_array($validated['condition_in'], [LoanCondition::FAIR->value])) {
+            $newStatus = AssetStatus::DAMAGED;
         }
 
         // Update asset status and condition

@@ -77,9 +77,11 @@
                         </label>
                         <select name="role" class="select select-bordered @error('role') select-error @enderror" required>
                              <option value="">Pilih Role</option>
-                             <option value="admin" {{ old('role') == 'admin' ? 'selected' : '' }}>Admin</option>
-                             <option value="staff" {{ old('role') == 'staff' ? 'selected' : '' }}>Staff</option>
-                             <option value="auditor" {{ old('role') == 'auditor' ? 'selected' : '' }}>Auditor</option>
+                             @foreach(App\Enums\UserRole::cases() as $role)
+                    <option value="{{ $role->value }}" {{ old('role') == $role->value ? 'selected' : '' }}>
+                        {{ $role->label() }}
+                    </option>
+                @endforeach
                          </select>
                         @error('role')
                             <label class="label">

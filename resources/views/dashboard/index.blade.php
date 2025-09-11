@@ -38,7 +38,7 @@
                         <i data-lucide="check-circle" class="w-8 h-8"></i>
                     </div>
                     <div class="stat-title">Active Assets</div>
-                    <div class="stat-value text-success">{{ \App\Models\Asset::where('status', 'active')->count() }}</div>
+                    <div class="stat-value text-success">{{ \App\Models\Asset::where('status', \App\Enums\AssetStatus::ACTIVE)->count() }}</div>
                     <div class="stat-desc">Aset yang sedang aktif</div>
                 </div>
             </div>
@@ -115,14 +115,14 @@
                                                 </td>
                                                 <td>
                                                     @php
-                                                        $actionColors = [
-                                                            'created' => 'badge-success',
-                                                            'updated' => 'badge-info',
-                                                            'deleted' => 'badge-error',
-                                                            'status_changed' => 'badge-warning'
-                                                        ];
-                                                        $colorClass = $actionColors[$log->action] ?? 'badge-neutral';
-                                                    @endphp
+                                        $actionColors = [
+                                            \App\Enums\AssetLogAction::CREATED->value => 'badge-success',
+                                            \App\Enums\AssetLogAction::UPDATED->value => 'badge-info',
+                                            \App\Enums\AssetLogAction::DELETED->value => 'badge-error',
+                                            \App\Enums\AssetLogAction::STATUS_CHANGED->value => 'badge-warning'
+                                        ];
+                                        $colorClass = $actionColors[$log->action] ?? 'badge-neutral';
+                                    @endphp
                                                     <span class="badge {{ $colorClass }}">
                                                         {{ ucfirst(str_replace('_', ' ', $log->action)) }}
                                                     </span>
@@ -160,10 +160,10 @@
                     <div class="p-6">
                         <div class="space-y-4">
                             @php
-                                $activeCount = \App\Models\Asset::where('status', 'active')->count();
-                                $inactiveCount = \App\Models\Asset::where('status', 'inactive')->count();
-                                $maintenanceCount = \App\Models\Asset::where('status', 'maintenance')->count();
-                                $disposedCount = \App\Models\Asset::where('status', 'disposed')->count();
+                                $activeCount = \App\Models\Asset::where('status', \App\Enums\AssetStatus::ACTIVE)->count();
+                $inactiveCount = \App\Models\Asset::where('status', 'inactive')->count();
+                $maintenanceCount = \App\Models\Asset::where('status', \App\Enums\AssetStatus::MAINTENANCE)->count();
+                $disposedCount = \App\Models\Asset::where('status', 'disposed')->count();
                             @endphp
                             <div class="flex justify-between items-center">
                                 <span>Active</span>
@@ -211,7 +211,7 @@
                                             </p>
                                         </div>
                                         <div
-                                            class="badge badge-{{ $asset->status === 'active' ? 'success' : ($asset->status === 'maintenance' ? 'warning' : 'error') }} badge-sm">
+                                            class="badge badge-{{ $asset->status === \App\Enums\AssetStatus::ACTIVE ? 'success' : ($asset->status === \App\Enums\AssetStatus::MAINTENANCE ? 'warning' : 'error') }} badge-sm">
                                             {{ ucfirst($asset->status) }}
                                         </div>
                                     </div>

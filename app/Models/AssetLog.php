@@ -71,10 +71,10 @@ class AssetLog extends Model
     public function getActionBadgeColorAttribute(): string
     {
         return match($this->action) {
-            'created' => 'badge-success',
-            'updated' => 'badge-info',
-            'deleted' => 'badge-error',
-            'status_changed' => 'badge-warning',
+            AssetLogAction::CREATED->value => 'badge-success',
+        AssetLogAction::UPDATED->value => 'badge-info',
+        AssetLogAction::DELETED->value => 'badge-error',
+        AssetLogAction::STATUS_CHANGED->value => 'badge-warning',
             default => 'badge-ghost',
         };
     }

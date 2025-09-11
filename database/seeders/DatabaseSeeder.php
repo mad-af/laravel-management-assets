@@ -9,6 +9,10 @@ use App\Models\Asset;
 use App\Models\AssetLog;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use App\Enums\UserRole;
+use App\Enums\AssetStatus;
+use App\Enums\AssetCondition;
+use App\Enums\AssetLogAction;
 
 class DatabaseSeeder extends Seeder
 {
@@ -22,7 +26,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Administrator',
             'email' => 'admin@example.com',
             'password' => Hash::make('password'),
-            'role' => 'admin',
+            'role' => UserRole::ADMIN,
         ]);
 
         // Create categories
@@ -65,7 +69,7 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Laptop Dell Inspiron 15',
                 'category_id' => $computerCategory->id,
                 'location_id' => $officeLocation->id,
-                'status' => 'active',
+                'status' => AssetStatus::ACTIVE,
                 'condition' => 'excellent',
                 'value' => 8500000.00,
                 'purchase_date' => '2024-01-15',
@@ -98,7 +102,7 @@ class DatabaseSeeder extends Seeder
                 'name' => 'PC Desktop HP',
                 'category_id' => $computerCategory->id,
                 'location_id' => $warehouseLocation->id,
-                'status' => 'maintenance',
+                'status' => AssetStatus::MAINTENANCE,
                 'condition' => 'fair',
                 'value' => 6000000.00,
                 'purchase_date' => '2022-05-20',
@@ -135,7 +139,7 @@ class DatabaseSeeder extends Seeder
             AssetLog::create([
                 'asset_id' => $asset->id,
                 'user_id' => $admin->id,
-                'action' => 'created',
+                'action' => AssetLogAction::CREATED,
                 'changed_fields' => null,
                 'notes' => 'Asset created during database seeding',
             ]);
@@ -146,9 +150,9 @@ class DatabaseSeeder extends Seeder
         AssetLog::create([
             'asset_id' => $maintenanceAsset->id,
             'user_id' => $admin->id,
-            'action' => 'status_changed',
+            'action' => AssetLogAction::STATUS_CHANGED,
             'changed_fields' => [
-                'status' => ['old' => 'active', 'new' => 'maintenance']
+                'status' => ['old' => AssetStatus::ACTIVE->value, 'new' => AssetStatus::MAINTENANCE->value]
             ],
             'notes' => 'Asset moved to maintenance due to hardware issues',
         ]);

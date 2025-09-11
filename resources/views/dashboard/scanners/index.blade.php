@@ -263,22 +263,12 @@
                             <span class="label-text-alt text-error">*</span>
                         </label>
                         <div class="flex flex-col gap-2">
-                            <label class="gap-3 justify-start cursor-pointer label">
-                                <input type="radio" name="checkout-condition" value="excellent" class="radio-sm" required />
-                                <span class="label-text">Excellent</span>
-                            </label>
-                            <label class="gap-3 justify-start cursor-pointer label">
-                                <input type="radio" name="checkout-condition" value="good" class="radio-sm" required />
-                                <span class="label-text">Good</span>
-                            </label>
-                            <label class="gap-3 justify-start cursor-pointer label">
-                                <input type="radio" name="checkout-condition" value="fair" class="radio-sm" required />
-                                <span class="label-text">Fair</span>
-                            </label>
-                            <label class="gap-3 justify-start cursor-pointer label">
-                                <input type="radio" name="checkout-condition" value="poor" class="radio-sm" required />
-                                <span class="label-text">Poor</span>
-                            </label>
+                            @foreach(App\Enums\LoanCondition::cases() as $condition)
+                                <label class="gap-3 justify-start cursor-pointer label">
+                                    <input type="radio" name="checkout-condition" value="{{ $condition->value }}" class="radio-sm" required />
+                                    <span class="label-text">{{ $condition->label() }}</span>
+                                </label>
+                            @endforeach
                         </div>
                     </div>
 
@@ -333,22 +323,12 @@
                             <span class="label-text-alt text-error">*</span>
                         </label>
                         <div class="flex flex-col gap-2 text-sm">
-                            <label class="gap-3 justify-start cursor-pointer label">
-                                <input type="radio" name="checkin-condition" value="excellent" class="radio-sm" required />
-                                <span class="label-text">Excellent</span>
-                            </label>
-                            <label class="gap-3 justify-start cursor-pointer label">
-                                <input type="radio" name="checkin-condition" value="good" class="radio-sm" required />
-                                <span class="label-text">Good</span>
-                            </label>
-                            <label class="gap-3 justify-start cursor-pointer label">
-                                <input type="radio" name="checkin-condition" value="fair" class="radio-sm" required />
-                                <span class="label-text">Fair</span>
-                            </label>
-                            <label class="gap-3 justify-start cursor-pointer label">
-                                <input type="radio" name="checkin-condition" value="poor" class="radio-sm" required />
-                                <span class="label-text">Poor</span>
-                            </label>
+                            @foreach(App\Enums\LoanCondition::cases() as $condition)
+                                <label class="gap-3 justify-start cursor-pointer label">
+                                    <input type="radio" name="checkin-condition" value="{{ $condition->value }}" class="radio-sm" required />
+                                    <span class="label-text">{{ $condition->label() }}</span>
+                                </label>
+                            @endforeach
                         </div>
                     </div>
 

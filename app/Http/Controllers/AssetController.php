@@ -6,6 +6,8 @@ use App\Models\Asset;
 use App\Models\AssetLog;
 use App\Models\Category;
 use App\Models\Location;
+use App\Enums\AssetStatus;
+use App\Enums\AssetLogAction;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -94,7 +96,7 @@ class AssetController extends Controller
             AssetLog::create([
                 'asset_id' => $asset->id,
                 'user_id' => Auth::id(),
-                'action' => 'created',
+                'action' => AssetLogAction::CREATED,
                 'notes' => 'Asset created successfully',
             ]);
         }
@@ -317,9 +319,9 @@ class AssetController extends Controller
     {
         $stats = [
             'total' => Asset::count(),
-            'active' => Asset::byStatus('active')->count(),
+            'active' => Asset::byStatus(AssetStatus::ACTIVE)->count(),
             'inactive' => Asset::byStatus('inactive')->count(),
-            'maintenance' => Asset::byStatus('maintenance')->count(),
+            'maintenance' => Asset::byStatus(AssetStatus::MAINTENANCE)->count(),
             'disposed' => Asset::byStatus('disposed')->count(),
             'total_value' => Asset::sum('value'),
             'by_category' => Asset::selectRaw('categories.name as category, COUNT(*) as count')
@@ -428,14 +430,14 @@ class AssetController extends Controller
         $asset = Asset::findOrFail($validated['asset_id']);
 
         // Check if asset is available for checkout
-        if ($asset->status === 'checked_out') {
+        if ($asset->status === AssetStatus::CHECKED_OUT) {
             return response()->json([
                 'success' => false,
                 'message' => 'Asset sudah dalam status checked out'
             ], 400);
         }
 
-        if (in_array($asset->status, ['damaged', 'lost', 'maintenance'])) {
+        if (in_array($asset->status, [AssetStatus::DAMAGED, AssetStatus::LOST, AssetStatus::MAINTENANCE])) {
             return response()->json([
                 'success' => false,
                 'message' => 'Asset tidak dapat di-checkout karena status: ' . $asset->status
@@ -453,13 +455,13 @@ class AssetController extends Controller
         ]);
 
         // Update asset status
-        $asset->update(['status' => 'checked_out']);
+        $asset->update(['status' => AssetStatus::CHECKED_OUT]);
 
         // Log the checkout
         AssetLog::create([
             'asset_id' => $asset->id,
             'user_id' => Auth::id(),
-            'action' => 'checked_out',
+            'action' => AssetLogAction::CHECKED_OUT,
             'notes' => 'Asset checked out to: ' . $validated['borrower_name'],
         ]);
 
@@ -494,7 +496,7 @@ class AssetController extends Controller
         $asset = Asset::findOrFail($validated['asset_id']);
 
         // Check if asset is checked out
-        if ($asset->status !== 'checked_out') {
+        if ($asset->status !== AssetStatus::CHECKED_OUT) {
             return response()->json([
                 'success' => false,
                 'message' => 'Asset tidak dalam status checked out'
@@ -521,11 +523,11 @@ class AssetController extends Controller
         ]);
 
         // Determine new asset status based on condition
-        $newStatus = 'active';
+        $newStatus = AssetStatus::ACTIVE;
         if (in_array($validated['condition_in'], ['poor'])) {
-            $newStatus = 'maintenance';
+            $newStatus = AssetStatus::MAINTENANCE;
         } elseif (in_array($validated['condition_in'], ['fair'])) {
-            $newStatus = 'damaged';
+            $newStatus = AssetStatus::DAMAGED;
         }
 
         // Update asset status and condition
@@ -538,7 +540,7 @@ class AssetController extends Controller
         AssetLog::create([
             'asset_id' => $asset->id,
             'user_id' => Auth::id(),
-            'action' => 'checked_in',
+            'action' => AssetLogAction::CHECKED_IN,
             'notes' => 'Asset checked in with condition: ' . $validated['condition_in'],
         ]);
 

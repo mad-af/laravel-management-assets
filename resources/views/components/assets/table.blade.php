@@ -37,7 +37,7 @@
                     </td>
                     <td class="min-w-0">
                         <span
-                            class="badge {{ $asset->status_badge_color }} text-xs whitespace-nowrap">{{ ucfirst($asset->status) }}</span>
+                            class="badge {{ $asset->status_badge_color }} text-xs whitespace-nowrap">{{ ucfirst($asset->status->value) }}</span>
                     </td>
                     <td class="min-w-0">
                         <span

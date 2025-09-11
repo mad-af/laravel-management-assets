@@ -24,15 +24,13 @@
             <div>
                 <label class="text-sm font-semibold text-base-content/70">Role</label>
                 <p class="mt-1">
-                    @if($user->role === 'admin')
-                        <span class="badge badge-primary badge-sm">Admin</span>
-                    @elseif($user->role === 'staff')
-                        <span class="badge badge-secondary badge-sm">Staff</span>
-                    @elseif($user->role === 'auditor')
-                        <span class="badge badge-accent badge-sm">Auditor</span>
-                    @else
-                        <span class="badge badge-ghost badge-sm">{{ ucfirst($user->role) }}</span>
-                    @endif
+                    @if($user->role === App\Enums\UserRole::ADMIN)
+                    <span class="badge badge-error">Admin</span>
+                @elseif($user->role === App\Enums\UserRole::STAFF)
+                    <span class="badge badge-warning">Staff</span>
+                @elseif($user->role === App\Enums\UserRole::AUDITOR)
+                    <span class="badge badge-info">Auditor</span>
+                @endif
                 </p>
             </div>
 
