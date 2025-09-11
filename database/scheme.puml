@@ -1,4 +1,4 @@
-@startuml Laravel Asset Management ERD
+@startuml
 !define table(x) class x << (T,#FFAAAA) >>
 !define pk(x) <u>x</u>
 !define fk(x) <i>x</i>
@@ -76,6 +76,24 @@ table(asset_loans) {
   updated_at : TIMESTAMP
 }
 
+table(asset_maintenances) {
+  pk(id) : UUID
+  fk(asset_id) : UUID
+  title : VARCHAR
+  type : ENUM(preventive, corrective)
+  status : ENUM(open, scheduled, in_progress, completed, cancelled) [DEFAULT: open]
+  priority : ENUM(low, medium, high, critical) [DEFAULT: medium]
+  scheduled_at : TIMESTAMP [NULL]
+  started_at : TIMESTAMP [NULL]
+  completed_at : TIMESTAMP [NULL]
+  cost : DECIMAL(15,2) [DEFAULT: 0.00]
+  technician_name : VARCHAR [NULL]
+  vendor_name : VARCHAR [NULL]
+  notes : TEXT [NULL]
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
 ' Laravel System Tables
 table(password_reset_tokens) {
   pk(email) : VARCHAR
@@ -142,6 +160,7 @@ categories ||--o{ assets : "has many"
 locations ||--o{ assets : "has many"
 assets ||--o{ asset_logs : "has many"
 assets ||--o{ asset_loans : "has many"
+assets ||--o{ asset_maintenances : "has many"
 users ||--o{ asset_logs : "creates"
 users ||--o{ sessions : "has many"
 users ||--o{ password_reset_tokens : "has many"
@@ -165,4 +184,9 @@ note right of asset_logs
   for complete history tracking
 end note
 
+note right of asset_maintenances
+  Records preventive/corrective maintenance
+  Minimal coupling: stores technician & vendor as text
+  Fits existing asset status = maintenance if needed
+end note
 @enduml
