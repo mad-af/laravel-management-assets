@@ -3,9 +3,9 @@
 @section('title', 'Reset Password')
 
 @section('content')
-<div class="card bg-base-100 shadow-xl max-w-md w-full">
-    <div class="card-body">
-        <h2 class="card-title text-center text-2xl font-bold mb-6">Reset Password</h2>
+<x-card title="Reset Password" class="shadow-xl max-w-md w-full" shadow>
+    <div class="p-6">
+        <h2 class="text-center text-2xl font-bold mb-6">Reset Password</h2>
         
         <p class="text-sm text-base-content/70 mb-6 text-center">
             Masukkan email dan password baru Anda.

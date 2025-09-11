@@ -72,8 +72,8 @@
         <section class="grid grid-cols-1 md:grid-cols-12 gap-4 bento-grid h-auto md:h-[calc(100vh-140px)] mt-3 pb-4 md:pb-0"
             style="--row-h: calc((100vh - 140px - 16px)/2); grid-template-rows: auto;">
             <!-- Kartu Utama (Hero): lebih tinggi dari kartu 1, berada di atas kartu 1 -->
-            <article class="overflow-hidden col-span-1 md:col-span-12 lg:col-span-7 shadow-sm card bg-base-100 order-1">
-                <div class="flex relative flex-col h-full card-body p-4 md:p-6">
+            <x-card class="overflow-hidden col-span-1 md:col-span-12 lg:col-span-7 shadow-sm order-1" shadow>
+                <div class="flex relative flex-col h-full p-4 md:p-6">
                     <div class="flex flex-col sm:flex-row gap-3 justify-between items-start">
                         <div class="space-y-2 max-w-xl">
                             <div class="badge badge-primary badge-outline">MVP</div>
@@ -91,17 +91,16 @@
                     </div>
                     <i data-lucide="grid" class="absolute -right-3 -bottom-3 w-16 md:w-24 h-16 md:h-24 opacity-10"></i>
                 </div>
-            </article>
+            </x-card>
 
             <!-- Kartu 2: Analitik Mendalam (kanan atas) -->
-            <article class="overflow-hidden col-span-1 md:col-span-12 lg:col-span-5 shadow-sm card bg-base-100 order-2">
-                <div class="flex relative flex-col h-full card-body p-4 md:p-6">
+            <x-card title="Analitik Mendalam" class="overflow-hidden col-span-1 md:col-span-12 lg:col-span-5 shadow-sm order-2" shadow>
+                <div class="flex relative flex-col h-full p-4 md:p-6">
                     <div class="space-y-1">
                         <div class="flex gap-2 items-center">
                             <span class="inline-flex justify-center items-center w-8 h-8 rounded-xl bg-primary/10">
                                 <i data-lucide="bar-chart-3" class="w-4 h-4 text-primary"></i>
                             </span>
-                            <h3 class="text-base card-title">Analitik Mendalam</h3>
                         </div>
                         <p class="text-xs opacity-80">Dapatkan insight berharga dengan laporan dan analitik yang
                             komprehensif dan actionable.</p>
@@ -117,18 +116,17 @@
                     <i data-lucide="bar-chart-3"
                         class="absolute -right-2 -bottom-2 w-16 md:w-20 h-16 md:h-20 opacity-40 text-primary-content"></i>
                 </div>
-            </article>
+            </x-card>
 
             <!-- Kartu 1 (fitur) dipindah ke bawah & konten dibiarkan (kecuali chip MVP dihapus) -->
-            <article class="overflow-hidden col-span-1 md:col-span-12 lg:col-span-7 shadow-sm card bg-base-100 order-3">
-                <div class="flex relative flex-col h-full card-body p-4 md:p-6">
+            <x-card title="Manajemen Terpusat" class="overflow-hidden col-span-1 md:col-span-12 lg:col-span-7 shadow-sm order-3" shadow>
+                <div class="flex relative flex-col h-full p-4 md:p-6">
                     <!-- Header dengan ikon + judul (tanpa badge MVP) -->
                     <div class="space-y-2 max-w-xl">
                         <div class="flex gap-2 items-center">
                             <span class="inline-flex justify-center items-center w-8 h-8 rounded-xl bg-primary/10">
                                 <i data-lucide="layout-dashboard" class="w-4 h-4 text-primary"></i>
                             </span>
-                            <h2 class="leading-snug card-title">Manajemen Terpusat</h2>
                         </div>
                         <p class="text-sm opacity-80">Kelola semua aset perusahaan dalam satu dashboard yang
                             terintegrasi dan mudah diakses. Struktur data, pengguna, dan kategori dapat disusun rapi
@@ -137,50 +135,49 @@
 
                     <!-- Placeholder UI: daftar aset (tanpa angka) -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-4">
-                        <div class="card bg-base-200/60">
-                            <div class="p-3 card-body">
+                        <x-card class="bg-base-200/60">
+                            <div class="p-3">
                                 <div class="flex gap-2 items-center">
                                     <i data-lucide="hard-drive" class="w-4 h-4"></i>
                                     <span class="text-xs font-medium">Inventaris</span>
                                 </div>
                                 <p class="text-xs opacity-70">Unit, kategori, status.</p>
                             </div>
-                        </div>
-                        <div class="card bg-base-200/60">
-                            <div class="p-3 card-body">
+                        </x-card>
+                        <x-card class="bg-base-200/60">
+                            <div class="p-3">
                                 <div class="flex gap-2 items-center">
                                     <i data-lucide="user-cog" class="w-4 h-4"></i>
                                     <span class="text-xs font-medium">Pengguna & Peran</span>
                                 </div>
                                 <p class="text-xs opacity-70">Hak akses berbasis role.</p>
                             </div>
-                        </div>
-                        <div class="card bg-base-200/60">
-                            <div class="p-3 card-body">
+                        </x-card>
+                        <x-card class="bg-base-200/60">
+                            <div class="p-3">
                                 <div class="flex gap-2 items-center">
                                     <i data-lucide="workflow" class="w-4 h-4"></i>
                                     <span class="text-xs font-medium">Alur & Status</span>
                                 </div>
                                 <p class="text-xs opacity-70">Lifecycle aset yang jelas.</p>
                             </div>
-                        </div>
+                        </x-card>
                     </div>
 
                     <!-- Watermark ikon besar -->
                     <i data-lucide="layout-dashboard"
                         class="absolute -right-2 -bottom-2 w-16 md:w-24 h-16 md:h-24 opacity-40 text-primary-content"></i>
                 </div>
-            </article>
+            </x-card>
 
             <!-- Kartu 3: Scan QR/Barcode (kanan bawah) -->
-            <article class="overflow-hidden col-span-1 md:col-span-12 lg:col-span-5 shadow-sm card bg-base-100 order-4">
-                <div class="flex relative flex-col h-full card-body p-4 md:p-6">
+            <x-card title="Scan QR/Barcode" class="overflow-hidden col-span-1 md:col-span-12 lg:col-span-5 shadow-sm order-4" shadow>
+                <div class="flex relative flex-col h-full p-4 md:p-6">
                     <div class="space-y-1">
                         <div class="flex gap-2 items-center">
                             <span class="inline-flex justify-center items-center w-8 h-8 rounded-xl bg-primary/10">
                                 <i data-lucide="qr-code" class="w-4 h-4 text-primary"></i>
                             </span>
-                            <h3 class="text-base card-title">Scan QR/Barcode</h3>
                         </div>
                         <p class="text-xs opacity-80">Dapat melakukan scan QR/Barcode untuk manajemen aset (placeholder
                             UI untuk MVP).</p>
@@ -200,7 +197,7 @@
                     <i data-lucide="qr-code"
                         class="absolute -right-2 -bottom-2 w-16 md:w-20 h-16 md:h-20 opacity-40 text-primary-content"></i>
                 </div>
-            </article>
+            </x-card>
         </section>
     </main>
 

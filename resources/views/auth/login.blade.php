@@ -3,9 +3,9 @@
 @section('title', 'Login')
 
 @section('content')
-<div class="card bg-base-100 shadow-xl max-w-md w-full">
-    <div class="card-body">
-        <h2 class="card-title text-center text-2xl font-bold mb-6">Login</h2>
+<x-card title="Login" class="shadow-xl max-w-md w-full" shadow>
+    <div class="p-6">
+        <h2 class="text-center text-2xl font-bold mb-6">Login</h2>
         
         @if (session('status'))
             <div class="alert alert-success mb-4">
@@ -92,7 +92,7 @@
             </a>
         </div>
     </div>
-</div>
+</x-card>
 
 <script>
 function togglePassword(fieldId) {

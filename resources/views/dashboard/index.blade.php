@@ -70,10 +70,9 @@
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
             <!-- Recent Activity -->
             <div class="lg:col-span-2">
-                <div class="shadow-xl card bg-base-100">
-                    <div class="card-body">
+                <x-card title="Aktivitas Terbaru" shadow>
+                    <div class="p-6">
                         <div class="flex justify-between items-center mb-4">
-                            <h2 class="text-lg font-semibold card-title">Aktivitas Terbaru</h2>
                             <a href="{{ route('asset-logs.index') }}" class="btn btn-ghost btn-sm">
                                 Lihat Semua
                                 <i data-lucide="arrow-right" class="ml-2 w-4 h-4"></i>
@@ -152,14 +151,13 @@
                             @endif
                         </div>
                     </div>
-                </div>
+                </x-card>
             </div>
 
             <!-- Quick Info -->
             <div class="space-y-6">
-                <div class="shadow-xl card bg-base-100">
-                    <div class="card-body">
-                        <h2 class="mb-4 text-lg font-semibold card-title">Status Asset</h2>
+                <x-card title="Status Asset" shadow>
+                    <div class="p-6">
                         <div class="space-y-4">
                             @php
                                 $activeCount = \App\Models\Asset::where('status', 'active')->count();
@@ -185,12 +183,11 @@
                             </div>
                         </div>
                     </div>
-                </div>
+                </x-card>
 
-                <div class="shadow-xl card bg-base-100">
-                    <div class="card-body">
+                <x-card title="Asset Terbaru" shadow>
+                    <div class="p-6">
                         <div class="flex justify-between items-center mb-4">
-                            <h2 class="text-lg font-semibold card-title">Asset Terbaru</h2>
                             <a href="{{ route('assets.index') }}" class="btn btn-ghost btn-sm">
                                 Lihat Semua
                             </a>
@@ -227,7 +224,7 @@
                             @endif
                         </div>
                     </div>
-                </div>
+                </x-card>
             </div>
         </div>
     </div>
