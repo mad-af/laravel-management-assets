@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Enums\AssetStatus;
+use App\Enums\AssetCondition;
+use App\Enums\AssetLogAction;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -32,6 +35,8 @@ class Asset extends Model
         'value' => 'decimal:2',
         'purchase_date' => 'date',
         'last_seen_at' => 'datetime',
+        'status' => AssetStatus::class,
+        'condition' => AssetCondition::class,
     ];
 
     /**
@@ -77,7 +82,7 @@ class Asset extends Model
     /**
      * Scope a query to only include assets with a specific status.
      */
-    public function scopeByStatus($query, $status)
+    public function scopeByStatus($query, AssetStatus|string $status)
     {
         return $query->where('status', $status);
     }
@@ -85,7 +90,7 @@ class Asset extends Model
     /**
      * Scope a query to only include assets with a specific condition.
      */
-    public function scopeByCondition($query, $condition)
+    public function scopeByCondition($query, AssetCondition|string $condition)
     {
         return $query->where('condition', $condition);
     }
@@ -191,7 +196,7 @@ class Asset extends Model
                 if (!empty($changes) && Auth::check()) {
                     $asset->logs()->create([
                         'user_id' => Auth::id(),
-                        'action' => 'updated',
+                        'action' => AssetLogAction::UPDATED,
                         'changed_fields' => $changes,
                         'notes' => 'Asset updated',
                     ]);
@@ -203,10 +208,82 @@ class Asset extends Model
             if (Auth::check()) {
                 $asset->logs()->create([
                     'user_id' => Auth::id(),
-                    'action' => 'deleted',
+                    'action' => AssetLogAction::DELETED,
                     'notes' => 'Asset deleted',
                 ]);
             }
         });
+    }
+
+    /**
+     * Check if asset is available for checkout
+     */
+    public function isAvailable(): bool
+    {
+        return $this->status->isAvailable();
+    }
+
+    /**
+     * Check if asset is checked out
+     */
+    public function isCheckedOut(): bool
+    {
+        return $this->status === AssetStatus::CHECKED_OUT;
+    }
+
+    /**
+     * Check if asset is under maintenance
+     */
+    public function isUnderMaintenance(): bool
+    {
+        return $this->status === AssetStatus::MAINTENANCE;
+    }
+
+    /**
+     * Check if asset is damaged
+     */
+    public function isDamaged(): bool
+    {
+        return $this->status === AssetStatus::DAMAGED;
+    }
+
+    /**
+     * Check if asset is lost
+     */
+    public function isLost(): bool
+    {
+        return $this->status === AssetStatus::LOST;
+    }
+
+    /**
+     * Check if asset condition needs attention
+     */
+    public function needsAttention(): bool
+    {
+        return $this->condition->needsAttention();
+    }
+
+    /**
+     * Get condition score
+     */
+    public function getConditionScore(): int
+    {
+        return $this->condition->score();
+    }
+
+    /**
+     * Scope to get available assets
+     */
+    public function scopeAvailable($query)
+    {
+        return $query->where('status', AssetStatus::ACTIVE);
+    }
+
+    /**
+     * Scope to get assets that need attention
+     */
+    public function scopeNeedsAttention($query)
+    {
+        return $query->whereIn('condition', [AssetCondition::FAIR, AssetCondition::POOR]);
     }
 }

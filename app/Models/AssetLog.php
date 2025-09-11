@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\AssetLogAction;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -21,6 +22,7 @@ class AssetLog extends Model
 
     protected $casts = [
         'changed_fields' => 'array',
+        'action' => AssetLogAction::class,
     ];
 
     /**
@@ -50,7 +52,7 @@ class AssetLog extends Model
     /**
      * Scope a query to only include logs with a specific action.
      */
-    public function scopeByAction($query, $action)
+    public function scopeByAction($query, AssetLogAction|string $action)
     {
         return $query->where('action', $action);
     }
@@ -103,5 +105,73 @@ class AssetLog extends Model
         }
 
         return implode(', ', $changes);
+    }
+
+    /**
+     * Check if log action is critical
+     */
+    public function isCritical(): bool
+    {
+        return $this->action?->isCritical() ?? false;
+    }
+
+    /**
+     * Check if log action is positive
+     */
+    public function isPositive(): bool
+    {
+        return $this->action?->isPositive() ?? false;
+    }
+
+    /**
+     * Get action icon
+     */
+    public function getActionIcon(): string
+    {
+        return $this->action?->icon() ?? 'circle';
+    }
+
+    /**
+     * Get action color
+     */
+    public function getActionColor(): string
+    {
+        return $this->action?->color() ?? 'gray';
+    }
+
+    /**
+     * Scope to get critical logs
+     */
+    public function scopeCritical($query)
+    {
+        return $query->whereIn('action', [
+            AssetLogAction::DELETED,
+            AssetLogAction::DAMAGED,
+            AssetLogAction::LOST,
+        ]);
+    }
+
+    /**
+     * Scope to get condition-related logs
+     */
+    public function scopeConditionLogs($query)
+    {
+        return $query->whereIn('action', AssetLogAction::conditionActions());
+    }
+
+    /**
+     * Scope to get location-related logs
+     */
+    public function scopeLocationLogs($query)
+    {
+        return $query->whereIn('action', AssetLogAction::locationActions());
+    }
+
+    /**
+     * Scope to get recent logs (last 30 days)
+     */
+    public function scopeRecent($query, int $days = 30)
+    {
+        return $query->where('created_at', '>=', now()->subDays($days));
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\UserRole;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -46,6 +47,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'role' => UserRole::class,
         ];
     }
 
@@ -63,6 +65,38 @@ class User extends Authenticatable
     public function logs(): HasMany
     {
         return $this->hasMany(AssetLog::class);
+    }
+
+    /**
+     * Check if user is admin
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === UserRole::ADMIN;
+    }
+
+    /**
+     * Check if user is staff
+     */
+    public function isStaff(): bool
+    {
+        return $this->role === UserRole::STAFF;
+    }
+
+    /**
+     * Check if user is auditor
+     */
+    public function isAuditor(): bool
+    {
+        return $this->role === UserRole::AUDITOR;
+    }
+
+    /**
+     * Check if user has admin or staff privileges
+     */
+    public function canManageAssets(): bool
+    {
+        return $this->role === UserRole::ADMIN || $this->role === UserRole::STAFF;
     }
 
     // Note: AssetLoan relationships removed as we now use borrower_name string instead of borrower_id foreign key
