@@ -41,7 +41,7 @@
                     </td>
                     <td class="min-w-0">
                         <span
-                            class="badge {{ $asset->condition_badge_color }} text-xs whitespace-nowrap">{{ ucfirst($asset->condition) }}</span>
+                            class="badge {{ $asset->condition_badge_color }} text-xs whitespace-nowrap">{{ ucfirst($asset->condition->value) }}</span>
                     </td>
                     <td>
                         <span class="font-medium">{{ $asset->formatted_value }}</span>
