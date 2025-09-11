@@ -1,53 +1,41 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
-
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Dashboard') - Laravel Dashboard</title>
-    
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ config('app.name', 'Laravel') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
+<body class="min-h-screen font-sans antialiased bg-base-200">
+    {{-- NAVBAR mobile only --}}
+    <x-nav sticky class="lg:hidden">
+        <x-slot:brand>
+            <div class="pt-5 ml-5">Asset Management</div>
+        </x-slot:brand>
+        <x-slot:actions>
+            <label for="main-drawer" class="mr-3 lg:hidden">
+                <x-icon name="o-bars-3" class="cursor-pointer" />
+            </label>
+        </x-slot:actions>
+    </x-nav>
 
-<body>
-    <div class="drawer lg:drawer-open">
-        <!-- Theme initialization script -->
-        <script>
-            // Initialize theme before page renders to prevent flash
-            (function() {
-                const savedTheme = localStorage.getItem('theme') || 'light';
-                document.documentElement.setAttribute('data-theme', savedTheme);
-            })();
-        </script>
-        <input id="drawer-toggle" type="checkbox" class="drawer-toggle" />
+    {{-- MAIN --}}
+    <x-main full-width>
+        {{-- SIDEBAR --}}
+        <x-slot:sidebar drawer="main-drawer" class="bg-base-100 lg:bg-inherit">
+            @include('partials.sidebar')
+        </x-slot:sidebar>
 
-        <!-- Page content -->
-        <div class="flex flex-col drawer-content">
-            <!-- Header -->
+        {{-- CONTENT --}}
+        <x-slot:content>
             @include('partials.header')
-
-            <!-- Main content -->
             <main class="flex-1 p-6 bg-base-200">
                 @yield('content')
             </main>
-        </div>
+        </x-slot:content>
+     </x-main>
 
-        <!-- Sidebar -->
-        <div class="drawer-side">
-            <label for="drawer-toggle" class="drawer-overlay"></label>
-            @include('partials.sidebar')
-        </div>
-    </div>
-    
-    <!-- Lucide Icons CDN - Load after DOM -->
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-    <script>
-        // Initialize Lucide icons after DOM is loaded
-        document.addEventListener('DOMContentLoaded', function() {
-            lucide.createIcons();
-        });
-    </script>
+    {{-- Toast --}}
+    <x-toast />
 </body>
-
 </html>
