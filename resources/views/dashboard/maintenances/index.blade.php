@@ -5,31 +5,28 @@
 @section('content')
     <div class="space-y-6">
         <!-- Page Header -->
-        <div class="flex justify-between items-center">
-            <div>
-                <h1 class="text-2xl font-bold text-gray-900">Asset Maintenance</h1>
-                <p class="text-gray-600">Manage and track asset maintenance activities</p>
-            </div>
-            <x-button icon="o-plus" class="btn-primary">
-                Add Maintenance
-            </x-button>
-        </div>
+        <x-page-header 
+            title="Asset Maintenance"
+            description="Manage and track asset maintenance activities"
+            button-text="Add Maintenance"
+            button-icon="o-plus"
+        />
 
         <!-- Kanban Board -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 h-[calc(100vh-200px)]">
             @php
                 use App\Enums\MaintenanceStatus;
                 $statusColumns = [
-                    MaintenanceStatus::OPEN->value => ['label' => 'Open', 'color' => 'bg-info/10 border-info', 'badge' => 'badge-info'],
-                    MaintenanceStatus::SCHEDULED->value => ['label' => 'Scheduled', 'color' => 'bg-warning/10 border-warning', 'badge' => 'badge-warning'],
-                    MaintenanceStatus::IN_PROGRESS->value => ['label' => 'In Progress', 'color' => 'bg-primary/10 border-primary', 'badge' => 'badge-primary'],
-                    MaintenanceStatus::COMPLETED->value => ['label' => 'Completed', 'color' => 'bg-success/10 border-success', 'badge' => 'badge-success'],
-                    MaintenanceStatus::CANCELLED->value => ['label' => 'Cancelled', 'color' => 'bg-error/10 border-error', 'badge' => 'badge-error']
+                    MaintenanceStatus::OPEN->value => ['label' => 'Open', 'badge' => 'badge-info'],
+                    MaintenanceStatus::SCHEDULED->value => ['label' => 'Scheduled', 'badge' => 'badge-warning'],
+                    MaintenanceStatus::IN_PROGRESS->value => ['label' => 'In Progress', 'badge' => 'badge-primary'],
+                    MaintenanceStatus::COMPLETED->value => ['label' => 'Completed', 'badge' => 'badge-success'],
+                    MaintenanceStatus::CANCELLED->value => ['label' => 'Cancelled', 'badge' => 'badge-error']
                 ];
             @endphp
 
             @foreach($statusColumns as $status => $config)
-                <div class="{{ $config['color'] }} border-2 rounded-lg p-4 flex flex-col">
+                <div class="flex flex-col p-4 rounded-lg border-2 bg-base-200 border-base-content/10">
                     <!-- Column Header -->
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="font-semibold text-base-content">{{ $config['label'] }}</h3>
