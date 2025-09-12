@@ -119,12 +119,13 @@
                                             \App\Enums\AssetLogAction::CREATED->value => 'badge-success',
                                             \App\Enums\AssetLogAction::UPDATED->value => 'badge-info',
                                             \App\Enums\AssetLogAction::DELETED->value => 'badge-error',
-                                            \App\Enums\AssetLogAction::STATUS_CHANGED->value => 'badge-warning'
+                                            \App\Enums\AssetLogAction::STATUS_CHANGED->value => 'badge-warning',
+                                            \App\Enums\AssetLogAction::SCANNED->value => 'badge-info'
                                         ];
-                                        $colorClass = $actionColors[$log->action] ?? 'badge-neutral';
+                                        $colorClass = $actionColors[$log->action->value] ?? 'badge-neutral';
                                     @endphp
                                                     <span class="badge {{ $colorClass }}">
-                                                        {{ ucfirst(str_replace('_', ' ', $log->action)) }}
+                                                        {{ ucfirst(str_replace('_', ' ', $log->action->value)) }}
                                                     </span>
                                                 </td>
                                                 <td>
@@ -212,7 +213,7 @@
                                         </div>
                                         <div
                                             class="badge badge-{{ $asset->status === \App\Enums\AssetStatus::ACTIVE ? 'success' : ($asset->status === \App\Enums\AssetStatus::MAINTENANCE ? 'warning' : 'error') }} badge-sm">
-                                            {{ ucfirst($asset->status) }}
+                                            {{ ucfirst($asset->status->value) }}
                                         </div>
                                     </div>
                                 @endforeach

@@ -19,6 +19,7 @@ enum AssetLogAction: string
     case LOST = 'lost';
     case FOUND = 'found';
     case REPAIRED = 'repaired';
+    case SCANNED = 'scanned';
 
     /**
      * Get all enum values as array
@@ -49,6 +50,7 @@ enum AssetLogAction: string
             self::LOST => 'Asset Lost',
             self::FOUND => 'Asset Found',
             self::REPAIRED => 'Asset Repaired',
+            self::SCANNED => 'Asset Scanned',
         };
     }
 
@@ -73,6 +75,7 @@ enum AssetLogAction: string
             self::LOST => 'red',
             self::FOUND => 'green',
             self::REPAIRED => 'green',
+            self::SCANNED => 'blue',
         };
     }
 
@@ -97,6 +100,7 @@ enum AssetLogAction: string
             self::LOST => 'x-circle',
             self::FOUND => 'search',
             self::REPAIRED => 'tool',
+            self::SCANNED => 'scan-line',
         };
     }
 
