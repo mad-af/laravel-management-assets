@@ -4,20 +4,20 @@
 
 @section('content')
     <div class="space-y-6">
-        <!-- Page Header -->
-        <x-page-header 
+        <!-- Dashboard Content Header -->
+        <livewire:dashboard-content-header 
             title="Asset Maintenance"
             description="Manage and track asset maintenance activities"
             button-text="Add Maintenance"
             button-icon="o-plus"
-        >
-            <x-slot:additionalButton>
-                <button class="btn btn-outline btn-sm">
-                    <x-heroicon-o-funnel class="w-4 h-4" />
-                    Filter
-                </button>
-            </x-slot:additionalButton>
-        </x-page-header>
+            :additional-buttons="[
+                [
+                    'text' => 'Filter',
+                    'icon' => 'o-funnel',
+                    'class' => 'btn-outline btn-sm'
+                ]
+            ]"
+        />
 
         <!-- Kanban Board -->
         <div class="h-[calc(100vh-12rem)]">
