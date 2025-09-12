@@ -8,7 +8,7 @@
 ])
 
 <!-- Page Header Component -->
-<div class="flex justify-between items-center mb-6">
+<div class="flex justify-between items-center mb-3">
     <div>
         <h1 class="text-2xl font-bold text-base-content">{{ $title }}</h1>
         @if($description)
@@ -16,8 +16,14 @@
         @endif
     </div>
     
-    @if($buttonText)
-        <div>
+    <div class="flex gap-2 items-center">
+        <!-- Custom Actions Slot -->
+        @if(isset($additionalButton))
+            {{ $additionalButton }}
+        @endif
+        
+        <!-- Default Button -->
+        @if($buttonText)
             @if($buttonAction)
                 <x-button 
                     icon="{{ $buttonIcon }}" 
@@ -34,6 +40,6 @@
                     {{ $buttonText }}
                 </x-button>
             @endif
-        </div>
-    @endif
+        @endif
+    </div>
 </div>
