@@ -30,7 +30,7 @@ if (document.readyState === 'loading') {
 }
 
 // Expose function globally for manual re-initialization if needed
-window.initLucide = initializeLucideIcons;
+// window.initLucide = initializeLucideIcons;
 
 // Simple Theme Management
 function changeTheme(theme) {

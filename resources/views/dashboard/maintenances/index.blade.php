@@ -5,11 +5,12 @@
 @section('content')
     <div class="space-y-6">
         <!-- Dashboard Content Header -->
-        <livewire:dashboard-content-header 
+        <x-dashboard-content-header 
             title="Asset Maintenance"
             description="Manage and track asset maintenance activities"
             button-text="Add Maintenance"
             button-icon="o-plus"
+            button-action="addMaintenance()"
             :additional-buttons="[
                 [
                     'text' => 'Filter',
@@ -24,4 +25,9 @@
             <livewire:kanban-board />
         </div>
     </div>
+
+    <!-- Maintenance Drawer -->
+    <x-maintenances.drawer />
+
+    <x-maintenances.scripts />
 @endsection

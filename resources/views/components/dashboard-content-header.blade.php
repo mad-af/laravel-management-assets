@@ -1,4 +1,4 @@
-<!-- Dashboard Content Header Livewire Component -->
+<!-- Dashboard Content Header Blade Component -->
 <div class="flex justify-between items-center mb-3">
     <div>
         <h1 class="text-2xl font-bold text-base-content">{{ $title }}</h1>
@@ -8,14 +8,14 @@
     </div>
     
     <div class="flex gap-2 items-center">
-        <!-- Additional Buttons (Livewire v3 workaround) -->
+        <!-- Additional Buttons -->
         @if(!empty($additionalButtons))
             @foreach($additionalButtons as $button)
                 @if(isset($button['action']))
                     <x-button 
                         icon="{{ $button['icon'] ?? 'o-plus' }}" 
                         class="{{ $button['class'] ?? 'btn-outline btn-sm' }}"
-                        wire:click="{{ $button['action'] }}"
+                        onclick="{{ $button['action'] }}"
                     >
                         {{ $button['text'] }}
                     </x-button>
@@ -35,8 +35,8 @@
             @if($buttonAction)
                 <x-button 
                     icon="{{ $buttonIcon }}" 
-                    class="{{ $buttonClass }}" 
-                    wire:click="executeButtonAction"
+                    class="{{ $buttonClass ?? 'btn-primary btn-sm' }}" 
+                    onclick="{{ $buttonAction }}"
                 >
                     {{ $buttonText }}
                 </x-button>
