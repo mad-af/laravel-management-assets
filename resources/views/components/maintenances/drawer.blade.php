@@ -20,7 +20,7 @@
                 <!-- Asset Selection -->
                 <div class="form-control">
                     <label class="label">
-                        <span class="font-medium label-text">Asset</span>
+                        <span class="text-xs font-bold label-text">Asset</span>
                     </label>
                     <select class="w-full select select-bordered select-sm">
                         <option disabled selected>Select an asset</option>
@@ -33,7 +33,7 @@
                 <!-- Maintenance Type -->
                 <div class="form-control">
                     <label class="label">
-                        <span class="font-medium label-text">Maintenance Type</span>
+                        <span class="text-xs font-bold label-text">Maintenance Type</span>
                     </label>
                     <select class="w-full select select-bordered select-sm">
                         <option disabled selected>Select maintenance type</option>
@@ -47,7 +47,7 @@
                 <!-- Priority -->
                 <div class="form-control">
                     <label class="label">
-                        <span class="font-medium label-text">Priority</span>
+                        <span class="text-xs font-bold label-text">Priority</span>
                     </label>
                     <select class="w-full select select-bordered select-sm">
                         <option disabled selected>Select priority</option>
@@ -61,7 +61,7 @@
                 <!-- Scheduled Date -->
                 <div class="form-control">
                     <label class="label">
-                        <span class="font-medium label-text">Scheduled Date</span>
+                        <span class="text-xs font-bold label-text">Scheduled Date</span>
                     </label>
                     <input type="date" class="w-full input input-bordered input-sm" />
                 </div>
@@ -69,7 +69,7 @@
                 <!-- Description -->
                 <div class="form-control">
                     <label class="label">
-                        <span class="font-medium label-text">Description</span>
+                        <span class="text-xs font-bold label-text">Description</span>
                     </label>
                     <textarea class="h-20 text-sm textarea textarea-bordered" placeholder="Describe the maintenance work needed..."></textarea>
                 </div>
@@ -77,7 +77,7 @@
                 <!-- Assigned Technician -->
                 <div class="form-control">
                     <label class="label">
-                        <span class="font-medium label-text">Assigned Technician</span>
+                        <span class="text-xs font-bold label-text">Assigned Technician</span>
                     </label>
                     <select class="w-full select select-bordered select-sm">
                         <option disabled selected>Select technician</option>
@@ -90,7 +90,7 @@
                 <!-- Estimated Cost -->
                 <div class="form-control">
                     <label class="label">
-                        <span class="font-medium label-text">Estimated Cost</span>
+                        <span class="text-xs font-bold label-text">Estimated Cost</span>
                     </label>
                     <input type="number" class="w-full input input-bordered input-sm" placeholder="0.00" step="0.01" />
                 </div>

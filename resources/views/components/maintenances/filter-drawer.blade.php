@@ -20,7 +20,7 @@
                 <!-- Status Filter -->
                 <div class="form-control">
                     <label class="label">
-                        <span class="font-medium label-text">Status</span>
+                        <span class="text-xs font-bold label-text">Status</span>
                     </label>
                     <select class="w-full select select-bordered select-sm">
                         <option value="">All Status</option>
@@ -34,7 +34,7 @@
                 <!-- Priority Filter -->
                 <div class="form-control">
                     <label class="label">
-                        <span class="font-medium label-text">Priority</span>
+                        <span class="text-xs font-bold label-text">Priority</span>
                     </label>
                     <select class="w-full select select-bordered select-sm">
                         <option value="">All Priorities</option>
@@ -48,7 +48,7 @@
                 <!-- Maintenance Type Filter -->
                 <div class="form-control">
                     <label class="label">
-                        <span class="font-medium label-text">Maintenance Type</span>
+                        <span class="text-xs font-bold label-text">Maintenance Type</span>
                     </label>
                     <select class="w-full select select-bordered select-sm">
                         <option value="">All Types</option>
@@ -62,14 +62,14 @@
                 <!-- Date Range Filter -->
                 <div class="form-control">
                     <label class="label">
-                        <span class="font-medium label-text">Date From</span>
+                        <span class="text-xs font-bold label-text">Date From</span>
                     </label>
                     <input type="date" class="w-full input input-bordered input-sm" />
                 </div>
 
                 <div class="form-control">
                     <label class="label">
-                        <span class="font-medium label-text">Date To</span>
+                        <span class="text-xs font-bold label-text">Date To</span>
                     </label>
                     <input type="date" class="w-full input input-bordered input-sm" />
                 </div>
@@ -77,7 +77,7 @@
                 <!-- Assigned Technician Filter -->
                 <div class="form-control">
                     <label class="label">
-                        <span class="font-medium label-text">Assigned Technician</span>
+                        <span class="text-xs font-bold label-text">Assigned Technician</span>
                     </label>
                     <select class="w-full select select-bordered select-sm">
                         <option value="">All Technicians</option>
@@ -90,7 +90,7 @@
                 <!-- Asset Filter -->
                 <div class="form-control">
                     <label class="label">
-                        <span class="font-medium label-text">Asset</span>
+                        <span class="text-xs font-bold label-text">Asset</span>
                     </label>
                     <input type="text" class="w-full input input-bordered input-sm" placeholder="Search asset..." />
                 </div>
