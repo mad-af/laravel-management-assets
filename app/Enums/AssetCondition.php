@@ -44,6 +44,19 @@ enum AssetCondition: string
     }
 
     /**
+     * Get badge color class for UI display
+     */
+    public function badgeColor(): string
+    {
+        return match($this) {
+            self::EXCELLENT => 'badge-success',
+            self::GOOD => 'badge-info',
+            self::FAIR => 'badge-warning',
+            self::POOR => 'badge-error',
+        };
+    }
+
+    /**
      * Get condition score (1-4, higher is better)
      */
     public function score(): int

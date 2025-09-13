@@ -47,6 +47,20 @@ enum LoanCondition: string
     }
 
     /**
+     * Get badge color class for UI display
+     */
+    public function badgeColor(): string
+    {
+        return match($this) {
+            self::EXCELLENT => 'badge-success',
+            self::GOOD => 'badge-info',
+            self::FAIR => 'badge-warning',
+            self::POOR => 'badge-accent',
+            self::DAMAGED => 'badge-error',
+        };
+    }
+
+    /**
      * Check if condition indicates damage or deterioration
      */
     public function isDamaged(): bool

@@ -1,3 +1,5 @@
+@props(['maintenance'])
+
 <div class="border shadow-sm transition-shadow cursor-pointer card bg-base-100 border-base-300 hover:shadow-md">
     <div class="p-4 card-body">
         <!-- Priority and Type Badges -->
@@ -5,7 +7,7 @@
             <span class="badge {{ $maintenance->priority->badgeColor() }} badge-xs">
                 {{ $maintenance->priority->label() }}
             </span>
-            <span class="badge {{ $this->typeColor }} badge-xs">
+            <span class="badge {{ $maintenance->type->badgeColor() }} badge-xs">
                 {{ $maintenance->type->label() }}
             </span>
         </div>

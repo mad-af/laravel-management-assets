@@ -25,7 +25,20 @@
 
         <!-- Kanban Board -->
         <div class="h-[calc(100vh-12rem)]">
-            <livewire:kanban-board />
+            @php
+                $maintenances = \App\Models\AssetMaintenance::with(['asset', 'assignedUser'])
+                    ->orderBy('created_at', 'desc')
+                    ->get();
+                
+                $statusColumns = collect(\App\Enums\MaintenanceStatus::cases())->map(function ($status) use ($maintenances) {
+                    return [
+                        'status' => $status,
+                        'maintenances' => $maintenances->where('status', $status)
+                    ];
+                })->toArray();
+            @endphp
+            
+            <x-maintenances.kanban-board :status-columns="$statusColumns" />
         </div>
     </div>
 

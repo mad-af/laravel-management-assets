@@ -22,4 +22,12 @@ enum MaintenanceType: string
             self::CORRECTIVE => 'Maintenance to fix existing problems',
         };
     }
+
+    public function badgeColor(): string
+    {
+        return match($this) {
+            self::PREVENTIVE => 'badge-info',
+            self::CORRECTIVE => 'badge-warning',
+        };
+    }
 }

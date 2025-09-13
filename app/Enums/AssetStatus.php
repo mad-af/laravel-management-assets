@@ -47,6 +47,20 @@ enum AssetStatus: string
     }
 
     /**
+     * Get badge color class for UI display
+     */
+    public function badgeColor(): string
+    {
+        return match($this) {
+            self::ACTIVE => 'badge-success',
+            self::DAMAGED => 'badge-error',
+            self::LOST => 'badge-neutral',
+            self::MAINTENANCE => 'badge-warning',
+            self::CHECKED_OUT => 'badge-info',
+        };
+    }
+
+    /**
      * Check if asset is available for checkout
      */
     public function isAvailable(): bool
