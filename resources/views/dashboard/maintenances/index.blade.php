@@ -15,7 +15,8 @@
                 [
                     'text' => 'Filter',
                     'icon' => 'o-funnel',
-                    'class' => 'btn-outline btn-sm'
+                    'class' => 'btn-outline btn-sm',
+                    'action' => 'openFilterDrawer()'
                 ]
             ]"
         />
@@ -28,6 +29,9 @@
 
     <!-- Maintenance Drawer -->
     <x-maintenances.drawer />
+
+    <!-- Filter Drawer -->
+    <x-maintenances.filter-drawer />
 
     <x-maintenances.scripts />
 @endsection
