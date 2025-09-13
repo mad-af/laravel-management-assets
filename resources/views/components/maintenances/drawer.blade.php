@@ -1,14 +1,14 @@
-<div class="drawer drawer-end z-50">
-    <input id="maintenance-drawer" type="checkbox" class="drawer-toggle" />
+<div class="z-50 drawer drawer-end">
+    <input id="maintenance-drawer" type="checkbox" onchange="cleanUrlParams()" class="drawer-toggle" />
     <div class="drawer-content">
         <!-- Page content here -->
         {{ $slot }}
     </div>
     <div class="drawer-side">
         <label for="maintenance-drawer" aria-label="close sidebar" class="drawer-overlay"></label>
-        <div class="bg-base-100 text-base-content min-h-full w-80 p-4">
+        <div class="p-4 w-80 min-h-full bg-base-100 text-base-content">
             <!-- Drawer Header -->
-            <div class="flex items-center justify-between mb-4">
+            <div class="flex justify-between items-center mb-4">
                 <h2 class="text-lg font-semibold">Add New Maintenance</h2>
                 <label for="maintenance-drawer" class="btn btn-sm btn-circle btn-ghost">
                     <x-mary-icon name="o-x-mark" class="w-5 h-5" />
@@ -20,9 +20,9 @@
                 <!-- Asset Selection -->
                 <div class="form-control">
                     <label class="label">
-                        <span class="label-text font-medium">Asset</span>
+                        <span class="font-medium label-text">Asset</span>
                     </label>
-                    <select class="select select-bordered select-sm w-full">
+                    <select class="w-full select select-bordered select-sm">
                         <option disabled selected>Select an asset</option>
                         <option>Laptop Dell XPS 13</option>
                         <option>Printer Canon MX490</option>
@@ -33,9 +33,9 @@
                 <!-- Maintenance Type -->
                 <div class="form-control">
                     <label class="label">
-                        <span class="label-text font-medium">Maintenance Type</span>
+                        <span class="font-medium label-text">Maintenance Type</span>
                     </label>
-                    <select class="select select-bordered select-sm w-full">
+                    <select class="w-full select select-bordered select-sm">
                         <option disabled selected>Select maintenance type</option>
                         <option>Preventive</option>
                         <option>Corrective</option>
@@ -47,9 +47,9 @@
                 <!-- Priority -->
                 <div class="form-control">
                     <label class="label">
-                        <span class="label-text font-medium">Priority</span>
+                        <span class="font-medium label-text">Priority</span>
                     </label>
-                    <select class="select select-bordered select-sm w-full">
+                    <select class="w-full select select-bordered select-sm">
                         <option disabled selected>Select priority</option>
                         <option>Low</option>
                         <option>Medium</option>
@@ -61,25 +61,25 @@
                 <!-- Scheduled Date -->
                 <div class="form-control">
                     <label class="label">
-                        <span class="label-text font-medium">Scheduled Date</span>
+                        <span class="font-medium label-text">Scheduled Date</span>
                     </label>
-                    <input type="date" class="input input-bordered input-sm w-full" />
+                    <input type="date" class="w-full input input-bordered input-sm" />
                 </div>
 
                 <!-- Description -->
                 <div class="form-control">
                     <label class="label">
-                        <span class="label-text font-medium">Description</span>
+                        <span class="font-medium label-text">Description</span>
                     </label>
-                    <textarea class="textarea textarea-bordered h-20 text-sm" placeholder="Describe the maintenance work needed..."></textarea>
+                    <textarea class="h-20 text-sm textarea textarea-bordered" placeholder="Describe the maintenance work needed..."></textarea>
                 </div>
 
                 <!-- Assigned Technician -->
                 <div class="form-control">
                     <label class="label">
-                        <span class="label-text font-medium">Assigned Technician</span>
+                        <span class="font-medium label-text">Assigned Technician</span>
                     </label>
-                    <select class="select select-bordered select-sm w-full">
+                    <select class="w-full select select-bordered select-sm">
                         <option disabled selected>Select technician</option>
                         <option>John Doe</option>
                         <option>Jane Smith</option>
@@ -90,18 +90,18 @@
                 <!-- Estimated Cost -->
                 <div class="form-control">
                     <label class="label">
-                        <span class="label-text font-medium">Estimated Cost</span>
+                        <span class="font-medium label-text">Estimated Cost</span>
                     </label>
-                    <input type="number" class="input input-bordered input-sm w-full" placeholder="0.00" step="0.01" />
+                    <input type="number" class="w-full input input-bordered input-sm" placeholder="0.00" step="0.01" />
                 </div>
 
                 <!-- Action Buttons -->
                 <div class="flex gap-2 pt-3">
-                    <button type="submit" class="btn btn-primary btn-sm flex-1">
-                        <x-mary-icon name="o-plus" class="w-4 h-4 mr-2" />
+                    <button type="submit" class="flex-1 btn btn-primary btn-sm">
+                        <x-mary-icon name="o-plus" class="mr-2 w-4 h-4" />
                         Create Maintenance
                     </button>
-                    <label for="maintenance-drawer" class="btn btn-outline btn-sm flex-1">
+                    <label for="maintenance-drawer" class="flex-1 btn btn-outline btn-sm">
                         Cancel
                     </label>
                 </div>
