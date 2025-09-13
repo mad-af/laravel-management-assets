@@ -33,10 +33,11 @@
                                 \App\Enums\AssetLogAction::DELETED->value => 'badge-error',
                                 \App\Enums\AssetLogAction::STATUS_CHANGED->value => 'badge-warning'
                             ];
-                            $colorClass = $actionColors[$log->action] ?? 'badge-neutral';
+                            $actionValue = $log->action instanceof \App\Enums\AssetLogAction ? $log->action->value : $log->action;
+                            $colorClass = $actionColors[$actionValue] ?? 'badge-neutral';
                         @endphp
                         <span class="badge {{ $colorClass }}">
-                            {{ ucfirst(str_replace('_', ' ', $log->action)) }}
+                            {{ ucfirst(str_replace('_', ' ', $actionValue)) }}
                         </span>
                     </td>
                     <td>

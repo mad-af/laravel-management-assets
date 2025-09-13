@@ -47,7 +47,10 @@ class AssetLogController extends Controller
         $actions = AssetLog::select('action')
             ->distinct()
             ->orderBy('action')
-            ->pluck('action');
+            ->pluck('action')
+            ->map(function($action) {
+                return $action instanceof \App\Enums\AssetLogAction ? $action->value : $action;
+            });
 
         return view('dashboard.asset-logs.index', compact('logs', 'assets', 'users', 'actions'));
     }
@@ -84,7 +87,10 @@ class AssetLogController extends Controller
         $actions = AssetLog::select('action')
             ->distinct()
             ->orderBy('action')
-            ->pluck('action');
+            ->pluck('action')
+            ->map(function($action) {
+                return $action instanceof \App\Enums\AssetLogAction ? $action->value : $action;
+            });
 
         // Get users for filter dropdown
         $users = User::orderBy('name')->get(['id', 'name']);
