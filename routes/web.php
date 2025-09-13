@@ -82,6 +82,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
 
     // Maintenance Routes
     Route::get('maintenances', [MaintenanceController::class, 'index'])->name('maintenances.index');
+    Route::post('maintenances', [MaintenanceController::class, 'store'])->name('maintenances.store');
     
 });
 

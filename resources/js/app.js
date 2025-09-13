@@ -69,7 +69,7 @@ if (document.readyState === 'loading') {
     enhancedInitTheme();
 }
 
-// Make changeTheme globally available
+// Make functions globally available
 window.changeTheme = changeTheme;
 
 // Print QR/Barcode function

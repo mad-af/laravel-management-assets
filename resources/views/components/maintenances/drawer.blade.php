@@ -16,7 +16,8 @@
             </div>
 
             <!-- Maintenance Form -->
-            <form class="space-y-3">
+            <form action="{{ route('maintenances.store') }}" method="POST" class="space-y-3">
+                @csrf
                 <!-- Asset Selection -->
                 <div class="form-control">
                     <label class="label">

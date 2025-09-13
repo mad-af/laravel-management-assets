@@ -4,6 +4,8 @@
 
 @section('content')
     <div class="space-y-6">
+        {{-- Messages will be handled by toast component in layout --}}
+
         <!-- Dashboard Content Header -->
         <x-dashboard-content-header 
             title="Asset Maintenance"

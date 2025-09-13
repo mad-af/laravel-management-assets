@@ -8,7 +8,7 @@
     </div>
 
     <!-- Column Content -->
-    <div class="overflow-y-auto flex-1 p-4 space-y-3 rounded-lg border-dashed -2">
+    <div class="overflow-y-auto flex-1 px-2 pt-4 space-y-2 rounded-lg border-dashed -2">
         @forelse($maintenances as $maintenance)
             <livewire:maintenance-card :maintenance="$maintenance" :key="'maintenance-'.$maintenance->id" />
         @empty
