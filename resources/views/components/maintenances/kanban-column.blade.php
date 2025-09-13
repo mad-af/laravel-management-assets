@@ -4,7 +4,7 @@
     <!-- Column Header -->
     <div class="flex justify-between items-center p-4 py-2 border-b border-base-300 bg-base-100">
         <h3 class="text-sm font-semibold text-base-content">{{ $title }}</h3>
-        <span class="w-6 text-center text-xs rounded-full {{ $badgeColorClass }}">
+        <span class="w-6 text-center text-xs badge-xs badge {{ $badgeColorClass }}">
             {{ $maintenances->count() }}
         </span>
     </div>

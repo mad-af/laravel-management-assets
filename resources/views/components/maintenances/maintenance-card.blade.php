@@ -13,12 +13,12 @@
         </div>
 
         <!-- Title -->
-        <h4 class="mb-2 text-sm font-medium text-base-content line-clamp-2">
+        <h4 class="mb-1 text-sm font-medium text-base-content line-clamp-2">
             {{ $maintenance->title }}
         </h4>
 
         <!-- Asset Info -->
-        <div class="mb-2 text-xs text-base-content/70">
+        <div class="mb-1 text-xs text-base-content/70">
             <div class="flex gap-1 items-center">
                 <x-icon name="o-cube" class="w-3 h-3" />
                 <span>{{ $maintenance->asset->name ?? 'N/A' }}</span>
@@ -27,7 +27,7 @@
 
         <!-- Description -->
         @if($maintenance->description)
-            <p class="mb-3 text-xs text-base-content/60 line-clamp-2">
+            <p class="mb-2 text-xs text-base-content/60 line-clamp-2">
                 {{ Str::limit($maintenance->description, 80) }}
             </p>
         @endif
@@ -68,7 +68,7 @@
 
         <!-- Notes Preview -->
         @if($maintenance->notes)
-            <div class="pt-2 mt-2 border-t border-base-300">
+            <div class="pt-2 border-t border-base-300">
                 <p class="text-xs italic text-base-content/60">
                     {{ Str::limit($maintenance->notes, 60) }}
                 </p>
