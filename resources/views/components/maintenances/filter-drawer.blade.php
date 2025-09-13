@@ -22,12 +22,11 @@
                     <label class="label">
                         <span class="text-xs font-bold label-text">Status</span>
                     </label>
-                    <select class="w-full select select-bordered select-sm">
+                    <select name="status" class="w-full select select-bordered select-sm">
                         <option value="">All Status</option>
-                        <option>Pending</option>
-                        <option>In Progress</option>
-                        <option>Completed</option>
-                        <option>Cancelled</option>
+                        @foreach(\App\Enums\MaintenanceStatus::cases() as $status)
+                            <option value="{{ $status->value }}">{{ $status->label() }}</option>
+                        @endforeach
                     </select>
                 </div>
 
@@ -36,12 +35,11 @@
                     <label class="label">
                         <span class="text-xs font-bold label-text">Priority</span>
                     </label>
-                    <select class="w-full select select-bordered select-sm">
+                    <select name="priority" class="w-full select select-bordered select-sm">
                         <option value="">All Priorities</option>
-                        <option>Low</option>
-                        <option>Medium</option>
-                        <option>High</option>
-                        <option>Critical</option>
+                        @foreach(\App\Enums\MaintenancePriority::cases() as $priority)
+                            <option value="{{ $priority->value }}">{{ $priority->label() }}</option>
+                        @endforeach
                     </select>
                 </div>
 
@@ -50,12 +48,11 @@
                     <label class="label">
                         <span class="text-xs font-bold label-text">Maintenance Type</span>
                     </label>
-                    <select class="w-full select select-bordered select-sm">
+                    <select name="type" class="w-full select select-bordered select-sm">
                         <option value="">All Types</option>
-                        <option>Preventive</option>
-                        <option>Corrective</option>
-                        <option>Emergency</option>
-                        <option>Routine</option>
+                        @foreach(\App\Enums\MaintenanceType::cases() as $type)
+                            <option value="{{ $type->value }}">{{ $type->label() }}</option>
+                        @endforeach
                     </select>
                 </div>
 
@@ -64,14 +61,14 @@
                     <label class="label">
                         <span class="text-xs font-bold label-text">Date From</span>
                     </label>
-                    <input type="date" class="w-full input input-bordered input-sm" />
+                    <input type="date" name="date_from" class="w-full input input-bordered input-sm" />
                 </div>
 
                 <div class="form-control">
                     <label class="label">
                         <span class="text-xs font-bold label-text">Date To</span>
                     </label>
-                    <input type="date" class="w-full input input-bordered input-sm" />
+                    <input type="date" name="date_to" class="w-full input input-bordered input-sm" />
                 </div>
 
                 <!-- Assigned Technician Filter -->
@@ -79,11 +76,14 @@
                     <label class="label">
                         <span class="text-xs font-bold label-text">Assigned Technician</span>
                     </label>
-                    <select class="w-full select select-bordered select-sm">
+                    <select name="assigned_to" class="w-full select select-bordered select-sm">
                         <option value="">All Technicians</option>
-                        <option>John Doe</option>
-                        <option>Jane Smith</option>
-                        <option>Mike Johnson</option>
+                        @php
+                            $users = \App\Models\User::orderBy('name')->get();
+                        @endphp
+                        @foreach($users as $user)
+                            <option value="{{ $user->id }}">{{ $user->name }}</option>
+                        @endforeach
                     </select>
                 </div>
 
@@ -92,7 +92,15 @@
                     <label class="label">
                         <span class="text-xs font-bold label-text">Asset</span>
                     </label>
-                    <input type="text" class="w-full input input-bordered input-sm" placeholder="Search asset..." />
+                    <select name="asset_id" class="w-full select select-bordered select-sm">
+                        <option value="">All Assets</option>
+                        @php
+                            $assets = \App\Models\Asset::with('category')->orderBy('name')->get();
+                        @endphp
+                        @foreach($assets as $asset)
+                            <option value="{{ $asset->id }}">{{ $asset->name }} ({{ $asset->code }})</option>
+                        @endforeach
+                    </select>
                 </div>
 
                 <!-- Action Buttons -->

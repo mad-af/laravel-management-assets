@@ -20,41 +20,62 @@
                 <!-- Asset Selection -->
                 <div class="form-control">
                     <label class="label">
-                        <span class="text-xs font-bold label-text">Asset</span>
+                        <span class="text-xs font-bold label-text">Asset <span class="text-red-500">*</span></span>
                     </label>
-                    <select class="w-full select select-bordered select-sm">
+                    <select name="asset_id" class="w-full select select-bordered select-sm" required>
                         <option disabled selected>Select an asset</option>
-                        <option>Laptop Dell XPS 13</option>
-                        <option>Printer Canon MX490</option>
-                        <option>Monitor Samsung 24"</option>
+                        @php
+                            $assets = \App\Models\Asset::with('category')->where('status', '!=', \App\Enums\AssetStatus::LOST)->orderBy('name')->get();
+                        @endphp
+                        @foreach($assets as $asset)
+                            <option value="{{ $asset->id }}">{{ $asset->name }} ({{ $asset->code }}) - {{ $asset->category->name ?? 'No Category' }}</option>
+                        @endforeach
                     </select>
+                </div>
+
+                <!-- Title -->
+                <div class="form-control">
+                    <label class="label">
+                        <span class="text-xs font-bold label-text">Title <span class="text-red-500">*</span></span>
+                    </label>
+                    <input type="text" name="title" class="w-full input input-bordered input-sm" placeholder="Enter maintenance title" required />
                 </div>
 
                 <!-- Maintenance Type -->
                 <div class="form-control">
                     <label class="label">
-                        <span class="text-xs font-bold label-text">Maintenance Type</span>
+                        <span class="text-xs font-bold label-text">Maintenance Type <span class="text-red-500">*</span></span>
                     </label>
-                    <select class="w-full select select-bordered select-sm">
+                    <select name="type" class="w-full select select-bordered select-sm" required>
                         <option disabled selected>Select maintenance type</option>
-                        <option>Preventive</option>
-                        <option>Corrective</option>
-                        <option>Emergency</option>
-                        <option>Routine</option>
+                        @foreach(\App\Enums\MaintenanceType::cases() as $type)
+                            <option value="{{ $type->value }}">{{ $type->label() }}</option>
+                        @endforeach
                     </select>
                 </div>
 
                 <!-- Priority -->
                 <div class="form-control">
                     <label class="label">
-                        <span class="text-xs font-bold label-text">Priority</span>
+                        <span class="text-xs font-bold label-text">Priority <span class="text-red-500">*</span></span>
                     </label>
-                    <select class="w-full select select-bordered select-sm">
+                    <select name="priority" class="w-full select select-bordered select-sm" required>
                         <option disabled selected>Select priority</option>
-                        <option>Low</option>
-                        <option>Medium</option>
-                        <option>High</option>
-                        <option>Critical</option>
+                        @foreach(\App\Enums\MaintenancePriority::cases() as $priority)
+                            <option value="{{ $priority->value }}">{{ $priority->label() }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Status -->
+                <div class="form-control">
+                    <label class="label">
+                        <span class="text-xs font-bold label-text">Status</span>
+                    </label>
+                    <select name="status" class="w-full select select-bordered select-sm">
+                        @foreach(\App\Enums\MaintenanceStatus::cases() as $status)
+                            <option value="{{ $status->value }}" {{ $status->value === 'open' ? 'selected' : '' }}>{{ $status->label() }}</option>
+                        @endforeach
                     </select>
                 </div>
 
@@ -63,15 +84,15 @@
                     <label class="label">
                         <span class="text-xs font-bold label-text">Scheduled Date</span>
                     </label>
-                    <input type="date" class="w-full input input-bordered input-sm" />
+                    <input type="date" name="scheduled_date" class="w-full input input-bordered input-sm" />
                 </div>
 
                 <!-- Description -->
                 <div class="form-control">
                     <label class="label">
-                        <span class="text-xs font-bold label-text">Description</span>
+                        <span class="text-xs font-bold label-text">Description <span class="text-red-500">*</span></span>
                     </label>
-                    <textarea class="h-20 text-sm textarea textarea-bordered" placeholder="Describe the maintenance work needed..."></textarea>
+                    <textarea name="description" class="h-20 text-sm textarea textarea-bordered" placeholder="Describe the maintenance work needed..." required></textarea>
                 </div>
 
                 <!-- Assigned Technician -->
@@ -79,11 +100,14 @@
                     <label class="label">
                         <span class="text-xs font-bold label-text">Assigned Technician</span>
                     </label>
-                    <select class="w-full select select-bordered select-sm">
-                        <option disabled selected>Select technician</option>
-                        <option>John Doe</option>
-                        <option>Jane Smith</option>
-                        <option>Mike Johnson</option>
+                    <select name="assigned_to" class="w-full select select-bordered select-sm">
+                        <option value="" selected>Select technician (optional)</option>
+                        @php
+                            $users = \App\Models\User::orderBy('name')->get();
+                        @endphp
+                        @foreach($users as $user)
+                            <option value="{{ $user->id }}">{{ $user->name }} ({{ $user->role->value }})</option>
+                        @endforeach
                     </select>
                 </div>
 
@@ -92,7 +116,15 @@
                     <label class="label">
                         <span class="text-xs font-bold label-text">Estimated Cost</span>
                     </label>
-                    <input type="number" class="w-full input input-bordered input-sm" placeholder="0.00" step="0.01" />
+                    <input type="number" name="cost" class="w-full input input-bordered input-sm" placeholder="0.00" step="0.01" min="0" />
+                </div>
+
+                <!-- Notes -->
+                <div class="form-control">
+                    <label class="label">
+                        <span class="text-xs font-bold label-text">Notes</span>
+                    </label>
+                    <textarea name="notes" class="h-16 text-sm textarea textarea-bordered" placeholder="Additional notes or comments..."></textarea>
                 </div>
 
                 <!-- Action Buttons -->
