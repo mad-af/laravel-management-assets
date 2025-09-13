@@ -39,4 +39,16 @@ enum UserRole: string
             self::AUDITOR => 'Read-only access for auditing purposes',
         };
     }
+
+    /**
+     * Get badge color class for UI display
+     */
+    public function badgeColor(): string
+    {
+        return match($this) {
+            self::ADMIN => 'badge-error',
+            self::STAFF => 'badge-info',
+            self::AUDITOR => 'badge-warning',
+        };
+    }
 }

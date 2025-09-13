@@ -80,6 +80,31 @@ enum AssetLogAction: string
     }
 
     /**
+     * Get badge color class for UI display
+     */
+    public function badgeColor(): string
+    {
+        return match($this) {
+            self::CREATED => 'badge-success',
+            self::UPDATED => 'badge-info',
+            self::DELETED => 'badge-error',
+            self::CHECKED_OUT => 'badge-warning',
+            self::CHECKED_IN => 'badge-success',
+            self::MAINTENANCE_START => 'badge-warning',
+            self::MAINTENANCE_END => 'badge-success',
+            self::CONDITION_CHANGED => 'badge-info',
+            self::STATUS_CHANGED => 'badge-info',
+            self::LOCATION_CHANGED => 'badge-accent',
+            self::CATEGORY_CHANGED => 'badge-accent',
+            self::DAMAGED => 'badge-error',
+            self::LOST => 'badge-error',
+            self::FOUND => 'badge-success',
+            self::REPAIRED => 'badge-success',
+            self::SCANNED => 'badge-info',
+        };
+    }
+
+    /**
      * Get icon for the action
      */
     public function icon(): string
