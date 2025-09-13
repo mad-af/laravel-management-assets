@@ -71,4 +71,55 @@ class MaintenanceController extends Controller
 
         return redirect()->route('maintenances.index');
     }
+
+    /**
+     * Show the form for editing the specified maintenance.
+     */
+    public function edit(AssetMaintenance $maintenance)
+    {
+        // Return JSON response for AJAX requests
+        if (request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'maintenance' => $maintenance->load(['asset', 'assignedUser'])
+            ]);
+        }
+
+        // Return view for regular requests
+        return view('dashboard.maintenances.edit', compact('maintenance'));
+    }
+
+    /**
+     * Update the specified maintenance in storage.
+     */
+    public function update(Request $request, AssetMaintenance $maintenance): RedirectResponse
+    {
+        $validated = $request->validate([
+            'asset_id' => 'required|exists:assets,id',
+            'title' => 'required|string|max:255',
+            'type' => 'required|string|in:preventive,corrective',
+            'priority' => 'required|string|in:low,medium,high,critical',
+            'status' => 'nullable|string|in:open,scheduled,in_progress,completed,cancelled',
+            'description' => 'required|string|max:1000',
+            'scheduled_date' => 'nullable|date',
+            'assigned_to' => 'nullable|exists:users,id',
+            'cost' => 'nullable|numeric|min:0',
+            'notes' => 'nullable|string|max:1000',
+        ]);
+
+        // Update maintenance record
+        $maintenance->update($validated);
+
+        // Log the maintenance update
+        if (Auth::check()) {
+            AssetLog::create([
+                'asset_id' => $maintenance->asset_id,
+                'user_id' => Auth::id(),
+                'action' => AssetLogAction::UPDATED,
+                'notes' => 'Maintenance updated: ' . $validated['title'],
+            ]);
+        }
+
+        return redirect()->route('maintenances.index');
+    }
 }

@@ -1,5 +1,5 @@
 <div class="z-50 drawer drawer-end">
-    <input id="filter-drawer" type="checkbox" class="drawer-toggle" />
+    <input id="filter-drawer" type="checkbox" class="drawer-toggle" onchange="cleanUrlParams()" />
     <div class="drawer-content">
         <!-- Page content here -->
         {{ $slot }}
