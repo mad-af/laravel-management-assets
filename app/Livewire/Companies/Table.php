@@ -54,6 +54,7 @@ class Table extends Component
             ->when($this->statusFilter === 'inactive', function ($query) {
                 $query->where('is_active', false);
             })
+            ->with('location')
             ->withCount(['users', 'assets'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);

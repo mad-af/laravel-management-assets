@@ -12,6 +12,7 @@ table(companies) {
   pk(id) : UUID
   name : VARCHAR [UNIQUE]
   code : VARCHAR [UNIQUE]
+  fk(location_id) : UUID [NULL]
   tax_id : VARCHAR [NULL]
   address : TEXT [NULL]
   phone : VARCHAR [NULL]
@@ -49,7 +50,6 @@ table(categories) {
 
 table(locations) {
   pk(id) : UUID
-  fk(company_id) : UUID
   name : VARCHAR [UNIQUE]
   is_active : BOOLEAN [DEFAULT: true]
   created_at : TIMESTAMP
@@ -186,7 +186,7 @@ table(password_reset_tokens) {
 ' ==========================
 companies ||--o{ users : "has many"
 companies ||--o{ categories : "has many"
-companies ||--o{ locations : "has many"
+locations ||--o{ companies : "has many"
 companies ||--o{ assets : "has many"
 
 categories ||--o{ assets : "has many"

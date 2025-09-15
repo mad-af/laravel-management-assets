@@ -40,6 +40,8 @@
                     @csrf
                     @method('PUT')
 
+
+
                     <!-- Name Field -->
                     <div class="form-control">
                         <label class="block mb-1 label">
@@ -53,6 +55,14 @@
                                 <span class="label-text-alt text-error">{{ $message }}</span>
                             </label>
                         @enderror
+                    </div>
+
+                    <!-- Status Field -->
+                    <div class="form-control">
+                        <label class="flex gap-2 items-center cursor-pointer label">
+                            <span class="label-text">Status Aktif</span>
+                            <input type="checkbox" name="is_active" value="1" {{ old('is_active', $location->is_active) ? 'checked' : '' }} class="toggle toggle-primary" />
+                        </label>
                     </div>
 
                     <!-- Form Actions -->

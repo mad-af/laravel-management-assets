@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Company extends Model
 {
@@ -13,6 +14,7 @@ class Company extends Model
     protected $fillable = [
         'name',
         'code',
+        'location_id',
         'tax_id',
         'address',
         'phone',
@@ -37,9 +39,9 @@ class Company extends Model
         return $this->hasMany(Category::class);
     }
 
-    public function locations(): HasMany
+    public function location(): BelongsTo
     {
-        return $this->hasMany(Location::class);
+        return $this->belongsTo(Location::class);
     }
 
     public function assets(): HasMany

@@ -30,6 +30,7 @@
                 $headers = [
                     ['key' => 'name', 'label' => 'Perusahaan', 'class' => 'w-56'],
                     ['key' => 'contact', 'label' => 'Kontak'],
+                    ['key' => 'location', 'label' => 'Location'],
                     ['key' => 'address', 'label' => 'Alamat'],
                     ['key' => 'users_count', 'label' => 'Users'],
                     ['key' => 'assets_count', 'label' => 'Assets'],
@@ -67,6 +68,14 @@
                         <span class="text-base-content/50">-</span>
                     @endif
                 </div>
+                @endscope
+
+                @scope('cell_location', $company)
+                @if($company->location)
+                    <div class="text-sm">{{ $company->location->name }}</div>
+                @else
+                    <span class="text-base-content/50">-</span>
+                @endif
                 @endscope
 
                 @scope('cell_address', $company)

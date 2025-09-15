@@ -35,10 +35,12 @@ class LocationController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255|unique:locations,name',
+            'is_active' => 'boolean',
         ]);
 
         Location::create([
             'name' => $request->name,
+            'is_active' => $request->has('is_active'),
         ]);
 
         return redirect()->route('locations.index')
@@ -74,14 +76,12 @@ class LocationController extends Controller
     {
         $request->validate([
             'name' => 'required|string|max:255|unique:locations,name,' . $location->id,
-            'description' => 'nullable|string|max:1000',
-            'address' => 'nullable|string|max:500'
+            'is_active' => 'boolean',
         ]);
 
         $location->update([
             'name' => $request->name,
-            'description' => $request->description,
-            'address' => $request->address
+            'is_active' => $request->has('is_active'),
         ]);
 
         return redirect()->route('locations.index')

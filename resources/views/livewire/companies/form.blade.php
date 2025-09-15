@@ -13,6 +13,10 @@
     <!-- Tax ID -->
     <x-input label="Tax ID" wire:model="tax_id" placeholder="Enter tax identification number" class="input-sm" />
 
+    <!-- Location Single Select -->
+    <x-select label="Location" wire:model="location_id" :options="$allLocations" option-value="id" option-label="name"
+        placeholder="Select location for this company" class="select-sm" />
+
     <!-- Address -->
     <x-textarea label="Address" wire:model="address" placeholder="Enter company address" rows="3" class="textarea-sm" />
 
@@ -26,7 +30,7 @@
     <x-input label="Website" wire:model="website" placeholder="https://example.com" type="url" class="input-sm" />
 
     <!-- Image Upload -->
-    <x-file label="Company Logo" wire:model="image" accept="image/*" class="file-input-sm" />
+    <x-file label="Company Logo" wire:model="image" accept="image/*" class="!file-input-sm" />
 
     <!-- Status Toggle -->
     <x-toggle label="Active Status" wire:model="is_active" right />

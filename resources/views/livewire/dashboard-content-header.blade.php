@@ -1,5 +1,5 @@
 <!-- Dashboard Content Header Livewire Component -->
-<div class="flex justify-between items-center mb-3">
+<div class="flex justify-between items-center space-y-4">
     <div>
         <h1 class="text-2xl font-bold text-base-content">{{ $title }}</h1>
         @if($description)
