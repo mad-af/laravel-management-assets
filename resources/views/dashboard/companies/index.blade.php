@@ -4,11 +4,12 @@
 
 @section('content')
 
-    <x-dashboard-content-header title="Company Management" description="Kelola data perusahaan dalam sistem."
-        button-text="Add Company" button-icon="o-plus" button-action="addMaintenance()" />
-
+    <livewire:dashboard-content-header title='Company Management' description='Kelola data perusahaan dalam sistem.'
+        buttonText='Add Company' buttonIcon='o-plus' buttonAction='openCompanyDrawer' />
 
     <livewire:companies.table />
+
+    <livewire:companies.drawer />
 
     <x-companies.scripts />
 @endsection

@@ -15,6 +15,8 @@ class Table extends Component
 
     protected $queryString = ['search', 'statusFilter'];
 
+    protected $listeners = ['company-saved' => '$refresh'];
+
     public function updatingSearch()
     {
         $this->resetPage();
@@ -23,6 +25,16 @@ class Table extends Component
     public function updatingStatusFilter()
     {
         $this->resetPage();
+    }
+
+    public function editCompany($companyId)
+    {
+        $this->dispatch('editCompany', $companyId);
+    }
+
+    public function openDrawer()
+    {
+        $this->dispatch('openDrawer');
     }
 
     public function render()

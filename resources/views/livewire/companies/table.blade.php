@@ -98,20 +98,21 @@
                 @endscope
 
                 @scope('cell_actions', $company)
-      <x-dropdown>
-        <x-slot:trigger>
-          <x-button icon="o-ellipsis-horizontal" class="btn-ghost btn-xs" />
-        </x-slot:trigger>
-        
-        <x-menu-item title="Hapus" icon="o-trash" class="text-error" 
-                     onclick="if(confirm('Apakah Anda yakin ingin menghapus perusahaan {{ $company->name }}?')) { document.getElementById('delete-form-{{ $company->id }}').submit(); }" />
-      </x-dropdown>
-      
-      <form id="delete-form-{{ $company->id }}" action="{{ route('companies.destroy', $company) }}" method="POST" style="display: none;">
-        @csrf
-        @method('DELETE')
-      </form>
-      @endscope
+                <x-dropdown>
+                    <x-slot:trigger>
+                        <x-button icon="o-ellipsis-horizontal" class="btn-ghost btn-xs" />
+                    </x-slot:trigger>
+
+                    <x-menu-item title="Hapus" icon="o-trash" class="text-error"
+                        onclick="if(confirm('Apakah Anda yakin ingin menghapus perusahaan {{ $company->name }}?')) { document.getElementById('delete-form-{{ $company->id }}').submit(); }" />
+                </x-dropdown>
+
+                <form id="delete-form-{{ $company->id }}" action="{{ route('companies.destroy', $company) }}"
+                    method="POST" style="display: none;">
+                    @csrf
+                    @method('DELETE')
+                </form>
+                @endscope
             </x-table>
         </div>
 

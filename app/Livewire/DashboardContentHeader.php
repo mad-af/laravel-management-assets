@@ -42,8 +42,15 @@ class DashboardContentHeader extends Component
 
     public function executeButtonAction()
     {
-        if ($this->buttonAction) {
+        if ($this->buttonAction === 'openCompanyDrawer') {
+            $this->openCompanyDrawer();
+        } elseif ($this->buttonAction) {
             $this->dispatch($this->buttonAction);
         }
+    }
+
+    public function openCompanyDrawer()
+    {
+        $this->dispatch('openDrawer');
     }
 }
