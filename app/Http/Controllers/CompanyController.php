@@ -13,11 +13,7 @@ class CompanyController extends Controller
      */
     public function index()
     {
-        $companies = Company::withCount(['users', 'assets'])
-            ->orderBy('is_active', 'desc')
-            ->orderBy('name')
-            ->paginate(10);
-        return view('dashboard.companies.index', compact('companies'));
+        return view('dashboard.companies.index');
     }
 
     /**
@@ -41,19 +37,19 @@ class CompanyController extends Controller
             'phone' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
             'website' => 'nullable|url|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $data = $request->only([
             'name', 'code', 'tax_id', 'address', 'phone', 'email', 'website'
         ]);
 
-        // Handle image upload
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = time() . '_' . Str::slug($request->name) . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('storage/companies'), $imageName);
-            $data['image'] = 'companies/' . $imageName;
+        // Handle logo upload
+        if ($request->hasFile('logo')) {
+            $logo = $request->file('logo');
+            $logoName = time() . '_' . Str::slug($request->name) . '.' . $logo->getClientOriginalExtension();
+            $logo->move(public_path('storage/companies'), $logoName);
+            $data['logo'] = 'companies/' . $logoName;
         }
 
         Company::create($data);
@@ -92,24 +88,24 @@ class CompanyController extends Controller
             'phone' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',
             'website' => 'nullable|url|max:255',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $data = $request->only([
             'name', 'code', 'tax_id', 'address', 'phone', 'email', 'website'
         ]);
 
-        // Handle image upload
-        if ($request->hasFile('image')) {
-            // Delete old image if exists
-            if ($company->image && file_exists(public_path('storage/' . $company->image))) {
-                unlink(public_path('storage/' . $company->image));
+        // Handle logo upload
+        if ($request->hasFile('logo')) {
+            // Delete old logo if exists
+            if ($company->logo && file_exists(public_path('storage/' . $company->logo))) {
+                unlink(public_path('storage/' . $company->logo));
             }
 
-            $image = $request->file('image');
-            $imageName = time() . '_' . Str::slug($request->name) . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('storage/companies'), $imageName);
-            $data['image'] = 'companies/' . $imageName;
+            $logo = $request->file('logo');
+            $logoName = time() . '_' . Str::slug($request->name) . '.' . $logo->getClientOriginalExtension();
+            $logo->move(public_path('storage/companies'), $logoName);
+            $data['logo'] = 'companies/' . $logoName;
         }
 
         $company->update($data);
@@ -129,9 +125,9 @@ class CompanyController extends Controller
                 ->with('error', 'Cannot delete company with existing users or assets.');
         }
 
-        // Delete image if exists
-        if ($company->image && file_exists(public_path('storage/' . $company->image))) {
-            unlink(public_path('storage/' . $company->image));
+        // Delete logo if exists
+        if ($company->logo && file_exists(public_path('storage/' . $company->logo))) {
+            unlink(public_path('storage/' . $company->logo));
         }
 
         $company->delete();
@@ -141,16 +137,38 @@ class CompanyController extends Controller
     }
 
     /**
-     * Toggle company active status.
+     * Activate company.
      */
     public function activate(Company $company)
     {
-        $company->update([
-            'is_active' => !$company->is_active
-        ]);
+        $company->update(['is_active' => true]);
 
-        $status = $company->is_active ? 'activated' : 'deactivated';
+        if (request()->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Company activated successfully.'
+            ]);
+        }
+
         return redirect()->route('companies.index')
-            ->with('success', "Company {$status} successfully.");
+            ->with('success', 'Company activated successfully.');
+    }
+
+    /**
+     * Deactivate company.
+     */
+    public function deactivate(Company $company)
+    {
+        $company->update(['is_active' => false]);
+
+        if (request()->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Company deactivated successfully.'
+            ]);
+        }
+
+        return redirect()->route('companies.index')
+            ->with('success', 'Company deactivated successfully.');
     }
 }

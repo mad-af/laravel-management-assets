@@ -79,6 +79,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     // Company Management Routes
     Route::resource('companies', CompanyController::class);
     Route::patch('companies/{company}/activate', [CompanyController::class, 'activate'])->name('companies.activate');
+    Route::patch('companies/{company}/deactivate', [CompanyController::class, 'deactivate'])->name('companies.deactivate');
     
     // Scanner Routes
     Route::get('scanners', function () {
