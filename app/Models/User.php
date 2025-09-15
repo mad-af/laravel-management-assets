@@ -7,6 +7,7 @@ use App\Enums\UserRole;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -25,6 +26,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'company_id',
     ];
 
     /**
@@ -97,6 +99,12 @@ class User extends Authenticatable
     public function canManageAssets(): bool
     {
         return $this->role === UserRole::ADMIN || $this->role === UserRole::STAFF;
+    }
+
+    // Relationships
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
     }
 
     // Note: AssetLoan relationships removed as we now use borrower_name string instead of borrower_id foreign key
