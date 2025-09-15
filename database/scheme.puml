@@ -3,11 +3,31 @@
 !define pk(x) <u>x</u>
 !define fk(x) <i>x</i>
 
-title Laravel Asset Management System - Entity Relationship Diagram
+title Laravel Asset Management System - Entity Relationship Diagram (Multi-tenant with Companies)
 
+' ==========================
+' Company / Tenant Table
+' ==========================
+table(companies) {
+  pk(id) : UUID
+  name : VARCHAR [UNIQUE]
+  code : VARCHAR [UNIQUE]
+  tax_id : VARCHAR [NULL]
+  address : TEXT [NULL]
+  phone : VARCHAR [NULL]
+  email : VARCHAR [NULL]
+  website : VARCHAR [NULL]
+  is_active : BOOLEAN [DEFAULT: true]
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+' ==========================
 ' Main Business Tables
+' ==========================
 table(users) {
   pk(id) : UUID
+  fk(company_id) : UUID
   name : VARCHAR
   email : VARCHAR [UNIQUE]
   role : ENUM(admin, staff, auditor) [DEFAULT: staff]
@@ -20,6 +40,7 @@ table(users) {
 
 table(categories) {
   pk(id) : UUID
+  fk(company_id) : UUID
   name : VARCHAR [UNIQUE]
   is_active : BOOLEAN [DEFAULT: true]
   created_at : TIMESTAMP
@@ -28,6 +49,7 @@ table(categories) {
 
 table(locations) {
   pk(id) : UUID
+  fk(company_id) : UUID
   name : VARCHAR [UNIQUE]
   is_active : BOOLEAN [DEFAULT: true]
   created_at : TIMESTAMP
@@ -36,6 +58,7 @@ table(locations) {
 
 table(assets) {
   pk(id) : UUID
+  fk(company_id) : UUID
   code : VARCHAR [UNIQUE]
   tag_code : VARCHAR [UNIQUE, NULL]
   name : VARCHAR
@@ -94,14 +117,17 @@ table(asset_maintenances) {
   updated_at : TIMESTAMP
 }
 
+' ==========================
 ' Laravel System Tables
+' ==========================
+
 table(password_reset_tokens) {
   pk(email) : VARCHAR
   token : VARCHAR
   created_at : TIMESTAMP [NULL]
 }
 
-table(sessions) {
+ table(sessions) {
   pk(id) : VARCHAR
   fk(user_id) : UUID [NULL]
   ip_address : VARCHAR(45) [NULL]
@@ -110,19 +136,19 @@ table(sessions) {
   last_activity : INTEGER
 }
 
-table(cache) {
+ table(cache) {
   pk(key) : VARCHAR
   value : MEDIUMTEXT
   expiration : INTEGER
 }
 
-table(cache_locks) {
+ table(cache_locks) {
   pk(key) : VARCHAR
   owner : VARCHAR
   expiration : INTEGER
 }
 
-table(jobs) {
+ table(jobs) {
   pk(id) : BIGINT
   queue : VARCHAR
   payload : LONGTEXT
@@ -132,7 +158,7 @@ table(jobs) {
   created_at : INTEGER
 }
 
-table(job_batches) {
+ table(job_batches) {
   pk(id) : VARCHAR
   name : VARCHAR
   total_jobs : INTEGER
@@ -145,7 +171,7 @@ table(job_batches) {
   finished_at : INTEGER [NULL]
 }
 
-table(failed_jobs) {
+ table(failed_jobs) {
   pk(id) : BIGINT
   uuid : VARCHAR [UNIQUE]
   connection : TEXT
@@ -155,7 +181,14 @@ table(failed_jobs) {
   failed_at : TIMESTAMP
 }
 
+' ==========================
 ' Relationships
+' ==========================
+companies ||--o{ users : "has many"
+companies ||--o{ categories : "has many"
+companies ||--o{ locations : "has many"
+companies ||--o{ assets : "has many"
+
 categories ||--o{ assets : "has many"
 locations ||--o{ assets : "has many"
 assets ||--o{ asset_logs : "has many"
@@ -165,11 +198,21 @@ users ||--o{ asset_logs : "creates"
 users ||--o{ sessions : "has many"
 users ||--o{ password_reset_tokens : "has many"
 
+' ==========================
 ' Notes
+' ==========================
+note right of companies
+  Top-level tenant/company entity
+  Use to scope data for multi-tenant installs
+  Consider composite unique constraints, e.g. (company_id, name)
+  on categories, locations, and optionally assets.code
+end note
+
 note right of assets
   Core entity for asset management
   Tracks physical assets with
   categories, locations, and status
+  Scoped by company_id for tenancy
 end note
 
 note right of asset_loans
