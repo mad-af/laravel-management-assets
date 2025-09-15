@@ -9,19 +9,19 @@
             </div>
 
             {{-- Filter Dropdown --}}
-    <div class="flex gap-2">
-      <x-dropdown>
-        <x-slot:trigger>
-          <x-button icon="o-funnel" class="btn-sm btn-outline">
-            Filter Status
-          </x-button>
-        </x-slot:trigger>
-        
-        <x-menu-item title="Semua Status" wire:click="$set('statusFilter', '')" />
-        <x-menu-item title="Aktif" wire:click="$set('statusFilter', 'active')" />
-        <x-menu-item title="Tidak Aktif" wire:click="$set('statusFilter', 'inactive')" />
-      </x-dropdown>
-    </div>
+            <div class="flex gap-2">
+                <x-dropdown>
+                    <x-slot:trigger>
+                        <x-button icon="o-funnel" class="btn-sm btn-outline">
+                            Filter Status
+                        </x-button>
+                    </x-slot:trigger>
+
+                    <x-menu-item title="Semua Status" wire:click="$set('statusFilter', '')" />
+                    <x-menu-item title="Aktif" wire:click="$set('statusFilter', 'active')" />
+                    <x-menu-item title="Tidak Aktif" wire:click="$set('statusFilter', 'inactive')" />
+                </x-dropdown>
+            </div>
         </div>
 
         {{-- Table --}}
@@ -98,20 +98,13 @@
                 @endscope
 
                 @scope('cell_actions', $company)
-                <x-dropdown>
-                    <x-slot:trigger>
-                        <x-button icon="o-ellipsis-horizontal" class="btn-ghost btn-xs" />
-                    </x-slot:trigger>
-
-                    <x-menu-item title="Hapus" icon="o-trash" class="text-error"
-                        onclick="if(confirm('Apakah Anda yakin ingin menghapus perusahaan {{ $company->name }}?')) { document.getElementById('delete-form-{{ $company->id }}').submit(); }" />
-                </x-dropdown>
-
-                <form id="delete-form-{{ $company->id }}" action="{{ route('companies.destroy', $company) }}"
-                    method="POST" style="display: none;">
-                    @csrf
-                    @method('DELETE')
-                </form>
+                @livewire('action-dropdown', [
+                                    'model' => $company,
+                                    'actions' => ['edit', 'delete'],
+                                    'editEvent' => 'edit-company',
+                                    'deleteEvent' => 'company-deleted',
+                                    'confirmMessage' => 'Are you sure you want to delete this company?'
+                                ], key($company->id))
                 @endscope
             </x-table>
         </div>

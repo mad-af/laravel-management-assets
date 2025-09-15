@@ -15,7 +15,11 @@ class Table extends Component
 
     protected $queryString = ['search', 'statusFilter'];
 
-    protected $listeners = ['company-saved' => '$refresh'];
+    protected $listeners = [
+        'company-saved' => '$refresh',
+        'company-deleted' => '$refresh',
+        'edit-company' => 'editCompany'
+    ];
 
     public function updatingSearch()
     {
