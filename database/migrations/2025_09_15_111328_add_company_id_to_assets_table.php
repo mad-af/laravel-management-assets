@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('assets', function (Blueprint $table) {
-            $table->foreignUuid('company_id')->after('id')->constrained('companies')->onDelete('cascade');
+            $table->uuid('company_id')->after('id')->nullable();
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
             
             // Drop existing unique constraint on code and add composite unique constraint
             $table->dropUnique(['code']);

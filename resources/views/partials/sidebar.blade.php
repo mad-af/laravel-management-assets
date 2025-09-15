@@ -46,6 +46,11 @@
             'label' => 'User Management'
         ],
         [
+            'route' => 'companies.index',
+            'icon' => 'o-building-office',
+            'label' => 'Companies'
+        ],
+        [
             'route' => 'categories.index',
             'icon' => 'o-folder',
             'label' => 'Categories'

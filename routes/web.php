@@ -11,6 +11,7 @@ use App\Http\Controllers\AssetLogController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\MaintenanceController;
+use App\Http\Controllers\CompanyController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -74,6 +75,10 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     // Location Management Routes
     Route::resource('locations', LocationController::class);
     Route::patch('locations/{location}/activate', [LocationController::class, 'activate'])->name('locations.activate');
+    
+    // Company Management Routes
+    Route::resource('companies', CompanyController::class);
+    Route::patch('companies/{company}/activate', [CompanyController::class, 'activate'])->name('companies.activate');
     
     // Scanner Routes
     Route::get('scanners', function () {
