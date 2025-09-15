@@ -100,14 +100,14 @@
                 @scope('cell_actions', $company)
                 <x-action-dropdown :model="$company">
                     <li>
-                        <button wire:click="$dispatch('edit-company', {{ $company->id }})"
+                        <button wire:click="openEditDrawer('{{ $company->id }}')"
                             class="flex gap-2 items-center p-2 text-sm rounded">
                             <x-icon name="o-pencil" class="w-4 h-4" />
                             Edit
                         </button>
                     </li>
                     <li>
-                        <button wire:click="delete({{ $company->id }})"
+                        <button wire:click="delete('{{ $company->id }}')"
                             wire:confirm="Are you sure you want to delete this company?"
                             class="flex gap-2 items-center p-2 text-sm rounded text-error">
                             <x-icon name="o-trash" class="w-4 h-4" />

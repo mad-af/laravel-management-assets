@@ -18,7 +18,6 @@ class Table extends Component
     protected $listeners = [
         'company-saved' => '$refresh',
         'company-deleted' => '$refresh',
-        'edit-company' => 'editCompany'
     ];
 
     public function updatingSearch()
@@ -31,14 +30,14 @@ class Table extends Component
         $this->resetPage();
     }
 
-    public function editCompany($companyId)
-    {
-        $this->dispatch('editCompany', $companyId);
-    }
-
     public function openDrawer()
     {
         $this->dispatch('openDrawer');
+    }
+
+    public function openEditDrawer($companyId)
+    {
+        $this->dispatch('openEditDrawer', $companyId);
     }
 
     public function render()

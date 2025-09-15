@@ -10,6 +10,8 @@
     <livewire:companies.table />
 
     <livewire:companies.drawer />
+    
+    <livewire:companies.edit-drawer />
 
     <x-companies.scripts />
 @endsection
