@@ -6,12 +6,13 @@ use App\Models\Asset;
 use App\Models\Category;
 use App\Models\Location;
 use App\Enums\AssetStatus;
+use App\Traits\WithAlert;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 class Table extends Component
 {
-    use WithPagination;
+    use WithPagination, WithAlert;
 
     public $search = '';
     public $statusFilter = '';
@@ -53,6 +54,27 @@ class Table extends Component
     public function openEditDrawer($assetId)
     {
         $this->dispatch('openEditDrawer', $assetId);
+    }
+
+    public function deleteAsset($assetId)
+    {
+        try {
+            $asset = Asset::findOrFail($assetId);
+            $assetName = $asset->name;
+            $asset->delete();
+            
+            $this->showSuccessAlert(
+                "Asset '{$assetName}' berhasil dihapus.",
+                'Asset Dihapus'
+            );
+            
+            $this->dispatch('asset-deleted');
+        } catch (\Exception $e) {
+            $this->showErrorAlert(
+                'Terjadi kesalahan saat menghapus asset.',
+                'Error'
+            );
+        }
     }
 
     public function render()

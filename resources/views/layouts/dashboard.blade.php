@@ -45,5 +45,8 @@
 
     {{-- Toast --}}
     <x-toast />
+
+    {{-- Alert Component --}}
+    <livewire:alert />
 </body>
 </html>
