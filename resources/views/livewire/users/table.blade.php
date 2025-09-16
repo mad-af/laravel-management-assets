@@ -30,9 +30,9 @@
                     </x-slot:trigger>
 
                     <x-menu-item title="Semua Role" wire:click="$set('roleFilter', '')" />
-                    <x-menu-item title="Administrator" wire:click="$set('roleFilter', 'admin')" />
-                    <x-menu-item title="Staff" wire:click="$set('roleFilter', 'staff')" />
-                    <x-menu-item title="Auditor" wire:click="$set('roleFilter', 'auditor')" />
+                    @foreach(\App\Enums\UserRole::cases() as $role)
+                        <x-menu-item title="{{ $role->label() }}" wire:click="$set('roleFilter', '{{ $role->value }}')" />
+                    @endforeach
                 </x-dropdown>
             </div>
         </div>
