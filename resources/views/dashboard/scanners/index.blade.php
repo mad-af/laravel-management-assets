@@ -3,29 +3,24 @@
 @section('title', 'QR/Barcode Scanner')
 
 @section('content')
+    <livewire:dashboard-content-header title='QR/Barcode Scanner' description='Scan QR code atau barcode untuk mencari dan mengelola aset.' />
+
+    @if(session('success'))
+        <div class="alert alert-success">
+            <i data-lucide="check-circle" class="w-5 h-5"></i>
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="alert alert-error">
+            <i data-lucide="x-circle" class="w-5 h-5"></i>
+            {{ session('error') }}
+        </div>
+    @endif
+
     <!-- Main content -->
     <div class="space-y-6">
-        <!-- Page Header -->
-        <div class="flex justify-between items-center">
-            <div>
-                <h1 class="text-3xl font-bold text-base-content">QR/Barcode Scanner</h1>
-                <p class="mt-1 text-base-content/70">Scan QR code atau barcode untuk mencari dan mengelola aset.</p>
-            </div>
-        </div>
-
-        @if(session('success'))
-            <div class="alert alert-success">
-                <i data-lucide="check-circle" class="w-5 h-5"></i>
-                {{ session('success') }}
-            </div>
-        @endif
-
-        @if(session('error'))
-            <div class="alert alert-error">
-                <i data-lucide="x-circle" class="w-5 h-5"></i>
-                {{ session('error') }}
-            </div>
-        @endif
 
         <!-- Scanner Interface -->
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
