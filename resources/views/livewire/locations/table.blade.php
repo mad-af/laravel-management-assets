@@ -54,11 +54,12 @@
 
         @scope('cell_actions', $location)
         <x-action-dropdown :model="$location">
-          <button wire:click="openEditDrawer('{{ $location->id }}')"
-            class="flex gap-2 items-center p-2 text-sm rounded">
-            <x-icon name="o-pencil" class="w-4 h-4" />
-            Edit
-          </button>
+          <li>
+            <button wire:click="openEditDrawer('{{ $location->id }}')"
+              class="flex gap-2 items-center p-2 text-sm rounded" onclick="document.activeElement.blur()">
+              <x-icon name="o-pencil" class="w-4 h-4" />
+              Edit
+            </button>
           </li>
           <li>
             <button wire:click="delete('{{ $location->id }}')"

@@ -76,11 +76,12 @@
 
                 @scope('cell_actions', $user)
                 <x-action-dropdown :model="$user">
-                    <button wire:click="openEditDrawer('{{ $user->id }}')"
-                        class="flex gap-2 items-center p-2 text-sm rounded">
-                        <x-icon name="o-pencil" class="w-4 h-4" />
-                        Edit
-                    </button>
+                    <li>
+                        <button wire:click="openEditDrawer('{{ $user->id }}')"
+                            class="flex gap-2 items-center p-2 text-sm rounded" onclick="document.activeElement.blur()">
+                            <x-icon name="o-pencil" class="w-4 h-4" />
+                            Edit
+                        </button>
                     </li>
                     <li>
                         <button wire:click="delete('{{ $user->id }}')"

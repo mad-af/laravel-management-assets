@@ -63,7 +63,7 @@ class CompanyController extends Controller
      */
     public function show(Company $company)
     {
-        $company->load(['users', 'assets', 'categories', 'locations']);
+        $company->load(['users', 'assets', 'locations']);
         return view('dashboard.companies.show', compact('company'));
     }
 

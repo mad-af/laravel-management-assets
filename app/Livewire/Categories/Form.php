@@ -3,7 +3,6 @@
 namespace App\Livewire\Categories;
 
 use App\Models\Category;
-use App\Models\Company;
 use Livewire\Component;
 use Mary\Traits\Toast;
 
@@ -13,14 +12,11 @@ class Form extends Component
 
     public $categoryId;
     public $name = '';
-    public $company_id = '';
     public $is_active = true;
     public $isEdit = false;
-    public $allCompanies = [];
 
     protected $rules = [
         'name' => 'required|string|max:255',
-        'company_id' => 'required|exists:companies,id',
         'is_active' => 'boolean',
     ];
 
@@ -32,7 +28,6 @@ class Form extends Component
     public function mount($categoryId = null)
     {
         $this->categoryId = $categoryId;
-        $this->allCompanies = Company::where('is_active', true)->get();
         
         if ($categoryId) {
             $this->isEdit = true;
@@ -46,7 +41,6 @@ class Form extends Component
             $category = Category::find($this->categoryId);
             if ($category) {
                 $this->name = $category->name;
-                $this->company_id = $category->company_id;
                 $this->is_active = $category->is_active;
             }
         }
@@ -61,7 +55,6 @@ class Form extends Component
                 $category = Category::find($this->categoryId);
                 $category->update([
                     'name' => $this->name,
-                    'company_id' => $this->company_id,
                     'is_active' => $this->is_active,
                 ]);
                 $this->success('Category updated successfully!');
@@ -69,7 +62,6 @@ class Form extends Component
             } else {
                 Category::create([
                     'name' => $this->name,
-                    'company_id' => $this->company_id,
                     'is_active' => $this->is_active,
                 ]);
                 $this->success('Category created successfully!');
@@ -84,7 +76,6 @@ class Form extends Component
     public function resetForm()
     {
         $this->name = '';
-        $this->company_id = '';
         $this->is_active = true;
         $this->resetValidation();
     }

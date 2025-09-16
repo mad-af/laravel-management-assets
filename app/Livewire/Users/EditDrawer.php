@@ -18,7 +18,7 @@ class EditDrawer extends Component
 
     public function openDrawer($userId)
     {
-        $this->user = User::with(['company', 'roles'])->find($userId);
+        $this->user = User::with(['company'])->find($userId);
         $this->showDrawer = true;
     }
 

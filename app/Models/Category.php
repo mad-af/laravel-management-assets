@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Category extends Model
 {
@@ -14,7 +13,6 @@ class Category extends Model
     protected $fillable = [
         'name',
         'is_active',
-        'company_id',
     ];
 
     protected $casts = [
@@ -31,13 +29,7 @@ class Category extends Model
         return $query->where('is_active', true);
     }
 
-    /**
-     * Get the company that owns the category.
-     */
-    public function company(): BelongsTo
-    {
-        return $this->belongsTo(Company::class);
-    }
+
 
     /**
      * Get the assets for the category.

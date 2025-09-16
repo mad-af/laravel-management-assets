@@ -39,13 +39,7 @@
                 <span class="font-medium">{{ $category->name }}</span>
                 @endscope
 
-                @scope('cell_company', $category)
-                @if($category->company)
-                    <div class="text-sm">{{ $category->company->name }}</div>
-                @else
-                    <span class="text-base-content/50">-</span>
-                @endif
-                @endscope
+
 
                 @scope('cell_is_active', $category)
                 @if($category->is_active)
@@ -61,11 +55,12 @@
 
                 @scope('cell_actions', $category)
                 <x-action-dropdown :model="$category">
-                    <button wire:click="openEditDrawer('{{ $category->id }}')"
-                        class="flex gap-2 items-center p-2 text-sm rounded">
-                        <x-icon name="o-pencil" class="w-4 h-4" />
-                        Edit
-                    </button>
+                    <li>
+                        <button wire:click="openEditDrawer('{{ $category->id }}')"
+                            class="flex gap-2 items-center p-2 text-sm rounded" onclick="document.activeElement.blur()">
+                            <x-icon name="o-pencil" class="w-4 h-4" />
+                            Edit
+                        </button>
                     </li>
                     <li>
                         <button wire:click="delete('{{ $category->id }}')"

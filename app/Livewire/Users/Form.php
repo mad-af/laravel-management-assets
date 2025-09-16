@@ -32,7 +32,7 @@ class Form extends Component
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email' . ($this->isEdit ? ',' . $this->userId : ''),
             'phone' => 'nullable|string|max:20',
-            'company_id' => 'required|exists:companies,id',
+            'company_id' => 'nullable|exists:companies,id',
             'role' => 'required|in:' . implode(',', UserRole::values()),
             'is_active' => 'boolean',
         ];
@@ -55,7 +55,12 @@ class Form extends Component
     {
         $this->userId = $userId;
         $this->allCompanies = Company::where('is_active', true)->get();
-        $this->allRoles = UserRole::cases();
+        $this->allRoles = collect(UserRole::cases())->map(function ($role) {
+            return [
+                'value' => $role->value,
+                'label' => $role->label()
+            ];
+        })->toArray();
         
         if ($userId) {
             $this->isEdit = true;
@@ -66,7 +71,7 @@ class Form extends Component
     public function loadUser()
     {
         if ($this->userId) {
-            $user = User::with('roles')->find($this->userId);
+            $user = User::find($this->userId);
             if ($user) {
                 $this->name = $user->name;
                 $this->email = $user->email;
