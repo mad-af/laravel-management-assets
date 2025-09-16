@@ -29,7 +29,6 @@ class Asset extends Model
         'purchase_date',
         'description',
         'last_seen_at',
-        'company_id',
     ];
 
     protected $casts = [
@@ -40,13 +39,7 @@ class Asset extends Model
         'condition' => AssetCondition::class,
     ];
 
-    /**
-     * Get the company that owns the asset.
-     */
-    public function company(): BelongsTo
-    {
-        return $this->belongsTo(Company::class);
-    }
+
 
     /**
      * Get the category that owns the asset.

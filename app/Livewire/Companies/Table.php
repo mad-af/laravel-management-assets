@@ -55,7 +55,7 @@ class Table extends Component
                 $query->where('is_active', false);
             })
             ->with('location')
-            ->withCount(['users', 'assets'])
+            ->withCount(['users'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 

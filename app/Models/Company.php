@@ -41,8 +41,5 @@ class Company extends Model
         return $this->belongsTo(Location::class);
     }
 
-    public function assets(): HasMany
-    {
-        return $this->hasMany(Asset::class);
-    }
+
 }

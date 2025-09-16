@@ -33,7 +33,6 @@
                     ['key' => 'location', 'label' => 'Location'],
                     ['key' => 'address', 'label' => 'Alamat'],
                     ['key' => 'users_count', 'label' => 'Users'],
-                    ['key' => 'assets_count', 'label' => 'Assets'],
                     ['key' => 'is_active', 'label' => 'Status'],
                     ['key' => 'created_at', 'label' => 'Dibuat'],
                     ['key' => 'actions', 'label' => 'Aksi', 'class' => 'w-20'],
@@ -90,9 +89,7 @@
                 {{ $company->users_count ?? 0 }}
                 @endscope
 
-                @scope('cell_assets_count', $company)
-                {{ $company->assets_count ?? 0 }}
-                @endscope
+
 
                 @scope('cell_is_active', $company)
                 @if($company->is_active)
