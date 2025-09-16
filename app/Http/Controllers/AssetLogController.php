@@ -15,44 +15,7 @@ class AssetLogController extends Controller
      */
     public function index(Request $request): View
     {
-        $query = AssetLog::with(['asset', 'user'])
-            ->orderBy('created_at', 'desc');
-
-        // Apply filters
-        if ($request->filled('asset_id')) {
-            $query->forAsset($request->get('asset_id'));
-        }
-
-        if ($request->filled('action')) {
-            $query->byAction($request->get('action'));
-        }
-
-        if ($request->filled('user_id')) {
-            $query->byUser($request->get('user_id'));
-        }
-
-        if ($request->filled('date_from')) {
-            $query->whereDate('created_at', '>=', $request->get('date_from'));
-        }
-
-        if ($request->filled('date_to')) {
-            $query->whereDate('created_at', '<=', $request->get('date_to'));
-        }
-
-        $logs = $query->paginate(20);
-        
-        // Get filter options
-        $assets = Asset::orderBy('name')->get(['id', 'name', 'code']);
-        $users = User::orderBy('name')->get(['id', 'name']);
-        $actions = AssetLog::select('action')
-            ->distinct()
-            ->orderBy('action')
-            ->pluck('action')
-            ->map(function($action) {
-                return $action instanceof \App\Enums\AssetLogAction ? $action->value : $action;
-            });
-
-        return view('dashboard.asset-logs.index', compact('logs', 'assets', 'users', 'actions'));
+        return view('dashboard.asset-logs.index');
     }
 
     /**
