@@ -13,6 +13,11 @@ class Location extends Model
 
     protected $fillable = [
         'name',
+        'address',
+        'city',
+        'state',
+        'country',
+        'postal_code',
         'is_active',
     ];
 
@@ -28,14 +33,6 @@ class Location extends Model
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
-    }
-
-    /**
-     * Get the companies for the location.
-     */
-    public function companies(): HasMany
-    {
-        return $this->hasMany(Company::class);
     }
 
     /**
