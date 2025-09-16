@@ -23,42 +23,7 @@ class AssetLogController extends Controller
      */
     public function forAsset(Request $request, Asset $asset): View
     {
-        $query = AssetLog::with(['user'])
-            ->forAsset($asset->id)
-            ->orderBy('created_at', 'desc');
-
-        // Apply filters
-        if ($request->filled('action')) {
-            $query->byAction($request->get('action'));
-        }
-
-        if ($request->filled('user_id')) {
-            $query->byUser($request->get('user_id'));
-        }
-
-        if ($request->filled('date_from')) {
-            $query->whereDate('created_at', '>=', $request->get('date_from'));
-        }
-
-        if ($request->filled('date_to')) {
-            $query->whereDate('created_at', '<=', $request->get('date_to'));
-        }
-
-        $logs = $query->paginate(15);
-
-        // Get available actions for filter dropdown
-        $actions = AssetLog::select('action')
-            ->distinct()
-            ->orderBy('action')
-            ->pluck('action')
-            ->map(function($action) {
-                return $action instanceof \App\Enums\AssetLogAction ? $action->value : $action;
-            });
-
-        // Get users for filter dropdown
-        $users = User::orderBy('name')->get(['id', 'name']);
-
-        return view('dashboard.asset-logs.for-asset', compact('asset', 'logs', 'actions', 'users'));
+        return view('dashboard.asset-logs.for-asset', compact('asset'));
     }
 
     /**

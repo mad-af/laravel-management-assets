@@ -6,12 +6,13 @@ use App\Models\AssetLog;
 use App\Models\Asset;
 use App\Models\User;
 use App\Enums\AssetLogAction;
+use App\Traits\WithAlert;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 class Table extends Component
 {
-    use WithPagination;
+    use WithPagination, WithAlert;
 
     public $search = '';
     public $assetFilter = '';
@@ -25,6 +26,23 @@ class Table extends Component
     protected $listeners = [
         'asset-log-created' => '$refresh',
     ];
+
+    public function mount()
+    {
+        // Handle session flash alerts
+        $this->boot();
+    }
+
+    public function boot()
+    {
+        if (session('success')) {
+            $this->showSuccessAlert(session('success'));
+        }
+
+        if (session('error')) {
+            $this->showErrorAlert(session('error'));
+        }
+    }
 
     public function updatingSearch()
     {

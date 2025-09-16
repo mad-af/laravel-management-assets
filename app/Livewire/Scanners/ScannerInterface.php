@@ -21,6 +21,18 @@ class ScannerInterface extends Component
         'scannerStopped' => 'setScanningState',
     ];
 
+    public function boot()
+    {
+        // Handle session flash alerts
+        if (session('success')) {
+            $this->showSuccessAlert(session('success'));
+        }
+        
+        if (session('error')) {
+            $this->showErrorAlert(session('error'));
+        }
+    }
+
     public function mount()
     {
         $this->loadRecentScans();
