@@ -1,4 +1,4 @@
-<form action="{{ $isEdit ? route('asset-transfers.update', $assetTransfer->id) : route('asset-transfers.store') }}"
+<form action="{{ $isEdit ? route('asset-transfers.update', $transferId) : route('asset-transfers.store') }}"
     method="POST" class="space-y-4">
     @csrf
     @if($isEdit)

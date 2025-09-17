@@ -97,7 +97,9 @@ class Form extends Component
                     return [
                         'id' => $item->id,
                         'asset_id' => $item->asset_id,
-                        'notes' => $item->notes
+                        'notes' => $item->notes,
+                        'from_location_id' => $this->from_location_id,
+                        'to_location_id' => $this->to_location_id,
                     ];
                 })->toArray();
             }
@@ -113,8 +115,6 @@ class Form extends Component
         ];
     }
 
-
-
     public function removeItem($index)
     {
         if (count($this->items) > 1) {
@@ -122,8 +122,6 @@ class Form extends Component
             $this->items = array_values($this->items);
         }
     }
-
-
 
     public function resetForm()
     {
@@ -157,6 +155,8 @@ class Form extends Component
             ];
         });
         
-        return view('livewire.asset-transfers.form', compact('locations', 'assets', 'statusOptions'));
+        return view('livewire.asset-transfers.form', compact('locations', 'assets', 'statusOptions'))
+            ->with('transferId', $this->transferId)
+            ->with('isEdit', $this->isEdit);
     }
 }
