@@ -25,10 +25,10 @@
     </div>
 
     <!-- Reason -->
-    <x-textarea name="reason" class="textarea-sm" label="Alasan Transfer" wire:model="reason" rows="3" required />
+    <x-textarea name="reason" class="textarea-sm" label="Alasan Transfer" wire:model="reason" rows="3" placeholder="Masukkan alasan transfer asset" required />
 
     <!-- Notes -->
-    <x-textarea name="notes" class="textarea-sm" label="Catatan" wire:model="notes" rows="3" />
+    <x-textarea name="notes" class="textarea-sm" label="Catatan" wire:model="notes" rows="3" placeholder="Masukkan catatan tambahan jika ada" />
 
     <fieldset class="p-2 w-full border fieldset bg-base-200 border-base-300 rounded-box">
         <legend class="fieldset-legend">Asset Items</legend>

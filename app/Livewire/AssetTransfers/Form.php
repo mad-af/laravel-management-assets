@@ -3,18 +3,12 @@
 namespace App\Livewire\AssetTransfers;
 
 use App\Models\AssetTransfer;
-use App\Models\AssetTransferItem;
 use App\Models\Location;
 use App\Models\Asset;
-use App\Models\User;
 use App\Enums\AssetTransferStatus;
-use App\Enums\AssetTransferItemStatus;
 use Livewire\Component;
 use Mary\Traits\Toast;
-use Illuminate\Support\Str;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 class Form extends Component
 {
     use Toast;

@@ -9,6 +9,4 @@
     <livewire:asset-transfers.table />
 
     <livewire:asset-transfers.drawer />
-
-    <livewire:asset-transfers.edit-drawer />
 @endsection
