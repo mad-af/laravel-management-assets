@@ -57,15 +57,15 @@
                                     ];
                                 @endphp
                                 <div class="mt-1">
-                                    <div class="badge {{ $statusColors[$assetTransfer->status] ?? 'badge-ghost' }} badge-lg">
-                                        {{ ucfirst($assetTransfer->status) }}
+                                    <div class="badge {{ $statusColors[$assetTransfer->status?->value] ?? 'badge-ghost' }} badge-lg">
+                                        {{ ucfirst($assetTransfer->status?->value) }}
                                     </div>
                                 </div>
                             </div>
                             
                             <div>
                                 <label class="text-sm font-medium text-gray-500">Type</label>
-                                <p class="capitalize">{{ $assetTransfer->type ?? '-' }}</p>
+                                <p class="capitalize">{{ $assetTransfer->type?->label() ?? '-' }}</p>
                             </div>
                             
                             <div>
@@ -79,8 +79,8 @@
                                     ];
                                 @endphp
                                 <div class="mt-1">
-                                    <div class="badge {{ $priorityColors[$assetTransfer->priority] ?? 'badge-ghost' }}">
-                                        {{ ucfirst($assetTransfer->priority ?? 'medium') }}
+                                    <div class="badge {{ $priorityColors[$assetTransfer->priority?->value] ?? 'badge-ghost' }}">
+                                        {{ ucfirst($assetTransfer->priority?->value ?? 'medium') }}
                                     </div>
                                 </div>
                             </div>

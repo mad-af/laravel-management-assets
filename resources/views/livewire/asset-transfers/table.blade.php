@@ -98,6 +98,13 @@
                 @scope('cell_actions', $transfer)
                 <x-action-dropdown :model="$transfer">
                     <li>
+                        <button wire:click="viewDetail('{{ $transfer->id }}')"
+                            class="flex gap-2 items-center p-2 text-sm rounded" onclick="document.activeElement.blur()">
+                            <x-icon name="o-eye" class="w-4 h-4" />
+                            Detail
+                        </button>
+                    </li>
+                    <li>
                         <button wire:click="openEditDrawer('{{ $transfer->id }}')"
                             class="flex gap-2 items-center p-2 text-sm rounded" onclick="document.activeElement.blur()">
                             <x-icon name="o-pencil" class="w-4 h-4" />

@@ -42,6 +42,11 @@ class Table extends Component
         return $this->redirect(route('asset-transfers.index', ['action' => 'edit', 'transfer_id' => $transferId]));
     }
 
+    public function viewDetail($transferId)
+    {
+        return $this->redirect(route('asset-transfers.show', $transferId));
+    }
+
     public function delete($transferId)
     {
         try {
