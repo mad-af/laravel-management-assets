@@ -48,5 +48,35 @@
 
     {{-- Alert Component --}}
     <livewire:alert />
+
+    {{-- Session Flash Messages Handler --}}
+    @if(session('success') || session('error'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                @if(session('success'))
+                    // Dispatch success alert
+                    window.dispatchEvent(new CustomEvent('alert', {
+                        detail: {
+                            type: 'success',
+                            message: '{{ session('success') }}'
+                        }
+                    }));
+                    
+                    // Close drawer if success
+                    window.dispatchEvent(new CustomEvent('closeDrawer'));
+                @endif
+                
+                @if(session('error'))
+                    // Dispatch error alert
+                    window.dispatchEvent(new CustomEvent('alert', {
+                        detail: {
+                            type: 'error',
+                            message: '{{ session('error') }}'
+                        }
+                    }));
+                @endif
+            });
+        </script>
+    @endif
 </body>
 </html>

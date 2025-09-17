@@ -13,6 +13,7 @@ use App\Models\Location;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
 
@@ -74,34 +75,58 @@ class AssetTransferController extends Controller
             'items.*.to_location_id' => 'nullable|exists:locations,id',
         ]);
 
-        DB::transaction(function () use ($request) {
-            $transfer = AssetTransfer::create([
-                'company_id' => Auth::user()->company_id,
-                'transfer_no' => $this->generateTransferNo(),
-                'reason' => $request->reason,
-                'status' => AssetTransferStatus::from($request->status),
-                'requested_by' => Auth::id(),
-                'from_location_id' => $request->from_location_id,
-                'to_location_id' => $request->to_location_id,
-                'scheduled_at' => $request->scheduled_at,
-                'notes' => $request->notes,
-            ]);
-
-            foreach ($request->items as $item) {
-                $transfer->items()->create([
-                    'asset_id' => $item['asset_id'],
+        try {
+            DB::transaction(function () use ($request) {
+                $user = Auth::user();
+                
+                // Ensure user has company_id
+                if (!$user->company_id) {
+                    Log::error('User attempting to create asset transfer without company_id', [
+                        'user_id' => $user->id,
+                        'user_email' => $user->email
+                    ]);
+                    throw new \Exception('User account is not properly configured. Please contact administrator.');
+                }
+                
+                $transfer = AssetTransfer::create([
+                    'company_id' => $user->company_id,
+                    'transfer_no' => $this->generateTransferNo(),
+                    'reason' => $request->reason,
+                    'status' => AssetTransferStatus::from($request->status),
+                    'requested_by' => Auth::id(),
                     'from_location_id' => $request->from_location_id,
                     'to_location_id' => $request->to_location_id,
-                    'status' => AssetTransferItemStatus::PENDING,
-                    'notes' => $item['notes'] ?? '',
+                    'scheduled_at' => $request->scheduled_at,
+                    'notes' => $request->notes,
                 ]);
-            }
-        });
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Transfer aset berhasil dibuat.'
-        ]);
+                foreach ($request->items as $item) {
+                    $transfer->items()->create([
+                        'asset_id' => $item['asset_id'],
+                        'from_location_id' => $request->from_location_id,
+                        'to_location_id' => $request->to_location_id,
+                        'status' => AssetTransferItemStatus::PENDING,
+                        'notes' => $item['notes'] ?? '',
+                    ]);
+                }
+            });
+
+            // Success: redirect back without query params and show success message
+            return redirect('/admin/asset-transfers')
+                ->with('success', 'Transfer aset berhasil dibuat.');
+                
+        } catch (\Exception $e) {
+            Log::error('Asset transfer creation failed', [
+                'error' => $e->getMessage(),
+                'user_id' => Auth::id(),
+                'request_data' => $request->all()
+            ]);
+            
+            // Error: redirect back with query params and show error message
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Gagal membuat transfer aset: ' . $e->getMessage());
+        }
     }
 
     /**

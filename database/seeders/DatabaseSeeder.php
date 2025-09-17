@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Models\Company;
 use App\Models\Category;
 use App\Models\Location;
 use App\Models\Asset;
@@ -21,12 +22,20 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create admin user
+        // Create default company first
+        $company = Company::create([
+            'name' => 'Default Company',
+            'code' => 'DEFAULT',
+            'is_active' => true,
+        ]);
+
+        // Create admin user with company_id
         $admin = User::create([
             'name' => 'Administrator',
             'email' => 'admin@example.com',
             'password' => Hash::make('password'),
             'role' => UserRole::ADMIN,
+            'company_id' => $company->id,
         ]);
 
         // Create categories
@@ -38,7 +47,7 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($categories as $categoryData) {
-            Category::create($categoryData);
+            Category::create(array_merge($categoryData, ['company_id' => $company->id]));
         }
 
         // Create locations
@@ -133,7 +142,7 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($assets as $assetData) {
-            $asset = Asset::create($assetData);
+            $asset = Asset::create(array_merge($assetData, ['company_id' => $company->id]));
             
             // Create asset log for each asset
             AssetLog::create([

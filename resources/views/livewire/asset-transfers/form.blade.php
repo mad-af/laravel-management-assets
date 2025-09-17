@@ -27,6 +27,9 @@
     <!-- Reason -->
     <x-textarea name="reason" class="textarea-sm" label="Alasan Transfer" wire:model="reason" rows="3" required />
 
+    <!-- Notes -->
+    <x-textarea name="notes" class="textarea-sm" label="Catatan" wire:model="notes" rows="3" />
+
     <fieldset class="p-2 w-full border fieldset bg-base-200 border-base-300 rounded-box">
         <legend class="fieldset-legend">Asset Items</legend>
 
