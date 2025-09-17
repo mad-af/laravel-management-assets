@@ -73,7 +73,6 @@ class AssetTransferController extends Controller
             'items.*.from_location_id' => 'nullable|exists:locations,id',
             'items.*.to_location_id' => 'nullable|exists:locations,id',
         ]);
-        dd('dsadsa');
 
         DB::transaction(function () use ($request) {
             $transfer = AssetTransfer::create([

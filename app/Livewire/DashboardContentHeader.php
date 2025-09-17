@@ -44,8 +44,24 @@ class DashboardContentHeader extends Component
     {
         if ($this->buttonAction) {
             // Handle specific drawer actions
-            if (in_array($this->buttonAction, ['openCategoryDrawer', 'openUserDrawer', 'openLocationDrawer', 'openCompanyDrawer', 'openAssetDrawer', 'openAssetLoanDrawer', 'openAssetTransferDrawer'])) {
+            if (in_array($this->buttonAction, 
+            [
+                'openCategoryDrawer', 
+                'openUserDrawer', 
+                'openLocationDrawer', 
+                'openCompanyDrawer', 
+                'openAssetDrawer', 
+                'openAssetLoanDrawer', 
+                'openAssetTransferDrawer'
+            ])) {
                 $this->dispatch('openDrawer');
+            // } elseif ($this->buttonAction === 'openAssetTransferDrawer') {
+            //     $pageUrl = request()->header('Referer'); // URL halaman sebenarnya
+            //     $glue = Str::contains($pageUrl, '?') ? '&' : '?';
+            //     $url  = $pageUrl . $glue . http_build_query(['action' => 'create']);
+
+            //     // Livewire v3 (kalau pakai wire:navigate, boleh pakai navigate: true)
+            //     return $this->redirect($url, navigate: true);
             } else {
                 // For other actions, dispatch as-is
                 $this->dispatch($this->buttonAction);
