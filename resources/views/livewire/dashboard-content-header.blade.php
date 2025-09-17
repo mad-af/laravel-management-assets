@@ -1,10 +1,19 @@
 <!-- Dashboard Content Header Livewire Component -->
 <div class="flex justify-between items-center space-y-4">
-    <div>
-        <h1 class="text-2xl font-bold text-base-content">{{ $title }}</h1>
-        @if($description)
-            <p class="text-base-content/70">{{ $description }}</p>
+    <div class="flex gap-3 items-center">
+        <!-- Back Button -->
+        @if($showBackButton)
+            <button onclick="history.back()" class="btn {{ $backButtonClass }}">
+                <x-icon name="{{ $backButtonIcon }}" class="w-4 h-4" />
+            </button>
         @endif
+        
+        <div>
+            <h1 class="text-2xl font-bold text-base-content">{{ $title }}</h1>
+            @if($description)
+                <p class="text-base-content/70">{{ $description }}</p>
+            @endif
+        </div>
     </div>
 
     <div class="flex gap-2 items-center">

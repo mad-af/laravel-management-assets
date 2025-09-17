@@ -13,6 +13,12 @@ class DashboardContentHeader extends Component
     public $buttonClass = 'btn-primary btn-sm';
     public $buttonAction;
     
+    // Back button properties
+    public $showBackButton = false;
+    public $backButtonUrl;
+    public $backButtonIcon = 'o-arrow-left';
+    public $backButtonClass = 'btn-ghost btn-sm';
+    
     // Additional buttons properties (workaround for Livewire v3 slot issues)
     public $additionalButtons = [];
 
@@ -24,7 +30,11 @@ class DashboardContentHeader extends Component
         $buttonIcon = 'o-plus',
         $buttonClass = 'btn-primary btn-sm',
         $buttonAction = null,
-        $additionalButtons = []
+        $additionalButtons = [],
+        $showBackButton = false,
+        $backButtonUrl = null,
+        $backButtonIcon = 'o-arrow-left',
+        $backButtonClass = 'btn-ghost btn-sm'
     ) {
         $this->title = $title;
         $this->description = $description;
@@ -33,6 +43,10 @@ class DashboardContentHeader extends Component
         $this->buttonClass = $buttonClass;
         $this->buttonAction = $buttonAction;
         $this->additionalButtons = $additionalButtons;
+        $this->showBackButton = $showBackButton;
+        $this->backButtonUrl = $backButtonUrl;
+        $this->backButtonIcon = $backButtonIcon;
+        $this->backButtonClass = $backButtonClass;
     }
 
     public function render()

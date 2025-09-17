@@ -3,43 +3,22 @@
 @section('title', 'Asset Transfer Details')
 
 @section('content')
-    <div class="space-y-6">
-        {{-- Header --}}
-        <div class="flex items-center justify-between">
-            <div>
-                <h1 class="text-2xl font-bold text-gray-900">Transfer Details</h1>
-                <p class="text-gray-600">{{ $assetTransfer->transfer_no }}</p>
-            </div>
-            <div class="flex gap-2">
-                @if($assetTransfer->status === 'draft')
-                    <a href="{{ route('asset-transfers.edit', $assetTransfer) }}" class="btn btn-outline">
-                        <x-icon name="o-pencil" class="w-4 h-4" />
-                        Edit
-                    </a>
-                    <form action="{{ route('asset-transfers.execute', $assetTransfer) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to execute this transfer? This action cannot be undone.')">
-                        @csrf
-                        <button type="submit" class="btn btn-success">
-                            <x-icon name="o-play" class="w-4 h-4" />
-                            Execute Transfer
-                        </button>
-                    </form>
-                @endif
-                <a href="{{ route('asset-transfers.index') }}" class="btn btn-ghost">
-                    <x-icon name="o-arrow-left" class="w-4 h-4" />
-                    Back to List
-                </a>
-            </div>
-        </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <livewire:dashboard-content-header 
+        title='Transfer Details' 
+        description='{{ $assetTransfer->transfer_no }}' 
+        showBackButton />
+
+    <div class="space-y-6">
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
             {{-- Main Content --}}
-            <div class="lg:col-span-2 space-y-6">
+            <div class="space-y-6 lg:col-span-2">
                 {{-- Basic Information --}}
-                <div class="card bg-base-100 shadow-sm">
+                <div class="shadow-sm card bg-base-100">
                     <div class="card-body">
-                        <h2 class="card-title mb-4">Basic Information</h2>
+                        <h2 class="mb-4 card-title">Basic Information</h2>
                         
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                             <div>
                                 <label class="text-sm font-medium text-gray-500">Transfer No</label>
                                 <p class="text-lg font-semibold">{{ $assetTransfer->transfer_no }}</p>
@@ -145,9 +124,9 @@
                 </div>
 
                 {{-- Transfer Items --}}
-                <div class="card bg-base-100 shadow-sm">
+                <div class="shadow-sm card bg-base-100">
                     <div class="card-body">
-                        <h2 class="card-title mb-4">Transfer Items ({{ $assetTransfer->items->count() }})</h2>
+                        <h2 class="mb-4 card-title">Transfer Items ({{ $assetTransfer->items->count() }})</h2>
                         
                         <div class="overflow-x-auto">
                             <table class="table table-zebra">
@@ -164,16 +143,16 @@
                                     @foreach($assetTransfer->items as $item)
                                         <tr>
                                             <td>
-                                                <div class="flex items-center gap-3">
+                                                <div class="flex gap-3 items-center">
                                                     @if($item->asset->image)
                                                         <div class="avatar">
-                                                            <div class="mask mask-squircle w-12 h-12">
+                                                            <div class="w-12 h-12 mask mask-squircle">
                                                                 <img src="{{ Storage::url($item->asset->image) }}" alt="{{ $item->asset->name }}" />
                                                             </div>
                                                         </div>
                                                     @else
                                                         <div class="avatar placeholder">
-                                                            <div class="bg-neutral text-neutral-content rounded-full w-12">
+                                                            <div class="w-12 rounded-full bg-neutral text-neutral-content">
                                                                 <span class="text-xs">{{ substr($item->asset->name, 0, 2) }}</span>
                                                             </div>
                                                         </div>
@@ -224,9 +203,9 @@
             {{-- Sidebar --}}
             <div class="space-y-6">
                 {{-- Quick Stats --}}
-                <div class="card bg-base-100 shadow-sm">
+                <div class="shadow-sm card bg-base-100">
                     <div class="card-body">
-                        <h3 class="card-title text-lg mb-4">Quick Stats</h3>
+                        <h3 class="mb-4 text-lg card-title">Quick Stats</h3>
                         
                         <div class="space-y-3">
                             <div class="flex justify-between items-center">
@@ -258,13 +237,13 @@
                 </div>
 
                 {{-- Timeline --}}
-                <div class="card bg-base-100 shadow-sm">
+                <div class="shadow-sm card bg-base-100">
                     <div class="card-body">
-                        <h3 class="card-title text-lg mb-4">Timeline</h3>
+                        <h3 class="mb-4 text-lg card-title">Timeline</h3>
                         
                         <div class="space-y-4">
-                            <div class="flex items-start gap-3">
-                                <div class="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>
+                            <div class="flex gap-3 items-start">
+                                <div class="flex-shrink-0 mt-2 w-2 h-2 rounded-full bg-primary"></div>
                                 <div>
                                     <p class="font-medium">Transfer Created</p>
                                     <p class="text-sm text-gray-500">{{ $assetTransfer->created_at->format('d M Y H:i') }}</p>
@@ -273,8 +252,8 @@
                             </div>
                             
                             @if($assetTransfer->approved_at)
-                                <div class="flex items-start gap-3">
-                                    <div class="w-2 h-2 bg-success rounded-full mt-2 flex-shrink-0"></div>
+                                <div class="flex gap-3 items-start">
+                                    <div class="flex-shrink-0 mt-2 w-2 h-2 rounded-full bg-success"></div>
                                     <div>
                                         <p class="font-medium">Transfer Approved</p>
                                         <p class="text-sm text-gray-500">{{ $assetTransfer->approved_at->format('d M Y H:i') }}</p>
@@ -284,8 +263,8 @@
                             @endif
                             
                             @if($assetTransfer->executed_at)
-                                <div class="flex items-start gap-3">
-                                    <div class="w-2 h-2 bg-info rounded-full mt-2 flex-shrink-0"></div>
+                                <div class="flex gap-3 items-start">
+                                    <div class="flex-shrink-0 mt-2 w-2 h-2 rounded-full bg-info"></div>
                                     <div>
                                         <p class="font-medium">Transfer Executed</p>
                                         <p class="text-sm text-gray-500">{{ $assetTransfer->executed_at->format('d M Y H:i') }}</p>
@@ -294,8 +273,8 @@
                             @endif
                             
                             @if($assetTransfer->status === 'draft')
-                                <div class="flex items-start gap-3">
-                                    <div class="w-2 h-2 bg-gray-300 rounded-full mt-2 flex-shrink-0"></div>
+                                <div class="flex gap-3 items-start">
+                                    <div class="flex-shrink-0 mt-2 w-2 h-2 bg-gray-300 rounded-full"></div>
                                     <div>
                                         <p class="font-medium text-gray-400">Pending Execution</p>
                                         <p class="text-sm text-gray-400">Waiting for execution</p>
@@ -308,9 +287,9 @@
 
                 {{-- Actions --}}
                 @if($assetTransfer->status === 'draft')
-                    <div class="card bg-base-100 shadow-sm">
+                    <div class="shadow-sm card bg-base-100">
                         <div class="card-body">
-                            <h3 class="card-title text-lg mb-4">Actions</h3>
+                            <h3 class="mb-4 text-lg card-title">Actions</h3>
                             
                             <div class="space-y-2">
                                 <a href="{{ route('asset-transfers.edit', $assetTransfer) }}" class="btn btn-outline btn-block">
