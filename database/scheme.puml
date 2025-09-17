@@ -127,6 +127,10 @@ table(asset_transfers) {
   transfer_no : VARCHAR [UNIQUE]
   reason : VARCHAR [NULL]
   status : ENUM(draft, submitted, approved, executed, void) [DEFAULT: draft]
+  type : ENUM(internal, external) [DEFAULT: internal]
+  priority : ENUM(low, medium, high, urgent) [DEFAULT: medium]
+  fk(from_location_id) : UUID [NULL]
+  fk(to_location_id) : UUID [NULL]
   fk(requested_by) : UUID
   fk(approved_by) : UUID [NULL]
   scheduled_at : TIMESTAMP [NULL]
@@ -246,7 +250,9 @@ asset_transfers ||--o{ asset_transfer_items : "has many"
 assets ||--o{ asset_location_history : "has many"
 users ||--o{ asset_transfers : "requests/approves"
 
-' from/to location references for items & history
+' from/to location references for transfers, items & history
+locations ||--o{ asset_transfers : "as from_location"
+locations ||--o{ asset_transfers : "as to_location"
 locations ||--o{ asset_transfer_items : "as from_location"
 locations ||--o{ asset_transfer_items : "as to_location"
 locations ||--o{ asset_location_history : "as from_location"

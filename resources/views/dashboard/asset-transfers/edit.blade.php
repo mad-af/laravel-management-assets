@@ -5,7 +5,7 @@
 @section('content')
     <div class="space-y-6">
         {{-- Header --}}
-        <div class="flex items-center justify-between">
+        <div class="flex justify-between items-center">
             <div>
                 <h1 class="text-2xl font-bold text-gray-900">Edit Asset Transfer</h1>
                 <p class="text-gray-600">{{ $assetTransfer->transfer_no }}</p>
@@ -33,11 +33,11 @@
                 @method('PUT')
                 
                 {{-- Basic Information --}}
-                <div class="card bg-base-100 shadow-sm">
+                <div class="shadow-sm card bg-base-100">
                     <div class="card-body">
-                        <h2 class="card-title mb-4">Basic Information</h2>
+                        <h2 class="mb-4 card-title">Basic Information</h2>
                         
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                             <div class="form-control">
                                 <label class="label">
                                     <span class="label-text">Transfer No <span class="text-error">*</span></span>
@@ -88,6 +88,44 @@
 
                             <div class="form-control">
                                 <label class="label">
+                                    <span class="label-text">From Location</span>
+                                </label>
+                                <select name="from_location_id" class="select select-bordered @error('from_location_id') select-error @enderror">
+                                    <option value="">Select From Location</option>
+                                    @foreach($locations as $location)
+                                        <option value="{{ $location->id }}" {{ old('from_location_id', $assetTransfer->from_location_id) == $location->id ? 'selected' : '' }}>
+                                            {{ $location->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('from_location_id')
+                                    <label class="label">
+                                        <span class="label-text-alt text-error">{{ $message }}</span>
+                                    </label>
+                                @enderror
+                            </div>
+
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text">To Location</span>
+                                </label>
+                                <select name="to_location_id" class="select select-bordered @error('to_location_id') select-error @enderror">
+                                    <option value="">Select To Location</option>
+                                    @foreach($locations as $location)
+                                        <option value="{{ $location->id }}" {{ old('to_location_id', $assetTransfer->to_location_id) == $location->id ? 'selected' : '' }}>
+                                            {{ $location->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('to_location_id')
+                                    <label class="label">
+                                        <span class="label-text-alt text-error">{{ $message }}</span>
+                                    </label>
+                                @enderror
+                            </div>
+
+                            <div class="form-control">
+                                <label class="label">
                                     <span class="label-text">Scheduled At</span>
                                 </label>
                                 <input type="datetime-local" name="scheduled_at" value="{{ old('scheduled_at', $assetTransfer->scheduled_at ? $assetTransfer->scheduled_at->format('Y-m-d\TH:i') : '') }}" class="input input-bordered @error('scheduled_at') input-error @enderror" />
@@ -126,9 +164,9 @@
                 </div>
 
                 {{-- Transfer Items --}}
-                <div class="card bg-base-100 shadow-sm">
+                <div class="shadow-sm card bg-base-100">
                     <div class="card-body">
-                        <div class="flex items-center justify-between mb-4">
+                        <div class="flex justify-between items-center mb-4">
                             <h2 class="card-title">Transfer Items</h2>
                             <button type="button" id="addItem" class="btn btn-outline btn-sm">
                                 <x-icon name="o-plus" class="w-4 h-4" />
@@ -147,15 +185,15 @@
                             @endphp
                             
                             @foreach($items as $index => $item)
-                                <div class="transfer-item border border-base-300 rounded-lg p-4">
-                                    <div class="flex items-center justify-between mb-4">
+                                <div class="p-4 rounded-lg border transfer-item border-base-300">
+                                    <div class="flex justify-between items-center mb-4">
                                         <h3 class="font-medium">Item {{ $index + 1 }}</h3>
                                         <button type="button" class="btn btn-ghost btn-sm text-error remove-item">
                                             <x-icon name="o-trash" class="w-4 h-4" />
                                         </button>
                                     </div>
                                     
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                                         <div class="form-control">
                                             <label class="label">
                                                 <span class="label-text">Asset <span class="text-error">*</span></span>
@@ -193,13 +231,13 @@
                         </div>
                         
                         @error('items')
-                            <div class="text-error text-sm mt-2">{{ $message }}</div>
+                            <div class="mt-2 text-sm text-error">{{ $message }}</div>
                         @enderror
                     </div>
                 </div>
 
                 {{-- Actions --}}
-                <div class="flex justify-end gap-4">
+                <div class="flex gap-4 justify-end">
                     <a href="{{ route('asset-transfers.show', $assetTransfer) }}" class="btn btn-ghost">Cancel</a>
                     <button type="submit" class="btn btn-primary">
                         <x-icon name="o-check" class="w-4 h-4" />
@@ -224,7 +262,7 @@
             const div = document.createElement('div');
             div.className = 'transfer-item border border-base-300 rounded-lg p-4';
             div.innerHTML = `
-                <div class="flex items-center justify-between mb-4">
+                <div class="flex justify-between items-center mb-4">
                     <h3 class="font-medium">Item ${index + 1}</h3>
                     <button type="button" class="btn btn-ghost btn-sm text-error remove-item">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -233,7 +271,7 @@
                     </button>
                 </div>
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div class="form-control">
                         <label class="label">
                             <span class="label-text">Asset <span class="text-error">*</span></span>

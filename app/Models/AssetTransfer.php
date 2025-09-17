@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\AssetTransferStatus;
 use App\Enums\AssetTransferPriority;
 use App\Enums\AssetTransferType;
+use App\Models\Location;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -17,6 +18,8 @@ class AssetTransfer extends Model
 
     protected $fillable = [
         'company_id',
+        'from_location_id',
+        'to_location_id',
         'transfer_no',
         'reason',
         'status',
@@ -58,5 +61,15 @@ class AssetTransfer extends Model
     public function locationHistories(): HasMany
     {
         return $this->hasMany(AssetLocationHistory::class, 'transfer_id');
+    }
+
+    public function fromLocation(): BelongsTo
+    {
+        return $this->belongsTo(Location::class, 'from_location_id');
+    }
+
+    public function toLocation(): BelongsTo
+    {
+        return $this->belongsTo(Location::class, 'to_location_id');
     }
 }

@@ -55,6 +55,8 @@ class AssetTransferController extends Controller
             'reason' => 'nullable|string',
             'type' => ['required', Rule::enum(AssetTransferType::class)],
             'priority' => ['required', Rule::enum(AssetTransferPriority::class)],
+            'from_location_id' => 'nullable|exists:locations,id',
+            'to_location_id' => 'nullable|exists:locations,id',
             'scheduled_at' => 'nullable|date',
             'notes' => 'nullable|string',
             'items' => 'required|array|min:1',
@@ -69,6 +71,10 @@ class AssetTransferController extends Controller
                 'reason' => $request->reason,
                 'status' => AssetTransferStatus::DRAFT,
                 'requested_by' => Auth::id(),
+                'from_location_id' => $request->from_location_id,
+                'to_location_id' => $request->to_location_id,
+                'type' => $request->type,
+                'priority' => $request->priority,
                 'scheduled_at' => $request->scheduled_at,
                 'notes' => $request->notes,
             ]);
@@ -93,7 +99,7 @@ class AssetTransferController extends Controller
      */
     public function show(AssetTransfer $assetTransfer)
     {
-        $assetTransfer->load(['company', 'requestedBy', 'approvedBy', 'items.asset', 'items.fromLocation', 'items.toLocation']);
+        $assetTransfer->load(['company', 'requestedBy', 'approvedBy', 'fromLocation', 'toLocation', 'items.asset', 'items.fromLocation', 'items.toLocation']);
         
         return view('dashboard.asset-transfers.show', compact('assetTransfer'));
     }
@@ -114,7 +120,7 @@ class AssetTransferController extends Controller
             ->get();
         
         $locations = Location::where('is_active', true)->get();
-        $assetTransfer->load('items');
+        $assetTransfer->load(['items', 'fromLocation', 'toLocation']);
 
         return view('dashboard.asset-transfers.edit', compact('assetTransfer', 'assets', 'locations'));
     }
@@ -134,6 +140,8 @@ class AssetTransferController extends Controller
             'reason' => 'nullable|string',
             'type' => ['sometimes', Rule::enum(AssetTransferType::class)],
             'priority' => ['sometimes', Rule::enum(AssetTransferPriority::class)],
+            'from_location_id' => 'nullable|exists:locations,id',
+            'to_location_id' => 'nullable|exists:locations,id',
             'scheduled_at' => 'nullable|date',
             'notes' => 'nullable|string',
             'items' => 'required|array|min:1',
@@ -145,6 +153,10 @@ class AssetTransferController extends Controller
             $assetTransfer->update([
                 'transfer_no' => $request->transfer_no,
                 'reason' => $request->reason,
+                'from_location_id' => $request->from_location_id,
+                'to_location_id' => $request->to_location_id,
+                'type' => $request->type ?? $assetTransfer->type,
+                'priority' => $request->priority ?? $assetTransfer->priority,
                 'scheduled_at' => $request->scheduled_at,
                 'notes' => $request->notes,
             ]);

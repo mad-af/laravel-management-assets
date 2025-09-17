@@ -85,6 +85,20 @@
                                 </div>
                             </div>
                             
+                            @if($assetTransfer->fromLocation)
+                                <div>
+                                    <label class="text-sm font-medium text-gray-500">From Location</label>
+                                    <p>{{ $assetTransfer->fromLocation->name }}</p>
+                                </div>
+                            @endif
+                            
+                            @if($assetTransfer->toLocation)
+                                <div>
+                                    <label class="text-sm font-medium text-gray-500">To Location</label>
+                                    <p>{{ $assetTransfer->toLocation->name }}</p>
+                                </div>
+                            @endif
+                            
                             <div>
                                 <label class="text-sm font-medium text-gray-500">Requested By</label>
                                 <p>{{ $assetTransfer->requestedBy->name }}</p>

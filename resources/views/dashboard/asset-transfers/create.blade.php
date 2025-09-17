@@ -75,6 +75,44 @@
 
                         <div class="form-control">
                             <label class="label">
+                                <span class="label-text">From Location</span>
+                            </label>
+                            <select name="from_location_id" class="select select-bordered @error('from_location_id') select-error @enderror">
+                                <option value="">Select From Location</option>
+                                @foreach($locations as $location)
+                                    <option value="{{ $location->id }}" {{ old('from_location_id') == $location->id ? 'selected' : '' }}>
+                                        {{ $location->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('from_location_id')
+                                <label class="label">
+                                    <span class="label-text-alt text-error">{{ $message }}</span>
+                                </label>
+                            @enderror
+                        </div>
+
+                        <div class="form-control">
+                            <label class="label">
+                                <span class="label-text">To Location</span>
+                            </label>
+                            <select name="to_location_id" class="select select-bordered @error('to_location_id') select-error @enderror">
+                                <option value="">Select To Location</option>
+                                @foreach($locations as $location)
+                                    <option value="{{ $location->id }}" {{ old('to_location_id') == $location->id ? 'selected' : '' }}>
+                                        {{ $location->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('to_location_id')
+                                <label class="label">
+                                    <span class="label-text-alt text-error">{{ $message }}</span>
+                                </label>
+                            @enderror
+                        </div>
+
+                        <div class="form-control">
+                            <label class="label">
                                 <span class="label-text">Scheduled At</span>
                             </label>
                             <input type="datetime-local" name="scheduled_at" value="{{ old('scheduled_at') }}" class="input input-bordered @error('scheduled_at') input-error @enderror" />
