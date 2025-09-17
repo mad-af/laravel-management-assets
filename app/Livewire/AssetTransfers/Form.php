@@ -43,10 +43,7 @@ class Form extends Component
         'items' => 'required|array|min:1',
         'items.*.asset_id' => 'required|exists:assets,id',
         'items.*.from_location_id' => 'nullable|exists:locations,id',
-        'items.*.to_location_id' => 'nullable|exists:locations,id',
-        'items.*.status' => 'required|string|in:pending,approved,rejected,completed',
-        'items.*.transferred_at' => 'nullable|date',
-        'items.*.notes' => 'nullable|string|max:255'
+        'items.*.to_location_id' => 'nullable|exists:locations,id'
     ];
 
     protected $listeners = [
@@ -100,10 +97,7 @@ class Form extends Component
         $this->items[] = [
             'asset_id' => '',
             'from_location_id' => '',
-            'to_location_id' => '',
-            'status' => 'pending',
-            'transferred_at' => '',
-            'notes' => ''
+            'to_location_id' => ''
         ];
     }
 
@@ -219,13 +213,6 @@ class Form extends Component
             ];
         });
         
-        $itemStatusOptions = [
-            ['value' => 'pending', 'label' => 'Pending'],
-            ['value' => 'approved', 'label' => 'Approved'],
-            ['value' => 'rejected', 'label' => 'Rejected'],
-            ['value' => 'completed', 'label' => 'Completed']
-        ];
-        
-        return view('livewire.asset-transfers.form', compact('locations', 'assets', 'statusOptions', 'itemStatusOptions'));
+        return view('livewire.asset-transfers.form', compact('locations', 'assets', 'statusOptions'));
     }
 }

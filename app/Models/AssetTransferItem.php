@@ -17,14 +17,10 @@ class AssetTransferItem extends Model
         'asset_id',
         'from_location_id',
         'to_location_id',
-        'status',
-        'notes',
-        'transferred_at',
     ];
 
     protected $casts = [
-        'transferred_at' => 'datetime',
-        'status' => AssetTransferItemStatus::class,
+        //
     ];
 
     public function assetTransfer(): BelongsTo
