@@ -31,10 +31,6 @@ class Form extends Component
     
     // Asset items
     public $items = [];
-    public $newItem = [
-        'asset_id' => '',
-        'notes' => ''
-    ];
 
     protected $rules = [
         'transfer_no' => 'required|string|max:255',
@@ -46,6 +42,9 @@ class Form extends Component
         'notes' => 'nullable|string|max:1000',
         'items' => 'required|array|min:1',
         'items.*.asset_id' => 'required|exists:assets,id',
+        'items.*.quantity' => 'required|integer|min:1',
+        'items.*.status' => 'required|string|in:pending,approved,rejected,completed',
+        'items.*.priority' => 'required|string|in:low,normal,high,urgent',
         'items.*.notes' => 'nullable|string|max:255'
     ];
 
@@ -97,14 +96,13 @@ class Form extends Component
 
     public function addItem()
     {
-        if ($this->newItem['asset_id']) {
-            $this->items[] = [
-                'asset_id' => $this->newItem['asset_id'],
-                'notes' => $this->newItem['notes'] ?? ''
-            ];
-            
-            $this->newItem = ['asset_id' => '', 'notes' => ''];
-        }
+        $this->items[] = [
+            'asset_id' => '',
+            'quantity' => 1,
+            'status' => 'pending',
+            'priority' => 'normal',
+            'notes' => ''
+        ];
     }
 
     public function removeItem($index)
@@ -112,8 +110,6 @@ class Form extends Component
         if (count($this->items) > 1) {
             unset($this->items[$index]);
             $this->items = array_values($this->items);
-        } else {
-            $this->error('Minimal 1 item harus ada dalam transfer.');
         }
     }
 
@@ -199,7 +195,6 @@ class Form extends Component
         $this->scheduled_at = '';
         $this->notes = '';
         $this->items = [];
-        $this->newItem = ['asset_id' => '', 'notes' => ''];
         $this->resetValidation();
         
         if (!$this->isEdit) {
@@ -222,6 +217,20 @@ class Form extends Component
             ];
         });
         
-        return view('livewire.asset-transfers.form', compact('locations', 'assets', 'statusOptions'));
+        $itemStatusOptions = [
+            ['value' => 'pending', 'label' => 'Pending'],
+            ['value' => 'approved', 'label' => 'Approved'],
+            ['value' => 'rejected', 'label' => 'Rejected'],
+            ['value' => 'completed', 'label' => 'Completed']
+        ];
+        
+        $priorityOptions = [
+            ['value' => 'low', 'label' => 'Low'],
+            ['value' => 'normal', 'label' => 'Normal'],
+            ['value' => 'high', 'label' => 'High'],
+            ['value' => 'urgent', 'label' => 'Urgent']
+        ];
+        
+        return view('livewire.asset-transfers.form', compact('locations', 'assets', 'statusOptions', 'itemStatusOptions', 'priorityOptions'));
     }
 }

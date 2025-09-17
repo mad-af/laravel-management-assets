@@ -70,3 +70,7 @@
 .mary-table-pagination button {
     @apply cursor-pointer
 }
+
+select {
+        margin-inline-start: calc(0.25rem * -3);
+    }

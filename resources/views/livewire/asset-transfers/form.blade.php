@@ -1,89 +1,101 @@
 <form wire:submit="save" class="space-y-4">
 
-    <!-- Reason -->
-    <x-textarea label="Alasan Transfer" wire:model="reason" placeholder="Masukkan alasan transfer aset" rows="3" required />
-
     <!-- Status -->
-    <x-select label="Status" wire:model="status" :options="$statusOptions" option-value="value" option-label="label" placeholder="Pilih status" required />
+    <x-select label="Status" class="select-sm" wire:model="status" :options="$statusOptions" option-value="value"
+        option-label="label" placeholder="Pilih status" required />
 
     <!-- Scheduled Date -->
-    <x-input label="Dijadwalkan" wire:model="scheduled_at" type="datetime-local" />
+    <x-datetime label="Dijadwalkan" class="input-sm" wire:model="scheduled_at" type="datetime-local" />
+    {{-- <x-input label="Dijadwalkan" class="input-sm" wire:model="scheduled_at" type="datetime-local" /> --}}
 
     <!-- Locations - Side by Side -->
     <div class="grid grid-cols-2 gap-4">
-        <x-select label="Dari Lokasi" class="select-sm"  wire:model="from_location_id" :options="$locations" option-value="id" option-label="name" placeholder="Pilih lokasi asal" required />
-        <x-select label="Ke Lokasi" class="select-sm" wire:model="to_location_id" :options="$locations" option-value="id" option-label="name" placeholder="Pilih lokasi tujuan" required />
+        <x-select label="Dari Lokasi" class="select-sm" wire:model="from_location_id" :options="$locations"
+            option-value="id" option-label="name" placeholder="Pilih lokasi asal" />
+        <x-select label="Ke Lokasi" class="select-sm" wire:model="to_location_id" :options="$locations"
+            option-value="id" option-label="name" placeholder="Pilih lokasi tujuan" />
     </div>
 
-    <x-select label="Inline label" wire:model="selectedUser" icon="o-user"  inline />
-
+    <!-- Reason -->
+    <x-textarea class="textarea-sm" label="Alasan Transfer" wire:model="reason"
+        placeholder="Masukkan alasan transfer aset" rows="3" required />
 
     <!-- Asset Items Section -->
-    <div class="space-y-4">
-        <div class="flex justify-between items-center">
-            <h3 class="text-lg font-semibold text-gray-900">Asset Items</h3>
-            <span class="text-sm text-gray-500">Minimal 1 item</span>
-        </div>
-        
-        <!-- Add New Item -->
-        <div class="p-4 bg-blue-50 rounded-lg border border-blue-200">
-            <div class="flex gap-3 items-end">
-                <div class="flex-1">
-                    <x-select wire:model="newItem.asset_id" :options="$assets" option-value="id" option-label="display_name" placeholder="Pilih aset" class="bg-white" />
-                </div>
-                <div class="flex-1">
-                    <x-input wire:model="newItem.notes" placeholder="Catatan (opsional)" class="bg-white" />
-                </div>
-                <x-button wire:click="addItem" class="btn-circle btn-primary btn-sm" icon="o-plus" />
-            </div>
-        </div>
+    <fieldset class="p-2 w-full border fieldset bg-base-200 border-base-300 rounded-box">
+        <legend class="fieldset-legend">Asset Items</legend>
 
-        <!-- Items List -->
-        @if(count($items) > 0)
-            <div class="space-y-3">
+        <div class="space-y-2">
+            @if(count($items) > 0)
                 @foreach($items as $index => $item)
-                    <div class="flex gap-3 items-center p-4 bg-gray-50 rounded-lg border">
-                        <div class="flex-1">
-                            @php
-                                $asset = $assets->find($item['asset_id']);
-                            @endphp
-                            <div class="font-medium text-gray-900">{{ $asset?->name ?? 'Asset not found' }}</div>
-                            <div class="text-sm text-gray-500">{{ $asset?->asset_tag ?? '' }}</div>
-                        </div>
-                        @if(!empty($item['notes']))
-                            <div class="flex-1 text-sm text-gray-600">
-                                {{ $item['notes'] }}
+                    <div wire:key="item-{{ $index }}">
+                        <fieldset class="p-2 border fieldset bg-base-100 border-base-300 rounded-box">
+                            <legend class="flex justify-between items-center w-full fieldset-legend">
+                                <span>Asset Item {{ $index + 1 }}</span>
+                                @if(count($items) > 1)
+                                    <button type="button" wire:click="removeItem({{ $index }})"
+                                        class="ml-2 btn btn-xs btn-circle text-error">
+                                        <x-icon name="o-x-mark" class="w-3 h-3" />
+                                    </button>
+                                @endif
+                            </legend>
+
+                            <div class="space-y-2">
+                                <div>
+                                    <x-select label="Asset" class="select-sm" wire:model="items.{{ $index }}.asset_id"
+                                        :options="$assets" option-value="id" option-label="name" placeholder="Pilih asset"
+                                        required />
+                                </div>
+
+                                <div>
+                                    <x-input label="Quantity" class="input-sm" wire:model="items.{{ $index }}.quantity"
+                                        type="number" placeholder="Jumlah" min="1" required />
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <x-select label="Status" class="select-sm" wire:model="items.{{ $index }}.status"
+                                            :options="$itemStatusOptions" option-value="value" option-label="label"
+                                            placeholder="Status item" />
+                                    </div>
+
+                                    <div>
+                                        <x-select label="Priority" class="select-sm" wire:model="items.{{ $index }}.priority"
+                                            :options="$priorityOptions" option-value="value" option-label="label"
+                                            placeholder="Prioritas" />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <x-textarea label="Notes" class="textarea-sm" wire:model="items.{{ $index }}.notes"
+                                        placeholder="Catatan untuk item ini (opsional)" rows="2" />
+                                </div>
                             </div>
-                        @endif
-                        <x-button 
-                            wire:click="removeItem({{ $index }})" 
-                            class="btn-circle btn-error btn-outline btn-sm" 
-                            icon="o-trash" 
-                            {{ count($items) <= 1 ? 'disabled' : '' }}
-                        />
+                        </fieldset>
                     </div>
                 @endforeach
-            </div>
-        @else
-            <div class="p-6 text-center bg-gray-50 rounded-lg border border-gray-300 border-dashed">
-                <p class="text-gray-500">Belum ada item yang ditambahkan</p>
-                <p class="mt-1 text-sm text-gray-400">Minimal 1 item harus ditambahkan</p>
-            </div>
-        @endif
-    </div>
+            @else
+                <div class="py-8 text-center text-gray-500">
+                    <p>Belum ada asset item yang ditambahkan</p>
+                    <p class="text-sm">Klik tombol "Tambah Asset Item" untuk memulai</p>
+                </div>
+            @endif
+        </div>
 
-    <!-- Notes -->
-    <x-textarea label="Catatan" wire:model="notes" placeholder="Catatan tambahan (opsional)" rows="2" />
+        <button type="button" wire:click="addItem" class="mt-3 w-full btn btn-sm btn-outline">
+            Tambah Asset Item
+        </button>
+
+        @error('items')
+            <div class="mt-2 text-xs text-error">
+                {{ $message }}
+            </div>
+        @enderror
+    </fieldset>
 
     <!-- Submit Button -->
-    <div class="flex gap-3 justify-end pt-6 border-t">
+    <div class="flex gap-3 justify-end pt-4">
         <x-button label="Batal" class="btn-ghost" wire:click="$dispatch('closeDrawer')" />
-        <x-button 
-            label="{{ $isEdit ? 'Update' : 'Simpan' }}" 
-            class="btn-primary" 
-            type="submit" 
-            spinner="save" 
-            {{ count($items) < 1 ? 'disabled' : '' }}
-        />
+        <x-button label="{{ $isEdit ? 'Update' : 'Simpan' }}" class="btn-primary" type="submit" spinner="save" {{-- {{
+            count($items) < 1 ? 'disabled' : '' }} --}} />
     </div>
 </form>
