@@ -136,9 +136,58 @@ class AssetTransferController extends Controller
      */
     public function show(AssetTransfer $assetTransfer)
     {
-        $assetTransfer->load(['company', 'requestedBy', 'approvedBy', 'fromLocation', 'toLocation', 'items.asset', 'items.fromLocation', 'items.toLocation']);
+        $assetTransfer->load(['company', 'requestedBy', 'approvedBy', 'fromLocation', 'toLocation', 'items.asset.location', 'items.fromLocation', 'items.toLocation']);
         
-        return view('dashboard.asset-transfers.show', compact('assetTransfer'));
+        // Prepare data for detail-info component
+        $transferData = [
+            'transfer_no' => $assetTransfer->transfer_no,
+            'status' => $assetTransfer->status,
+            'priority' => $assetTransfer->priority,
+            'type' => $assetTransfer->type,
+            'from_location' => $assetTransfer->fromLocation->name ?? null,
+            'to_location' => $assetTransfer->toLocation->name ?? null,
+            'requested_by' => $assetTransfer->requestedBy->name ?? null,
+            'company' => $assetTransfer->company->name ?? null,
+            'scheduled_at' => $assetTransfer->scheduled_at,
+            'requested_at' => $assetTransfer->requested_at,
+            'description' => $assetTransfer->description,
+            'reason' => $assetTransfer->reason,
+            'notes' => $assetTransfer->notes,
+        ];
+        
+        // Prepare data for items-table component
+        $itemsData = $assetTransfer->items->map(function ($item) {
+            return [
+                'asset_name' => $item->asset->name ?? 'N/A',
+                'asset_brand' => $item->asset->brand ?? '',
+                'asset_model' => $item->asset->model ?? '',
+                'asset_code' => $item->asset->asset_code ?? 'N/A',
+                'from_location' => $item->fromLocation->name ?? 'N/A',
+                'to_location' => $item->toLocation->name ?? 'N/A',
+                'current_location' => $item->asset->location->name ?? 'Unknown',
+                'status' => $item->status?->value ?? 'pending',
+                'quantity' => $item->quantity,
+                'notes' => $item->notes,
+            ];
+        })->toArray();
+        
+        // Prepare data for quick-actions component
+        $quickActionsData = [
+            'status' => $assetTransfer->status->value,
+            'id' => $assetTransfer->id,
+        ];
+        
+        // Prepare data for timeline component
+        $timelineData = [
+            'created_at' => $assetTransfer->created_at,
+            'requested_by' => $assetTransfer->requestedBy->name ?? null,
+            'scheduled_at' => $assetTransfer->scheduled_at,
+            'approved_at' => $assetTransfer->approved_at,
+            'approved_by' => $assetTransfer->approvedBy->name ?? null,
+            'executed_at' => $assetTransfer->executed_at,
+        ];
+        
+        return view('dashboard.asset-transfers.show', compact('assetTransfer', 'transferData', 'itemsData', 'quickActionsData', 'timelineData'));
     }
 
     /**
