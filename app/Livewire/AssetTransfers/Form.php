@@ -51,6 +51,21 @@ class Form extends Component
         'resetForm' => 'resetForm'
     ];
 
+    public function updated($propertyName)
+    {
+        if ($propertyName === 'from_location_id') {
+            foreach ($this->items as $index => $item) {
+                $this->items[$index]['from_location_id'] = $this->from_location_id;
+            }
+        }
+        
+        if ($propertyName === 'to_location_id') {
+            foreach ($this->items as $index => $item) {
+                $this->items[$index]['to_location_id'] = $this->to_location_id;
+            }
+        }
+    }
+
     public function mount($transferId = null)
     {
         $this->transferId = $transferId;
@@ -60,6 +75,8 @@ class Form extends Component
             $this->loadTransfer();
         } else {
             $this->generateTransferNo();
+            // Add default item
+            $this->addItem();
         }
     }
 
@@ -101,19 +118,7 @@ class Form extends Component
         ];
     }
 
-    public function updatedFromLocationId($value)
-    {
-        foreach ($this->items as $index => $item) {
-            $this->items[$index]['from_location_id'] = $value;
-        }
-    }
 
-    public function updatedToLocationId($value)
-    {
-        foreach ($this->items as $index => $item) {
-            $this->items[$index]['to_location_id'] = $value;
-        }
-    }
 
     public function removeItem($index)
     {
@@ -209,12 +214,13 @@ class Form extends Component
         
         if (!$this->isEdit) {
             $this->generateTransferNo();
+            $this->addItem();
         }
     }
 
     public function render()
     {
-        $locations = Location::where('company_id', Auth::user()?->company_id)->get();
+        $locations = Location::all();
         $assets = Asset::where('company_id', Auth::user()?->company_id)->get()->map(function ($asset) {
             $asset->display_name = $asset->name . ' (' . $asset->asset_tag . ')';
             return $asset;

@@ -10,9 +10,9 @@
 
     <!-- Locations - Side by Side -->
     <div class="grid grid-cols-2 gap-4">
-        <x-select label="Dari Lokasi" class="select-sm" wire:model="from_location_id" :options="$locations"
+        <x-select label="Dari Lokasi" class="select-sm" wire:model="from_location_id" wire:change="$refresh" :options="$locations"
             option-value="id" option-label="name" placeholder="Pilih lokasi asal" required />
-        <x-select label="Ke Lokasi" class="select-sm" wire:model="to_location_id" :options="$locations"
+        <x-select label="Ke Lokasi" class="select-sm" wire:model="to_location_id" wire:change="$refresh" :options="$locations"
             option-value="id" option-label="name" placeholder="Pilih lokasi tujuan" required />
     </div>
 
