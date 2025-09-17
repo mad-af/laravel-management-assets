@@ -23,7 +23,7 @@
     <!-- Asset Items Section -->
     <fieldset class="p-2 w-full border fieldset bg-base-200 border-base-300 rounded-box">
         <legend class="fieldset-legend">Asset Items</legend>
-
+        
         <div class="space-y-2">
             @if(count($items) > 0)
                 @foreach($items as $index => $item)
@@ -46,25 +46,18 @@
                                         required />
                                 </div>
 
-                                <div>
-                                    <x-input label="Quantity" class="input-sm" wire:model="items.{{ $index }}.quantity"
-                                        type="number" placeholder="Jumlah" min="1" required />
-                                </div>
-
                                 <div class="grid grid-cols-2 gap-3">
                                     <div>
-                                        <x-select label="Status" class="select-sm" wire:model="items.{{ $index }}.status"
-                                            :options="$itemStatusOptions" option-value="value" option-label="label"
-                                            placeholder="Status item" />
+                                        <x-select label="From Location" class="select-sm" wire:model="items.{{ $index }}.from_location_id"
+                                            :options="$locations" option-value="id" option-label="name" placeholder="Dari lokasi" />
                                     </div>
 
                                     <div>
-                                        <x-select label="Priority" class="select-sm" wire:model="items.{{ $index }}.priority"
-                                            :options="$priorityOptions" option-value="value" option-label="label"
-                                            placeholder="Prioritas" />
+                                        <x-select label="To Location" class="select-sm" wire:model="items.{{ $index }}.to_location_id"
+                                            :options="$locations" option-value="id" option-label="name" placeholder="Ke lokasi" />
                                     </div>
                                 </div>
-
+                                
                                 <div>
                                     <x-textarea label="Notes" class="textarea-sm" wire:model="items.{{ $index }}.notes"
                                         placeholder="Catatan untuk item ini (opsional)" rows="2" />
@@ -74,7 +67,7 @@
                     </div>
                 @endforeach
             @else
-                <div class="py-8 text-center text-gray-500">
+                <div class="py-8 text-center text-base-content/60">
                     <p>Belum ada asset item yang ditambahkan</p>
                     <p class="text-sm">Klik tombol "Tambah Asset Item" untuk memulai</p>
                 </div>

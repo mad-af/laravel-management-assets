@@ -42,9 +42,10 @@ class Form extends Component
         'notes' => 'nullable|string|max:1000',
         'items' => 'required|array|min:1',
         'items.*.asset_id' => 'required|exists:assets,id',
-        'items.*.quantity' => 'required|integer|min:1',
+        'items.*.from_location_id' => 'nullable|exists:locations,id',
+        'items.*.to_location_id' => 'nullable|exists:locations,id',
         'items.*.status' => 'required|string|in:pending,approved,rejected,completed',
-        'items.*.priority' => 'required|string|in:low,normal,high,urgent',
+        'items.*.transferred_at' => 'nullable|date',
         'items.*.notes' => 'nullable|string|max:255'
     ];
 
@@ -98,9 +99,10 @@ class Form extends Component
     {
         $this->items[] = [
             'asset_id' => '',
-            'quantity' => 1,
+            'from_location_id' => '',
+            'to_location_id' => '',
             'status' => 'pending',
-            'priority' => 'normal',
+            'transferred_at' => '',
             'notes' => ''
         ];
     }
@@ -224,13 +226,6 @@ class Form extends Component
             ['value' => 'completed', 'label' => 'Completed']
         ];
         
-        $priorityOptions = [
-            ['value' => 'low', 'label' => 'Low'],
-            ['value' => 'normal', 'label' => 'Normal'],
-            ['value' => 'high', 'label' => 'High'],
-            ['value' => 'urgent', 'label' => 'Urgent']
-        ];
-        
-        return view('livewire.asset-transfers.form', compact('locations', 'assets', 'statusOptions', 'itemStatusOptions', 'priorityOptions'));
+        return view('livewire.asset-transfers.form', compact('locations', 'assets', 'statusOptions', 'itemStatusOptions'));
     }
 }
