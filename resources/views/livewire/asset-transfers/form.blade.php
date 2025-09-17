@@ -1,4 +1,9 @@
-<form wire:submit="save" class="space-y-4">
+<form action="{{ $isEdit ? route('asset-transfers.update', $assetTransfer->id) : route('asset-transfers.store') }}"
+    method="POST" class="space-y-4">
+    @csrf
+    @if($isEdit)
+        @method('PUT')
+    @endif
 
     <!-- Status -->
     <x-select label="Status" class="select-sm" wire:model="status" :options="$statusOptions" option-value="value"
@@ -10,10 +15,10 @@
 
     <!-- Locations - Side by Side -->
     <div class="grid grid-cols-2 gap-4">
-        <x-select label="Dari Lokasi" class="select-sm" wire:model="from_location_id" wire:change="$refresh" :options="$locations"
-            option-value="id" option-label="name" placeholder="Pilih lokasi asal" required />
-        <x-select label="Ke Lokasi" class="select-sm" wire:model="to_location_id" wire:change="$refresh" :options="$locations"
-            option-value="id" option-label="name" placeholder="Pilih lokasi tujuan" required />
+        <x-select label="Dari Lokasi" class="select-sm" wire:model="from_location_id" wire:change="$refresh"
+            :options="$locations" option-value="id" option-label="name" placeholder="Pilih lokasi asal" required />
+        <x-select label="Ke Lokasi" class="select-sm" wire:model="to_location_id" wire:change="$refresh"
+            :options="$locations" option-value="id" option-label="name" placeholder="Pilih lokasi tujuan" required />
     </div>
 
     <!-- Reason -->
@@ -55,10 +60,10 @@
                                         option-label="name" placeholder="Ke lokasi" disabled />
                                 </div>
 
-                                <div>
+                                {{-- <div>
                                     <x-textarea label="Notes" class="textarea-sm" wire:model="items.{{ $index }}.notes"
                                         placeholder="Catatan untuk item ini (opsional)" rows="2" />
-                                </div>
+                                </div> --}}
                             </div>
                         </fieldset>
                     </div>

@@ -14,9 +14,18 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
 
 class AssetTransferController extends Controller
 {
+    /**
+     * Generate unique transfer number.
+     */
+    private function generateTransferNo()
+    {
+        return 'TRF-' . date('Ymd') . '-' . strtoupper(Str::random(4));
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -35,6 +44,7 @@ class AssetTransferController extends Controller
      */
     public function create()
     {
+        dd("Hello");
         $assets = Asset::where('company_id', Auth::user()->company_id)
             ->where('status', 'active')
             ->with('location')
@@ -50,48 +60,49 @@ class AssetTransferController extends Controller
      */
     public function store(Request $request)
     {
+        
         $request->validate([
-            'transfer_no' => 'required|string|unique:asset_transfers',
-            'reason' => 'nullable|string',
-            'type' => ['required', Rule::enum(AssetTransferType::class)],
-            'priority' => ['required', Rule::enum(AssetTransferPriority::class)],
-            'from_location_id' => 'nullable|exists:locations,id',
-            'to_location_id' => 'nullable|exists:locations,id',
+            'reason' => 'required|string|max:500',
+            'from_location_id' => 'required|exists:locations,id',
+            'to_location_id' => 'required|exists:locations,id|different:from_location_id',
+            'status' => 'required|string',
             'scheduled_at' => 'nullable|date',
-            'notes' => 'nullable|string',
+            'notes' => 'nullable|string|max:1000',
             'items' => 'required|array|min:1',
             'items.*.asset_id' => 'required|exists:assets,id',
-            'items.*.to_location_id' => 'required|exists:locations,id',
+            'items.*.from_location_id' => 'nullable|exists:locations,id',
+            'items.*.to_location_id' => 'nullable|exists:locations,id',
         ]);
+        dd('dsadsa');
 
         DB::transaction(function () use ($request) {
             $transfer = AssetTransfer::create([
                 'company_id' => Auth::user()->company_id,
-                'transfer_no' => $request->transfer_no,
+                'transfer_no' => $this->generateTransferNo(),
                 'reason' => $request->reason,
-                'status' => AssetTransferStatus::DRAFT,
+                'status' => AssetTransferStatus::from($request->status),
                 'requested_by' => Auth::id(),
                 'from_location_id' => $request->from_location_id,
                 'to_location_id' => $request->to_location_id,
-                'type' => $request->type,
-                'priority' => $request->priority,
                 'scheduled_at' => $request->scheduled_at,
                 'notes' => $request->notes,
             ]);
 
             foreach ($request->items as $item) {
-                $asset = Asset::find($item['asset_id']);
                 $transfer->items()->create([
                     'asset_id' => $item['asset_id'],
-                    'from_location_id' => $asset->location_id,
-                    'to_location_id' => $item['to_location_id'],
+                    'from_location_id' => $request->from_location_id,
+                    'to_location_id' => $request->to_location_id,
                     'status' => AssetTransferItemStatus::PENDING,
+                    'notes' => $item['notes'] ?? '',
                 ]);
             }
         });
 
-        return redirect()->route('asset-transfers.index')
-            ->with('success', 'Transfer aset berhasil dibuat.');
+        return response()->json([
+            'success' => true,
+            'message' => 'Transfer aset berhasil dibuat.'
+        ]);
     }
 
     /**
@@ -130,33 +141,25 @@ class AssetTransferController extends Controller
      */
     public function update(Request $request, AssetTransfer $assetTransfer)
     {
-        if ($assetTransfer->status !== AssetTransferStatus::DRAFT) {
-            return redirect()->route('asset-transfers.show', $assetTransfer)
-                ->with('error', 'Hanya transfer dengan status draft yang dapat diupdate.');
-        }
-
         $request->validate([
-            'transfer_no' => 'required|string|unique:asset_transfers,transfer_no,' . $assetTransfer->id,
-            'reason' => 'nullable|string',
-            'type' => ['sometimes', Rule::enum(AssetTransferType::class)],
-            'priority' => ['sometimes', Rule::enum(AssetTransferPriority::class)],
-            'from_location_id' => 'nullable|exists:locations,id',
-            'to_location_id' => 'nullable|exists:locations,id',
+            'reason' => 'required|string|max:500',
+            'from_location_id' => 'required|exists:locations,id',
+            'to_location_id' => 'required|exists:locations,id|different:from_location_id',
+            'status' => 'required|string',
             'scheduled_at' => 'nullable|date',
-            'notes' => 'nullable|string',
+            'notes' => 'nullable|string|max:1000',
             'items' => 'required|array|min:1',
             'items.*.asset_id' => 'required|exists:assets,id',
-            'items.*.to_location_id' => 'required|exists:locations,id',
+            'items.*.from_location_id' => 'nullable|exists:locations,id',
+            'items.*.to_location_id' => 'nullable|exists:locations,id',
         ]);
 
         DB::transaction(function () use ($request, $assetTransfer) {
             $assetTransfer->update([
-                'transfer_no' => $request->transfer_no,
                 'reason' => $request->reason,
                 'from_location_id' => $request->from_location_id,
                 'to_location_id' => $request->to_location_id,
-                'type' => $request->type ?? $assetTransfer->type,
-                'priority' => $request->priority ?? $assetTransfer->priority,
+                'status' => AssetTransferStatus::from($request->status),
                 'scheduled_at' => $request->scheduled_at,
                 'notes' => $request->notes,
             ]);
@@ -166,18 +169,20 @@ class AssetTransferController extends Controller
 
             // Create new items
             foreach ($request->items as $item) {
-                $asset = Asset::find($item['asset_id']);
                 $assetTransfer->items()->create([
                     'asset_id' => $item['asset_id'],
-                    'from_location_id' => $asset->location_id,
-                    'to_location_id' => $item['to_location_id'],
+                    'from_location_id' => $request->from_location_id,
+                    'to_location_id' => $request->to_location_id,
                     'status' => AssetTransferItemStatus::PENDING,
+                    'notes' => $item['notes'] ?? '',
                 ]);
             }
         });
 
-        return redirect()->route('asset-transfers.show', $assetTransfer)
-            ->with('success', 'Transfer aset berhasil diupdate.');
+        return response()->json([
+            'success' => true,
+            'message' => 'Transfer aset berhasil diupdate.'
+        ]);
     }
 
     /**

@@ -14,7 +14,7 @@ use Mary\Traits\Toast;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\Log;
 class Form extends Component
 {
     use Toast;
@@ -33,7 +33,6 @@ class Form extends Component
     public $items = [];
 
     protected $rules = [
-        'transfer_no' => 'required|string|max:255',
         'reason' => 'required|string|max:500',
         'from_location_id' => 'required|exists:locations,id',
         'to_location_id' => 'required|exists:locations,id|different:from_location_id',
@@ -74,16 +73,12 @@ class Form extends Component
             $this->isEdit = true;
             $this->loadTransfer();
         } else {
-            $this->generateTransferNo();
             // Add default item
             $this->addItem();
         }
     }
 
-    public function generateTransferNo()
-    {
-        $this->transfer_no = 'TRF-' . date('Ymd') . '-' . strtoupper(Str::random(4));
-    }
+
 
     public function loadTransfer()
     {
@@ -128,77 +123,7 @@ class Form extends Component
         }
     }
 
-    public function save()
-    {
-        $this->validate();
 
-        if (empty($this->items)) {
-            $this->error('Minimal 1 item aset harus ditambahkan.');
-            return;
-        }
-
-        try {
-            if ($this->isEdit && $this->transferId) {
-                $transfer = AssetTransfer::find($this->transferId);
-                $transfer->update([
-                    'transfer_no' => $this->transfer_no,
-                    'reason' => $this->reason,
-                    'from_location_id' => $this->from_location_id,
-                    'to_location_id' => $this->to_location_id,
-                    'status' => AssetTransferStatus::from($this->status),
-                    'scheduled_at' => $this->scheduled_at ? Carbon::parse($this->scheduled_at) : null,
-                    'notes' => $this->notes,
-                    'requested_by' => Auth::id(),
-                ]);
-                
-                // Update items
-                $transfer->items()->delete();
-                foreach ($this->items as $item) {
-                    AssetTransferItem::create([
-                        'asset_transfer_id' => $transfer->id,
-                        'asset_id' => $item['asset_id'],
-                        'from_location_id' => $this->from_location_id,
-                        'to_location_id' => $this->to_location_id,
-                        'notes' => $item['notes'] ?? '',
-                        'status' => AssetTransferItemStatus::PENDING,
-                    ]);
-                }
-                
-                $this->success('Asset Transfer updated successfully!');
-                $this->dispatch('transfer-updated');
-            } else {
-                $transfer = AssetTransfer::create([
-                    'transfer_no' => $this->transfer_no,
-                    'reason' => $this->reason,
-                    'from_location_id' => $this->from_location_id,
-                    'to_location_id' => $this->to_location_id,
-                    'status' => AssetTransferStatus::from($this->status),
-                    'scheduled_at' => $this->scheduled_at ? Carbon::parse($this->scheduled_at) : null,
-                    'notes' => $this->notes,
-                    'requested_by' => Auth::id(),
-                    'company_id' => Auth::user()?->company_id,
-                ]);
-                
-                // Create items
-                foreach ($this->items as $item) {
-                    AssetTransferItem::create([
-                        'asset_transfer_id' => $transfer->id,
-                        'asset_id' => $item['asset_id'],
-                        'from_location_id' => $this->from_location_id,
-                        'to_location_id' => $this->to_location_id,
-                        'notes' => $item['notes'] ?? '',
-                        'status' => AssetTransferItemStatus::PENDING,
-                    ]);
-                }
-                
-                $this->success('Asset Transfer created successfully!');
-                $this->dispatch('transfer-saved');
-                $this->resetForm();
-            }
-        } catch (\Exception $e) {
-            $this->error('An error occurred: ' . $e->getMessage());
-        }
-    }
 
     public function resetForm()
     {
@@ -213,7 +138,6 @@ class Form extends Component
         $this->resetValidation();
         
         if (!$this->isEdit) {
-            $this->generateTransferNo();
             $this->addItem();
         }
     }
