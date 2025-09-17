@@ -43,7 +43,7 @@
             @endphp
             <x-table :headers="$headers" :rows="$transfers" striped show-empty-text>
                 @scope('cell_transfer_no', $transfer)
-                <span class="font-medium text-primary">{{ $transfer->transfer_no }}</span>
+                <span class="font-medium">{{ $transfer->transfer_no }}</span>
                 @endscope
 
                 @scope('cell_reason', $transfer)

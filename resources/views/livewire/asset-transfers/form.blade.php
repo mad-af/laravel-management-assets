@@ -1,5 +1,5 @@
 <form action="{{ $isEdit ? route('asset-transfers.update', $transferId) : route('asset-transfers.store') }}"
-    method="POST" class="space-y-4">
+    method="POST" class="space-y-2">
     @csrf
     @if($isEdit)
         @method('PUT')
@@ -74,8 +74,8 @@
     </fieldset>
 
     <div class="flex gap-3 justify-end pt-4">
-        <x-button label="Batal" class="btn-ghost" type="button" wire:click="$dispatch('closeDrawer')" />
-        <button class="btn btn-primary" type="submit">
+        <x-button label="Batal" class="btn-ghost btn-sm" type="button" wire:click="$dispatch('closeDrawer')" />
+        <button class="btn btn-sm btn-primary" type="submit">
             {{ $isEdit ? 'Update' : 'Simpan' }}
         </button>
     </div>
