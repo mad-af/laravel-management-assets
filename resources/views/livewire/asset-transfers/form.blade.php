@@ -45,6 +45,18 @@
                                         :options="$assets" option-value="id" option-label="name" placeholder="Pilih asset"
                                         required />
                                 </div>
+
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <x-select label="From Location" class="select-sm" wire:model="items.{{ $index }}.from_location_id"
+                                            :options="$locations" option-value="id" option-label="name" placeholder="Dari lokasi" required />
+                                    </div>
+
+                                    <div>
+                                        <x-select label="To Location" class="select-sm" wire:model="items.{{ $index }}.to_location_id"
+                                            :options="$locations" option-value="id" option-label="name" placeholder="Ke lokasi" required />
+                                    </div>
+                                </div>
                                 
                                 <div>
                                     <x-textarea label="Notes" class="textarea-sm" wire:model="items.{{ $index }}.notes"
