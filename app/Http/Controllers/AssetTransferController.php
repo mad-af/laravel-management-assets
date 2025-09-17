@@ -178,35 +178,49 @@ class AssetTransferController extends Controller
             'items.*.to_location_id' => 'nullable|exists:locations,id',
         ]);
 
-        DB::transaction(function () use ($request, $assetTransfer) {
-            $assetTransfer->update([
-                'reason' => $request->reason,
-                'from_location_id' => $request->from_location_id,
-                'to_location_id' => $request->to_location_id,
-                'status' => AssetTransferStatus::from($request->status),
-                'scheduled_at' => $request->scheduled_at,
-                'notes' => $request->notes,
-            ]);
-
-            // Delete existing items
-            $assetTransfer->items()->delete();
-
-            // Create new items
-            foreach ($request->items as $item) {
-                $assetTransfer->items()->create([
-                    'asset_id' => $item['asset_id'],
+        try {
+            DB::transaction(function () use ($request, $assetTransfer) {
+                $assetTransfer->update([
+                    'reason' => $request->reason,
                     'from_location_id' => $request->from_location_id,
                     'to_location_id' => $request->to_location_id,
-                    'status' => AssetTransferItemStatus::PENDING,
-                    'notes' => $item['notes'] ?? '',
+                    'status' => AssetTransferStatus::from($request->status),
+                    'scheduled_at' => $request->scheduled_at,
+                    'notes' => $request->notes,
                 ]);
-            }
-        });
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Transfer aset berhasil diupdate.'
-        ]);
+                // Delete existing items
+                $assetTransfer->items()->delete();
+
+                // Create new items
+                foreach ($request->items as $item) {
+                    $assetTransfer->items()->create([
+                        'asset_id' => $item['asset_id'],
+                        'from_location_id' => $request->from_location_id,
+                        'to_location_id' => $request->to_location_id,
+                        'status' => AssetTransferItemStatus::PENDING,
+                        'notes' => $item['notes'] ?? '',
+                    ]);
+                }
+            });
+
+            // Success: redirect back without query params and show success message
+            return redirect('/admin/asset-transfers')
+                ->with('success', 'Transfer aset berhasil diupdate.');
+                
+        } catch (\Exception $e) {
+            Log::error('Asset transfer update failed', [
+                'error' => $e->getMessage(),
+                'user_id' => Auth::id(),
+                'transfer_id' => $assetTransfer->id,
+                'request_data' => $request->all()
+            ]);
+            
+            // Error: redirect back with query params and show error message
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Gagal mengupdate transfer aset: ' . $e->getMessage());
+        }
     }
 
     /**
