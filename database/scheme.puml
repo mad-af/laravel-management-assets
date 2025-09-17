@@ -3,7 +3,7 @@
 !define pk(x) <u>x</u>
 !define fk(x) <i>x</i>
 
-title Laravel Asset Management System - Entity Relationship Diagram (Multi-tenant with Companies)
+title Laravel Asset Management System - Entity Relationship Diagram (Multi-tenant with Companies) + Asset Transfer (MVP)
 
 ' ==========================
 ' Company / Tenant Table
@@ -118,6 +118,48 @@ table(asset_maintenances) {
 }
 
 ' ==========================
+' NEW: Asset Transfer (MVP)
+' ==========================
+' Header dokumen mutasi aset (batch, multi-aset)
+table(asset_transfers) {
+  pk(id) : UUID
+  fk(company_id) : UUID
+  transfer_no : VARCHAR [UNIQUE]
+  reason : VARCHAR [NULL]
+  status : ENUM(draft, submitted, approved, executed, void) [DEFAULT: draft]
+  fk(requested_by) : UUID
+  fk(approved_by) : UUID [NULL]
+  scheduled_at : TIMESTAMP [NULL]
+  executed_at : TIMESTAMP [NULL]
+  notes : TEXT [NULL]
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+' Item per aset dalam satu transfer (asal & tujuan lokasi)
+table(asset_transfer_items) {
+  pk(id) : UUID
+  fk(asset_transfer_id) : UUID
+  fk(asset_id) : UUID
+  fk(from_location_id) : UUID
+  fk(to_location_id) : UUID
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+' Riwayat perubahan lokasi aset (audit trail)
+table(asset_location_history) {
+  pk(id) : UUID
+  fk(asset_id) : UUID
+  fk(from_location_id) : UUID [NULL]
+  fk(to_location_id) : UUID
+  changed_at : TIMESTAMP
+  fk(changed_by) : UUID
+  fk(transfer_id) : UUID [NULL]
+  remark : VARCHAR [NULL]
+}
+
+' ==========================
 ' Laravel System Tables
 ' ==========================
 
@@ -186,8 +228,9 @@ table(password_reset_tokens) {
 ' ==========================
 companies ||--o{ users : "has many"
 companies ||--o{ categories : "has many"
-locations ||--o{ companies : "has many"
+locations ||--o{ companies : "has many"   ' HQ / lokasi induk perusahaan (opsional)
 companies ||--o{ assets : "has many"
+companies ||--o{ asset_transfers : "has many"
 
 categories ||--o{ assets : "has many"
 locations ||--o{ assets : "has many"
@@ -197,6 +240,20 @@ assets ||--o{ asset_maintenances : "has many"
 users ||--o{ asset_logs : "creates"
 users ||--o{ sessions : "has many"
 users ||--o{ password_reset_tokens : "has many"
+
+' NEW: Asset Transfer relations
+asset_transfers ||--o{ asset_transfer_items : "has many"
+assets ||--o{ asset_location_history : "has many"
+users ||--o{ asset_transfers : "requests/approves"
+
+' from/to location references for items & history
+locations ||--o{ asset_transfer_items : "as from_location"
+locations ||--o{ asset_transfer_items : "as to_location"
+locations ||--o{ asset_location_history : "as from_location"
+locations ||--o{ asset_location_history : "as to_location"
+
+' linking history to transfer (optional)
+asset_transfers ||--o{ asset_location_history : "writes"
 
 ' ==========================
 ' Notes
@@ -215,21 +272,23 @@ note right of assets
   Scoped by company_id for tenancy
 end note
 
-note right of asset_loans
-  Tracks asset borrowing/lending
-  Uses borrower_name instead of
-  user reference for flexibility
+note right of asset_transfers
+  Header dokumen mutasi aset (batch)
+  Minimal status flow untuk MVP: draft -> executed
+  (opsional submitted/approved bila lintas unit)
+  Eksekusi akan update assets.location_id & menulis asset_location_history
 end note
 
-note right of asset_logs
-  Audit trail for all asset changes
-  Stores JSON of changed fields
-  for complete history tracking
+note right of asset_transfer_items
+  Setiap baris merepresentasikan satu aset yang dipindahkan
+  Validasi penting: from_location_id harus sama dengan
+  lokasi aset saat ini ketika dieksekusi
 end note
 
-note right of asset_maintenances
-  Records preventive/corrective maintenance
-  Minimal coupling: stores technician & vendor as text
-  Fits existing asset status = maintenance if needed
+note right of asset_location_history
+  Jejak audit perubahan lokasi aset
+  changed_by mengacu ke user yang mengeksekusi
+  transfer_id opsional untuk mengikat ke dokumen transfer
 end note
+
 @enduml
