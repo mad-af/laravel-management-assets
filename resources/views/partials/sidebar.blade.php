@@ -21,6 +21,11 @@
                     'label' => 'Assets'
                 ],
                 [
+                    'route' => 'asset-transfers.index',
+                    'icon' => 'o-arrow-path',
+                    'label' => 'Asset Transfers'
+                ],
+                [
                     'route' => 'asset-loans.index',
                     'icon' => 'o-clipboard-document-list',
                     'label' => 'Asset Loans'
