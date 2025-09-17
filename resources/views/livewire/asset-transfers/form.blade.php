@@ -11,9 +11,9 @@
     <!-- Locations - Side by Side -->
     <div class="grid grid-cols-2 gap-4">
         <x-select label="Dari Lokasi" class="select-sm" wire:model="from_location_id" :options="$locations"
-            option-value="id" option-label="name" placeholder="Pilih lokasi asal" />
+            option-value="id" option-label="name" placeholder="Pilih lokasi asal" required />
         <x-select label="Ke Lokasi" class="select-sm" wire:model="to_location_id" :options="$locations"
-            option-value="id" option-label="name" placeholder="Pilih lokasi tujuan" />
+            option-value="id" option-label="name" placeholder="Pilih lokasi tujuan" required />
     </div>
 
     <!-- Reason -->
@@ -23,7 +23,7 @@
     <!-- Asset Items Section -->
     <fieldset class="p-2 w-full border fieldset bg-base-200 border-base-300 rounded-box">
         <legend class="fieldset-legend">Asset Items</legend>
-        
+
         <div class="space-y-2">
             @if(count($items) > 0)
                 @foreach($items as $index => $item)
@@ -47,17 +47,14 @@
                                 </div>
 
                                 <div class="grid grid-cols-2 gap-2">
-                                    <div>
-                                        <x-select label="From Location" class="select-sm" wire:model="items.{{ $index }}.from_location_id"
-                                            :options="$locations" option-value="id" option-label="name" placeholder="Dari lokasi" required />
-                                    </div>
-
-                                    <div>
-                                        <x-select label="To Location" class="select-sm" wire:model="items.{{ $index }}.to_location_id"
-                                            :options="$locations" option-value="id" option-label="name" placeholder="Ke lokasi" required />
-                                    </div>
+                                    <x-select label="From Location" class="select-sm"
+                                        wire:model="items.{{ $index }}.from_location_id" :options="$locations" option-value="id"
+                                        option-label="name" placeholder="Dari lokasi" disabled />
+                                    <x-select label="To Location" class="select-sm"
+                                        wire:model="items.{{ $index }}.to_location_id" :options="$locations" option-value="id"
+                                        option-label="name" placeholder="Ke lokasi" disabled />
                                 </div>
-                                
+
                                 <div>
                                     <x-textarea label="Notes" class="textarea-sm" wire:model="items.{{ $index }}.notes"
                                         placeholder="Catatan untuk item ini (opsional)" rows="2" />

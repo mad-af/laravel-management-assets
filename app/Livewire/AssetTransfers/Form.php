@@ -96,9 +96,23 @@ class Form extends Component
     {
         $this->items[] = [
             'asset_id' => '',
-            'from_location_id' => '',
-            'to_location_id' => ''
+            'from_location_id' => $this->from_location_id,
+            'to_location_id' => $this->to_location_id
         ];
+    }
+
+    public function updatedFromLocationId($value)
+    {
+        foreach ($this->items as $index => $item) {
+            $this->items[$index]['from_location_id'] = $value;
+        }
+    }
+
+    public function updatedToLocationId($value)
+    {
+        foreach ($this->items as $index => $item) {
+            $this->items[$index]['to_location_id'] = $value;
+        }
     }
 
     public function removeItem($index)
