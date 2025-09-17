@@ -1,0 +1,49 @@
+<?php
+
+namespace App\Models;
+
+use App\Enums\AssetTransferItemStatus;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class AssetTransferItem extends Model
+{
+    use HasUuids;
+
+    protected $fillable = [
+        'asset_transfer_id',
+        'asset_id',
+        'from_location_id',
+        'to_location_id',
+        'status',
+        'notes',
+        'transferred_at',
+    ];
+
+    protected $casts = [
+        'transferred_at' => 'datetime',
+        'status' => AssetTransferItemStatus::class,
+    ];
+
+    public function assetTransfer(): BelongsTo
+    {
+        return $this->belongsTo(AssetTransfer::class);
+    }
+
+    public function asset(): BelongsTo
+    {
+        return $this->belongsTo(Asset::class);
+    }
+
+    public function fromLocation(): BelongsTo
+    {
+        return $this->belongsTo(Location::class, 'from_location_id');
+    }
+
+    public function toLocation(): BelongsTo
+    {
+        return $this->belongsTo(Location::class, 'to_location_id');
+    }
+}

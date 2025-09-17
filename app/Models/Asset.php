@@ -82,6 +82,14 @@ class Asset extends Model
     }
 
     /**
+     * Get the location histories for the asset.
+     */
+    public function locationHistories(): HasMany
+    {
+        return $this->hasMany(AssetLocationHistory::class)->orderBy('changed_at', 'desc');
+    }
+
+    /**
      * Scope a query to only include assets with a specific status.
      */
     public function scopeByStatus($query, AssetStatus|string $status)
