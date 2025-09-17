@@ -44,7 +44,7 @@ class DashboardContentHeader extends Component
     {
         if ($this->buttonAction) {
             // Handle specific drawer actions
-            if (in_array($this->buttonAction, ['openCategoryDrawer', 'openUserDrawer', 'openLocationDrawer', 'openCompanyDrawer', 'openAssetDrawer', 'openAssetLoanDrawer'])) {
+            if (in_array($this->buttonAction, ['openCategoryDrawer', 'openUserDrawer', 'openLocationDrawer', 'openCompanyDrawer', 'openAssetDrawer', 'openAssetLoanDrawer', 'openAssetTransferDrawer'])) {
                 $this->dispatch('openDrawer');
             } else {
                 // For other actions, dispatch as-is
