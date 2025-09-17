@@ -3,12 +3,13 @@
 namespace App\Livewire\AssetTransfers;
 
 use App\Models\AssetTransfer;
+use App\Traits\WithAlert;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 class Table extends Component
 {
-    use WithPagination;
+    use WithPagination, WithAlert;
 
     public $search = '';
     public $statusFilter = '';
@@ -44,13 +45,21 @@ class Table extends Component
     public function delete($transferId)
     {
         try {
-            $transfer = AssetTransfer::find($transferId);
-            if ($transfer) {
-                $transfer->delete();
-                $this->dispatch('transfer-deleted');
+            $transfer = AssetTransfer::findOrFail($transferId);
+            
+            // Check if transfer can be deleted (only draft status)
+            if ($transfer->status->value !== 'draft') {
+                $this->showErrorAlert('Hanya transfer dengan status draft yang dapat dihapus.', 'Error');
+                return;
             }
+            
+            $transfer->delete();
+            
+            $this->showSuccessAlert('Transfer aset berhasil dihapus.', 'Berhasil');
+            $this->dispatch('transfer-deleted');
+            
         } catch (\Exception $e) {
-            // Handle error silently or add toast notification
+            $this->showErrorAlert('Gagal menghapus transfer aset: ' . $e->getMessage(), 'Error');
         }
     }
 

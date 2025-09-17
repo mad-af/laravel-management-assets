@@ -1,5 +1,5 @@
 <!-- Alert Container - Fixed position at top right -->
-<div class="fixed top-4 right-4 z-50 space-y-2" style="max-width: 400px;">
+<div wire:id="{{ $this->getId() }}" class="fixed top-4 right-4 z-50 space-y-2" style="max-width: 400px;">
     @foreach($alerts as $alert)
         <div 
             wire:key="alert-{{ $alert['id'] }}"
@@ -10,7 +10,7 @@
                     setTimeout(() => {
                         show = false;
                         setTimeout(() => {
-                            $wire.removeAlert('{{ $alert['id'] }}');
+                            @this.removeAlert('{{ $alert['id'] }}');
                         }, 300);
                     }, {{ $hideDelay }});
                 @endif
@@ -26,7 +26,7 @@
         >
             <!-- Alert Icon -->
             <div class="flex-shrink-0">
-                <i data-lucide="{{ $this->getAlertIcon($alert['type']) }}" class="w-5 h-5"></i>
+                <x-icon name="{{ $this->getAlertIcon($alert['type']) }}" class="w-5 h-5" />
             </div>
 
             <!-- Alert Content -->
@@ -45,11 +45,11 @@
             <div class="flex-shrink-0">
                 <button 
                     @click="
-                        show = false;
-                        setTimeout(() => {
-                            $wire.removeAlert('{{ $alert['id'] }}');
-                        }, 300);
-                    "
+                    show = false;
+                    setTimeout(() => {
+                        @this.removeAlert('{{ $alert['id'] }}');
+                    }, 300);
+                "
                     class="btn btn-ghost btn-xs btn-circle"
                     aria-label="Close alert"
                 >
@@ -64,10 +64,9 @@
 <script>
     document.addEventListener('livewire:init', () => {
         Livewire.on('auto-hide-alert', (event) => {
-            const { id, delay } = event;
             setTimeout(() => {
-                Livewire.dispatch('hideAlert', { alertId: id });
-            }, delay);
+                Livewire.dispatch('hideAlert', { alertId: event.id });
+            }, event.delay);
         });
     });
 </script>
