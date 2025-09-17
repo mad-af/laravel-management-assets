@@ -6,6 +6,7 @@ use App\Models\AssetTransfer;
 use App\Models\Location;
 use App\Models\Asset;
 use App\Enums\AssetTransferStatus;
+use App\Enums\AssetTransferPriority;
 use Livewire\Component;
 use Mary\Traits\Toast;
 use Illuminate\Support\Facades\Auth;
@@ -19,6 +20,7 @@ class Form extends Component
     public $from_location_id = '';
     public $to_location_id = '';
     public $status = 'draft';
+    public $priority = 'medium';
     public $scheduled_at = '';
     public $notes = '';
     public $isEdit = false;
@@ -31,6 +33,7 @@ class Form extends Component
         'from_location_id' => 'required|exists:locations,id',
         'to_location_id' => 'required|exists:locations,id|different:from_location_id',
         'status' => 'required|string',
+        'priority' => 'required|string',
         'scheduled_at' => 'nullable|date',
         'notes' => 'nullable|string|max:1000',
         'items' => 'required|array|min:1',
@@ -84,6 +87,7 @@ class Form extends Component
                 $this->from_location_id = $transfer->from_location_id;
                 $this->to_location_id = $transfer->to_location_id;
                 $this->status = $transfer->status->value;
+                $this->priority = $transfer->priority->value;
                 $this->scheduled_at = $transfer->scheduled_at?->format('Y-m-d\\TH:i');
                 $this->notes = $transfer->notes;
                 
@@ -124,6 +128,7 @@ class Form extends Component
         $this->from_location_id = '';
         $this->to_location_id = '';
         $this->status = 'draft';
+        $this->priority = 'medium';
         $this->scheduled_at = '';
         $this->notes = '';
         $this->items = [];
@@ -149,7 +154,14 @@ class Form extends Component
             ];
         });
         
-        return view('livewire.asset-transfers.form', compact('locations', 'assets', 'statusOptions'))
+        $priorityOptions = collect(AssetTransferPriority::cases())->map(function ($priority) {
+            return [
+                'value' => $priority->value,
+                'label' => $priority->label()
+            ];
+        });
+        
+        return view('livewire.asset-transfers.form', compact('locations', 'assets', 'statusOptions', 'priorityOptions'))
             ->with('transferId', $this->transferId)
             ->with('isEdit', $this->isEdit);
     }

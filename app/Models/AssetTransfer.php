@@ -23,6 +23,7 @@ class AssetTransfer extends Model
         'transfer_no',
         'reason',
         'status',
+        'priority',
         'requested_by',
         'approved_by',
         'scheduled_at',

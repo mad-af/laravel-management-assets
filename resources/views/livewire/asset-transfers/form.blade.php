@@ -5,6 +5,10 @@
         @method('PUT')
     @endif
 
+    <!-- Priority -->
+    <x-select name="priority" label="Priority" class="select-sm" wire:model="priority" :options="$priorityOptions"
+        option-value="value" option-label="label" placeholder="Pilih priority" required />
+
     <!-- Status -->
     <x-select name="status" label="Status" class="select-sm" wire:model="status" :options="$statusOptions"
         option-value="value" option-label="label" placeholder="Pilih status" required />
