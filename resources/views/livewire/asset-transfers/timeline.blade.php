@@ -7,7 +7,7 @@
             Transfer Timeline
         </h2>
         
-        <div class="mt-4">
+        <div class="pl-3.5 mt-4">
             
             <x-timeline-item 
                 title="Transfer Created" 

@@ -21,6 +21,8 @@ class Drawer extends Component
         'transfer-saved' => 'handleTransferSaved',
         'transfer-updated' => 'handleTransferSaved',
         'close-drawer' => 'closeDrawer',
+        'open-drawer' => 'openDrawer',
+        'open-edit-drawer' => 'openEditDrawer',
     ];
 
     public function mount()
@@ -48,6 +50,19 @@ class Drawer extends Component
             $this->showDrawer   = true;
             $this->editingTransferId = $this->transfer_id;
         } // else: biarkan state tetap (jangan auto-tutup tiap update)
+    }
+
+    public function openEditDrawer($transferId)
+    {
+        $this->action = 'edit';
+        $this->transfer_id = $transferId;
+        $this->applyActionFromUrl();
+    }
+
+    public function openDrawer()
+    {
+        $this->action = 'create';
+        $this->applyActionFromUrl();
     }
 
     public function closeDrawer()

@@ -7,7 +7,7 @@
         </h2>
 
         <div class="mt-4 space-y-3">
-            @if($quickActionsData['status'] === 'pending')
+            @if($quickActionsData['status'] === \App\Enums\AssetTransferStatus::PENDING->value)
                 <button class="btn btn-primary btn-sm" wire:click="openEditModal">
                     <x-icon name="o-pencil" class="w-4 h-4" />
                     Edit Transfer
@@ -22,12 +22,12 @@
                     <x-icon name="o-x-mark" class="w-4 h-4" />
                     Reject
                 </button>
-            @elseif($quickActionsData['status'] === 'approved')
+            @elseif($quickActionsData['status'] === \App\Enums\AssetTransferStatus::APPROVED->value)
                 <button class="btn btn-info btn-sm" wire:click="openStatusModal">
                     <x-icon name="o-truck" class="w-4 h-4" />
                     Start Transfer
                 </button>
-            @elseif($quickActionsData['status'] === 'in_transit')
+            @elseif($quickActionsData['status'] === \App\Enums\AssetTransferStatus::EXECUTED->value)
                 <button class="btn btn-success btn-sm" wire:click="openStatusModal">
                     <x-icon name="o-check-circle" class="w-4 h-4" />
                     Complete Transfer

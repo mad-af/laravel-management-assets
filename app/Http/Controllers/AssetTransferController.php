@@ -107,7 +107,6 @@ class AssetTransferController extends Controller
                         'asset_id' => $item['asset_id'],
                         'from_location_id' => $request->from_location_id,
                         'to_location_id' => $request->to_location_id,
-                        'status' => AssetTransferItemStatus::PENDING,
                         'notes' => $item['notes'] ?? '',
                     ]);
                 }
@@ -251,7 +250,6 @@ class AssetTransferController extends Controller
                         'asset_id' => $item['asset_id'],
                         'from_location_id' => $request->from_location_id,
                         'to_location_id' => $request->to_location_id,
-                        'status' => AssetTransferItemStatus::PENDING,
                         'notes' => $item['notes'] ?? '',
                     ]);
                 }
@@ -311,7 +309,6 @@ class AssetTransferController extends Controller
                 
                 // Update item status
                 $item->update([
-                    'status' => AssetTransferItemStatus::DELIVERED,
                     'transferred_at' => now(),
                 ]);
 

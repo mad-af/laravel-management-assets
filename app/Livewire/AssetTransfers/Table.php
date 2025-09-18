@@ -34,12 +34,12 @@ class Table extends Component
 
     public function openDrawer()
     {
-        return $this->redirect(route('asset-transfers.index', ['action' => 'create']));
+        $this->dispatch('open-drawer');
     }
 
     public function openEditDrawer($transferId)
     {
-        return $this->redirect(route('asset-transfers.index', ['action' => 'edit', 'transfer_id' => $transferId]));
+        $this->dispatch('open-edit-drawer', transferId: $transferId);
     }
 
     public function viewDetail($transferId)

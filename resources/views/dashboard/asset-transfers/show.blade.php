@@ -28,5 +28,8 @@
             <livewire:asset-transfers.timeline :timelineData="$timelineData" />
         </div>
     </div>
+
+    <!-- Edit Drawer -->
+    <livewire:asset-transfers.drawer />
    
 @endsection

@@ -90,10 +90,6 @@ class AssetTransferSeeder extends Seeder
                 'asset_id' => $asset->id,
                 'from_location_id' => $fromLocation->id,
                 'to_location_id' => $toLocation->id,
-                'status' => $transferData['status'] === 'executed' 
-                    ? AssetTransferItemStatus::DELIVERED 
-                    : AssetTransferItemStatus::PENDING,
-                'notes' => 'Item transfer untuk ' . $asset->name,
                 'transferred_at' => $transferData['status'] === AssetTransferStatus::EXECUTED ? now() : null,
             ]);
 

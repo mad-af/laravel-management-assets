@@ -16,13 +16,13 @@ class QuickActions extends Component
 
     public function mount($quickActionsData)
     {
-        $this->quickActionsData = $quickActionsData;
-    }
+         $this->quickActionsData = $quickActionsData;
+     }
 
-    public function openEditModal()
-    {
-        $this->showEditModal = true;
-    }
+     public function openEditModal()
+     {
+         $this->dispatch('open-edit-drawer', transferId: $this->quickActionsData['id']);
+     }
 
     public function openStatusModal()
     {
