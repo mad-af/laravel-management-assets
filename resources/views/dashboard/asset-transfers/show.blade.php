@@ -9,9 +9,9 @@
         description='{{ $assetTransfer->transfer_no }}' 
         showBackButton />
 
-    <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+    <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <!-- Left Column - Detail Info & Items Table -->
-        <div class="space-y-6 lg:col-span-2">
+        <div class="space-y-4 lg:col-span-2">
             <!-- Detail Information -->
             <livewire:asset-transfers.detail-info :transferData="$transferData" />
             
@@ -20,7 +20,7 @@
         </div>
         
         <!-- Right Column - Quick Actions & Timeline -->
-        <div class="space-y-6 lg:col-span-1">
+        <div class="space-y-4 lg:col-span-1">
             <!-- Quick Actions -->
             <livewire:asset-transfers.quick-actions :quickActionsData="$quickActionsData" />
             

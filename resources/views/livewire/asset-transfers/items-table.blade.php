@@ -1,5 +1,5 @@
 <!-- Card Table List AssetTransferItem -->
-<div class="shadow-xl card card-compact bg-base-100">
+<div class="shadow-sm card card-compact bg-base-100">
     <div class="card-body">
         <h2 class="text-lg card-title">
             <x-icon name="o-cube" class="w-5 h-5" />
