@@ -7,12 +7,13 @@ use App\Models\Location;
 use App\Models\Asset;
 use App\Enums\AssetTransferStatus;
 use App\Enums\AssetTransferPriority;
+use App\Traits\WithAlert;
 use Livewire\Component;
 use Mary\Traits\Toast;
 use Illuminate\Support\Facades\Auth;
 class Form extends Component
 {
-    use Toast;
+    use Toast, WithAlert;
 
     public $transferId;
     public $transfer_no = '';

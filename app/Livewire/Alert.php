@@ -30,6 +30,30 @@ class Alert extends Component
         }
     }
 
+    #[On('showSuccessAlert')]
+    public function showSuccessAlert(string $message, ?string $title = null): void
+    {
+        $this->addAlert('success', $message, $title);
+    }
+
+    #[On('showErrorAlert')]
+    public function showErrorAlert(string $message, ?string $title = null): void
+    {
+        $this->addAlert('error', $message, $title);
+    }
+
+    #[On('showWarningAlert')]
+    public function showWarningAlert(string $message, ?string $title = null): void
+    {
+        $this->addAlert('warning', $message, $title);
+    }
+
+    #[On('showInfoAlert')]
+    public function showInfoAlert(string $message, ?string $title = null): void
+    {
+        $this->addAlert('info', $message, $title);
+    }
+
     #[On('hideAlert')]
     public function removeAlert(string $alertId): void
     {
