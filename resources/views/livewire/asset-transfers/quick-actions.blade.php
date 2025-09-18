@@ -8,17 +8,17 @@
 
         <div class="mt-4 space-y-3">
             @if($quickActionsData['status'] === \App\Enums\AssetTransferStatus::PENDING->value)
-                <button class="btn btn-primary btn-sm" onclick="if(confirm('Edit transfer?')) { @this.call('openEditModal') }">
+                <button class="w-full btn btn-outline btn-primary btn-sm" onclick="if(confirm('Edit transfer?')) { @this.call('openEditModal') }">
                     <x-icon name="o-pencil" class="w-4 h-4" />
                     Edit Transfer
                 </button>
 
-                <button class="btn btn-success btn-sm" onclick="if(confirm('Approve this transfer?')) { @this.call('updateStatus', 'approved') }">
+                <button class="w-full btn btn-outline btn-success btn-sm" onclick="if(confirm('Approve this transfer?')) { @this.call('updateStatus', 'approved') }">
                     <x-icon name="o-check" class="w-4 h-4" />
                     Approve
                 </button>
 
-                <button class="btn btn-error btn-sm" onclick="if(confirm('Reject this transfer?')) { @this.call('updateStatus', 'rejected') }">
+                <button class="w-full btn btn-outline btn-error btn-sm" onclick="if(confirm('Reject this transfer?')) { @this.call('updateStatus', 'rejected') }">
                     <x-icon name="o-x-mark" class="w-4 h-4" />
                     Reject
                 </button>
