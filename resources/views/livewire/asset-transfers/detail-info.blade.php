@@ -1,14 +1,14 @@
 @props(['transfer'])
 
 <!-- Card Detail Informasi AssetTransfer -->
-<div class="card card-compact bg-base-100 shadow-xl">
+<div class="shadow-xl card card-compact bg-base-100">
     <div class="card-body">
-        <h2 class="card-title text-lg">
+        <h2 class="text-lg card-title">
             <x-icon name="o-information-circle" class="w-5 h-5" />
             Transfer Information
         </h2>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+        <div class="grid grid-cols-1 gap-4 mt-4 md:grid-cols-2">
             <div>
                 <label class="text-sm font-medium text-base-content/70">Transfer Number</label>
                 <p class="font-semibold">{{ $transferData['transfer_no'] }}</p>
@@ -30,7 +30,7 @@
             
             <div>
                 <label class="text-sm font-medium text-base-content/70">Type</label>
-                <p class="font-semibold">{{ ucfirst($transferData['type']->value) }}</p>
+                <p >{{ ucfirst($transferData['type']->value) }}</p>
             </div>
             
             <div>
@@ -45,12 +45,12 @@
             
             <div>
                 <label class="text-sm font-medium text-base-content/70">Requested By</label>
-                <p class="font-semibold">{{ $transferData['requested_by'] ?? 'N/A' }}</p>
+                <p >{{ $transferData['requested_by'] ?? 'N/A' }}</p>
             </div>
             
             <div>
                 <label class="text-sm font-medium text-base-content/70">Company</label>
-                <p class="font-semibold">{{ $transferData['company'] ?? 'N/A' }}</p>
+                <p>{{ $transferData['company'] ?? 'N/A' }}</p>
             </div>
             
             @if($transferData['scheduled_at'])
@@ -78,14 +78,14 @@
         @if($transferData['reason'])
         <div class="mt-4">
             <label class="text-sm font-medium text-base-content/70">Reason</label>
-            <p class="mt-1 text-sm bg-base-200 text-base-content p-3 rounded-lg">{{ $transferData['reason'] }}</p>
+            <p class="p-3 mt-1 text-sm rounded-lg bg-base-200 text-base-content">{{ $transferData['reason'] }}</p>
         </div>
         @endif
         
         @if($transferData['notes'])
         <div class="mt-4">
             <label class="text-sm font-medium text-base-content/70">Notes</label>
-            <p class="mt-1 text-sm bg-base-200 text-base-content p-3 rounded-lg whitespace-pre-line">{{ $transferData['notes'] }}</p>
+            <p class="p-3 mt-1 text-sm whitespace-pre-line rounded-lg bg-base-200 text-base-content">{{ $transferData['notes'] }}</p>
         </div>
         @endif
     </div>

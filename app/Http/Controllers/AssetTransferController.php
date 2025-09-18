@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Enums\AssetTransferStatus;
 use App\Enums\AssetTransferPriority;
-use App\Enums\AssetTransferType;
-use App\Enums\AssetTransferItemStatus;
 use App\Enums\AssetLocationChangeType;
 use App\Models\AssetTransfer;
 use App\Models\Asset;
@@ -14,7 +12,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
 
 class AssetTransferController extends Controller
@@ -157,10 +154,10 @@ class AssetTransferController extends Controller
         // Prepare data for items-table component
         $itemsData = $assetTransfer->items->map(function ($item) {
             return [
+                'asset_code' => $item->asset->code ?? 'N/A',
                 'asset_name' => $item->asset->name ?? 'N/A',
                 'asset_brand' => $item->asset->brand ?? '',
                 'asset_model' => $item->asset->model ?? '',
-                'asset_code' => $item->asset->asset_code ?? 'N/A',
                 'from_location' => $item->fromLocation->name ?? 'N/A',
                 'to_location' => $item->toLocation->name ?? 'N/A',
                 'current_location' => $item->asset->location->name ?? 'Unknown',
