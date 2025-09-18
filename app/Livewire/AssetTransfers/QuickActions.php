@@ -3,6 +3,7 @@
 namespace App\Livewire\AssetTransfers;
 
 use App\Models\AssetTransfer;
+use App\Enums\AssetTransferStatus;
 use App\Traits\WithAlert;
 use Livewire\Component;
 
@@ -11,8 +12,6 @@ class QuickActions extends Component
     use WithAlert;
 
     public $quickActionsData;
-    public $showEditModal = false;
-    public $showStatusModal = false;
 
     public function mount($quickActionsData)
     {
@@ -24,31 +23,32 @@ class QuickActions extends Component
          $this->dispatch('open-edit-drawer', transferId: $this->quickActionsData['id']);
      }
 
-    public function openStatusModal()
-    {
-        $this->showStatusModal = true;
-    }
+     public function updateStatus($status)
+     {
+         $transfer = AssetTransfer::find($this->quickActionsData['id']);
+         
+         if (!$transfer) {
+             $this->error('Transfer tidak ditemukan!');
+             return;
+         }
 
-    public function executeTransfer()
-    {
-        if ($this->transfer->status->value === 'approved') {
-            $this->transfer->update([
-                'status' => 'in_progress',
-                'executed_at' => now()
-            ]);
-            
-            $this->success('Transfer berhasil dieksekusi!');
-        }
-    }
+         $transfer->update(['status' => $status]);
+         
+         $this->quickActionsData['status'] = $status;
+         
+         $statusMessages = [
+             'approved' => 'Transfer berhasil disetujui!',
+             'rejected' => 'Transfer berhasil ditolak!',
+             'in_progress' => 'Transfer berhasil dimulai!',
+             'completed' => 'Transfer berhasil diselesaikan!'
+         ];
+         
+         $this->success($statusMessages[$status] ?? 'Status berhasil diperbarui!');
+         
+         $this->dispatch('transfer-status-updated');
+     }
 
-    public function cancelTransfer()
-    {
-        if (in_array($this->transfer->status->value, ['draft', 'pending'])) {
-            $this->transfer->update(['status' => 'cancelled']);
-            
-            $this->success('Transfer berhasil dibatalkan!');
-        }
-    }
+
 
     public function render()
     {

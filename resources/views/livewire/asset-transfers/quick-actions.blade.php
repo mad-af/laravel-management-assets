@@ -8,29 +8,24 @@
 
         <div class="mt-4 space-y-3">
             @if($quickActionsData['status'] === \App\Enums\AssetTransferStatus::PENDING->value)
-                <button class="btn btn-primary btn-sm" wire:click="openEditModal">
+                <button class="btn btn-primary btn-sm" onclick="if(confirm('Edit transfer?')) { @this.call('openEditModal') }">
                     <x-icon name="o-pencil" class="w-4 h-4" />
                     Edit Transfer
                 </button>
 
-                <button class="btn btn-success btn-sm" wire:click="openStatusModal">
+                <button class="btn btn-success btn-sm" onclick="if(confirm('Approve this transfer?')) { @this.call('updateStatus', 'approved') }">
                     <x-icon name="o-check" class="w-4 h-4" />
                     Approve
                 </button>
 
-                <button class="btn btn-error btn-sm" wire:click="openStatusModal">
+                <button class="btn btn-error btn-sm" onclick="if(confirm('Reject this transfer?')) { @this.call('updateStatus', 'rejected') }">
                     <x-icon name="o-x-mark" class="w-4 h-4" />
                     Reject
                 </button>
             @elseif($quickActionsData['status'] === \App\Enums\AssetTransferStatus::APPROVED->value)
-                <button class="btn btn-info btn-sm" wire:click="openStatusModal">
+                <button class="btn btn-info btn-sm" onclick="if(confirm('Start this transfer?')) { @this.call('updateStatus', 'in_progress') }">
                     <x-icon name="o-truck" class="w-4 h-4" />
                     Start Transfer
-                </button>
-            @elseif($quickActionsData['status'] === \App\Enums\AssetTransferStatus::EXECUTED->value)
-                <button class="btn btn-success btn-sm" wire:click="openStatusModal">
-                    <x-icon name="o-check-circle" class="w-4 h-4" />
-                    Complete Transfer
                 </button>
             @endif
 

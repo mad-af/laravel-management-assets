@@ -66,7 +66,7 @@
                 @endscope
 
                 @scope('cell_items_count', $transfer)
-                <x-badge value="{{ $transfer->items_count ?? $transfer->items->count() }} item" class="badge-neutral badge-sm" />
+                <x-badge value="{{ $transfer->items_count ?? $transfer->items->count() }} item" class="badge-neutral badge-outline badge-sm" />
                 @endscope
 
                 @scope('cell_status', $transfer)

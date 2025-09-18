@@ -13,7 +13,6 @@
                     ['key' => 'asset_info', 'label' => 'Asset'],
                     ['key' => 'from_location', 'label' => 'From Location'],
                     ['key' => 'to_location', 'label' => 'To Location'],
-                    ['key' => 'current_location', 'label' => 'Current Location']
                 ];
             @endphp
 
@@ -32,15 +31,11 @@
                     @endscope
 
                     @scope('cell_from_location', $item)
-                    {{ $item['from_location'] ?? 'N/A' }}
+                    <span class="font-semibold">{{ $item['from_location'] ?? 'N/A' }}</span>
                     @endscope
 
                     @scope('cell_to_location', $item)
-                    {{ $item['to_location'] ?? 'N/A' }}
-                    @endscope
-
-                    @scope('cell_current_location', $item)
-                    {{ $item['current_location'] ?? 'N/A' }}
+                    <span class="font-semibold">{{ $item['to_location'] ?? 'N/A' }}</span>
                     @endscope
                 </x-table>
             @else
