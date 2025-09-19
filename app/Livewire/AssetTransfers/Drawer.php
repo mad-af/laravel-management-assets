@@ -17,9 +17,6 @@ class Drawer extends Component
     public ?string $editingTransferId = null;
 
     protected $listeners = [
-        'closeDrawer' => 'closeDrawer',
-        'transfer-saved' => 'handleTransferSaved',
-        'transfer-updated' => 'handleTransferSaved',
         'close-drawer' => 'closeDrawer',
         'open-drawer' => 'openDrawer',
         'open-edit-drawer' => 'openEditDrawer',

@@ -22,7 +22,7 @@
             @foreach($additionalButtons as $button)
                 @if(isset($button['action']))
                     <x-button icon="{{ $button['icon'] ?? 'o-plus' }}" class="{{ $button['class'] ?? 'btn-outline btn-sm' }}"
-                        wire:click="{{ $button['action'] }}">
+                        wire:click="executeAdditionalButtonAction('{{ $button['action'] }}')">
                         {{ $button['text'] }}
                     </x-button>
                 @else

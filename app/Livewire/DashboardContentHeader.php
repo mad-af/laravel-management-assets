@@ -56,26 +56,36 @@ class DashboardContentHeader extends Component
 
     public function executeButtonAction()
     {
-        if ($this->buttonAction) {
-            // Handle specific drawer actions
-            if (in_array($this->buttonAction, [
-                'openCategoryDrawer', 
-                'openUserDrawer', 
-                'openLocationDrawer', 
-                'openCompanyDrawer', 
-                'openAssetDrawer', 
-                'openAssetLoanDrawer'
-            ])) {
+        switch ($this->buttonAction) {
+            case 'openCategoryDrawer':
+            case 'openUserDrawer':
+            case 'openLocationDrawer':
+            case 'openCompanyDrawer':
+            case 'openAssetDrawer':
+            case 'openAssetLoanDrawer':
                 $this->dispatch('openDrawer');
-            } elseif (in_array($this->buttonAction, [
-                'openAssetTransferDrawer', 
-                'openVehicleDrawer',
-            ])) {
+                break;
+            case 'openAssetTransferDrawer':
                 $this->dispatch('open-drawer');
-            } else {
-                // For other actions, dispatch as-is
+                break;
+            case 'openVehicleProfileDrawer':
+                $this->dispatch('open-profile-drawer');
+                break;
+            default:
                 $this->dispatch($this->buttonAction);
-            }
+                break;
+        }
+    }
+
+    public function executeAdditionalButtonAction($action)
+    {
+        switch ($action) {
+            case 'openVehicleOdometerDrawer':
+                $this->dispatch('open-odometer-drawer');
+                break;
+            default:
+                $this->dispatch($action);
+                break;
         }
     }
 }

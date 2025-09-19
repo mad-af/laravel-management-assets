@@ -11,15 +11,25 @@
             <!-- Drawer Header -->
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-lg font-semibold">
-                    {{ $editingVehicleId ? 'Edit Vehicle Profile' : 'Add New Vehicle Profile' }}
+                    @if($this->isActionSaveProfile())
+                        {{ 'Save Vehicle Profile' }}
+                    @elseif($this->isActionSaveOdometer())
+                        {{ 'Save Odometer Log' }}
+                    @endif
                 </h2>
                 <button wire:click="closeDrawer" class="btn btn-sm btn-circle btn-ghost">
                     <x-icon name="o-x-mark" class="w-5 h-5" />
                 </button>
             </div>
 
-            <!-- Vehicle Form -->
-            <livewire:vehicles.form :vehicleId="$editingVehicleId" :key="'vehicle-form-' . ($editingVehicleId ?? 'new')" />
+            <!-- Form Content -->
+            @if($this->isActionSaveProfile())
+                <!-- Vehicle Profile Form -->
+                <livewire:vehicles.profile-form :assetId="$assetId" :key="'profile-form-' . ($assetId ?? 'save')" />
+            @elseif($this->isActionSaveOdometer())
+                <!-- Odometer Log Form -->
+                <livewire:vehicles.odometer-form :assetId="$assetId" :key="'odometer-form-' . ($assetId ?? 'save')" />
+            @endif
         </div>
     </div>
 </div>

@@ -9,10 +9,11 @@ use Livewire\Component;
 use Mary\Traits\Toast;
 use Illuminate\Support\Facades\Auth;
 
-class Form extends Component
+class ProfileForm extends Component
 {
     use Toast, WithAlert;
 
+    public $assetId;
     public $vehicleId;
     public $asset_id = '';
     public $year_purchase = '';
@@ -56,11 +57,11 @@ class Form extends Component
         'resetForm' => 'resetForm'
     ];
 
-    public function mount($vehicleId = null)
+    public function mount($assetId = null)
     {
-        $this->vehicleId = $vehicleId;
+        $this->assetId = $assetId;
         
-        if ($vehicleId) {
+        if ($assetId) {
             $this->isEdit = true;
             $this->loadVehicle();
         }
@@ -70,9 +71,11 @@ class Form extends Component
 
     public function loadVehicle()
     {
-        if ($this->vehicleId) {
-            $vehicle = VehicleProfile::find($this->vehicleId);
-            if ($vehicle) {
+        if ($this->assetId) {
+            $vehicle = optional(
+            Asset::with('vehicleProfile')->find($this->assetId)
+            )->vehicleProfile;
+            if($vehicle){
                 $this->asset_id = $vehicle->asset_id;
                 $this->year_purchase = $vehicle->year_purchase;
                 $this->year_manufacture = $vehicle->year_manufacture;
@@ -160,8 +163,7 @@ class Form extends Component
                 return $asset;
             });
         
-        return view('livewire.vehicles.form', compact('assets'))
-            ->with('vehicleId', $this->vehicleId)
-            ->with('isEdit', $this->isEdit);
+        return view('livewire.vehicles.profile-form', compact('assets'))
+            ->with('assetId', $this->assetId);
     }
 }

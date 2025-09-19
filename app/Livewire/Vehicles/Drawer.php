@@ -7,23 +7,30 @@ use Livewire\Attributes\Url;
 
 class Drawer extends Component
 {
-    #[Url(as: 'action')]       // ?action=create|edit
+    #[Url(as: 'action')]       // ?action=save-profile|save-odometer
     public ?string $action = null;
 
-    #[Url(as: 'vehicle_id')]  // ?vehicle_id=123
-    public ?string $vehicle_id = null;
+    #[Url(as: 'asset_id')]  // ?asset_id=123
+    public ?string $asset_id = null;
 
     public bool $showDrawer = false;
-    public ?string $editingVehicleId = null;
+    public ?string $assetId = null;
 
     protected $listeners = [
-        'closeDrawer' => 'closeDrawer',
-        'vehicle-saved' => 'handleVehicleSaved',
-        'vehicle-updated' => 'handleVehicleSaved',
         'close-drawer' => 'closeDrawer',
-        'open-drawer' => 'openDrawer',
-        'open-edit-drawer' => 'openEditDrawer',
+        'open-profile-drawer' => 'openProfileDrawer',
+        'open-odometer-drawer' => 'openOdometerDrawer',
     ];
+
+    public function isActionSaveProfile(): bool
+    {
+        return $this->action === 'save-profile';
+    }
+
+    public function isActionSaveOdometer(): bool
+    {
+        return $this->action === 'save-odometer';
+    }
 
     public function mount()
     {
@@ -36,49 +43,51 @@ class Drawer extends Component
         $this->applyActionFromUrl();
     }
 
-    public function updatedVehicleId()
+    public function updatedAssetId()
     {
         $this->applyActionFromUrl();
     }
 
     protected function applyActionFromUrl(): void
     {
-        if ($this->action === 'create') {
+        $isDrawerAction = in_array($this->action, [
+                'save-profile', 
+                'save-odometer',
+            ]);
+
+        if ($isDrawerAction && $this->asset_id) {
             $this->showDrawer = true;
-            $this->editingVehicleId = null;
-        } elseif ($this->action === 'edit' && $this->vehicle_id) {
-            $this->showDrawer   = true;
-            $this->editingVehicleId = $this->vehicle_id;
+            $this->assetId = $this->asset_id;
+        } elseif ($isDrawerAction) {
+            $this->showDrawer = true;
+            $this->assetId = null;
         } // else: biarkan state tetap (jangan auto-tutup tiap update)
     }
 
-    public function openEditDrawer($vehicleId)
+    public function openProfileDrawer(?string $assetId = null)
     {
-        $this->action = 'edit';
-        $this->vehicle_id = $vehicleId;
+        $this->action = 'save-profile';
+        $this->asset_id = $assetId;
         $this->applyActionFromUrl();
     }
 
-    public function openDrawer()
+    public function openOdometerDrawer(?string $assetId = null)
     {
-        $this->action = 'create';
+        $this->action = 'save-odometer';
+        $this->asset_id = $assetId;
         $this->applyActionFromUrl();
     }
 
     public function closeDrawer()
     {
         $this->showDrawer = false;
-        $this->editingVehicleId = null;
-        $this->dispatch('resetForm');
+        $this->assetId = null;
+        $this->dispatch('resetProfileForm');
+        $this->dispatch('resetOdometerForm');
 
         // hapus query di URL (Url-bound akan pushState)
         $this->action = null;
-        $this->vehicle_id = null;
-    }
-
-    public function handleVehicleSaved()
-    {
-        $this->closeDrawer();
+        $this->asset_id = null;
     }
 
     public function render()
