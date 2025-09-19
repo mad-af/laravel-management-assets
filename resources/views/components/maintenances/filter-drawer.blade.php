@@ -11,7 +11,7 @@
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-lg font-semibold">Filter Maintenances</h2>
                 <label for="filter-drawer" class="btn btn-sm btn-circle btn-ghost">
-                    <x-mary-icon name="o-x-mark" class="w-5 h-5" />
+                    <x-icon name="o-x-mark" class="w-5 h-5" />
                 </label>
             </div>
 
@@ -106,7 +106,7 @@
                 <!-- Action Buttons -->
                 <div class="flex gap-2 pt-3">
                     <button type="submit" class="flex-1 btn btn-primary btn-sm">
-                        <x-mary-icon name="o-funnel" class="mr-2 w-4 h-4" />
+                        <x-icon name="o-funnel" class="mr-2 w-4 h-4" />
                         Apply Filters
                     </button>
                     <button type="button" class="flex-1 btn btn-outline btn-sm" onclick="clearFilters()">

@@ -14,7 +14,7 @@
                     Edit User: {{ $user->name ?? 'Loading...' }}
                 </h2>
                 <button wire:click="closeDrawer" class="btn btn-sm btn-circle btn-ghost">
-                    <x-mary-icon name="o-x-mark" class="w-5 h-5" />
+                    <x-icon name="o-x-mark" class="w-5 h-5" />
                 </button>
             </div>
 
