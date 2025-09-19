@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
@@ -87,6 +88,30 @@ class Asset extends Model
     public function locationHistories(): HasMany
     {
         return $this->hasMany(AssetLocationHistory::class)->orderBy('changed_at', 'desc');
+    }
+
+    /**
+     * Get the vehicle profile for the asset.
+     */
+    public function vehicleProfile(): HasOne
+    {
+        return $this->hasOne(VehicleProfile::class, 'asset_id');
+    }
+
+    /**
+     * Get the vehicle odometer logs for the asset.
+     */
+    public function vehicleOdometerLogs(): HasMany
+    {
+        return $this->hasMany(VehicleOdometerLog::class)->orderBy('read_at', 'desc');
+    }
+
+    /**
+     * Check if asset is a vehicle.
+     */
+    public function isVehicle(): bool
+    {
+        return $this->vehicleProfile()->exists();
     }
 
     /**
