@@ -79,17 +79,24 @@
                 @scope('cell_actions', $vehicle)
                 <x-action-dropdown :model="$vehicle">
                     <li>
+                        <button wire:click="openOdometerDrawer('{{ $vehicle->id }}')"
+                            class="flex gap-2 items-center p-2 text-sm rounded text-primary" onclick="document.getElementById('dropdown-menu-{{ $vehicle->id }}').hidePopover()">
+                            <x-icon name="o-calculator" class="w-4 h-4" />
+                            Save Odometer
+                        </button>
+                    </li>
+                    <li>
                         <button wire:click="viewDetail('{{ $vehicle->id }}')"
-                            class="flex gap-2 items-center p-2 text-sm rounded" onclick="document.activeElement.blur()">
+                            class="flex gap-2 items-center p-2 text-sm rounded" onclick="document.getElementById('dropdown-menu-{{ $vehicle->id }}').hidePopover()">
                             <x-icon name="o-eye" class="w-4 h-4" />
                             Detail
                         </button>
                     </li>
                     <li>
-                        <button wire:click="openEditDrawer('{{ $vehicle->id }}')"
-                            class="flex gap-2 items-center p-2 text-sm rounded" onclick="document.activeElement.blur()">
+                        <button wire:click="openProfileDrawer('{{ $vehicle->id }}')"
+                            class="flex gap-2 items-center p-2 text-sm rounded" onclick="document.getElementById('dropdown-menu-{{ $vehicle->id }}').hidePopover()">
                             <x-icon name="o-pencil" class="w-4 h-4" />
-                            Edit
+                            Edit Profile
                         </button>
                     </li>
                     <li>

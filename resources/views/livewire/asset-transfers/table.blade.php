@@ -99,14 +99,14 @@
                 <x-action-dropdown :model="$transfer">
                     <li>
                         <button wire:click="viewDetail('{{ $transfer->id }}')"
-                            class="flex gap-2 items-center p-2 text-sm rounded" onclick="document.activeElement.blur()">
+                            class="flex gap-2 items-center p-2 text-sm rounded" onclick="document.getElementById('dropdown-menu-{{ $transfer->id }}').hidePopover()">
                             <x-icon name="o-eye" class="w-4 h-4" />
                             Detail
                         </button>
                     </li>
                     <li>
                         <button wire:click="openEditDrawer('{{ $transfer->id }}')"
-                            class="flex gap-2 items-center p-2 text-sm rounded" onclick="document.activeElement.blur()">
+                            class="flex gap-2 items-center p-2 text-sm rounded" onclick="document.getElementById('dropdown-menu-{{ $transfer->id }}').hidePopover()">
                             <x-icon name="o-pencil" class="w-4 h-4" />
                             Edit
                         </button>
@@ -114,7 +114,7 @@
                     <li>
                         <button wire:click="delete('{{ $transfer->id }}')"
                             wire:confirm="Are you sure you want to delete this transfer?"
-                            class="flex gap-2 items-center p-2 text-sm rounded text-error">
+                            class="flex gap-2 items-center p-2 text-sm rounded text-error" onclick="document.getElementById('dropdown-menu-{{ $transfer->id }}').hidePopover()">
                             <x-icon name="o-trash" class="w-4 h-4" />
                             Delete
                         </button>

@@ -33,14 +33,14 @@ class Table extends Component
         $this->resetPage();
     }
 
-    public function openDrawer()
+    public function openOdometerDrawer($assetId)
     {
-        $this->dispatch('open-drawer');
+        $this->dispatch('open-odometer-drawer', $assetId);
     }
 
-    public function openEditDrawer($vehicleId)
+    public function openProfileDrawer($assetId)
     {
-        $this->dispatch('open-edit-drawer', vehicleId: $vehicleId);
+        $this->dispatch('open-profile-drawer', $assetId);
     }
 
     public function viewDetail($vehicleId)
