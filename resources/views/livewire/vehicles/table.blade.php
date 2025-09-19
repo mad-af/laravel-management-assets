@@ -30,11 +30,11 @@
             @php
                 $headers = [
                     ['key' => 'name', 'label' => 'Vehicle Name'],
+                    ['key' => 'code', 'label' => 'Asset Code'],
                     ['key' => 'license_plate', 'label' => 'License Plate'],
                     ['key' => 'brand_model', 'label' => 'Brand & Model'],
-                    ['key' => 'year', 'label' => 'Year'],
                     ['key' => 'status', 'label' => 'Status'],
-                    ['key' => 'current_odometer', 'label' => 'Odometer (km)'],
+                    ['key' => 'location', 'label' => 'Location'],
                     ['key' => 'actions', 'label' => 'Actions', 'class' => 'w-20'],
                 ];
             @endphp
@@ -43,39 +43,37 @@
                 <span class="font-medium">{{ $vehicle->name }}</span>
                 @endscope
 
+                @scope('cell_code', $vehicle)
+                <span class="font-mono text-sm">{{ $vehicle->code }}</span>
+                @endscope
+
                 @scope('cell_license_plate', $vehicle)
-                <span class="font-mono font-medium">{{ $vehicle->license_plate }}</span>
+                <span class="font-mono font-medium">{{ $vehicle->vehicleProfile?->plate_no ?? '-' }}</span>
                 @endscope
 
                 @scope('cell_brand_model', $vehicle)
                 <div class="text-sm">
-                    <div class="font-medium">{{ $vehicle->brand ?? '-' }}</div>
-                    <div class="text-base-content/70">{{ $vehicle->model ?? '-' }}</div>
+                    <div class="font-medium">{{ $vehicle->vehicleProfile?->brand ?? '-' }}</div>
+                    <div class="text-base-content/70">{{ $vehicle->vehicleProfile?->model ?? '-' }}</div>
                 </div>
-                @endscope
-
-                @scope('cell_year', $vehicle)
-                <span>{{ $vehicle->year ?? '-' }}</span>
                 @endscope
 
                 @scope('cell_status', $vehicle)
                 @php
                     $statusColors = [
                         'active' => 'badge-success',
-                        'inactive' => 'badge-neutral',
+                        'damaged' => 'badge-error',
+                        'lost' => 'badge-error',
                         'maintenance' => 'badge-warning',
+                        'checked_out' => 'badge-info',
                     ];
-                    $statusColor = $statusColors[$vehicle->status] ?? 'badge-neutral';
+                    $statusColor = $statusColors[$vehicle->status->value] ?? 'badge-neutral';
                 @endphp
-                <x-badge value="{{ ucfirst($vehicle->status) }}" class="{{ $statusColor }} badge-sm" />
+                <x-badge value="{{ ucfirst($vehicle->status->value) }}" class="{{ $statusColor }} badge-sm" />
                 @endscope
 
-                @scope('cell_current_odometer', $vehicle)
-                @if($vehicle->current_odometer)
-                    <span>{{ number_format($vehicle->current_odometer) }} km</span>
-                @else
-                    <span class="text-base-content/50">-</span>
-                @endif
+                @scope('cell_location', $vehicle)
+                <span class="text-sm">{{ $vehicle->location?->name ?? '-' }}</span>
                 @endscope
 
                 @scope('cell_actions', $vehicle)

@@ -2,8 +2,8 @@
 
 namespace App\Livewire\Vehicles;
 
-use App\Models\VehicleProfile;
 use App\Models\Asset;
+use App\Models\Category;
 use App\Traits\WithAlert;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -51,33 +51,39 @@ class Table extends Component
     public function delete($vehicleId)
     {
         try {
-            $vehicle = VehicleProfile::findOrFail($vehicleId);
+            $vehicle = Asset::findOrFail($vehicleId);
             
             $vehicle->delete();
             
-            $this->showSuccessAlert('Profil kendaraan berhasil dihapus.', 'Berhasil');
+            $this->showSuccessAlert('Kendaraan berhasil dihapus.', 'Berhasil');
             $this->dispatch('vehicle-deleted');
             
         } catch (\Exception $e) {
-            $this->showErrorAlert('Gagal menghapus profil kendaraan: ' . $e->getMessage(), 'Error');
+            $this->showErrorAlert('Gagal menghapus kendaraan: ' . $e->getMessage(), 'Error');
         }
     }
 
     public function render()
     {
-        $vehicles = VehicleProfile::query()
-            ->with(['asset'])
+        $vehicleCategory = Category::where('name', 'Kendaraan')->first();
+        
+        $vehicles = Asset::query()
+            ->with(['category', 'location', 'vehicleProfile'])
+            ->where('category_id', $vehicleCategory?->id)
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
-                    $q->where('plate_no', 'like', '%' . $this->search . '%')
-                      ->orWhere('brand', 'like', '%' . $this->search . '%')
-                      ->orWhere('model', 'like', '%' . $this->search . '%')
-                      ->orWhere('vin', 'like', '%' . $this->search . '%')
-                      ->orWhereHas('asset', function ($asset) {
-                          $asset->where('name', 'like', '%' . $this->search . '%')
-                                ->orWhere('asset_code', 'like', '%' . $this->search . '%');
+                    $q->where('name', 'like', '%' . $this->search . '%')
+                      ->orWhere('code', 'like', '%' . $this->search . '%')
+                      ->orWhereHas('vehicleProfile', function ($profile) {
+                          $profile->where('plate_no', 'like', '%' . $this->search . '%')
+                                  ->orWhere('brand', 'like', '%' . $this->search . '%')
+                                  ->orWhere('model', 'like', '%' . $this->search . '%')
+                                  ->orWhere('vin', 'like', '%' . $this->search . '%');
                       });
                 });
+            })
+            ->when($this->statusFilter, function ($query) {
+                $query->where('status', $this->statusFilter);
             })
             ->orderBy('created_at', 'desc')
             ->paginate(10);

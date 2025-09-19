@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\VehicleProfile;
+use App\Models\Asset;
+use App\Models\Category;
 use Illuminate\Http\Request;
 
 class VehicleController extends Controller
@@ -16,10 +17,19 @@ class VehicleController extends Controller
     }
 
     /**
-     * Display the specified vehicle profile.
+     * Display the specified vehicle.
      */
-    public function show(VehicleProfile $vehicleProfile)
+    public function show(Asset $vehicle)
     {
-        return view('dashboard.vehicles.show', compact('vehicleProfile'));
+        // Load necessary relationships
+        $vehicle->load(['category', 'location', 'vehicleProfile']);
+        
+        // Ensure this is actually a vehicle asset
+        $vehicleCategory = Category::where('name', 'Kendaraan')->first();
+        if (!$vehicleCategory || $vehicle->category_id !== $vehicleCategory->id) {
+            abort(404, 'Vehicle not found');
+        }
+        
+        return view('dashboard.vehicles.show', compact('vehicle'));
     }
 }
