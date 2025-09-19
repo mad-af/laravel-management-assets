@@ -20,7 +20,13 @@ class Drawer extends Component
         'close-drawer' => 'closeDrawer',
         'open-profile-drawer' => 'openProfileDrawer',
         'open-odometer-drawer' => 'openOdometerDrawer',
+        'asset-id-changed' => 'handleAssetIdChanged'
     ];
+
+    public function handleAssetIdChanged($assetId)
+    {
+        $this->asset_id = $assetId;
+    }
 
     public function isActionSaveProfile(): bool
     {

@@ -4,6 +4,7 @@ namespace App\Livewire\Vehicles;
 
 use App\Models\VehicleProfile;
 use App\Models\Asset;
+use App\Models\Category;
 use App\Traits\WithAlert;
 use Livewire\Component;
 use Mary\Traits\Toast;
@@ -57,9 +58,27 @@ class ProfileForm extends Component
         'resetForm' => 'resetForm'
     ];
 
+    public function updatedAssetId($value)
+    {
+        // keep event dispatch as-is
+        $this->dispatch('asset-id-changed', $value);
+
+        // sync aliases
+        $this->asset_id = $value;
+        $this->assetId = $value;
+
+        // treat empty/blank as reset
+        if (\Illuminate\Support\Str::of((string) $value)->trim()->isEmpty()) {
+            $this->resetForm();
+            return;
+        }
+
+        $this->loadVehicle($value);
+    }
+
     public function mount($assetId = null)
     {
-        $this->assetId = $assetId;
+        $this->asset_id = $assetId;
         
         if ($assetId) {
             $this->isEdit = true;
@@ -67,36 +86,46 @@ class ProfileForm extends Component
         }
     }
 
-
-
-    public function loadVehicle()
+    public function loadVehicle($param = null)
     {
-        if ($this->assetId) {
-            $vehicle = optional(
-            Asset::with('vehicleProfile')->find($this->assetId)
-            )->vehicleProfile;
-            if($vehicle){
-                $this->asset_id = $vehicle->asset_id;
-                $this->year_purchase = $vehicle->year_purchase;
-                $this->year_manufacture = $vehicle->year_manufacture;
-                $this->current_odometer_km = $vehicle->current_odometer_km;
-                $this->last_service_date = $vehicle->last_service_date?->format('Y-m-d');
-                $this->service_interval_km = $vehicle->service_interval_km;
-                $this->service_interval_days = $vehicle->service_interval_days;
-                $this->service_target_odometer_km = $vehicle->service_target_odometer_km;
-                $this->next_service_date = $vehicle->next_service_date?->format('Y-m-d');
-                $this->annual_tax_due_date = $vehicle->annual_tax_due_date?->format('Y-m-d');
-                $this->plate_no = $vehicle->plate_no;
-                $this->vin = $vehicle->vin;
-                $this->brand = $vehicle->brand;
-                $this->model = $vehicle->model;
-            }
+        if ($param !== null) {
+            $this->assetId = $param;
+            $this->asset_id = $param; // keep in sync
+        }
+
+        if (! $this->assetId) {
+            return;
+        }
+
+        $vehicle = Asset::with('vehicleProfile')->find($this->assetId)?->vehicleProfile;
+
+
+        if ($vehicle) {
+            // ensure vehicleId is available for update path
+            $this->vehicleId = (string) $vehicle->id;
+
+
+            $this->year_purchase = $vehicle->year_purchase;
+            $this->year_manufacture = $vehicle->year_manufacture;
+            $this->current_odometer_km = $vehicle->current_odometer_km;
+            $this->last_service_date = optional($vehicle->last_service_date)->format('Y-m-d');
+            $this->service_interval_km = $vehicle->service_interval_km;
+            $this->service_interval_days = $vehicle->service_interval_days;
+            $this->service_target_odometer_km = $vehicle->service_target_odometer_km;
+            $this->next_service_date = optional($vehicle->next_service_date)->format('Y-m-d');
+            $this->annual_tax_due_date = optional($vehicle->annual_tax_due_date)->format('Y-m-d');
+            $this->plate_no = $vehicle->plate_no;
+            $this->vin = $vehicle->vin;
+            $this->brand = $vehicle->brand;
+            $this->model = $vehicle->model;
+        } else {
+            $this->vehicleId = null;
+            $this->resetForm();
         }
     }
 
     public function resetForm()
     {
-        $this->asset_id = '';
         $this->year_purchase = '';
         $this->year_manufacture = '';
         $this->current_odometer_km = '';
@@ -154,15 +183,18 @@ class ProfileForm extends Component
 
     public function render()
     {
-        $assets = Asset::where('company_id', Auth::user()?->company_id)
-            ->whereDoesntHave('vehicleProfile')
-            ->orWhere('id', $this->asset_id)
+        // asumsi $vehicleCategory sudah diambil seperti di bawah
+        $vehicleCategory = Category::where('name', 'Kendaraan')->first();
+
+        $assets = Asset::query()
+            ->where('category_id', $vehicleCategory?->id)
+            ->orderByDesc('created_at')
             ->get()
             ->map(function ($asset) {
-                $asset->display_name = $asset->name . ' (' . $asset->asset_code . ')';
+                $asset->display_name = $asset->name . ' (' . $asset->code . ')';
                 return $asset;
             });
-        
+
         return view('livewire.vehicles.profile-form', compact('assets'))
             ->with('assetId', $this->assetId);
     }

@@ -1,6 +1,6 @@
 <form wire:submit="save" class="space-y-2">
     <!-- Asset Selection -->
-    <x-select name="asset_id" label="Vehicle" class="select-sm" wire:model="asset_id" :options="$assets"
+    <x-select name="asset_id" label="Vehicle" class="select-sm" wire:model.live="asset_id" :options="$assets"
         option-value="id" option-label="display_name" placeholder="Select vehicle" required />
 
     <!-- Odometer Reading -->

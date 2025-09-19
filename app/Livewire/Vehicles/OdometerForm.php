@@ -5,6 +5,7 @@ namespace App\Livewire\Vehicles;
 use App\Models\VehicleOdometerLog;
 use App\Models\Asset;
 use App\Enums\VehicleOdometerSource;
+use App\Models\Category;
 use App\Traits\WithAlert;
 use Livewire\Component;
 use Mary\Traits\Toast;
@@ -18,7 +19,7 @@ class OdometerForm extends Component
     public $asset_id = '';
     public $reading_km = '';
     public $read_at = '';
-    public $source = '';
+    public $source = VehicleOdometerSource::MANUAL;
     public $notes = '';
     public $isEdit = false;
 
@@ -38,10 +39,31 @@ class OdometerForm extends Component
         'resetOdometerForm' => 'resetForm'
     ];
 
+    public function updatedAssetId($value)
+    {
+        // keep event dispatch as-is
+        $this->dispatch('asset-id-changed', $value);
+
+        // treat empty/blank as reset
+        if (\Illuminate\Support\Str::of((string) $value)->trim()->isEmpty()) {
+            $this->resetForm();
+            return;
+        }
+
+        // For OdometerForm, we don't need to load existing data like ProfileForm
+        // Just keep the asset_id updated
+    }
+
     public function mount($odometerLogId = null)
     {
         $this->odometerLogId = $odometerLogId;
         $this->read_at = now()->format('Y-m-d H:i');
+        
+        // Get asset_id from URL parameter if available
+        $urlAssetId = request()->get('asset_id');
+        if ($urlAssetId && !$odometerLogId) {
+            $this->asset_id = $urlAssetId;
+        }
         
         if ($odometerLogId) {
             $this->isEdit = true;
@@ -105,19 +127,20 @@ class OdometerForm extends Component
 
     public function render()
     {
-        $assets = Asset::where('company_id', Auth::user()?->company_id)
-            ->whereHas('vehicleProfile')
+        $vehicleCategory = Category::where('name', 'Kendaraan')->first();
+
+        $assets = Asset::query()
+            ->where('category_id', $vehicleCategory?->id)
+            ->orderByDesc('created_at')
             ->get()
             ->map(function ($asset) {
                 $asset->display_name = $asset->name . ' (' . $asset->code . ')';
                 return $asset;
             });
         
-        $sources = [
-            ['value' => 'manual', 'label' => 'Manual'],
-            ['value' => 'telematics', 'label' => 'Telematics'],
-            ['value' => 'service', 'label' => 'Service']
-        ];
+        $sources = collect(VehicleOdometerSource::options())->map(function ($label, $value) {
+            return ['value' => $value, 'label' => $label];
+        })->values()->toArray();
         
         return view('livewire.vehicles.odometer-form', compact('assets', 'sources'))
             ->with('odometerLogId', $this->odometerLogId)
