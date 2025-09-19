@@ -68,7 +68,7 @@ class DashboardContentHeader extends Component
             ])) {
                 $this->dispatch('openDrawer');
             } elseif ($this->buttonAction === 'openAssetTransferDrawer') {
-                return $this->redirect(route('asset-transfers.index', ['action' => 'create']));
+                $this->dispatch('open-drawer');
             } else {
                 // For other actions, dispatch as-is
                 $this->dispatch($this->buttonAction);
