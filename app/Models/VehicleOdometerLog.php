@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\VehicleOdometerSource;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -22,6 +23,7 @@ class VehicleOdometerLog extends Model
         'asset_id' => 'string',
         'reading_km' => 'integer',
         'read_at' => 'datetime',
+        'source' => VehicleOdometerSource::class,
     ];
     
     /**

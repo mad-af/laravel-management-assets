@@ -8,58 +8,18 @@ use Illuminate\Http\Request;
 class VehicleController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Display a listing of the vehicles with Livewire components.
      */
     public function index()
     {
-        //
+        return view('dashboard.vehicles.index');
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
+     * Display the specified vehicle profile.
      */
     public function show(VehicleProfile $vehicleProfile)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(VehicleProfile $vehicleProfile)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, VehicleProfile $vehicleProfile)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(VehicleProfile $vehicleProfile)
-    {
-        //
+        return view('dashboard.vehicles.show', compact('vehicleProfile'));
     }
 }

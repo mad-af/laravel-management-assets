@@ -9,6 +9,7 @@ use App\Http\Controllers\AssetController;
 use App\Http\Controllers\AssetLoanController;
 use App\Http\Controllers\AssetLogController;
 use App\Http\Controllers\AssetTransferController;
+use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\MaintenanceController;
@@ -72,6 +73,9 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     // Asset Transfer Routes
     Route::resource('asset-transfers', AssetTransferController::class);
     Route::patch('asset-transfers/{assetTransfer}/execute', [AssetTransferController::class, 'execute'])->name('asset-transfers.execute');
+    
+    // Vehicle Management Routes
+    Route::resource('vehicles', VehicleController::class);
     
     // Category Management Routes
     Route::resource('categories', CategoryController::class);

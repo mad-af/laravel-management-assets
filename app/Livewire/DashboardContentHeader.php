@@ -67,7 +67,10 @@ class DashboardContentHeader extends Component
                 'openAssetLoanDrawer'
             ])) {
                 $this->dispatch('openDrawer');
-            } elseif ($this->buttonAction === 'openAssetTransferDrawer') {
+            } elseif (in_array($this->buttonAction, [
+                'openAssetTransferDrawer', 
+                'openVehicleDrawer',
+            ])) {
                 $this->dispatch('open-drawer');
             } else {
                 // For other actions, dispatch as-is

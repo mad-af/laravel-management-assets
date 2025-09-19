@@ -34,6 +34,11 @@
                     'route' => 'asset-logs.index',
                     'icon' => 'o-document-text',
                     'label' => 'Asset Logs'
+                ],
+                [
+                    'route' => 'vehicles.index',
+                    'icon' => 'o-truck',
+                    'label' => 'Vehicles'
                 ]
             ]
         ],
