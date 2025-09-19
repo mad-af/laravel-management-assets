@@ -3,7 +3,7 @@
 !define pk(x) <u>x</u>
 !define fk(x) <i>x</i>
 
-title Laravel Asset Management System - Entity Relationship Diagram (Multi-tenant with Companies) + Asset Transfer (MVP)
+title Laravel Asset Management System - ERD (Multi-tenant) + Asset Transfer (MVP) + Vehicle (MVP) + Service Log Enhancements
 
 ' ==========================
 ' Company / Tenant Table
@@ -99,7 +99,9 @@ table(asset_loans) {
   updated_at : TIMESTAMP
 }
 
-table(asset_maintenances) {
+' ============ UPDATED ============
+' Service log untuk SEMUA aset; diperkuat untuk kendaraan
+ table(asset_maintenances) {
   pk(id) : UUID
   fk(asset_id) : UUID
   title : VARCHAR
@@ -113,6 +115,12 @@ table(asset_maintenances) {
   technician_name : VARCHAR [NULL]
   vendor_name : VARCHAR [NULL]
   notes : TEXT [NULL]
+  ' ---- Vehicle-specific helpers (tanpa tabel baru)
+  odometer_km_at_service : INT [NULL]
+  next_service_target_odometer_km : INT [NULL]
+  next_service_date : DATE [NULL]
+  workshop_name : VARCHAR [NULL]
+  invoice_no : VARCHAR [NULL]
   created_at : TIMESTAMP
   updated_at : TIMESTAMP
 }
@@ -120,8 +128,7 @@ table(asset_maintenances) {
 ' ==========================
 ' NEW: Asset Transfer (MVP)
 ' ==========================
-' Header dokumen mutasi aset (batch, multi-aset)
-table(asset_transfers) {
+ table(asset_transfers) {
   pk(id) : UUID
   fk(company_id) : UUID
   transfer_no : VARCHAR [UNIQUE]
@@ -140,8 +147,7 @@ table(asset_transfers) {
   updated_at : TIMESTAMP
 }
 
-' Item per aset dalam satu transfer (asal & tujuan lokasi)
-table(asset_transfer_items) {
+ table(asset_transfer_items) {
   pk(id) : UUID
   fk(asset_transfer_id) : UUID
   fk(asset_id) : UUID
@@ -151,8 +157,7 @@ table(asset_transfer_items) {
   updated_at : TIMESTAMP
 }
 
-' Riwayat perubahan lokasi aset (audit trail)
-table(asset_location_history) {
+ table(asset_location_history) {
   pk(id) : UUID
   fk(asset_id) : UUID
   fk(from_location_id) : UUID [NULL]
@@ -164,67 +169,36 @@ table(asset_location_history) {
 }
 
 ' ==========================
-' Laravel System Tables
+' NEW: Vehicle (MVP)
 ' ==========================
-
-table(password_reset_tokens) {
-  pk(email) : VARCHAR
-  token : VARCHAR
-  created_at : TIMESTAMP [NULL]
+ table(vehicle_profiles) {
+  pk(asset_id) : UUID
+  year_purchase : INT
+  year_manufacture : INT
+  current_odometer_km : INT [DEFAULT: 0]
+  last_service_date : DATE [NULL]
+  service_interval_km : INT [NULL]
+  service_interval_days : INT [NULL]
+  service_target_odometer_km : INT [NULL]
+  next_service_date : DATE [NULL]
+  annual_tax_due_date : DATE [NULL]
+  plate_no : VARCHAR(32) [NULL]
+  vin : VARCHAR(64) [NULL]
+  brand : VARCHAR(64) [NULL]
+  model : VARCHAR(64) [NULL]
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
 }
 
- table(sessions) {
-  pk(id) : VARCHAR
-  fk(user_id) : UUID [NULL]
-  ip_address : VARCHAR(45) [NULL]
-  user_agent : TEXT [NULL]
-  payload : LONGTEXT
-  last_activity : INTEGER
-}
-
- table(cache) {
-  pk(key) : VARCHAR
-  value : MEDIUMTEXT
-  expiration : INTEGER
-}
-
- table(cache_locks) {
-  pk(key) : VARCHAR
-  owner : VARCHAR
-  expiration : INTEGER
-}
-
- table(jobs) {
-  pk(id) : BIGINT
-  queue : VARCHAR
-  payload : LONGTEXT
-  attempts : TINYINT
-  reserved_at : INTEGER [NULL]
-  available_at : INTEGER
-  created_at : INTEGER
-}
-
- table(job_batches) {
-  pk(id) : VARCHAR
-  name : VARCHAR
-  total_jobs : INTEGER
-  pending_jobs : INTEGER
-  failed_jobs : INTEGER
-  failed_job_ids : LONGTEXT
-  options : MEDIUMTEXT [NULL]
-  cancelled_at : INTEGER [NULL]
-  created_at : INTEGER
-  finished_at : INTEGER [NULL]
-}
-
- table(failed_jobs) {
-  pk(id) : BIGINT
-  uuid : VARCHAR [UNIQUE]
-  connection : TEXT
-  queue : TEXT
-  payload : LONGTEXT
-  exception : LONGTEXT
-  failed_at : TIMESTAMP
+ table(vehicle_odometer_logs) {
+  pk(id) : UUID
+  fk(asset_id) : UUID
+  reading_km : INT
+  read_at : TIMESTAMP
+  source : ENUM(manual, telematics, service) [DEFAULT: manual]
+  notes : TEXT [NULL]
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
 }
 
 ' ==========================
@@ -232,7 +206,7 @@ table(password_reset_tokens) {
 ' ==========================
 companies ||--o{ users : "has many"
 companies ||--o{ categories : "has many"
-locations ||--o{ companies : "has many"   ' HQ / lokasi induk perusahaan (opsional)
+locations ||--o{ companies : "has many"
 companies ||--o{ assets : "has many"
 companies ||--o{ asset_transfers : "has many"
 
@@ -245,12 +219,10 @@ users ||--o{ asset_logs : "creates"
 users ||--o{ sessions : "has many"
 users ||--o{ password_reset_tokens : "has many"
 
-' NEW: Asset Transfer relations
 asset_transfers ||--o{ asset_transfer_items : "has many"
 assets ||--o{ asset_location_history : "has many"
 users ||--o{ asset_transfers : "requests/approves"
 
-' from/to location references for transfers, items & history
 locations ||--o{ asset_transfers : "as from_location"
 locations ||--o{ asset_transfers : "as to_location"
 locations ||--o{ asset_transfer_items : "as from_location"
@@ -258,43 +230,34 @@ locations ||--o{ asset_transfer_items : "as to_location"
 locations ||--o{ asset_location_history : "as from_location"
 locations ||--o{ asset_location_history : "as to_location"
 
-' linking history to transfer (optional)
 asset_transfers ||--o{ asset_location_history : "writes"
+
+assets ||--|| vehicle_profiles : "has one"
+assets ||--o{ vehicle_odometer_logs : "has many"
 
 ' ==========================
 ' Notes
 ' ==========================
-note right of companies
-  Top-level tenant/company entity
-  Use to scope data for multi-tenant installs
-  Consider composite unique constraints, e.g. (company_id, name)
-  on categories, locations, and optionally assets.code
+note right of asset_maintenances
+  Service log utama untuk semua aset.
+  Tambahan kolom mendukung kendaraan tanpa tabel baru:
+  - odometer_km_at_service
+  - next_service_target_odometer_km
+  - next_service_date
+  - workshop_name, invoice_no
+  Saat status completed:
+  - update vehicle_profiles.last_service_date
+  - hitung ulang target km/tanggal servis berikutnya
 end note
 
-note right of assets
-  Core entity for asset management
-  Tracks physical assets with
-  categories, locations, and status
-  Scoped by company_id for tenancy
+note right of vehicle_profiles
+  Detail khusus aset kendaraan (category = vehicle)
+  Menyimpan odometer terkini, tahun beli/manufacture, servis & pajak
 end note
 
-note right of asset_transfers
-  Header dokumen mutasi aset (batch)
-  Minimal status flow untuk MVP: draft -> executed
-  (opsional submitted/approved bila lintas unit)
-  Eksekusi akan update assets.location_id & menulis asset_location_history
-end note
-
-note right of asset_transfer_items
-  Setiap baris merepresentasikan satu aset yang dipindahkan
-  Validasi penting: from_location_id harus sama dengan
-  lokasi aset saat ini ketika dieksekusi
-end note
-
-note right of asset_location_history
-  Jejak audit perubahan lokasi aset
-  changed_by mengacu ke user yang mengeksekusi
-  transfer_id opsional untuk mengikat ke dokumen transfer
+note right of vehicle_odometer_logs
+  Riwayat pembacaan odometer (manual/telematics/service)
+  Berguna untuk audit dan trigger preventive maintenance
 end note
 
 @enduml
