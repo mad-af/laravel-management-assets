@@ -37,19 +37,19 @@
                             popover id="user-dropdown-{{ $user->id }}"
                             style="position-anchor: --user-anchor-{{ $user->id }}">
                             <li>
-                                <a href="{{ route('users.show', $user) }}" onclick="document.activeElement.blur()">
+                                <a href="{{ route('users.show', $user) }}" onclick="document.getElementById('user-dropdown-{{ $user->id }}').hidePopover()">
                                     <i data-lucide="eye" class="w-4 h-4"></i>
                                     View
                                 </a>
                             </li>
                             <li>
-                                <a href="{{ route('users.edit', $user) }}" onclick="document.activeElement.blur()">
+                                <a href="{{ route('users.edit', $user) }}" onclick="document.getElementById('user-dropdown-{{ $user->id }}').hidePopover()">
                                     <i data-lucide="edit" class="w-4 h-4"></i>
                                     Edit
                                 </a>
                             </li>
                             <li>
-                                <a onclick="deleteUser({{ $user->id }}); document.activeElement.blur()" class="text-error">
+                                <a onclick="deleteUser({{ $user->id }}); document.getElementById('user-dropdown-{{ $user->id }}').hidePopover()" class="text-error">
                                     <i data-lucide="trash-2" class="w-4 h-4"></i>
                                     Delete
                                 </a>

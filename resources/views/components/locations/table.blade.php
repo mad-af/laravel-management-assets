@@ -34,19 +34,19 @@
                             style="position-anchor: --location-anchor-{{ $location->id }}">
                             @if($location->is_active)
                                 <li>
-                                    <a href="{{ route('locations.show', $location) }}" onclick="document.activeElement.blur()">
+                                    <a href="{{ route('locations.show', $location) }}" onclick="document.getElementById('location-dropdown-{{ $location->id }}').hidePopover()">
                                         <i data-lucide="eye" class="w-4 h-4"></i>
                                         View
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('locations.edit', $location) }}" onclick="document.activeElement.blur()">
+                                    <a href="{{ route('locations.edit', $location) }}" onclick="document.getElementById('location-dropdown-{{ $location->id }}').hidePopover()">
                                         <i data-lucide="edit" class="w-4 h-4"></i>
                                         Edit
                                     </a>
                                 </li>
                                 <li>
-                                    <a onclick="deleteLocation('{{ $location->id }}'); document.activeElement.blur()"
+                                    <a onclick="deleteLocation('{{ $location->id }}'); document.getElementById('location-dropdown-{{ $location->id }}').hidePopover()"
                                         class="text-error">
                                         <i data-lucide="trash-2" class="w-4 h-4"></i>
                                         Deactivate
@@ -54,7 +54,7 @@
                                 </li>
                             @else
                                 <li>
-                                    <a onclick="activateLocation('{{ $location->id }}')" class="text-success">
+                                    <a onclick="activateLocation('{{ $location->id }}'); document.getElementById('location-dropdown-{{ $location->id }}').hidePopover()" class="text-success">
                                         <i data-lucide="check-circle" class="w-4 h-4"></i>
                                         Activate
                                     </a>

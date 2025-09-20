@@ -54,25 +54,25 @@
                         <ul class="w-52 shadow-lg dropdown dropdown-left dropdown-center menu rounded-box bg-base-100" popover
                             id="asset-dropdown-{{ $asset->id }}" style="position-anchor: --asset-anchor-{{ $asset->id }}">
                             <li>
-                                <a href="{{ route('assets.show', $asset) }}" onclick="document.activeElement.blur()">
+                                <a href="{{ route('assets.show', $asset) }}" onclick="document.getElementById('asset-dropdown-{{ $asset->id }}').hidePopover()">
                                     <i data-lucide="eye" class="w-4 h-4"></i>
                                     View
                                 </a>
                             </li>
                             <li>
-                                <a href="{{ route('assets.edit', $asset) }}" onclick="document.activeElement.blur()">
+                                <a href="{{ route('assets.edit', $asset) }}" onclick="document.getElementById('asset-dropdown-{{ $asset->id }}').hidePopover()">
                                     <i data-lucide="edit" class="w-4 h-4"></i>
                                     Edit
                                 </a>
                             </li>
                             <li>
-                                <a onclick="printQRBarcode('{{ $asset->tag_code }}', '{{ $asset->name }}', '{{ $asset->code }}', '{{ $asset->purchase_date ? $asset->purchase_date->format('Y') : '' }}'); document.activeElement.blur()">
+                                <a onclick="printQRBarcode('{{ $asset->tag_code }}', '{{ $asset->name }}', '{{ $asset->code }}', '{{ $asset->purchase_date ? $asset->purchase_date->format('Y') : '' }}'); document.getElementById('asset-dropdown-{{ $asset->id }}').hidePopover()">
                                     <i data-lucide="qr-code" class="w-4 h-4"></i>
                                     Print QR/Barcode
                                 </a>
                             </li>
                             <li>
-                                <a onclick="deleteAsset({{ $asset->id }}); document.activeElement.blur()" class="text-error">
+                                <a onclick="deleteAsset({{ $asset->id }}); document.getElementById('asset-dropdown-{{ $asset->id }}').hidePopover()" class="text-error">
                                     <i data-lucide="trash-2" class="w-4 h-4"></i>
                                     Delete
                                 </a>

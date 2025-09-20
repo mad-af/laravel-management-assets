@@ -56,7 +56,7 @@
         <x-action-dropdown :model="$location">
           <li>
             <button wire:click="openEditDrawer('{{ $location->id }}')"
-              class="flex gap-2 items-center p-2 text-sm rounded" onclick="document.activeElement.blur()">
+              class="flex gap-2 items-center p-2 text-sm rounded" onclick="document.getElementById('dropdown-menu-{{ $location->id }}').hidePopover()">
               <x-icon name="o-pencil" class="w-4 h-4" />
               Edit
             </button>

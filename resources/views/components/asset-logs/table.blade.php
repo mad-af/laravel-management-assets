@@ -82,14 +82,14 @@
                             popover id="log-dropdown-{{ $log->id }}"
                             style="position-anchor: --log-anchor-{{ $log->id }}">
                             <li>
-                                <a href="{{ route('asset-logs.show', $log) }}" onclick="document.activeElement.blur()">
+                                <a href="{{ route('asset-logs.show', $log) }}" onclick="document.getElementById('log-dropdown-{{ $log->id }}').hidePopover()">
                                     <i data-lucide="eye" class="w-4 h-4"></i>
                                     View Details
                                 </a>
                             </li>
                             @if($log->asset)
                                 <li>
-                                    <a href="{{ route('assets.show', $log->asset) }}" onclick="document.activeElement.blur()">
+                                    <a href="{{ route('assets.show', $log->asset) }}" onclick="document.getElementById('log-dropdown-{{ $log->id }}').hidePopover()">
                                         <i data-lucide="package" class="w-4 h-4"></i>
                                         View Asset
                                     </a>
