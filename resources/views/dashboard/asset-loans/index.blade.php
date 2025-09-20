@@ -12,7 +12,4 @@
 
     <!-- Asset Loans Drawer -->
     <livewire:asset-loans.drawer />
-
-    <!-- Asset Loans Edit Drawer -->
-    <livewire:asset-loans.edit-drawer />
 @endsection
