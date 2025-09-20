@@ -4,13 +4,13 @@
 
 @section('content')
     <livewire:dashboard-content-header title='Vehicle Management'
-        description='Manage vehicle profiles and information in the system.' buttonText='Save Profile' buttonIcon='o-truck'
-        buttonAction='openVehicleProfileDrawer' :additional-buttons="[
+        description='Manage vehicle profiles and information in the system.' buttonText='Add Odometer' buttonIcon='o-calculator'
+        buttonAction='openVehicleOdometerDrawer' :additional-buttons="[
             [
-                'text' => 'Add Odometer',
-                'icon' => 'o-calculator',
-                'class' => 'btn-primary btn-sm',
-                'action' => 'openVehicleOdometerDrawer'
+                'text' => 'Save Vehicle Profile',
+                'icon' => 'o-truck',
+                'class' => 'btn-outline btn-sm',
+                'action' => 'openVehicleProfileDrawer'
             ]
         ]" />
 

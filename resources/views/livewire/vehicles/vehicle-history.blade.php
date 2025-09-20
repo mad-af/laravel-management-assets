@@ -6,43 +6,84 @@
         </div>
         <div class="mt-4" x-data="{ activeTab: @entangle('activeTab') }">
             <div x-show="activeTab === 'odometer'">
-                @forelse($odometerLogs as $log)
-                    <div class="p-4 rounded-lg border bg-base-100 border-base-300">
-                        <div class="flex justify-between items-start">
-                            <div class="flex-1">
-                                <div class="flex items-center mb-2 space-x-3">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 text-xs font-medium rounded-full bg-primary/10 text-primary">
-                                        {{ number_format($log->reading_km) }} km
-                                    </span>
-                                    <span class="text-sm text-base-content/60">
-                                        {{ $log->created_at->format('d M Y, H:i') }}
-                                    </span>
-                                </div>
-                                @if($log->notes)
-                                    <p class="p-2 mt-2 text-sm rounded text-base-content/80 bg-base-200/50">
-                                        {{ $log->notes }}
-                                    </p>
-                                @endif
-                            </div>
-                            <div class="ml-4 text-right">
-                                <span class="text-xs text-base-content/70">{{ $log->user->name }}</span>
-                            </div>
-                        </div>
-                    </div>
-                @empty
+                @if($odometerLogs->isEmpty())
                     <div class="py-8 text-center">
                         <p class="text-base-content/50">No odometer logs available</p>
                     </div>
-                @endforelse
+                @else
+                    <x-table :headers="[
+                        ['key' => 'reading_km', 'label' => 'Reading (km)', 'class' => 'w-32'],
+                        ['key' => 'read_at', 'label' => 'Date & Time', 'class' => 'w-40'],
+                        ['key' => 'source', 'label' => 'Source', 'class' => 'w-24'],
+                        ['key' => 'notes', 'label' => 'Notes', 'class' => 'w-auto']
+                    ]" :rows="$odometerLogs" class="table-sm">
+                        @scope('cell_reading_km', $log)
+                            <span class="font-mono font-medium">{{ number_format($log->reading_km) }}</span>
+                        @endscope
+                        
+                        @scope('cell_read_at', $log)
+                            <div class="text-sm">
+                                <div class="font-medium">{{ $log->read_at->format('d M Y') }}</div>
+                                <div class="text-gray-500">{{ $log->read_at->format('H:i') }}</div>
+                            </div>
+                        @endscope
+                        
+                        @scope('cell_source', $log)
+                             <x-badge :value="$log->source->label()" class="badge-sm"
+                                 :class="[
+                                     'badge-primary' => $log->source->value === 'manual',
+                                     'badge-info' => $log->source->value === 'telematics', 
+                                     'badge-success' => $log->source->value === 'service'
+                                 ][$log->source->value] ?? 'badge-ghost'" />
+                         @endscope
+                        
+                        @scope('cell_notes', $log)
+                            <span class="text-sm text-gray-600">{{ $log->notes ?: '-' }}</span>
+                        @endscope
+                    </x-table>
+                @endif
             </div>
             
             <div x-show="activeTab === 'maintenance'">
-                @forelse($odometerLogs as $log)
-                @empty
-                <div class="py-8 text-center">
-                    <p class="text-base-content/50">Maintenance history coming soon</p>
-                </div>
-                @endforelse
+                @if($maintenances->isEmpty())
+                    <div class="py-8 text-center">
+                        <p class="text-base-content/50">No maintenance records available</p>
+                    </div>
+                @else
+                    <x-table :headers="[
+                        ['key' => 'scheduled_date', 'label' => 'Scheduled Date', 'class' => 'w-32'],
+                        ['key' => 'type', 'label' => 'Type', 'class' => 'w-24'],
+                        ['key' => 'description', 'label' => 'Description', 'class' => 'w-auto'],
+                        ['key' => 'cost', 'label' => 'Cost', 'class' => 'w-28'],
+                        ['key' => 'status', 'label' => 'Status', 'class' => 'w-24']
+                    ]" :rows="$maintenances" class="table-sm">
+                        @scope('cell_scheduled_date', $maintenance)
+                            <span class="text-sm font-medium">{{ $maintenance->scheduled_date->format('d M Y') }}</span>
+                        @endscope
+                        
+                        @scope('cell_type', $maintenance)
+                            <x-badge :value="ucfirst($maintenance->type)" class="badge-sm badge-outline" />
+                        @endscope
+                        
+                        @scope('cell_description', $maintenance)
+                            <span class="text-sm">{{ $maintenance->description ?: '-' }}</span>
+                        @endscope
+                        
+                        @scope('cell_cost', $maintenance)
+                            <span class="font-mono text-sm">{{ $maintenance->cost ? 'Rp ' . number_format($maintenance->cost) : '-' }}</span>
+                        @endscope
+                        
+                        @scope('cell_status', $maintenance)
+                            <x-badge :value="ucfirst($maintenance->status)" class="badge-sm"
+                                :class="[
+                                    'badge-warning' => $maintenance->status === 'scheduled',
+                                    'badge-info' => $maintenance->status === 'in_progress',
+                                    'badge-success' => $maintenance->status === 'completed',
+                                    'badge-error' => $maintenance->status === 'cancelled'
+                                ][$maintenance->status] ?? 'badge-ghost'" />
+                        @endscope
+                    </x-table>
+                @endif
             </div>
         </div>
     {{-- </div> --}}

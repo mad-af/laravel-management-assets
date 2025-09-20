@@ -68,8 +68,8 @@ class DashboardContentHeader extends Component
             case 'openAssetTransferDrawer':
                 $this->dispatch('open-drawer');
                 break;
-            case 'openVehicleProfileDrawer':
-                $this->dispatch('open-profile-drawer');
+            case 'openVehicleOdometerDrawer':
+                $this->dispatch('open-odometer-drawer');
                 break;
             default:
                 $this->dispatch($this->buttonAction);
@@ -80,8 +80,8 @@ class DashboardContentHeader extends Component
     public function executeAdditionalButtonAction($action)
     {
         switch ($action) {
-            case 'openVehicleOdometerDrawer':
-                $this->dispatch('open-odometer-drawer');
+            case 'openVehicleProfileDrawer':
+                $this->dispatch('open-profile-drawer');
                 break;
             default:
                 $this->dispatch($action);

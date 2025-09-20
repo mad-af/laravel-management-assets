@@ -6,8 +6,8 @@
         </button>
 
         <button wire:click="editProfile" class="w-full btn btn-outline btn-sm">
-            <x-icon name="o-pencil-square" class="w-4 h-4" />
-            Edit Profile
+            <x-icon name="o-truck" class="w-4 h-4" />
+            Save Vehicle Profile
         </button>
     </div>
 </x-info-card>

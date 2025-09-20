@@ -4,8 +4,8 @@
         <div class="flex flex-col gap-4 mb-4 sm:flex-row">
             {{-- Search Input --}}
             <div class="flex-1">
-                <x-input wire:model.live="search" placeholder="Search vehicles (name, license plate, brand)..." icon="o-magnifying-glass"
-                    class="input-sm" />
+                <x-input wire:model.live="search" placeholder="Search vehicles (name, license plate, brand)..."
+                    icon="o-magnifying-glass" class="input-sm" />
             </div>
 
             {{-- Filter Dropdown --}}
@@ -19,7 +19,8 @@
 
                     <x-menu-item title="All Status" wire:click="$set('statusFilter', '')" />
                     @foreach(\App\Enums\AssetStatus::cases() as $status)
-                        <x-menu-item title="{{ $status->label() }}" wire:click="$set('statusFilter', '{{ $status->value }}')" />
+                        <x-menu-item title="{{ $status->label() }}"
+                            wire:click="$set('statusFilter', '{{ $status->value }}')" />
                     @endforeach
                 </x-dropdown>
             </div>
@@ -80,23 +81,26 @@
                 <x-action-dropdown :model="$vehicle">
                     <li>
                         <button wire:click="openOdometerDrawer('{{ $vehicle->id }}')"
-                            class="flex gap-2 items-center p-2 text-sm rounded text-primary" onclick="document.getElementById('dropdown-menu-{{ $vehicle->id }}').hidePopover()">
+                            class="flex gap-2 items-center p-2 text-sm rounded text-primary"
+                            onclick="document.getElementById('dropdown-menu-{{ $vehicle->id }}').hidePopover()">
                             <x-icon name="o-calculator" class="w-4 h-4" />
-                            Save Odometer
+                            Add Odometer
                         </button>
                     </li>
                     <li>
                         <button wire:click="viewDetail('{{ $vehicle->id }}')"
-                            class="flex gap-2 items-center p-2 text-sm rounded" onclick="document.getElementById('dropdown-menu-{{ $vehicle->id }}').hidePopover()">
+                            class="flex gap-2 items-center p-2 text-sm rounded"
+                            onclick="document.getElementById('dropdown-menu-{{ $vehicle->id }}').hidePopover()">
                             <x-icon name="o-eye" class="w-4 h-4" />
                             Detail
                         </button>
                     </li>
                     <li>
                         <button wire:click="openProfileDrawer('{{ $vehicle->id }}')"
-                            class="flex gap-2 items-center p-2 text-sm rounded" onclick="document.getElementById('dropdown-menu-{{ $vehicle->id }}').hidePopover()">
-                            <x-icon name="o-pencil" class="w-4 h-4" />
-                            Edit Profile
+                            class="flex gap-2 items-center p-2 text-sm rounded"
+                            onclick="document.getElementById('dropdown-menu-{{ $vehicle->id }}').hidePopover()">
+                            <x-icon name="o-truck" class="w-4 h-4" />
+                            Save Vehicle Profile
                         </button>
                     </li>
                     <li>

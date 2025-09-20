@@ -19,8 +19,15 @@ class VehicleHistory extends Component
     public function getOdometerLogs()
     {
         return $this->vehicle->odometerLogs()
-            ->with('user')
-            ->orderBy('created_at', 'desc')
+            ->orderBy('read_at', 'desc')
+            ->limit(10)
+            ->get();
+    }
+
+    public function getMaintenances()
+    {
+        return $this->vehicle->maintenances()
+            ->orderBy('scheduled_date', 'desc')
             ->limit(10)
             ->get();
     }
@@ -28,7 +35,8 @@ class VehicleHistory extends Component
     public function render()
     {
         return view('livewire.vehicles.vehicle-history', [
-            'odometerLogs' => $this->getOdometerLogs()
+            'odometerLogs' => $this->getOdometerLogs(),
+            'maintenances' => $this->getMaintenances()
         ]);
     }
 }
