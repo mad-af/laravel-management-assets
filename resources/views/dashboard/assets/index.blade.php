@@ -9,6 +9,4 @@
     <livewire:assets.table />
 
     <livewire:assets.drawer />
-
-    <livewire:assets.edit-drawer />
 @endsection

@@ -3,24 +3,64 @@
 namespace App\Livewire\Assets;
 
 use Livewire\Component;
+use Livewire\Attributes\Url;
 
 class Drawer extends Component
 {
-    public $showDrawer = false;
-    public $editingAssetId = null;
+    #[Url(as: 'action')]       // ?action=create|edit
+    public ?string $action = null;
+
+    #[Url(as: 'asset_id')]  // ?asset_id=123
+    public ?string $asset_id = null;
+
+    public bool $showDrawer = false;
+    public ?string $editingAssetId = null;
 
     protected $listeners = [
-        'openDrawer' => 'openDrawer',
-        'closeDrawer' => 'closeDrawer',
-        'editAsset' => 'editAsset',
+        'close-drawer' => 'closeDrawer',
+        'open-drawer' => 'openDrawer',
+        'open-edit-drawer' => 'openEditDrawer',
         'asset-saved' => 'handleAssetSaved',
-        'close-drawer' => 'closeDrawer'
     ];
+
+    public function mount()
+    {
+        $this->applyActionFromUrl(); // hanya sekali di initial load
+    }
+
+    // Dipanggil kalau kamu ubah action via property (akan auto update URL)
+    public function updatedAction($value)
+    {
+        $this->applyActionFromUrl();
+    }
+
+    public function updatedAssetId()
+    {
+        $this->applyActionFromUrl();
+    }
+
+    protected function applyActionFromUrl(): void
+    {
+        if ($this->action === 'create') {
+            $this->showDrawer = true;
+            $this->editingAssetId = null;
+        } elseif ($this->action === 'edit' && $this->asset_id) {
+            $this->showDrawer   = true;
+            $this->editingAssetId = $this->asset_id;
+        } // else: biarkan state tetap (jangan auto-tutup tiap update)
+    }
+
+    public function openEditDrawer($assetId)
+    {
+        $this->action = 'edit';
+        $this->asset_id = $assetId;
+        $this->applyActionFromUrl();
+    }
 
     public function openDrawer()
     {
-        $this->showDrawer = true;
-        $this->editingAssetId = null;
+        $this->action = 'create';
+        $this->applyActionFromUrl();
     }
 
     public function closeDrawer()
@@ -28,12 +68,15 @@ class Drawer extends Component
         $this->showDrawer = false;
         $this->editingAssetId = null;
         $this->dispatch('resetForm');
+
+        // hapus query di URL (Url-bound akan pushState)
+        $this->action = null;
+        $this->asset_id = null;
     }
 
     public function editAsset($assetId)
     {
-        $this->editingAssetId = $assetId;
-        $this->showDrawer = true;
+        $this->openEditDrawer($assetId);
     }
 
     public function handleAssetSaved()
