@@ -9,6 +9,4 @@
     <livewire:categories.table />
 
     <livewire:categories.drawer />
-
-    <livewire:categories.edit-drawer />
 @endsection

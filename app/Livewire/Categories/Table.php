@@ -32,12 +32,12 @@ class Table extends Component
 
     public function openDrawer()
     {
-        $this->dispatch('openDrawer');
+        $this->dispatch('open-drawer');
     }
 
     public function openEditDrawer($categoryId)
     {
-        $this->dispatch('openEditDrawer', $categoryId);
+        $this->dispatch('open-edit-drawer', categoryId: $categoryId);
     }
 
     public function render()

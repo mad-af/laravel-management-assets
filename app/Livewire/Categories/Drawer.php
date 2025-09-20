@@ -3,24 +3,69 @@
 namespace App\Livewire\Categories;
 
 use Livewire\Component;
+use Livewire\Attributes\Url;
 
 class Drawer extends Component
 {
-    public $showDrawer = false;
-    public $editingCategoryId = null;
+    #[Url(as: 'action')]       // ?action=create|edit
+    public ?string $action = null;
+
+    #[Url(as: 'category_id')]  // ?category_id=123
+    public ?string $category_id = null;
+
+    public bool $showDrawer = false;
+    public ?string $editingCategoryId = null;
 
     protected $listeners = [
-        'openDrawer' => 'openDrawer',
-        'closeDrawer' => 'closeDrawer',
-        'editCategory' => 'editCategory',
-        'category-saved' => 'handleCategorySaved',
-        'close-drawer' => 'closeDrawer'
+        'close-drawer' => 'closeDrawer',
+        'open-drawer' => 'openDrawer',
+        'open-edit-drawer' => 'openEditDrawer',
+        'category-saved' => 'closeDrawer',
     ];
 
-    public function openDrawer()
+    public function mount()
     {
-        $this->showDrawer = true;
-        $this->editingCategoryId = null;
+        $this->applyActionFromUrl(); // hanya sekali di initial load
+    }
+
+    // Dipanggil kalau kamu ubah action via property (akan auto update URL)
+    public function updatedAction($value)
+    {
+        $this->applyActionFromUrl();
+    }
+
+    public function updatedCategoryId()
+    {
+        $this->applyActionFromUrl();
+    }
+
+    protected function applyActionFromUrl(): void
+    {
+        if ($this->action === 'create') {
+            $this->showDrawer = true;
+            $this->editingCategoryId = null;
+        } elseif ($this->action === 'edit' && $this->category_id) {
+            $this->showDrawer   = true;
+            $this->editingCategoryId = $this->category_id;
+        } // else: biarkan state tetap (jangan auto-tutup tiap update)
+    }
+
+    public function openEditDrawer($categoryId)
+    {
+        $this->action = 'edit';
+        $this->category_id = $categoryId;
+        $this->applyActionFromUrl();
+    }
+
+    public function openDrawer($categoryId = null)
+    {
+        if ($categoryId) {
+            $this->action = 'edit';
+            $this->category_id = $categoryId;
+        } else {
+            $this->action = 'create';
+        }
+        $this->applyActionFromUrl();
     }
 
     public function closeDrawer()
@@ -28,11 +73,15 @@ class Drawer extends Component
         $this->showDrawer = false;
         $this->editingCategoryId = null;
         $this->dispatch('resetForm');
+
+        // hapus query di URL (Url-bound akan pushState)
+        $this->action = null;
+        $this->category_id = null;
     }
 
     public function editCategory($categoryId)
     {
-        $this->editingCategoryId = $categoryId;
+        $this->openEditDrawer($categoryId);
         $this->showDrawer = true;
     }
 
