@@ -43,7 +43,7 @@ class ProfileForm extends Component
             'last_service_date' => 'nullable|date',
             'service_interval_km' => 'nullable|integer|min:1',
             'service_interval_days' => 'nullable|integer|min:1',
-            'service_target_odometer_km' => 'nullable|integer|min:0',
+            'service_target_odometer_km' => 'required|integer|min:0',
             'next_service_date' => 'nullable|date',
             'annual_tax_due_date' => 'nullable|date',
             'plate_no' => 'required|string|max:20',

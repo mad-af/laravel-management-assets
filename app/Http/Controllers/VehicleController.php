@@ -41,15 +41,18 @@ class VehicleController extends Controller
      */
     public function storeProfile(Request $request)
     {
+        $currentYear = date('Y');
+        $maxYear = $currentYear + 1;
+        
         $request->validate([
             'asset_id' => 'required|exists:assets,id',
             'plate_no' => 'required|string|max:255',
             'brand' => 'required|string|max:255',
             'model' => 'required|string|max:255',
             'vin' => 'nullable|string|max:255',
-            'year_purchase' => 'nullable|integer|min:1900|max:' . (date('Y') + 1),
-            'year_manufacture' => 'nullable|integer|min:1900|max:' . (date('Y') + 1),
-            'current_odometer_km' => 'nullable|integer|min:0',
+            'year_purchase' => 'nullable|integer|min:1900|max:' . $maxYear,
+            'year_manufacture' => 'nullable|integer|min:1900|max:' . $maxYear,
+            'current_odometer_km' => 'required|integer|min:0',
             'last_service_date' => 'nullable|date',
             'service_interval_km' => 'nullable|integer|min:1',
             'service_interval_days' => 'nullable|integer|min:1',
@@ -81,8 +84,9 @@ class VehicleController extends Controller
                 $data
             );
 
-            return redirect()->back()->with('success', 'Profil kendaraan berhasil diperbarui.');
+            return redirect()->route('vehicles.index')->with('success', 'Profil kendaraan berhasil diperbarui.');
         } catch (\Exception $e) {
+            dd($e);
             return redirect()->back()->with('error', 'Gagal menyimpan profil kendaraan: ' . $e->getMessage());
         }
     }

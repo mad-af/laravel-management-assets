@@ -30,7 +30,7 @@
 
     <!-- Current Odometer -->
     <x-input name="current_odometer_km" label="Current Odometer (km)" class="input-sm" wire:model="current_odometer_km"
-        type="number" min="0" placeholder="Enter current odometer reading" :readonly=$isEdit />
+        type="number" min="0" placeholder="Enter current odometer reading" :readonly=$isEdit required />
 
     <!-- Last Service Date -->
     <x-datetime name="last_service_date" label="Last Service Date" class="input-sm" wire:model="last_service_date"
