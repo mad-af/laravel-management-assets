@@ -9,6 +9,4 @@
     <livewire:locations.table />
 
     <livewire:locations.drawer />
-
-    <livewire:locations.edit-drawer />
 @endsection
