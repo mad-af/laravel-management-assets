@@ -32,5 +32,11 @@
             'badge_class' => $this->getConditionBadgeClass($vehicle->condition->value ?? 'unknown')
         ]
     ]"
+    :longTextItems="[
+        [
+            'label' => 'Description',
+            'value' => 'dasdas'
+        ]
+    ]"
     :description="$vehicle->description"
 />

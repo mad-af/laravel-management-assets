@@ -2,7 +2,7 @@
     'title' => null,
     'icon' => null,
     'items' => [],
-    'description' => null,
+    'longTextItems' => [],
     'columns' => 'md:grid-cols-2'
 ])
 
@@ -27,11 +27,15 @@
         </div>
     @endif
     
-    @if($description)
-        <div class="mt-4">
-            <label class="text-sm font-medium text-base-content/70">Description</label>
-            <p class="mt-1">{{ $description }}</p>
-        </div>
+    @if(count($longTextItems) > 0)
+        @foreach($longTextItems as $item)
+            @if($item['value'])
+            <div class="mt-4">
+                <label class="text-sm font-medium text-base-content/70">{{ $item['label'] }}</label>
+                <p class="p-3 mt-1 text-sm rounded-lg bg-base-200 text-base-content">{{ $item['value'] }}</p>
+            </div>
+            @endif
+        @endforeach
     @endif
     
     {{ $slot }}
