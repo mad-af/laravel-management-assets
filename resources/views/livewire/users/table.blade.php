@@ -60,7 +60,10 @@
 
                 @scope('cell_company', $user)
                 @if($user->company)
-                    <div class="text-sm">{{ $user->company->name }}</div>
+                <div class="lg:tooltip" data-tip="{{ $user->company->name }}">
+                    <x-avatar placeholder="{{ strtoupper(substr($user->company->name, 0, 2)) }}"
+                        class="!w-10 !rounded-lg !bg-primary !font-bold" />
+                </div>
                 @else
                     <span class="text-base-content/50">-</span>
                 @endif
