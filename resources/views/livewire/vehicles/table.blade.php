@@ -32,9 +32,11 @@
                 $headers = [
                     ['key' => 'name', 'label' => 'Vehicle Name'],
                     ['key' => 'code', 'label' => 'Asset Code'],
+                    ['key' => 'current_odometer_km', 'label' => 'Odometer (km)', 'class' => 'text-right'],
                     ['key' => 'license_plate', 'label' => 'License Plate'],
                     ['key' => 'brand_model', 'label' => 'Brand & Model'],
                     ['key' => 'status', 'label' => 'Status'],
+                    ['key' => 'condition', 'label' => 'Condition'],
                     ['key' => 'location', 'label' => 'Location'],
                     ['key' => 'actions', 'label' => 'Actions', 'class' => 'w-20'],
                 ];
@@ -46,6 +48,10 @@
 
                 @scope('cell_code', $vehicle)
                 <span class="font-mono text-sm">{{ $vehicle->code }}</span>
+                @endscope
+
+                @scope('cell_current_odometer_km', $vehicle)
+                <span class="text-sm">{{ $vehicle->vehicleProfile?->current_odometer_km ?? '-' }}</span>
                 @endscope
 
                 @scope('cell_license_plate', $vehicle)
@@ -60,17 +66,11 @@
                 @endscope
 
                 @scope('cell_status', $vehicle)
-                @php
-                    $statusColors = [
-                        'active' => 'badge-success',
-                        'damaged' => 'badge-error',
-                        'lost' => 'badge-error',
-                        'maintenance' => 'badge-warning',
-                        'checked_out' => 'badge-info',
-                    ];
-                    $statusColor = $statusColors[$vehicle->status->value] ?? 'badge-neutral';
-                @endphp
-                <x-badge value="{{ ucfirst($vehicle->status->value) }}" class="{{ $statusColor }} badge-sm" />
+                <x-badge value="{{ $vehicle->status->label() }}" class="{{ $vehicle->status->badgeColor() }} badge-sm" />
+                @endscope
+
+                @scope('cell_condition', $vehicle)
+                <x-badge value="{{ $vehicle->condition->label() }}" class="{{ $vehicle->condition->badgeColor() }} badge-sm" />
                 @endscope
 
                 @scope('cell_location', $vehicle)

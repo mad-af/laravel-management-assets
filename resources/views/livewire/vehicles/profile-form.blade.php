@@ -1,4 +1,6 @@
-<form wire:submit="save" class="space-y-2">
+<form action="{{ route('vehicles.store-profile') }}" method="POST" class="space-y-2">
+    @csrf
+    
     <!-- Asset Selection -->
     <x-select name="asset_id" label="Asset" class="select-sm" wire:model.live="asset_id" 
         :options="$assets" option-value="id" option-label="display_name" 

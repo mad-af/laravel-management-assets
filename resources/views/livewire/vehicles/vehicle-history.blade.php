@@ -12,20 +12,20 @@
                     </div>
                 @else
                     <x-table :headers="[
-                        ['key' => 'reading_km', 'label' => 'Reading (km)', 'class' => 'w-32'],
-                        ['key' => 'read_at', 'label' => 'Date & Time', 'class' => 'w-40'],
-                        ['key' => 'source', 'label' => 'Source', 'class' => 'w-24'],
-                        ['key' => 'notes', 'label' => 'Notes', 'class' => 'w-auto']
+                        ['key' => 'read_at', 'label' => 'Date & Time'],
+                        ['key' => 'reading_km', 'label' => 'Reading (km)', 'class'=> 'text-right'],
+                        ['key' => 'source', 'label' => 'Source', 'class'=> 'text-center'],
+                        ['key' => 'notes', 'label' => 'Notes', 'class'=> 'text-center']
                     ]" :rows="$odometerLogs" class="table-sm">
-                        @scope('cell_reading_km', $log)
-                            <span class="font-mono font-medium">{{ number_format($log->reading_km) }}</span>
-                        @endscope
-                        
                         @scope('cell_read_at', $log)
                             <div class="text-sm">
                                 <div class="font-medium">{{ $log->read_at->format('d M Y') }}</div>
                                 <div class="text-gray-500">{{ $log->read_at->format('H:i') }}</div>
                             </div>
+                        @endscope
+
+                        @scope('cell_reading_km', $log)
+                            <span class="text-sm font-medium text-center">{{ number_format($log->reading_km) }}</span>
                         @endscope
                         
                         @scope('cell_source', $log)

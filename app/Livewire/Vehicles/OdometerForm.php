@@ -54,40 +54,14 @@ class OdometerForm extends Component
         // Just keep the asset_id updated
     }
 
-    public function mount($odometerLogId = null)
+    public function mount($assetId = null)
     {
-        $this->odometerLogId = $odometerLogId;
+        $this->asset_id = $assetId;
         $this->read_at = now()->format('Y-m-d H:i');
-        
-        // Get asset_id from URL parameter if available
-        $urlAssetId = request()->get('asset_id');
-        if ($urlAssetId && !$odometerLogId) {
-            $this->asset_id = $urlAssetId;
-        }
-        
-        if ($odometerLogId) {
-            $this->isEdit = true;
-            $this->loadOdometerLog();
-        }
-    }
-
-    public function loadOdometerLog()
-    {
-        if ($this->odometerLogId) {
-            $log = VehicleOdometerLog::find($this->odometerLogId);
-            if ($log) {
-                $this->asset_id = $log->asset_id;
-                $this->reading_km = $log->reading_km;
-                $this->read_at = $log->read_at?->format('Y-m-d H:i');
-                $this->source = $log->source->value;
-                $this->notes = $log->notes;
-            }
-        }
     }
 
     public function resetForm()
     {
-        $this->asset_id = '';
         $this->reading_km = '';
         $this->read_at = now()->format('Y-m-d H:i');
         $this->source = '';

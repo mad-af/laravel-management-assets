@@ -76,6 +76,8 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     
     // Vehicle Management Routes
     Route::resource('vehicles', VehicleController::class);
+    Route::post('vehicles/profile', [VehicleController::class, 'storeProfile'])->name('vehicles.store-profile');
+    Route::post('vehicles/odometer', [VehicleController::class, 'storeOdometer'])->name('vehicles.store-odometer');
     
     // Category Management Routes
     Route::resource('categories', CategoryController::class);
