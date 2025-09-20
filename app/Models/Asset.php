@@ -107,6 +107,22 @@ class Asset extends Model
     }
 
     /**
+     * Get the odometer logs for the asset (alias for vehicleOdometerLogs).
+     */
+    public function odometerLogs(): HasMany
+    {
+        return $this->vehicleOdometerLogs();
+    }
+
+    /**
+     * Get the maintenances for the asset.
+     */
+    public function maintenances(): HasMany
+    {
+        return $this->hasMany(AssetMaintenance::class)->orderBy('scheduled_date', 'desc');
+    }
+
+    /**
      * Check if asset is a vehicle.
      */
     public function isVehicle(): bool

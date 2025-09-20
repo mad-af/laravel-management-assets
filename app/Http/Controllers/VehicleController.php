@@ -22,7 +22,7 @@ class VehicleController extends Controller
     public function show(Asset $vehicle)
     {
         // Load necessary relationships
-        $vehicle->load(['category', 'location', 'vehicleProfile']);
+        $vehicle->load(['category', 'location', 'vehicleProfile', 'odometerLogs', 'maintenances']);
         
         // Ensure this is actually a vehicle asset
         $vehicleCategory = Category::where('name', 'Kendaraan')->first();

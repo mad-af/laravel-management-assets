@@ -7,7 +7,7 @@
         description='Manage vehicle profiles and information in the system.' buttonText='Save Profile' buttonIcon='o-truck'
         buttonAction='openVehicleProfileDrawer' :additional-buttons="[
             [
-                'text' => 'Save Odometer',
+                'text' => 'Add Odometer',
                 'icon' => 'o-calculator',
                 'class' => 'btn-primary btn-sm',
                 'action' => 'openVehicleOdometerDrawer'

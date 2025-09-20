@@ -18,12 +18,9 @@
                     </x-slot:trigger>
 
                     <x-menu-item title="Semua Status" wire:click="$set('statusFilter', '')" />
-                    <x-menu-item title="Draft" wire:click="$set('statusFilter', 'draft')" />
-                    <x-menu-item title="Pending" wire:click="$set('statusFilter', 'pending')" />
-                    <x-menu-item title="Approved" wire:click="$set('statusFilter', 'approved')" />
-                    <x-menu-item title="Rejected" wire:click="$set('statusFilter', 'rejected')" />
-                    <x-menu-item title="Executed" wire:click="$set('statusFilter', 'executed')" />
-                    <x-menu-item title="Cancelled" wire:click="$set('statusFilter', 'cancelled')" />
+                    @foreach(\App\Enums\AssetTransferStatus::cases() as $status)
+                        <x-menu-item title="{{ $status->label() }}" wire:click="$set('statusFilter', '{{ $status->value }}')" />
+                    @endforeach
                 </x-dropdown>
             </div>
         </div>

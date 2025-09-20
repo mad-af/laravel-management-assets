@@ -18,9 +18,9 @@
                     </x-slot:trigger>
 
                     <x-menu-item title="All Status" wire:click="$set('statusFilter', '')" />
-                    <x-menu-item title="Active" wire:click="$set('statusFilter', 'active')" />
-                    <x-menu-item title="Inactive" wire:click="$set('statusFilter', 'inactive')" />
-                    <x-menu-item title="Maintenance" wire:click="$set('statusFilter', 'maintenance')" />
+                    @foreach(\App\Enums\AssetStatus::cases() as $status)
+                        <x-menu-item title="{{ $status->label() }}" wire:click="$set('statusFilter', '{{ $status->value }}')" />
+                    @endforeach
                 </x-dropdown>
             </div>
         </div>
