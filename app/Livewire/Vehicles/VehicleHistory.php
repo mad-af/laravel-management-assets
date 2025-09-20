@@ -8,16 +8,12 @@ use Livewire\Component;
 class VehicleHistory extends Component
 {
     public Asset $vehicle;
+
     public string $activeTab = 'odometer';
 
     public function mount(Asset $vehicle)
     {
         $this->vehicle = $vehicle;
-    }
-
-    public function setActiveTab($tab)
-    {
-        $this->activeTab = $tab;
     }
 
     public function getOdometerLogs()
