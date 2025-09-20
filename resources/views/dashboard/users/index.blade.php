@@ -9,6 +9,4 @@
     <livewire:users.table />
 
     <livewire:users.drawer />
-
-    <livewire:users.edit-drawer />
 @endsection

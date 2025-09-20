@@ -39,7 +39,7 @@ class Table extends Component
 
     public function openEditDrawer($userId)
     {
-        $this->dispatch('openEditDrawer', userId: $userId);
+        $this->dispatch('open-edit-drawer', userId: $userId);
     }
 
     public function delete($userId)
