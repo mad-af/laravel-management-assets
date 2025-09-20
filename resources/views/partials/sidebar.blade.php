@@ -6,9 +6,9 @@
             'label' => 'Dashboard'
         ],
         [
-            'route' => 'maintenances.index',
-            'icon' => 'o-wrench-screwdriver',
-            'label' => 'Asset Maintenance'
+            'route' => 'scanners.index',
+            'icon' => 'o-qr-code',
+            'label' => 'QR/Barcode Scanner'
         ],
         [
             'type' => 'submenu',
@@ -35,17 +35,17 @@
                     'icon' => 'o-document-text',
                     'label' => 'Asset Logs'
                 ],
-                [
-                    'route' => 'vehicles.index',
-                    'icon' => 'o-truck',
-                    'label' => 'Vehicles'
-                ]
             ]
         ],
         [
-            'route' => 'scanners.index',
-            'icon' => 'o-qr-code',
-            'label' => 'QR/Barcode Scanner'
+            'route' => 'maintenances.index',
+            'icon' => 'o-wrench-screwdriver',
+            'label' => 'Maintenance'
+        ],
+        [
+            'route' => 'vehicles.index',
+            'icon' => 'o-truck',
+            'label' => 'Vehicles'
         ],
     ];
 
