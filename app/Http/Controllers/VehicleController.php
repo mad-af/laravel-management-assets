@@ -98,13 +98,14 @@ class VehicleController extends Controller
             ->orderBy('read_at', 'desc')
             ->first();
 
-        $currentOdometer = 0;
-        if ($vehicleProfile && $vehicleProfile->current_odometer_km) {
-            $currentOdometer = max($currentOdometer, $vehicleProfile->current_odometer_km);
-        }
-        if ($latestOdometerLog && $latestOdometerLog->reading_km) {
-            $currentOdometer = max($currentOdometer, $latestOdometerLog->reading_km);
-        }
+            $currentOdometer = 0;
+            if ($vehicleProfile && $vehicleProfile->current_odometer_km) {
+                $currentOdometer = max($currentOdometer, $vehicleProfile->current_odometer_km);
+            }
+            if ($latestOdometerLog && $latestOdometerLog->reading_km) {
+                $currentOdometer = max($currentOdometer, $latestOdometerLog->reading_km);
+            }
+            
 
         // Set minimum reading_km based on current odometer (skip for updates)
         $minReading = $request->odometer_log_id ? 0 : $currentOdometer;
@@ -139,10 +140,11 @@ class VehicleController extends Controller
             }
 
             // Update current odometer in vehicle profile
-            VehicleProfile::updateOrCreate(
+            $coba = VehicleProfile::updateOrCreate(
                 ['asset_id' => $request->asset_id],
                 ['current_odometer_km' => $request->reading_km]
             );
+            // dd($coba);;
 
             return redirect()->route('vehicles.index')->with('success', $message);
         } catch (\Exception $e) {

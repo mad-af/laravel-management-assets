@@ -81,7 +81,6 @@ class ProfileForm extends Component
         $this->asset_id = $assetId;
         
         if ($assetId) {
-            $this->isEdit = true;
             $this->loadVehicle();
         }
     }
@@ -101,9 +100,9 @@ class ProfileForm extends Component
 
 
         if ($vehicle) {
+            $this->isEdit = true;
             // ensure vehicleId is available for update path
             $this->vehicleId = (string) $vehicle->id;
-
 
             $this->year_purchase = $vehicle->year_purchase;
             $this->year_manufacture = $vehicle->year_manufacture;
