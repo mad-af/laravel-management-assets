@@ -9,6 +9,4 @@
     <livewire:companies.table />
 
     <livewire:companies.drawer />
-
-    <livewire:companies.edit-drawer />
 @endsection

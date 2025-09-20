@@ -7,7 +7,7 @@
     </div>
     <div class="drawer-side">
         <label for="company-drawer" class="drawer-overlay" wire:click="closeDrawer"></label>
-        <div class="p-4 w-80 min-h-full bg-base-100 text-base-content">
+        <div class="p-4 w-96 min-h-full bg-base-100 text-base-content">
             <!-- Drawer Header -->
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-lg font-semibold">
