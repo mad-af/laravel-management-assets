@@ -102,6 +102,7 @@ class QRBarcodeScanner {
   }
 
   async startScanning() {
+    console.log("avxas");
     if (this.isScanning) return;
     try {
       this.updateStatus('info', 'Memulai kamera...');

@@ -94,7 +94,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     
     // Scanner Routes
     Route::get('scanners', function () {
-        return view('dashboard.scanners.index');
+        return view('dashboard.scanners.index1');
     })->name('scanners.index');
 
     // Maintenance Routes

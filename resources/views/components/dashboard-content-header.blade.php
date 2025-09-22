@@ -31,7 +31,7 @@
         @endif
         
         <!-- Default Button -->
-        @if($buttonText)
+        @if(!empty($buttonText))
             @if($buttonAction)
                 <x-button 
                     icon="{{ $buttonIcon }}" 

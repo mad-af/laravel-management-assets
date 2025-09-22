@@ -8,7 +8,7 @@
     @vite(array_filter([
         'resources/css/app.css',
         'resources/js/app.js',
-        request()->routeIs('scanners.index') ? 'resources/js/scanner.js' : null,
+        'resources/js/scanner.js'
     ]))
 </head>
 

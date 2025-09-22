@@ -56,7 +56,7 @@
 
                     <!-- Scanner Controls -->
                     <div class="flex gap-2 mt-4">
-                        <button id="start-scanner" class="flex-1 btn btn-primary">
+                        <button id="start-scanner" class="flex-1 btn btn-primary" onclick="(()=>console.log('woiiii'))()">
                             <i data-lucide="play" class="w-4 h-4"></i>
                             Mulai Scan
                         </button>

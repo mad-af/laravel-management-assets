@@ -1,6 +1,6 @@
-@props(['title', 'icon' => 'o-information-circle'])
+@props(['class', 'title', 'icon' => 'o-information-circle'])
 
-<x-card shadow>
+<x-card shadow class="{{ !empty($class) ? $class : '' }}">
     <x-slot:title>
         <h2 class="text-lg card-title">
             <x-icon :name="$icon" class="w-5 h-5" />

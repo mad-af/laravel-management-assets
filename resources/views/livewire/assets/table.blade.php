@@ -109,8 +109,16 @@
                 @scope('cell_actions', $asset)
                 <x-action-dropdown :model="$asset">
                     <li>
+                        <a
+                            onclick="printQRBarcode('{{ $asset->tag_code }}', '{{ $asset->name }}', '{{ $asset->code }}', '{{ $asset->purchase_date ? $asset->purchase_date->format('Y') : '' }}'); document.activeElement.blur()">
+                            <x-icon name="o-qr-code" class="w-4 h-4" />
+                            Print QR/Barcode
+                        </a>
+                    </li>
+                    <li>
                         <button wire:click="openEditDrawer('{{ $asset->id }}')"
-                            class="flex gap-2 items-center p-2 text-sm rounded" onclick="document.getElementById('dropdown-menu-{{ $asset->id }}').hidePopover()">
+                            class="flex gap-2 items-center p-2 text-sm rounded"
+                            onclick="document.getElementById('dropdown-menu-{{ $asset->id }}').hidePopover()">
                             <x-icon name="o-pencil" class="w-4 h-4" />
                             Edit
                         </button>
@@ -118,7 +126,8 @@
                     <li>
                         <button wire:click="delete('{{ $asset->id }}')"
                             wire:confirm="Are you sure you want to delete this asset?"
-                            class="flex gap-2 items-center p-2 text-sm rounded text-error" onclick="document.getElementById('dropdown-menu-{{ $asset->id }}').hidePopover()">
+                            class="flex gap-2 items-center p-2 text-sm rounded text-error"
+                            onclick="document.getElementById('dropdown-menu-{{ $asset->id }}').hidePopover()">
                             <x-icon name="o-trash" class="w-4 h-4" />
                             Delete
                         </button>
