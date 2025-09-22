@@ -4,15 +4,15 @@
     @php
       $headers = [
         ['key' => 'key', 'label' => 'Key', 'class' => 'font-bold'],
-        ['key' => 'value', 'label' => 'Value'],
+        ['key' => 'value', 'label' => 'Value', 'class' => 'w-3/5'],
       ];
 
       $rows = [
-        ['key' => 'Nama Aset', 'value' => 'Asset 1'],
-        ['key' => 'Kode Aset', 'value' => 'ASSET001'],
-        ['key' => 'Kategori', 'value' => 'Elektronik'],
-        ['key' => 'Lokasi', 'value' => 'Gedung A, Ruang 101'],
-        ['key' => 'Status', 'value' => 'tersedia'],
+        ['key' => 'Nama Aset', 'value' => '-'],
+        ['key' => 'Kode Aset', 'value' => '-'],
+        ['key' => 'Kategori', 'value' => '-'],
+        ['key' => 'Lokasi', 'value' => '-'],
+        ['key' => 'Status', 'value' => '-'],
       ];
     @endphp
     <x-table :headers="$headers" :rows="$rows" no-headers no-hover />
