@@ -28,17 +28,17 @@
 
             <!-- Scanner Controls -->
             <div class="flex gap-2 mt-4">
-                <x-button id="start-scanner" class="flex-1" wire:click="setScanningState(true)">
+                <button id="start-scanner" class="flex-1 btn btn-primary">
                     <x-icon name="o-play" class="w-4 h-4" />
                     Mulai Scan
-                </x-button>
-                <x-button id="stop-scanner" class="flex-1" outline wire:click="setScanningState(false)" disabled>
+                </button>
+                <button id="stop-scanner" class="flex-1 btn btn-outline" disabled>
                     <x-icon name="o-stop" class="w-4 h-4" />
                     Stop Scan
-                </x-button>
-                <x-button id="switch-camera" ghost>
+                </button>
+                <button id="switch-camera" class="btn btn-ghost">
                     <x-icon name="o-arrow-path" class="w-4 h-4" />
-                </x-button>
+                </button>
             </div>
 
             <!-- Scanner Status -->
@@ -79,7 +79,7 @@
                         <!-- Asset Information -->
                         <div class="space-y-4">
                             <x-header title="Informasi Aset" size="text-lg" />
-                            
+
                             <div class="space-y-3">
                                 <div class="flex justify-between">
                                     <span class="font-semibold">Nama Aset:</span>
@@ -99,7 +99,8 @@
                                 </div>
                                 <div class="flex justify-between">
                                     <span class="font-semibold">Status:</span>
-                                    <x-badge :value="$asset->status->label()" class="badge-{{ $asset->status->value === 'available' ? 'success' : ($asset->status->value === 'checked_out' ? 'warning' : 'error') }}" />
+                                    <x-badge :value="$asset->status->label()"
+                                        class="badge-{{ $asset->status->value === 'available' ? 'success' : ($asset->status->value === 'checked_out' ? 'warning' : 'error') }}" />
                                 </div>
                             </div>
 
@@ -110,28 +111,28 @@
                                 @if($asset->status->value !== 'checked_out')
                                     <!-- Maintenance and Checkout buttons side by side -->
                                     <div class="grid grid-cols-2 gap-2">
-                                        <x-button wire:click="updateAssetStatus('maintenance')" outline>
+                                        <button wire:click="updateAssetStatus('maintenance')" outline>
                                             <x-icon name="o-cog-6-tooth" class="mr-2 w-4 h-4" />
                                             Maintenance
-                                        </x-button>
-                                        <x-button wire:click="openCheckoutDrawer" class="btn-primary">
+                                        </button>
+                                        <button wire:click="openCheckoutDrawer" class="btn-primary">
                                             <x-icon name="o-arrow-up-tray" class="mr-2 w-4 h-4" />
                                             Check Out
-                                        </x-button>
+                                        </button>
                                     </div>
                                 @else
                                     <!-- Check In button -->
-                                    <x-button wire:click="openCheckinDrawer" class="w-full btn-success">
+                                    <button wire:click="openCheckinDrawer" class="w-full btn-success">
                                         <x-icon name="o-arrow-down-tray" class="mr-2 w-4 h-4" />
                                         Check In
-                                    </x-button>
+                                    </button>
                                 @endif
 
                                 <!-- View Detail button -->
-                                <x-button wire:click="viewAssetDetail" class="w-full" outline>
+                                <button wire:click="viewAssetDetail" class="w-full" outline>
                                     <x-icon name="o-eye" class="mr-2 w-4 h-4" />
                                     View Detail
-                                </x-button>
+                                </button>
                             </div>
                         </div>
                     @else
@@ -145,10 +146,10 @@
 
                 <!-- Clear Result Button -->
                 <div class="mt-4">
-                    <x-button wire:click="clearResult" outline class="w-full">
+                    <button wire:click="clearResult" outline class="w-full">
                         <x-icon name="o-x-mark" class="mr-2 w-4 h-4" />
                         Clear Result
-                    </x-button>
+                    </button>
                 </div>
             @else
                 <!-- Empty State -->
@@ -164,15 +165,15 @@
 
 <script>
     // Scanner JavaScript functionality will be handled by the existing scanner.js
-    document.addEventListener('livewire:navigated', function() {
+    document.addEventListener('livewire:navigated', function () {
         // Re-initialize scanner when Livewire navigates
         if (window.QRBarcodeScanner) {
-            window.QRBarcodeScanner.init();
+            new window.QRBarcodeScanner()
         }
     });
 
     // Listen for scan results from scanner.js
-    document.addEventListener('qr-code-scanned', function(event) {
+    document.addEventListener('qr-code-scanned', function (event) {
         @this.call('handleScannedCode', event.detail.code);
     });
 </script>

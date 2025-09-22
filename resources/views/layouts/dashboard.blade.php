@@ -1,16 +1,22 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'Dashboard') - {{ config('app.name', 'Laravel') }}</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(array_filter([
+        'resources/css/app.css',
+        'resources/js/app.js',
+        request()->routeIs('scanners.index') ? 'resources/js/scanner.js' : null,
+    ]))
 </head>
+
 <body class="min-h-screen font-sans antialiased bg-base-200">
     <!-- Theme initialization script -->
     <script>
         // Initialize theme before page renders to prevent flash
-        (function() {
+        (function () {
             const savedTheme = localStorage.getItem('theme') || 'light';
             document.documentElement.setAttribute('data-theme', savedTheme);
         })();
@@ -41,7 +47,7 @@
                 @yield('content')
             </main>
         </x-slot:content>
-     </x-main>
+    </x-main>
 
     {{-- Toast --}}
     <x-toast />
@@ -52,7 +58,7 @@
     {{-- Session Flash Messages Handler --}}
     @if(session('success') || session('error'))
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('DOMContentLoaded', function () {
                 @if(session('success'))
                     // Dispatch success alert
                     window.dispatchEvent(new CustomEvent('alert', {
@@ -61,11 +67,11 @@
                             message: '{{ session('success') }}'
                         }
                     }));
-                    
+
                     // Close drawer if success
                     window.dispatchEvent(new CustomEvent('closeDrawer'));
                 @endif
-                
+
                 @if(session('error'))
                     // Dispatch error alert
                     window.dispatchEvent(new CustomEvent('alert', {
@@ -75,8 +81,9 @@
                         }
                     }));
                 @endif
-            });
+                    });
         </script>
     @endif
 </body>
+
 </html>
