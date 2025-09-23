@@ -6,26 +6,11 @@
         ['key' => 'key', 'label' => 'Key', 'class' => 'font-bold'],
         ['key' => 'value', 'label' => 'Value', 'class' => 'w-3/5'],
       ];
-
-      $rows = [
-        ['key' => 'Nama Aset', 'value' => '-'],
-        ['key' => 'Kode Aset', 'value' => '-'],
-        ['key' => 'Kategori', 'value' => '-'],
-        ['key' => 'Lokasi', 'value' => '-'],
-        ['key' => 'Status', 'value' => '-'],
-      ];
     @endphp
     <x-table :headers="$headers" :rows="$rows" no-headers no-hover />
 
     {{-- Alert Component --}}
-    <div class="alert alert-warning">
-      <x-icon name="o-exclamation-triangle" class="w-4 h-4" />
-      <div>
-        <h3 class="font-bold">Aset Tidak Ditemukan</h3>
-        <div class="text-xs">Kode yang dipindai tidak terdaftar dalam sistem.</div>
-      </div>
-    </div>
-
+    @if ($assetScanned)
     <div class="alert alert-success">
       <x-icon name="o-check-circle" class="w-4 h-4" />
       <div>
@@ -33,6 +18,15 @@
         <div class="text-xs">Kode aset berhasil ditemukan dalam sistem.</div>
       </div>
     </div>
+    @elseif (!$assetScanned && $tagScanned) 
+    <div class="alert alert-warning">
+      <x-icon name="o-exclamation-triangle" class="w-4 h-4" />
+      <div>
+        <h3 class="font-bold">Aset Tidak Ditemukan</h3>
+        <div class="text-xs">Kode yang dipindai tidak terdaftar dalam sistem.</div>
+      </div>
+    </div>
+    @endif
 
     {{-- Action Buttons --}}
     <div class="space-y-4">

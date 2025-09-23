@@ -7,12 +7,11 @@ use Livewire\Component;
 
 class ScanCamera extends Component
 {
-    // public bool $isSwitchCamera = false;
-    public bool $isCameraActive = false;
+    public string $cameraStatus = 'off'; // on, off, preparing
 
     public bool $isSwitchCamera = false;
 
-    public object $alert;
+    public ?object $alert = null;
 
     public function mount()
     {
@@ -23,10 +22,10 @@ class ScanCamera extends Component
         ];
     }
 
-    #[On('scanner:updateAttributes')]
+    #[On('scanCamera:updateAttributes')]
     public function updateAttributes($payload)
     {
-        $this->isCameraActive = $payload['isCameraActive'] ?? $this->isCameraActive;
+        $this->cameraStatus = $payload['cameraStatus'] ?? $this->cameraStatus;
         $this->isSwitchCamera = $payload['isSwitchCamera'] ?? $this->isSwitchCamera;
         $this->alert = (object) $payload['alert'] ?? $this->alert;
     }

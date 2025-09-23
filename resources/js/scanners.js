@@ -7,29 +7,41 @@ class QRBarcodeScanner {
         this.availableDevices = [];
         this.currentDeviceId = null;
         this.isSwitchCamera = true;
+        this.isScanning = false;
+        this.scanHistory = JSON.parse(
+            localStorage.getItem("scanHistory") || "[]"
+        );
+
+        this.BrowserMultiFormatReader = new BrowserMultiFormatReader();
 
         window.addEventListener("scanner:start", () => this.start());
         window.addEventListener("scanner:stop", () => this.stop());
         window.addEventListener("scanner:switch", () => this.switchCamera());
+        this.dispatchUpdateHistoryAttributes({ rows: this.scanHistory });
     }
 
     async start() {
-        this.dispatchUpdateAttributes({
+        this.dispatchUpdateCameraAttributes({
+            cameraStatus: 'preparing',
             ...this.setAlert(
                 "warning",
                 "Menyiapkan Kamera",
                 "Mohon izinkan akses kamera."
             ),
         });
+
         try {
             if (!this.currentDeviceId) {
                 await this.getAvailableDevices();
             }
 
+            this.isScanning = true;
             await this.startStream(this.currentDeviceId);
 
-            this.dispatchUpdateAttributes({
-                isCameraActive: true,
+            await this.runningScanner();
+
+            this.dispatchUpdateCameraAttributes({
+                cameraStatus: 'on',
                 isSwitchCamera: this.isSwitchCamera,
                 ...this.setAlert(
                     "success",
@@ -38,8 +50,8 @@ class QRBarcodeScanner {
                 ),
             });
         } catch (e) {
-            console.error(e);
-            this.dispatchUpdateAttributes({
+            this.isScanning = false;
+            this.dispatchUpdateCameraAttributes({
                 ...this.setAlert(
                     "error",
                     "Gagal Mengakses Kamera",
@@ -51,14 +63,31 @@ class QRBarcodeScanner {
     }
 
     async stop() {
+        if (!this.isScanning) return;
+        this.isScanning = false;
+
+        try {
+            // This stops ZXing's internal decode loop and closes any stream it owns
+            this.BrowserMultiFormatReader.reset();
+        } catch (e) {
+            console.warn("Reader reset warning:", e);
+        }
+
         if (this.stream) {
             this.stream.getTracks().forEach((t) => t.stop());
             this.stream = null;
         }
         if (this.videoEl) {
             this.videoEl.srcObject = null;
+            try {
+                this.videoEl.pause();
+            } catch (_) {}
+            try {
+                this.videoEl.load();
+            } catch (_) {}
         }
-        this.dispatchUpdateAttributes({
+        this.dispatchUpdateCameraAttributes({
+            cameraStatus: 'off',
             ...this.setAlert(
                 "info",
                 "Aktifkan Kamera",
@@ -125,12 +154,92 @@ class QRBarcodeScanner {
         await this.videoEl.play();
     }
 
+    async runningScanner() {
+        if (!this.isScanning) return;
+
+        this.BrowserMultiFormatReader.decodeFromVideoDevice(
+            this.currentDeviceId,
+            this.videoEl,
+            (result, _) => {
+                if (!this.isScanning) return; // guard when stop is pressed mid-callback
+
+                if (result) {
+                    this.handleScanResult(result.getText());
+                }
+            }
+        );
+    }
+
+    async handleScanResult(text) {
+        try {
+            const assetResponse = await fetch(
+                `/api/assets/search?code=${encodeURIComponent(text)}`,
+                {
+                    method: "GET",
+                    headers: {
+                        Accept: "application/json",
+                        "X-Requested-With": "XMLHttpRequest",
+                        "X-CSRF-TOKEN":
+                            document
+                                .querySelector('meta[name="csrf-token"]')
+                                ?.getAttribute("content") || "",
+                    },
+                }
+            );
+
+            if (!assetResponse.ok) throw new Error("Gagal mencari aset");
+            const assetData = await assetResponse.json();
+            this.dispatchUpdateResultAttributes({
+                tagScanned: text,
+                assetScanned: assetData.asset ?? null,
+            });
+            this.addToScanHistory(text, assetData.asset ?? null);
+            this.dispatchUpdateHistoryAttributes({ rows: this.scanHistory });
+        } catch (error) {
+            console.error("Error searching asset:", error);
+        }
+    }
+
+    addToScanHistory(tag, payload) {
+        const scanEntry = {
+            time: new Intl.DateTimeFormat("id-ID", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                second: "2-digit",
+            }).format(Date.now()),
+            tag: tag,
+            id: payload?.id ?? null,
+            asset_name: payload?.name ?? "-",
+            category: payload?.category.name ?? "-",
+            location: payload?.location.name ?? "-",
+            status: payload?.status ?? "-",
+        };
+        this.scanHistory = JSON.parse(
+            localStorage.getItem("scanHistory") || "[]"
+        );
+        this.scanHistory.unshift(scanEntry);
+        if (this.scanHistory.length > 10)
+            this.scanHistory = this.scanHistory.slice(0, 10);
+        localStorage.setItem("scanHistory", JSON.stringify(this.scanHistory));
+    }
+
     setAlert(type, title, message) {
         return { alert: { type, title, message } };
     }
 
-    dispatchUpdateAttributes(payload) {
-        Livewire.dispatch("scanner:updateAttributes", { payload });
+    dispatchUpdateCameraAttributes(payload) {
+        Livewire.dispatch("scanCamera:updateAttributes", { payload });
+    }
+
+    dispatchUpdateResultAttributes(payload) {
+        Livewire.dispatch("scanResult:updateAttributes", { payload });
+    }
+
+    dispatchUpdateHistoryAttributes(payload) {
+        Livewire.dispatch("scanHistory:updateAttributes", { payload });
     }
 }
 
