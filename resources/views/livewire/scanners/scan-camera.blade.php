@@ -34,11 +34,11 @@
         'alert-warning': alert.type === 'warning',
       }">
         <x-icon class="w-4 h-4" :name="match ($alert->type) {
-    'info' => 'o-information-circle',
-    'success' => 'o-check-circle',
-    'error' => 'o-x-circle',
-    'warning' => 'o-exclamation-circle',
-  }" />
+          'info' => 'o-information-circle',
+          'success' => 'o-check-circle',
+          'error' => 'o-x-circle',
+          'warning' => 'o-exclamation-circle',
+        }" />
         <div>
           <h3 class="font-bold">{{ $alert->title }}</h3>
           <div class="text-xs">{{ $alert->message }}</div>
