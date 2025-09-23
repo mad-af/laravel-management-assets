@@ -60,7 +60,7 @@
                     {{ $asset->logs->first() ? $asset->logs->first()->created_at->diffForHumans() : 'No activity' }}
                 </div>
                 <div class="stat-desc text-base-content/60">
-                    {{ $asset->logs->first() ? ucfirst($asset->logs->first()->action) : 'No recent activity' }}
+                    {{ $asset->logs->first() ? ucfirst($asset->logs->first()->action->label()) : 'No recent activity' }}
                 </div>
             </div>
         </div>

@@ -42,7 +42,7 @@
             <div>
                 <label class="text-sm font-semibold text-base-content/70">Condition</label>
                 <p class="mt-1">
-                    <span class="badge {{ $asset->condition_badge_color }} badge-sm">{{ ucfirst($asset->condition) }}</span>
+                    <span class="badge {{ $asset->condition_badge_color }} badge-sm">{{ $asset->condition->label() }}</span>
                 </p>
             </div>
 

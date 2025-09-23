@@ -109,8 +109,14 @@
                 @scope('cell_actions', $asset)
                 <x-action-dropdown :model="$asset">
                     <li>
+                        <a href="{{ route('assets.show', $asset) }}" onclick="document.getElementById('dropdown-menu-{{ $asset->id }}').hidePopover()">
+                            <x-icon name="o-eye" class="w-4 h-4" />
+                            View
+                        </a>
+                    </li>
+                    <li>
                         <a
-                            onclick="printQRBarcode('{{ $asset->tag_code }}', '{{ $asset->name }}', '{{ $asset->code }}', '{{ $asset->purchase_date ? $asset->purchase_date->format('Y') : '' }}'); document.activeElement.blur()">
+                            onclick="printQRBarcode('{{ $asset->tag_code }}', '{{ $asset->name }}', '{{ $asset->code }}', '{{ $asset->purchase_date ? $asset->purchase_date->format('Y') : '' }}'); document.getElementById('dropdown-menu-{{ $asset->id }}').hidePopover()">
                             <x-icon name="o-qr-code" class="w-4 h-4" />
                             Print QR/Barcode
                         </a>

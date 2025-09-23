@@ -34,7 +34,7 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="badge badge-outline">{{ ucfirst($log->action) }}</span>
+                                    <span class="badge badge-outline">{{ ucfirst($log->action->label()) }}</span>
                                 </td>
                                 <td>{{ $log->user->name }}</td>
                                 <td>
