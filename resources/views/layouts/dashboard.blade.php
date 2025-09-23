@@ -8,11 +8,10 @@
     @vite(array_filter([
         'resources/css/app.css',
         'resources/js/app.js',
-        'resources/js/scanner.js'
     ]))
 </head>
 
-<body class="min-h-screen font-sans antialiased bg-base-200">
+<body class="min-h-screen font-sans antialiased bg-base-200" data-route="{{ Route::currentRouteName() }}">
     <!-- Theme initialization script -->
     <script>
         // Initialize theme before page renders to prevent flash

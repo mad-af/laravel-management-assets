@@ -12,7 +12,7 @@
             <livewire:scanners.scan-camera />
             <livewire:scanners.scan-result />
         </div>
-        <livewire:scanners.scan-history />
+        {{-- <livewire:scanners.scan-history /> --}}
     </div>
 
 @endsection

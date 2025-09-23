@@ -16,17 +16,32 @@
     </div>
 
     <!-- Scanner Controls -->
-    <div class="flex gap-4">
-      <x-button label="Mulai Scan" icon="o-play" class="flex-1 btn-primary btn-sm" />
-      <x-button label="Stop Scan" icon="o-stop" class="flex-1 btn-sm" />
-      <x-button icon="o-arrow-path" class="btn-sm" />
+    <div class="flex gap-4" x-data="{ isCameraActive: @entangle('isCameraActive') }">
+      <x-button label="Mulai Scan" icon="o-play" class="flex-1 btn-primary btn-sm" wire:click="startScanner" />
+      <x-button label="Stop Scan" icon="o-stop" class="flex-1 btn-sm" wire:click="stopScanner" x-bind:disabled="!isCameraActive" disabled />
+      @if ($isSwitchCamera)
+        <x-button icon="o-arrow-path" class="btn-sm" wire:click="switchCamera" />
+      @endif
     </div>
 
     <!-- Scanner Status -->
-    <div id="scanner-status">
-      <div class="alert alert-info">
-        <x-icon name="o-information-circle" class="size-4" />
-        <span>Klik "Mulai Scan" untuk mengaktifkan kamera</span>
+    <div id="scanner-status" x-data="{ alert: @entangle('alert') }">
+      <div class="alert alert-info" :class="{
+        'alert-info': alert.type === 'info',
+        'alert-success': alert.type === 'success',
+        'alert-error': alert.type === 'error',
+        'alert-warning': alert.type === 'warning',
+      }" >
+      <x-icon class="w-4 h-4" :name="match($alert->type) {
+          'info' => 'o-information-circle',
+          'success' => 'o-check-circle',
+          'error' => 'o-x-circle',
+          'warning' => 'o-exclamation-circle',
+        }" />
+        <div>
+          <h3 class="font-bold">{{ $alert->title }}</h3>
+          <div class="text-xs">{{ $alert->message }}</div>
+        </div>
       </div>
     </div>
   </div>

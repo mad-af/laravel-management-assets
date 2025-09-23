@@ -1,4 +1,5 @@
 import './bootstrap';
+import './scanners';
 import QRCode from 'qrcode';
 import JsBarcode from 'jsbarcode';
 
@@ -256,3 +257,17 @@ function printQRBarcode(tagCode, assetName, assetCode, purchaseYear) {
 
 // Make printQRBarcode globally available
 window.printQRBarcode = printQRBarcode;
+
+function initScannerIfPresent() {
+
+
+    if (document.body.dataset.route != 'scanners.index') return;
+
+    // hindari double init
+    if (!window._cameraScanner) {
+        window._cameraScanner = new window.QRBarcodeScanner();
+    }
+}
+
+document.addEventListener('DOMContentLoaded', initScannerIfPresent);
+document.addEventListener('livewire:navigated', initScannerIfPresent);
