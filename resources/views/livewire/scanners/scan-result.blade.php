@@ -11,23 +11,21 @@
     <x-table :headers="$headers" :rows="$rows" no-headers no-hover />
 
     {{-- Alert Component --}}
-    <div class="alert-container">
-      @if ($assetScanned)
-        <div class="alert alert-success">
-          <x-icon name="o-check-circle" class="w-4 h-4" />
-          <div>
-            <h3 class="font-bold">Aset Ditemukan</h3>
-            <div class="text-xs">Kode aset berhasil ditemukan dalam sistem.</div>
+    <div class="alert-containe" x-data="{ alert: @entangle('alert') }">
+      @if ($alert)
+          <div class="alert" :class="{
+        'alert-success': alert.type === 'success',
+        'alert-warning': alert.type === 'warning',
+      }">
+            <x-icon class="w-4 h-4" :name="match ($alert->type) {
+          'success' => 'o-check-circle',
+          'warning' => 'o-exclamation-triangle',
+        }" />
+            <div>
+              <h3 class="font-bold">{{ $alert->title }}</h3>
+              <div class="text-xs">{{ $alert->message }}</div>
+            </div>
           </div>
-        </div>
-      @elseif (!$assetScanned && $tagScanned)
-        <div class="alert alert-warning">
-          <x-icon name="o-exclamation-triangle" class="w-4 h-4" />
-          <div>
-            <h3 class="font-bold">Aset Tidak Ditemukan</h3>
-            <div class="text-xs">Kode yang dipindai tidak terdaftar dalam sistem.</div>
-          </div>
-        </div>
       @endif
     </div>
 

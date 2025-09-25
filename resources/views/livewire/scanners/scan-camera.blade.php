@@ -37,7 +37,7 @@
           'info' => 'o-information-circle',
           'success' => 'o-check-circle',
           'error' => 'o-x-circle',
-          'warning' => 'o-exclamation-circle',
+          'warning' => 'o-exclamation-triangle',
         }" />
         <div>
           <h3 class="font-bold">{{ $alert->title }}</h3>

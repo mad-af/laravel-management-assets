@@ -16,7 +16,7 @@ class ScanCamera extends Component
     public function mount()
     {
         $this->alert = (object) [
-            'type' => 'info',   // info, success, error
+            'type' => 'info',   // info, success, error, warning
             'title' => 'Aktifkan Kamera',
             'message' => 'Klik "Mulai Scan" untuk mengaktifkan kamera.',
         ];

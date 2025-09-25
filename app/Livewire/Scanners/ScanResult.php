@@ -28,6 +28,8 @@ class ScanResult extends Component
 
     public ?array $assetScanned = null;
 
+    public ?object $alert = null;
+
     public function mount() {}
 
     #[On('scanResult:updateAttributes')]
@@ -51,6 +53,20 @@ class ScanResult extends Component
             ['key' => 'Lokasi', 'value' => $this->assetScanned['location']['name'] ?? '-'],
             ['key' => 'Status', 'value' => $this->assetScanned['status'] ?? '-'],
         ];
+
+        if ($this->assetScanned) {
+            $this->alert = (object) [
+                'type' => 'success',   // success, warning
+                'title' => 'Aset Ditemukan',
+                'message' => 'Kode aset berhasil ditemukan dalam sistem.',
+            ];
+        } else {
+            $this->alert = (object) [
+                'type' => 'warning', // success, warning
+                'title' => 'Aset Tidak Ditemukan',
+                'message' => 'Kode yang dipindai tidak terdaftar dalam sistem.',
+            ];
+        }
     }
 
     public function render()
