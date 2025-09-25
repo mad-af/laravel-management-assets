@@ -12,7 +12,7 @@
             <div class="flex gap-2">
                 <x-dropdown>
                     <x-slot:trigger>
-                        <x-button icon="o-funnel" class="btn-sm btn-outline">
+                        <x-button icon="o-funnel" class="btn-sm ">
                             Filter Status
                         </x-button>
                     </x-slot:trigger>

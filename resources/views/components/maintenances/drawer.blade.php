@@ -32,7 +32,8 @@
                         @endphp
                         @foreach($assets as $asset)
                             <option value="{{ $asset->id }}">{{ $asset->name }} ({{ $asset->code }}) -
-                                {{ $asset->category->name ?? 'No Category' }}</option>
+                                {{ $asset->category->name ?? 'No Category' }}
+                            </option>
                         @endforeach
                     </select>
                 </div>
@@ -82,7 +83,8 @@
                     <select id="maintenance-status" name="status" class="w-full select select-bordered select-sm">
                         @foreach(\App\Enums\MaintenanceStatus::cases() as $status)
                             <option value="{{ $status->value }}" {{ $status->value === 'open' ? 'selected' : '' }}>
-                                {{ $status->label() }}</option>
+                                {{ $status->label() }}
+                            </option>
                         @endforeach
                     </select>
                 </div>
@@ -148,7 +150,7 @@
                         <x-icon id="submit-icon" name="o-plus" class="mr-2 w-4 h-4" />
                         <span id="submit-text">Create Maintenance</span>
                     </button>
-                    <label for="maintenance-drawer" class="flex-1 btn btn-outline btn-sm">
+                    <label for="maintenance-drawer" class="flex-1 btn  btn-sm">
                         Cancel
                     </label>
                 </div>

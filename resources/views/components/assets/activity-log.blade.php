@@ -7,7 +7,7 @@
                 <i data-lucide="file-text" class="w-5 h-5"></i>
                 Asset Information
             </h3>
-            <a href="{{ route('asset-logs.export', $asset) }}" class="btn btn-outline btn-sm">
+            <a href="{{ route('asset-logs.export', $asset) }}" class="btn  btn-sm">
                 <i data-lucide="download" class="mr-2 w-4 h-4"></i>
                 Export Log
             </a>
@@ -41,8 +41,8 @@
                                     @if($log->changed_fields)
                                         <div class="text-sm">
                                             @php
-                                                $changedFields = is_string($log->changed_fields) 
-                                                    ? json_decode($log->changed_fields, true) 
+                                                $changedFields = is_string($log->changed_fields)
+                                                    ? json_decode($log->changed_fields, true)
                                                     : $log->changed_fields;
                                             @endphp
                                             @if(is_array($changedFields))
@@ -70,7 +70,7 @@
 
             @if($asset->logs->count() > 10)
                 <div class="mt-4 text-center">
-                    <a href="{{ route('asset-logs.index', ['asset' => $asset->id]) }}" class="btn btn-outline">
+                    <a href="{{ route('asset-logs.index', ['asset' => $asset->id]) }}" class="btn ">
                         View All Logs ({{ $asset->logs->count() }})
                     </a>
                 </div>

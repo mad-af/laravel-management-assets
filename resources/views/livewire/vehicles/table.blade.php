@@ -12,7 +12,7 @@
             <div class="flex gap-2">
                 <x-dropdown>
                     <x-slot:trigger>
-                        <x-button icon="o-funnel" class="btn-sm btn-outline">
+                        <x-button icon="o-funnel" class="btn-sm ">
                             Filter Status
                         </x-button>
                     </x-slot:trigger>
@@ -66,11 +66,13 @@
                 @endscope
 
                 @scope('cell_status', $vehicle)
-                <x-badge value="{{ $vehicle->status->label() }}" class="{{ $vehicle->status->badgeColor() }} badge-sm" />
+                <x-badge value="{{ $vehicle->status->label() }}"
+                    class="{{ $vehicle->status->badgeColor() }} badge-sm" />
                 @endscope
 
                 @scope('cell_condition', $vehicle)
-                <x-badge value="{{ $vehicle->condition->label() }}" class="{{ $vehicle->condition->badgeColor() }} badge-sm" />
+                <x-badge value="{{ $vehicle->condition->label() }}"
+                    class="{{ $vehicle->condition->badgeColor() }} badge-sm" />
                 @endscope
 
                 @scope('cell_location', $vehicle)

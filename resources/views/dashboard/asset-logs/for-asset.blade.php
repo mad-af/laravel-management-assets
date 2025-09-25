@@ -16,11 +16,11 @@
                 </div>
             </div>
             <div class="flex gap-2">
-                <a href="{{ route('assets.show', $asset) }}" class="btn btn-outline btn-sm">
+                <a href="{{ route('assets.show', $asset) }}" class="btn  btn-sm">
                     <i data-lucide="eye" class="mr-2 w-4 h-4"></i>
                     Lihat Asset
                 </a>
-                <button id="export-logs" class="btn btn-outline btn-sm">
+                <button id="export-logs" class="btn  btn-sm">
                     <i data-lucide="download" class="mr-2 w-4 h-4"></i>
                     Export CSV
                 </button>

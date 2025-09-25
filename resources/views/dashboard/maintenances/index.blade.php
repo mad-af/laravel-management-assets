@@ -7,13 +7,13 @@
     <!-- Dashboard Content Header -->
     <x-dashboard-content-header title="Asset Maintenance" description="Manage and track asset maintenance activities"
         button-text="Add Maintenance" button-icon="o-plus" button-action="addMaintenance()" :additional-buttons="[
-                            [
-                                'text' => 'Filter',
-                                'icon' => 'o-funnel',
-                                'class' => 'btn-outline btn-sm',
-                                'action' => 'openFilterDrawer()'
-                            ]
-                        ]" />
+                                [
+                                    'text' => 'Filter',
+                                    'icon' => 'o-funnel',
+                                    'class' => ' btn-sm',
+                                    'action' => 'openFilterDrawer()'
+                                ]
+                            ]" />
 
     <!-- Kanban Board -->
     <div class="h-[calc(100vh-12rem)]">

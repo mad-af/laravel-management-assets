@@ -29,10 +29,12 @@
     </div>
 
     <!-- Reason -->
-    <x-textarea name="reason" class="textarea-sm" label="Alasan Transfer" wire:model="reason" rows="3" placeholder="Masukkan alasan transfer asset" required />
+    <x-textarea name="reason" class="textarea-sm" label="Alasan Transfer" wire:model="reason" rows="3"
+        placeholder="Masukkan alasan transfer asset" required />
 
     <!-- Notes -->
-    <x-textarea name="notes" class="textarea-sm" label="Catatan" wire:model="notes" rows="3" placeholder="Masukkan catatan tambahan jika ada" />
+    <x-textarea name="notes" class="textarea-sm" label="Catatan" wire:model="notes" rows="3"
+        placeholder="Masukkan catatan tambahan jika ada" />
 
     <fieldset class="p-2 w-full border fieldset bg-base-200 border-base-300 rounded-box">
         <legend class="fieldset-legend">Asset Items</legend>
@@ -58,9 +60,9 @@
 
                             <div class="grid grid-cols-2 gap-2">
                                 <!-- Select-nya disabled (tidak terkirim) → kirim via hidden -->
-                                <x-select name="items[{{ $index }}][from_location_id]" label="From Location" class="select-sm"
-                                    wire:model="items.{{ $index }}.from_location_id" :options="$locations" option-value="id"
-                                    option-label="name" placeholder="Dari lokasi" disabled />
+                                <x-select name="items[{{ $index }}][from_location_id]" label="From Location"
+                                    class="select-sm" wire:model="items.{{ $index }}.from_location_id" :options="$locations"
+                                    option-value="id" option-label="name" placeholder="Dari lokasi" disabled />
 
                                 <x-select name="items[{{ $index }}][to_location_id]" label="To Location" class="select-sm"
                                     wire:model="items.{{ $index }}.to_location_id" :options="$locations" option-value="id"
@@ -72,7 +74,7 @@
             @endforeach
         </div>
 
-        <button type="button" wire:click="addItem" class="mt-3 w-full btn btn-sm btn-outline">
+        <button type="button" wire:click="addItem" class="mt-3 w-full btn btn-sm ">
             Tambah Asset Item
         </button>
     </fieldset>

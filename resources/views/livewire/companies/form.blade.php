@@ -42,7 +42,7 @@
             {{ $isEdit ? 'Update Company' : 'Create Company' }}
         </x-button>
 
-        <x-button type="button" class="flex-1 btn-outline btn-sm"
+        <x-button type="button" class="flex-1  btn-sm"
             wire:click="{{ $isEdit ? '$dispatch(\'closeEditDrawer\')' : '$dispatch(\'closeDrawer\')' }}">
             Cancel
         </x-button>

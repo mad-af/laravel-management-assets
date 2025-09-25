@@ -7,7 +7,7 @@
                 <x-icon name="{{ $backButtonIcon }}" class="w-4 h-4" />
             </button>
         @endif
-        
+
         <div>
             <h1 class="text-2xl font-bold text-base-content">{{ $title }}</h1>
             @if($description)
@@ -21,12 +21,12 @@
         @if(!empty($additionalButtons))
             @foreach($additionalButtons as $button)
                 @if(isset($button['action']))
-                    <x-button icon="{{ $button['icon'] ?? 'o-plus' }}" class="{{ $button['class'] ?? 'btn-outline btn-sm' }}"
+                    <x-button icon="{{ $button['icon'] ?? 'o-plus' }}" class="{{ $button['class'] ?? ' btn-sm' }}"
                         wire:click="executeAdditionalButtonAction('{{ $button['action'] }}')">
                         {{ $button['text'] }}
                     </x-button>
                 @else
-                    <x-button icon="{{ $button['icon'] ?? 'o-plus' }}" class="{{ $button['class'] ?? 'btn-outline btn-sm' }}">
+                    <x-button icon="{{ $button['icon'] ?? 'o-plus' }}" class="{{ $button['class'] ?? ' btn-sm' }}">
                         {{ $button['text'] }}
                     </x-button>
                 @endif

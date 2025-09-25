@@ -109,7 +109,7 @@
                         <x-icon name="o-funnel" class="mr-2 w-4 h-4" />
                         Apply Filters
                     </button>
-                    <button type="button" class="flex-1 btn btn-outline btn-sm" onclick="clearFilters()">
+                    <button type="button" class="flex-1 btn  btn-sm" onclick="clearFilters()">
                         Clear All
                     </button>
                 </div>

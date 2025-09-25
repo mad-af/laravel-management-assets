@@ -16,7 +16,7 @@
                 </div>
             </div>
             <div class="flex gap-2">
-                <a href="{{ route('asset-logs.for-asset', $log->asset_id) }}" class="btn btn-outline btn-sm">
+                <a href="{{ route('asset-logs.for-asset', $log->asset_id) }}" class="btn  btn-sm">
                     <i data-lucide="history" class="mr-2 w-4 h-4"></i>
                     Riwayat Asset
                 </a>

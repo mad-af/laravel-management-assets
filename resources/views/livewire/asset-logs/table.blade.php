@@ -12,7 +12,7 @@
             <div class="flex gap-2">
                 <x-dropdown>
                     <x-slot:trigger>
-                        <x-button icon="o-cube" class="btn-sm btn-outline">
+                        <x-button icon="o-cube" class="btn-sm ">
                             Filter Asset
                         </x-button>
                     </x-slot:trigger>
@@ -26,7 +26,7 @@
 
                 <x-dropdown>
                     <x-slot:trigger>
-                        <x-button icon="o-bolt" class="btn-sm btn-outline">
+                        <x-button icon="o-bolt" class="btn-sm ">
                             Filter Aksi
                         </x-button>
                     </x-slot:trigger>
@@ -40,19 +40,18 @@
 
                 <x-dropdown>
                     <x-slot:trigger>
-                        <x-button icon="o-user" class="btn-sm btn-outline">
+                        <x-button icon="o-user" class="btn-sm ">
                             Filter User
                         </x-button>
                     </x-slot:trigger>
 
                     <x-menu-item title="Semua User" wire:click="$set('userFilter', '')" />
                     @foreach($users as $user)
-                        <x-menu-item title="{{ $user->name }}"
-                            wire:click="$set('userFilter', '{{ $user->id }}')" />
+                        <x-menu-item title="{{ $user->name }}" wire:click="$set('userFilter', '{{ $user->id }}')" />
                     @endforeach
                 </x-dropdown>
 
-                <x-button wire:click="exportLogs" icon="o-arrow-down-tray" class="btn-sm btn-outline">
+                <x-button wire:click="exportLogs" icon="o-arrow-down-tray" class="btn-sm ">
                     Export CSV
                 </x-button>
             </div>

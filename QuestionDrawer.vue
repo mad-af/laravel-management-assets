@@ -163,7 +163,7 @@
               </div>
             </div>
 
-            <button type="button" @click="addChoice" class="mt-3 w-full btn btn-sm btn-outline">
+            <button type="button" @click="addChoice" class="mt-3 w-full btn btn-sm ">
               Add Choice
             </button>
 

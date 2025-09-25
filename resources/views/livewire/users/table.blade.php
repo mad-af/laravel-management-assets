@@ -12,7 +12,7 @@
             <div class="flex gap-2">
                 <x-dropdown>
                     <x-slot:trigger>
-                        <x-button icon="o-funnel" class="btn-sm btn-outline">
+                        <x-button icon="o-funnel" class="btn-sm ">
                             Filter Status
                         </x-button>
                     </x-slot:trigger>
@@ -24,7 +24,7 @@
 
                 <x-dropdown>
                     <x-slot:trigger>
-                        <x-button icon="o-user-group" class="btn-sm btn-outline">
+                        <x-button icon="o-user-group" class="btn-sm ">
                             Filter Role
                         </x-button>
                     </x-slot:trigger>
@@ -60,10 +60,10 @@
 
                 @scope('cell_company', $user)
                 @if($user->company)
-                <div class="lg:tooltip" data-tip="{{ $user->company->name }}">
-                    <x-avatar placeholder="{{ strtoupper(substr($user->company->name, 0, 2)) }}"
-                        class="!w-10 !rounded-lg !bg-primary !font-bold" />
-                </div>
+                    <div class="lg:tooltip" data-tip="{{ $user->company->name }}">
+                        <x-avatar placeholder="{{ strtoupper(substr($user->company->name, 0, 2)) }}"
+                            class="!w-10 !rounded-lg !bg-primary !font-bold" />
+                    </div>
                 @else
                     <span class="text-base-content/50">-</span>
                 @endif
@@ -81,7 +81,8 @@
                 <x-action-dropdown :model="$user">
                     <li>
                         <button wire:click="openEditDrawer('{{ $user->id }}')"
-                            class="flex gap-2 items-center p-2 text-sm rounded" onclick="document.getElementById('dropdown-menu-{{ $user->id }}').hidePopover()">
+                            class="flex gap-2 items-center p-2 text-sm rounded"
+                            onclick="document.getElementById('dropdown-menu-{{ $user->id }}').hidePopover()">
                             <x-icon name="o-pencil" class="w-4 h-4" />
                             Edit
                         </button>

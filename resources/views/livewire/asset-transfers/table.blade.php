@@ -4,22 +4,23 @@
         <div class="flex flex-col gap-4 mb-4 sm:flex-row">
             {{-- Search Input --}}
             <div class="flex-1">
-                <x-input wire:model.live="search" placeholder="Cari transfer (nomor, alasan, lokasi)..." icon="o-magnifying-glass"
-                    class="input-sm" />
+                <x-input wire:model.live="search" placeholder="Cari transfer (nomor, alasan, lokasi)..."
+                    icon="o-magnifying-glass" class="input-sm" />
             </div>
 
             {{-- Filter Dropdown --}}
             <div class="flex gap-2">
                 <x-dropdown>
                     <x-slot:trigger>
-                        <x-button icon="o-funnel" class="btn-sm btn-outline">
+                        <x-button icon="o-funnel" class="btn-sm ">
                             Filter Status
                         </x-button>
                     </x-slot:trigger>
 
                     <x-menu-item title="Semua Status" wire:click="$set('statusFilter', '')" />
                     @foreach(\App\Enums\AssetTransferStatus::cases() as $status)
-                        <x-menu-item title="{{ $status->label() }}" wire:click="$set('statusFilter', '{{ $status->value }}')" />
+                        <x-menu-item title="{{ $status->label() }}"
+                            wire:click="$set('statusFilter', '{{ $status->value }}')" />
                     @endforeach
                 </x-dropdown>
             </div>
@@ -63,7 +64,8 @@
                 @endscope
 
                 @scope('cell_items_count', $transfer)
-                <x-badge value="{{ $transfer->items_count ?? $transfer->items->count() }} item" class="badge-neutral badge-outline badge-sm" />
+                <x-badge value="{{ $transfer->items_count ?? $transfer->items->count() }} item"
+                    class="badge-neutral badge-outline badge-sm" />
                 @endscope
 
                 @scope('cell_status', $transfer)
@@ -96,14 +98,16 @@
                 <x-action-dropdown :model="$transfer">
                     <li>
                         <button wire:click="viewDetail('{{ $transfer->id }}')"
-                            class="flex gap-2 items-center p-2 text-sm rounded" onclick="document.getElementById('dropdown-menu-{{ $transfer->id }}').hidePopover()">
+                            class="flex gap-2 items-center p-2 text-sm rounded"
+                            onclick="document.getElementById('dropdown-menu-{{ $transfer->id }}').hidePopover()">
                             <x-icon name="o-eye" class="w-4 h-4" />
                             Detail
                         </button>
                     </li>
                     <li>
                         <button wire:click="openEditDrawer('{{ $transfer->id }}')"
-                            class="flex gap-2 items-center p-2 text-sm rounded" onclick="document.getElementById('dropdown-menu-{{ $transfer->id }}').hidePopover()">
+                            class="flex gap-2 items-center p-2 text-sm rounded"
+                            onclick="document.getElementById('dropdown-menu-{{ $transfer->id }}').hidePopover()">
                             <x-icon name="o-pencil" class="w-4 h-4" />
                             Edit
                         </button>
@@ -111,7 +115,8 @@
                     <li>
                         <button wire:click="delete('{{ $transfer->id }}')"
                             wire:confirm="Are you sure you want to delete this transfer?"
-                            class="flex gap-2 items-center p-2 text-sm rounded text-error" onclick="document.getElementById('dropdown-menu-{{ $transfer->id }}').hidePopover()">
+                            class="flex gap-2 items-center p-2 text-sm rounded text-error"
+                            onclick="document.getElementById('dropdown-menu-{{ $transfer->id }}').hidePopover()">
                             <x-icon name="o-trash" class="w-4 h-4" />
                             Delete
                         </button>

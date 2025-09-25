@@ -12,7 +12,7 @@
             <div class="flex gap-2">
                 <x-dropdown>
                     <x-slot:trigger>
-                        <x-button icon="o-funnel" class="btn-sm btn-outline">
+                        <x-button icon="o-funnel" class="btn-sm ">
                             Filter Status
                         </x-button>
                     </x-slot:trigger>
@@ -24,7 +24,7 @@
 
                 <x-dropdown>
                     <x-slot:trigger>
-                        <x-button icon="o-exclamation-triangle" class="btn-sm btn-outline">
+                        <x-button icon="o-exclamation-triangle" class="btn-sm ">
                             Filter Kondisi
                         </x-button>
                     </x-slot:trigger>
@@ -94,14 +94,14 @@
                     @if($assetLoan->condition_out)
                         <div class="flex gap-1 items-center">
                             <span class="text-xs">Keluar:</span>
-                            <x-badge value="{{ $assetLoan->condition_out->label() }}" 
+                            <x-badge value="{{ $assetLoan->condition_out->label() }}"
                                 class="{{ $assetLoan->condition_out->badgeColor() }} badge-xs" />
                         </div>
                     @endif
                     @if($assetLoan->condition_in)
                         <div class="flex gap-1 items-center">
                             <span class="text-xs">Masuk:</span>
-                            <x-badge value="{{ $assetLoan->condition_in->label() }}" 
+                            <x-badge value="{{ $assetLoan->condition_in->label() }}"
                                 class="{{ $assetLoan->condition_in->badgeColor() }} badge-xs" />
                         </div>
                     @endif
@@ -124,7 +124,8 @@
                 <x-action-dropdown :model="$assetLoan">
                     <li>
                         <button wire:click="openEditDrawer('{{ $assetLoan->id }}')"
-                            class="flex gap-2 items-center p-2 text-sm rounded" onclick="document.getElementById('dropdown-menu-{{ $assetLoan->id }}').hidePopover()">
+                            class="flex gap-2 items-center p-2 text-sm rounded"
+                            onclick="document.getElementById('dropdown-menu-{{ $assetLoan->id }}').hidePopover()">
                             <x-icon name="o-pencil" class="w-4 h-4" />
                             Edit
                         </button>
@@ -132,7 +133,8 @@
                     @if($assetLoan->isActive())
                         <li>
                             <button wire:click="returnAsset('{{ $assetLoan->id }}')"
-                                class="flex gap-2 items-center p-2 text-sm rounded text-success" onclick="document.getElementById('dropdown-menu-{{ $assetLoan->id }}').hidePopover()">
+                                class="flex gap-2 items-center p-2 text-sm rounded text-success"
+                                onclick="document.getElementById('dropdown-menu-{{ $assetLoan->id }}').hidePopover()">
                                 <x-icon name="o-arrow-uturn-left" class="w-4 h-4" />
                                 Kembalikan
                             </button>
@@ -141,7 +143,8 @@
                     <li>
                         <button wire:click="delete('{{ $assetLoan->id }}')"
                             wire:confirm="Are you sure you want to delete this loan record?"
-                            class="flex gap-2 items-center p-2 text-sm rounded text-error" onclick="document.getElementById('dropdown-menu-{{ $assetLoan->id }}').hidePopover()">
+                            class="flex gap-2 items-center p-2 text-sm rounded text-error"
+                            onclick="document.getElementById('dropdown-menu-{{ $assetLoan->id }}').hidePopover()">
                             <x-icon name="o-trash" class="w-4 h-4" />
                             Delete
                         </button>

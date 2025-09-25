@@ -49,7 +49,7 @@
 
             <!-- Clear Filters Button -->
             <div class="mt-4">
-                <button wire:click="clearFilters" class="btn btn-outline btn-sm">
+                <button wire:click="clearFilters" class="btn  btn-sm">
                     <i data-lucide="x" class="mr-2 w-4 h-4"></i>
                     Clear Filters
                 </button>
@@ -123,7 +123,8 @@
                                     <td>
                                         @if($log->notes)
                                             <div class="tooltip" data-tip="{{ $log->notes }}">
-                                                <span class="text-sm truncate max-w-xs block">{{ Str::limit($log->notes, 50) }}</span>
+                                                <span
+                                                    class="text-sm truncate max-w-xs block">{{ Str::limit($log->notes, 50) }}</span>
                                             </div>
                                         @else
                                             <span class="text-base-content/50">No notes</span>

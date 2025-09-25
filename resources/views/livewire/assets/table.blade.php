@@ -12,7 +12,7 @@
             <div class="flex gap-2">
                 <x-dropdown>
                     <x-slot:trigger>
-                        <x-button icon="o-funnel" class="btn-sm btn-outline">
+                        <x-button icon="o-funnel" class="btn-sm ">
                             Filter Status
                         </x-button>
                     </x-slot:trigger>
@@ -26,7 +26,7 @@
 
                 <x-dropdown>
                     <x-slot:trigger>
-                        <x-button icon="o-tag" class="btn-sm btn-outline">
+                        <x-button icon="o-tag" class="btn-sm ">
                             Filter Kategori
                         </x-button>
                     </x-slot:trigger>
@@ -40,7 +40,7 @@
 
                 <x-dropdown>
                     <x-slot:trigger>
-                        <x-button icon="o-map-pin" class="btn-sm btn-outline">
+                        <x-button icon="o-map-pin" class="btn-sm ">
                             Filter Lokasi
                         </x-button>
                     </x-slot:trigger>
@@ -109,7 +109,8 @@
                 @scope('cell_actions', $asset)
                 <x-action-dropdown :model="$asset">
                     <li>
-                        <a href="{{ route('assets.show', $asset) }}" onclick="document.getElementById('dropdown-menu-{{ $asset->id }}').hidePopover()">
+                        <a href="{{ route('assets.show', $asset) }}"
+                            onclick="document.getElementById('dropdown-menu-{{ $asset->id }}').hidePopover()">
                             <x-icon name="o-eye" class="w-4 h-4" />
                             View
                         </a>

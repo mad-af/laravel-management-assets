@@ -11,7 +11,7 @@
       <div class="flex gap-2">
         <x-dropdown>
           <x-slot:trigger>
-            <x-button icon="o-funnel" class="btn-sm btn-outline">
+            <x-button icon="o-funnel" class="btn-sm ">
               Filter Status
             </x-button>
           </x-slot:trigger>
@@ -56,7 +56,8 @@
         <x-action-dropdown :model="$location">
           <li>
             <button wire:click="openEditDrawer('{{ $location->id }}')"
-              class="flex gap-2 items-center p-2 text-sm rounded" onclick="document.getElementById('dropdown-menu-{{ $location->id }}').hidePopover()">
+              class="flex gap-2 items-center p-2 text-sm rounded"
+              onclick="document.getElementById('dropdown-menu-{{ $location->id }}').hidePopover()">
               <x-icon name="o-pencil" class="w-4 h-4" />
               Edit
             </button>

@@ -60,7 +60,7 @@
                             <i data-lucide="play" class="w-4 h-4"></i>
                             Mulai Scan
                         </button>
-                        <button id="stop-scanner" class="flex-1 btn btn-outline" disabled>
+                        <button id="stop-scanner" class="flex-1 btn " disabled>
                             <i data-lucide="square" class="w-4 h-4"></i>
                             Stop Scan
                         </button>
