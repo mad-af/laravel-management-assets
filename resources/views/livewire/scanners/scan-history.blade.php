@@ -9,7 +9,6 @@
             ['key' => 'status', 'label' => 'Status'],
             ['key' => 'action', 'label' => 'Aksi'],
         ];
-
     @endphp
     <x-table :headers="$headers" :rows="$rows" show-empty-text>
 
@@ -18,7 +17,13 @@
         @endscope
 
         @scope('cell_action', $scan)
-        <x-button icon="o-eye" class="btn-ghost btn-xs" :disabled="empty($scan['id'])" />
+        @if (empty($scan['id']))
+        <a href="" class="btn btn-xs btn-ghost" disabled>
+        @else
+        <a href="" class="btn btn-xs btn-ghost">
+        @endif
+            <x-icon name="o-eye" class="!w-5 !h-5" />
+        </a>
         @endscope
     </x-table>
 </x-info-card>

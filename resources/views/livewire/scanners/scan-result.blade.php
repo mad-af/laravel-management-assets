@@ -1,7 +1,9 @@
 <x-info-card icon="o-magnifying-glass" title="Hasil Scan" class="flex-1">
 
   {{-- Success State --}}
-  <div class="space-y-4 {{ $scanStatus === self::SCAN_STATUS_SUCCESS ? 'block' : 'hidden' }}">
+  <div class="space-y-4
+   {{-- {{ $scanStatus === self::SCAN_STATUS_SUCCESS ? 'block' : 'hidden' }} --}}
+    ">
     @php
       $headers = [
         ['key' => 'key', 'label' => 'Key', 'class' => 'font-bold'],
@@ -14,9 +16,9 @@
     <div class="alert-containe" x-data="{ alert: @entangle('alert') }">
       @if ($alert)
           <div class="alert" :class="{
-        'alert-success': alert.type === 'success',
-        'alert-warning': alert.type === 'warning',
-      }">
+            'alert-success': alert.type === 'success',
+            'alert-warning': alert.type === 'warning',
+          }">
             <x-icon class="w-4 h-4" :name="match ($alert->type) {
           'success' => 'o-check-circle',
           'warning' => 'o-exclamation-triangle',
@@ -30,10 +32,13 @@
     </div>
 
     {{-- Action Buttons --}}
-    <div class="action-buttons {{ $assetScanned ? 'block' : 'hidden' }}">
+    <div class="action-buttons 
+    {{-- {{ $assetScanned ? 'block' : 'hidden' }} --}}
+     ">
       <div class="space-y-4">
-        <div
-          class="status-buttons {{ isset($assetScanned['status']) && $assetScanned['status'] === \App\Enums\AssetStatus::ACTIVE->value ? 'block' : 'hidden' }}">
+        <div class="status-buttons 
+          {{-- {{ isset($assetScanned['status']) && $assetScanned['status'] === \App\Enums\AssetStatus::ACTIVE->value ? 'block' : 'hidden' }} --}}
+           ">
           <div class="flex gap-4">
             <x-button label="Maintenance" icon="o-wrench-screwdriver" class="flex-1 w-full btn-secondary btn-sm" />
             <x-button label="Check Out" icon="o-arrow-up-tray" class="flex-1 w-full btn-accent btn-sm" />
@@ -45,7 +50,10 @@
           <x-button label="Check In" icon="o-arrow-down-tray" class="flex-1 w-full btn-primary btn-sm" />
         </div>
 
-        <x-button label="Lihat Detail" icon="o-eye" class="w-full btn-sm" />
+        <a href="" class="w-full btn btn-sm">
+          <x-icon name="o-eye" class="!w-5 !h-5" />
+          Lihat Detail
+        </a>
       </div>
     </div>
   </div>
