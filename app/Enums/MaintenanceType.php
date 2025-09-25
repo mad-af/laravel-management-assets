@@ -18,16 +18,16 @@ enum MaintenanceType: string
     public function description(): string
     {
         return match($this) {
-            self::PREVENTIVE => 'Scheduled maintenance to prevent issues',
-            self::CORRECTIVE => 'Maintenance to fix existing problems',
+            self::PREVENTIVE => 'Pemeliharaan terjadwal untuk mencegah masalah',
+            self::CORRECTIVE => 'Pemeliharaan untuk memperbaiki masalah yang ada',
         };
     }
 
-    public function badgeColor(): string
+    public function color(): string
     {
         return match($this) {
-            self::PREVENTIVE => 'badge-info',
-            self::CORRECTIVE => 'badge-warning',
+            self::PREVENTIVE => 'info',
+            self::CORRECTIVE => 'warning',
         };
     }
 }

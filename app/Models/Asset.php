@@ -172,7 +172,6 @@ class Asset extends Model
             'damaged' => 'badge-warning',
             'lost' => 'badge-error',
             'maintenance' => 'badge-info',
-            AssetStatus::CHECKED_OUT->value => 'badge-primary',
             default => 'badge-ghost',
         };
     }
@@ -275,27 +274,11 @@ class Asset extends Model
     }
 
     /**
-     * Check if asset is checked out
-     */
-    public function isCheckedOut(): bool
-    {
-        return $this->status === AssetStatus::CHECKED_OUT;
-    }
-
-    /**
      * Check if asset is under maintenance
      */
     public function isUnderMaintenance(): bool
     {
         return $this->status === AssetStatus::MAINTENANCE;
-    }
-
-    /**
-     * Check if asset is damaged
-     */
-    public function isDamaged(): bool
-    {
-        return $this->status === AssetStatus::DAMAGED;
     }
 
     /**

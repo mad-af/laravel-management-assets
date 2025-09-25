@@ -5,10 +5,10 @@ namespace App\Enums;
 enum AssetStatus: string
 {
     case ACTIVE = 'active';
-    case DAMAGED = 'damaged';
+    case INACTIVE = 'inactive';
     case LOST = 'lost';
     case MAINTENANCE = 'maintenance';
-    case CHECKED_OUT = 'checked_out';
+    case ON_LOAN = 'on_loan';
 
     /**
      * Get all enum values as array
@@ -25,10 +25,10 @@ enum AssetStatus: string
     {
         return match($this) {
             self::ACTIVE => 'Active',
-            self::DAMAGED => 'Damaged',
+            self::INACTIVE => 'Inactive',
             self::LOST => 'Lost',
-            self::MAINTENANCE => 'Under Maintenance',
-            self::CHECKED_OUT => 'Checked Out',
+            self::MAINTENANCE => 'Maintenance',
+            self::ON_LOAN => 'on_loan',
         };
     }
 
@@ -38,25 +38,11 @@ enum AssetStatus: string
     public function color(): string
     {
         return match($this) {
-            self::ACTIVE => 'green',
-            self::DAMAGED => 'red',
-            self::LOST => 'gray',
-            self::MAINTENANCE => 'yellow',
-            self::CHECKED_OUT => 'blue',
-        };
-    }
-
-    /**
-     * Get badge color class for UI display
-     */
-    public function badgeColor(): string
-    {
-        return match($this) {
-            self::ACTIVE => 'badge-success',
-            self::DAMAGED => 'badge-error',
-            self::LOST => 'badge-neutral',
-            self::MAINTENANCE => 'badge-warning',
-            self::CHECKED_OUT => 'badge-info',
+            self::ACTIVE => 'success',
+            self::INACTIVE => 'error',
+            self::LOST => 'neutral',
+            self::MAINTENANCE => 'warning',
+            self::ON_LOAN => 'info',
         };
     }
 

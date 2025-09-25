@@ -5,7 +5,6 @@ namespace App\Enums;
 enum MaintenanceStatus: string
 {
     case OPEN = 'open';
-    case SCHEDULED = 'scheduled';
     case IN_PROGRESS = 'in_progress';
     case COMPLETED = 'completed';
     case CANCELLED = 'cancelled';
@@ -14,21 +13,19 @@ enum MaintenanceStatus: string
     {
         return match($this) {
             self::OPEN => 'Open',
-            self::SCHEDULED => 'Scheduled',
             self::IN_PROGRESS => 'In Progress',
             self::COMPLETED => 'Completed',
             self::CANCELLED => 'Cancelled',
         };
     }
 
-    public function badgeColor(): string
+    public function color(): string
     {
         return match($this) {
-            self::OPEN => 'badge-info',
-            self::SCHEDULED => 'badge-warning',
-            self::IN_PROGRESS => 'badge-primary',
-            self::COMPLETED => 'badge-success',
-            self::CANCELLED => 'badge-error',
+            self::OPEN => 'info',
+            self::IN_PROGRESS => 'primary',
+            self::COMPLETED => 'success',
+            self::CANCELLED => 'error',
         };
     }
 }

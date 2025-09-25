@@ -34,21 +34,21 @@ enum UserRole: string
     public function description(): string
     {
         return match($this) {
-            self::ADMIN => 'Full system access and management',
-            self::STAFF => 'Standard user with limited access',
-            self::AUDITOR => 'Read-only access for auditing purposes',
+            self::ADMIN => 'Akses penuh dan manajemen sistem',
+            self::STAFF => 'Pengguna standar dengan akses terbatas',
+            self::AUDITOR => 'Akses hanya baca untuk keperluan audit',
         };
     }
 
     /**
-     * Get badge color class for UI display
+     * Get color for UI display
      */
-    public function badgeColor(): string
+    public function color(): string
     {
         return match($this) {
-            self::ADMIN => 'badge-error',
-            self::STAFF => 'badge-info',
-            self::AUDITOR => 'badge-warning',
+            self::ADMIN => 'error',
+            self::STAFF => 'info',
+            self::AUDITOR => 'warning',
         };
     }
 }

@@ -3,8 +3,7 @@
 namespace App\Enums;
 
 enum AssetCondition: string
-{
-    case EXCELLENT = 'excellent';
+{       
     case GOOD = 'good';
     case FAIR = 'fair';
     case POOR = 'poor';
@@ -23,7 +22,6 @@ enum AssetCondition: string
     public function label(): string
     {
         return match($this) {
-            self::EXCELLENT => 'Excellent',
             self::GOOD => 'Good',
             self::FAIR => 'Fair',
             self::POOR => 'Poor',
@@ -36,23 +34,9 @@ enum AssetCondition: string
     public function color(): string
     {
         return match($this) {
-            self::EXCELLENT => 'green',
-            self::GOOD => 'blue',
-            self::FAIR => 'yellow',
-            self::POOR => 'red',
-        };
-    }
-
-    /**
-     * Get badge color class for UI display
-     */
-    public function badgeColor(): string
-    {
-        return match($this) {
-            self::EXCELLENT => 'badge-success',
-            self::GOOD => 'badge-info',
-            self::FAIR => 'badge-warning',
-            self::POOR => 'badge-error',
+            self::GOOD => 'info',
+            self::FAIR => 'warning',
+            self::POOR => 'error',
         };
     }
 
@@ -62,7 +46,6 @@ enum AssetCondition: string
     public function score(): int
     {
         return match($this) {
-            self::EXCELLENT => 4,
             self::GOOD => 3,
             self::FAIR => 2,
             self::POOR => 1,
