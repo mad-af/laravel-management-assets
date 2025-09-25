@@ -259,8 +259,6 @@ function printQRBarcode(tagCode, assetName, assetCode, purchaseYear) {
 window.printQRBarcode = printQRBarcode;
 
 function initScannerIfPresent() {
-
-
     if (document.body.dataset.route != 'scanners.index') return;
 
     // hindari double init

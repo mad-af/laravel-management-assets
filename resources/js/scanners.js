@@ -22,7 +22,7 @@ class QRBarcodeScanner {
 
     async start() {
         this.dispatchUpdateCameraAttributes({
-            cameraStatus: 'preparing',
+            cameraStatus: "preparing",
             ...this.setAlert(
                 "warning",
                 "Menyiapkan Kamera",
@@ -36,12 +36,12 @@ class QRBarcodeScanner {
             }
 
             this.isScanning = true;
-            await this.startStream(this.currentDeviceId);
+            // await this.startStream(this.currentDeviceId);
 
             await this.runningScanner();
 
             this.dispatchUpdateCameraAttributes({
-                cameraStatus: 'on',
+                cameraStatus: "on",
                 isSwitchCamera: this.isSwitchCamera,
                 ...this.setAlert(
                     "success",
@@ -87,7 +87,7 @@ class QRBarcodeScanner {
             } catch (_) {}
         }
         this.dispatchUpdateCameraAttributes({
-            cameraStatus: 'off',
+            cameraStatus: "off",
             ...this.setAlert(
                 "info",
                 "Aktifkan Kamera",
@@ -171,6 +171,9 @@ class QRBarcodeScanner {
     }
 
     async handleScanResult(text) {
+        this.dispatchUpdateResultAttributes({
+            scanStatus: "loading",
+        });
         try {
             const assetResponse = await fetch(
                 `/api/assets/search?code=${encodeURIComponent(text)}`,
@@ -190,11 +193,13 @@ class QRBarcodeScanner {
             if (!assetResponse.ok) throw new Error("Gagal mencari aset");
             const assetData = await assetResponse.json();
             this.dispatchUpdateResultAttributes({
+                scanStatus: "success",
                 tagScanned: text,
                 assetScanned: assetData.asset ?? null,
             });
             this.addToScanHistory(text, assetData.asset ?? null);
             this.dispatchUpdateHistoryAttributes({ rows: this.scanHistory });
+            this.playScanSound();
         } catch (error) {
             console.error("Error searching asset:", error);
         }
@@ -224,6 +229,28 @@ class QRBarcodeScanner {
         if (this.scanHistory.length > 10)
             this.scanHistory = this.scanHistory.slice(0, 10);
         localStorage.setItem("scanHistory", JSON.stringify(this.scanHistory));
+    }
+
+    playScanSound() {
+        try {
+            const audioContext = new (window.AudioContext ||
+                window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            oscillator.frequency.value = 800;
+            oscillator.type = "sine";
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(
+                0.01,
+                audioContext.currentTime + 0.1
+            );
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.1);
+        } catch (error) {
+            console.log("Could not play scan sound:", error);
+        }
     }
 
     setAlert(type, title, message) {
