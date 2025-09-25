@@ -3,16 +3,13 @@
 !define pk(x) <u>x</u>
 !define fk(x) <i>x</i>
 
-title Laravel Asset Management System - ERD (Multi-tenant) + Asset Transfer (MVP) + Vehicle (MVP) + Service Log Enhancements
+title Laravel Asset Management System - ERD (Multi-tenant) + Asset Transfer (MVP) + Vehicle (MVP) + Service Log Enhancements (Branches) — Refactor v3
 
-' ==========================
-' Company / Tenant Table
-' ==========================
 table(companies) {
   pk(id) : UUID
   name : VARCHAR [UNIQUE]
   code : VARCHAR [UNIQUE]
-  fk(location_id) : UUID [NULL]
+  fk(hq_branch_id) : UUID [NULL]
   tax_id : VARCHAR [NULL]
   address : TEXT [NULL]
   phone : VARCHAR [NULL]
@@ -23,12 +20,8 @@ table(companies) {
   updated_at : TIMESTAMP
 }
 
-' ==========================
-' Main Business Tables
-' ==========================
 table(users) {
   pk(id) : UUID
-  fk(company_id) : UUID
   name : VARCHAR
   email : VARCHAR [UNIQUE]
   role : ENUM(admin, staff, auditor) [DEFAULT: staff]
@@ -39,18 +32,40 @@ table(users) {
   updated_at : TIMESTAMP
 }
 
+table(user_companies) {
+  pk(id) : UUID
+  fk(user_id) : UUID
+  fk(company_id) : UUID
+  company_role : ENUM(admin, staff, auditor) [DEFAULT: staff]
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
 table(categories) {
   pk(id) : UUID
-  fk(company_id) : UUID
   name : VARCHAR [UNIQUE]
   is_active : BOOLEAN [DEFAULT: true]
   created_at : TIMESTAMP
   updated_at : TIMESTAMP
 }
 
-table(locations) {
+table(branches) {
   pk(id) : UUID
-  name : VARCHAR [UNIQUE]
+  fk(company_id) : UUID
+  name : VARCHAR
+  is_active : BOOLEAN [DEFAULT: true]
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+table(employees) {
+  pk(id) : UUID
+  fk(company_id) : UUID
+  fk(branch_id) : UUID [NULL]
+  employee_number : INT [UNIQUE, NULL]
+  full_name : VARCHAR
+  email : VARCHAR [NULL]
+  phone : VARCHAR [NULL]
   is_active : BOOLEAN [DEFAULT: true]
   created_at : TIMESTAMP
   updated_at : TIMESTAMP
@@ -63,9 +78,11 @@ table(assets) {
   tag_code : VARCHAR [UNIQUE, NULL]
   name : VARCHAR
   fk(category_id) : UUID
-  fk(location_id) : UUID
-  status : ENUM(active, damaged, lost, maintenance, checked_out) [DEFAULT: active]
-  condition : ENUM(excellent, good, fair, poor) [DEFAULT: good]
+  fk(branch_id) : UUID
+  brand : VARCHAR(64) [NULL]
+  model : VARCHAR(64) [NULL]
+  status : ENUM(active, inactive, lost, maintenance, on_loan) [DEFAULT: active]
+  condition : ENUM(good, fair, poor) [DEFAULT: good]
   value : DECIMAL(15,2)
   purchase_date : DATE [NULL]
   description : TEXT [NULL]
@@ -88,56 +105,48 @@ table(asset_logs) {
 table(asset_loans) {
   pk(id) : UUID
   fk(asset_id) : UUID
-  borrower_name : VARCHAR
+  fk(employee_id) : UUID
   checkout_at : TIMESTAMP
   due_at : TIMESTAMP
   checkin_at : TIMESTAMP [NULL]
-  condition_out : VARCHAR
-  condition_in : VARCHAR [NULL]
+  condition_out : ENUM(good, fair, poor)
+  condition_in : ENUM(good, fair, poor) [NULL]
   notes : TEXT [NULL]
   created_at : TIMESTAMP
   updated_at : TIMESTAMP
 }
 
-' ============ UPDATED ============
-' Service log untuk SEMUA aset; diperkuat untuk kendaraan
- table(asset_maintenances) {
+table(asset_maintenances) {
   pk(id) : UUID
   fk(asset_id) : UUID
   title : VARCHAR
   type : ENUM(preventive, corrective)
-  status : ENUM(open, scheduled, in_progress, completed, cancelled) [DEFAULT: open]
-  priority : ENUM(low, medium, high, critical) [DEFAULT: medium]
-  scheduled_at : TIMESTAMP [NULL]
+  status : ENUM(open, in_progress, completed, cancelled) [DEFAULT: open]
+  priority : ENUM(low, medium, high) [DEFAULT: medium]
   started_at : TIMESTAMP [NULL]
+  estimated_completed_at : TIMESTAMP [NULL]
   completed_at : TIMESTAMP [NULL]
   cost : DECIMAL(15,2) [DEFAULT: 0.00]
   technician_name : VARCHAR [NULL]
   vendor_name : VARCHAR [NULL]
   notes : TEXT [NULL]
-  ' ---- Vehicle-specific helpers (tanpa tabel baru)
   odometer_km_at_service : INT [NULL]
   next_service_target_odometer_km : INT [NULL]
   next_service_date : DATE [NULL]
-  workshop_name : VARCHAR [NULL]
   invoice_no : VARCHAR [NULL]
   created_at : TIMESTAMP
   updated_at : TIMESTAMP
 }
 
-' ==========================
-' NEW: Asset Transfer (MVP)
-' ==========================
- table(asset_transfers) {
+table(asset_transfers) {
   pk(id) : UUID
   fk(company_id) : UUID
   transfer_no : VARCHAR [UNIQUE]
   reason : VARCHAR [NULL]
-  status : ENUM(draft, submitted, approved, executed, void) [DEFAULT: draft]
-  type : ENUM(internal, external) [DEFAULT: internal]
-  priority : ENUM(low, medium, high, urgent) [DEFAULT: medium]
-  fk(from_location_id) : UUID [NULL]
-  fk(to_location_id) : UUID [NULL]
+  status : ENUM(shipped, delivered) [DEFAULT: shipped]
+  type : ENUM(branch, company) [DEFAULT: branch]
+  fk(from_branch_id) : UUID [NULL]
+  fk(to_branch_id) : UUID [NULL]
   fk(requested_by) : UUID
   fk(approved_by) : UUID [NULL]
   scheduled_at : TIMESTAMP [NULL]
@@ -147,55 +156,46 @@ table(asset_loans) {
   updated_at : TIMESTAMP
 }
 
- table(asset_transfer_items) {
+table(asset_transfer_items) {
   pk(id) : UUID
   fk(asset_transfer_id) : UUID
   fk(asset_id) : UUID
-  fk(from_location_id) : UUID
-  fk(to_location_id) : UUID
+  fk(from_branch_id) : UUID
+  fk(to_branch_id) : UUID
   created_at : TIMESTAMP
   updated_at : TIMESTAMP
 }
 
- table(asset_location_history) {
+table(asset_branch_history) {
   pk(id) : UUID
   fk(asset_id) : UUID
-  fk(from_location_id) : UUID [NULL]
-  fk(to_location_id) : UUID
-  changed_at : TIMESTAMP
-  fk(changed_by) : UUID
+  fk(from_branch_id) : UUID [NULL]
+  fk(to_branch_id) : UUID
   fk(transfer_id) : UUID [NULL]
   remark : VARCHAR [NULL]
 }
 
-' ==========================
-' NEW: Vehicle (MVP)
-' ==========================
- table(vehicle_profiles) {
+table(vehicle_profiles) {
   pk(asset_id) : UUID
   year_purchase : INT
   year_manufacture : INT
   current_odometer_km : INT [DEFAULT: 0]
   last_service_date : DATE [NULL]
-  service_interval_km : INT [NULL]
-  service_interval_days : INT [NULL]
   service_target_odometer_km : INT [NULL]
   next_service_date : DATE [NULL]
   annual_tax_due_date : DATE [NULL]
   plate_no : VARCHAR(32) [NULL]
   vin : VARCHAR(64) [NULL]
-  brand : VARCHAR(64) [NULL]
-  model : VARCHAR(64) [NULL]
   created_at : TIMESTAMP
   updated_at : TIMESTAMP
 }
 
- table(vehicle_odometer_logs) {
+table(vehicle_odometer_logs) {
   pk(id) : UUID
   fk(asset_id) : UUID
   reading_km : INT
   read_at : TIMESTAMP
-  source : ENUM(manual, telematics, service) [DEFAULT: manual]
+  source : ENUM(manual, service) [DEFAULT: manual]
   notes : TEXT [NULL]
   created_at : TIMESTAMP
   updated_at : TIMESTAMP
@@ -204,14 +204,18 @@ table(asset_loans) {
 ' ==========================
 ' Relationships
 ' ==========================
-companies ||--o{ users : "has many"
 companies ||--o{ categories : "has many"
-locations ||--o{ companies : "has many"
+companies ||--o{ branches : "has many"
 companies ||--o{ assets : "has many"
 companies ||--o{ asset_transfers : "has many"
+companies ||--o{ employees : "has many"
+
+users ||--o{ user_companies : "memberships"
+companies ||--o{ user_companies : "memberships"
 
 categories ||--o{ assets : "has many"
-locations ||--o{ assets : "has many"
+branches ||--o{ assets : "has many"
+employees ||--o{ asset_loans : "borrows"
 assets ||--o{ asset_logs : "has many"
 assets ||--o{ asset_loans : "has many"
 assets ||--o{ asset_maintenances : "has many"
@@ -220,44 +224,19 @@ users ||--o{ sessions : "has many"
 users ||--o{ password_reset_tokens : "has many"
 
 asset_transfers ||--o{ asset_transfer_items : "has many"
-assets ||--o{ asset_location_history : "has many"
+assets ||--o{ asset_branch_history : "has many"
 users ||--o{ asset_transfers : "requests/approves"
 
-locations ||--o{ asset_transfers : "as from_location"
-locations ||--o{ asset_transfers : "as to_location"
-locations ||--o{ asset_transfer_items : "as from_location"
-locations ||--o{ asset_transfer_items : "as to_location"
-locations ||--o{ asset_location_history : "as from_location"
-locations ||--o{ asset_location_history : "as to_location"
+branches ||--o{ asset_transfers : "as from_branch"
+branches ||--o{ asset_transfers : "as to_branch"
+branches ||--o{ asset_transfer_items : "as from_branch"
+branches ||--o{ asset_transfer_items : "as to_branch"
+branches ||--o{ asset_branch_history : "as from_branch"
+branches ||--o{ asset_branch_history : "as to_branch"
 
-asset_transfers ||--o{ asset_location_history : "writes"
+asset_transfers ||--o{ asset_branch_history : "writes"
 
 assets ||--|| vehicle_profiles : "has one"
 assets ||--o{ vehicle_odometer_logs : "has many"
-
-' ==========================
-' Notes
-' ==========================
-note right of asset_maintenances
-  Service log utama untuk semua aset.
-  Tambahan kolom mendukung kendaraan tanpa tabel baru:
-  - odometer_km_at_service
-  - next_service_target_odometer_km
-  - next_service_date
-  - workshop_name, invoice_no
-  Saat status completed:
-  - update vehicle_profiles.last_service_date
-  - hitung ulang target km/tanggal servis berikutnya
-end note
-
-note right of vehicle_profiles
-  Detail khusus aset kendaraan (category = vehicle)
-  Menyimpan odometer terkini, tahun beli/manufacture, servis & pajak
-end note
-
-note right of vehicle_odometer_logs
-  Riwayat pembacaan odometer (manual/telematics/service)
-  Berguna untuk audit dan trigger preventive maintenance
-end note
 
 @enduml
