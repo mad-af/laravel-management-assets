@@ -1,7 +1,8 @@
 <form wire:submit="save" class="space-y-4">
     <!-- Asset Selection -->
     <div>
-        <x-select label="Asset" wire:model="asset_id" :options="$assets" option-value="id" option-label="name" placeholder="Pilih asset" required />
+        <x-select label="Asset" wire:model="asset_id" :options="$assets" option-value="id" option-label="name"
+            placeholder="Pilih asset" required />
     </div>
 
     <!-- Borrower Name -->
@@ -33,13 +34,15 @@
 
     <!-- Condition Out -->
     <div>
-        <x-select label="Kondisi Saat Dipinjam" wire:model="condition_out" :options="$conditions" option-value="value" option-label="label" placeholder="Pilih kondisi" required />
+        <x-select label="Kondisi Saat Dipinjam" wire:model="condition_out" :options="$conditions" option-value="value"
+            option-label="label" placeholder="Pilih kondisi" required />
     </div>
 
     <!-- Condition In (for edit mode or when returned) -->
     @if($isEdit && $checkin_at)
         <div>
-            <x-select label="Kondisi Saat Dikembalikan" wire:model="condition_in" :options="$conditions" option-value="value" option-label="label" placeholder="Pilih kondisi" />
+            <x-select label="Kondisi Saat Dikembalikan" wire:model="condition_in" :options="$conditions"
+                option-value="value" option-label="label" placeholder="Pilih kondisi" />
         </div>
     @endif
 
@@ -50,7 +53,7 @@
 
     <!-- Submit Button -->
     <div class="flex gap-2 justify-end pt-4">
-        <x-button label="Batal" class="btn-ghost" wire:click="$dispatch('closeDrawer')" />
+        <x-button label="Batal" class="btn-ghost" wire:click="$dispatch('close-drawer')" />
         <x-button label="{{ $isEdit ? 'Update' : 'Simpan' }}" class="btn-primary" type="submit" spinner="save" />
     </div>
 </form>

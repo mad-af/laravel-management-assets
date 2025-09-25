@@ -11,7 +11,7 @@
 
     <!-- Submit Button -->
     <div class="flex gap-2 justify-end pt-4">
-        <x-button label="Batal" class="btn-ghost" wire:click="$dispatch('closeDrawer')" />
+        <x-button label="Batal" class="btn-ghost" wire:click="$dispatch('close-drawer')" />
         <x-button label="{{ $isEdit ? 'Update' : 'Simpan' }}" class="btn-primary" type="submit" spinner="save" />
     </div>
 </form>

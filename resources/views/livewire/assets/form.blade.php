@@ -16,27 +16,32 @@
 
     <!-- Category -->
     <div>
-        <x-select label="Kategori" wire:model="category_id" :options="$categories" option-value="id" option-label="name" placeholder="Pilih kategori" required />
+        <x-select label="Kategori" wire:model="category_id" :options="$categories" option-value="id" option-label="name"
+            placeholder="Pilih kategori" required />
     </div>
 
     <!-- Location -->
     <div>
-        <x-select label="Lokasi" wire:model="location_id" :options="$locations" option-value="id" option-label="name" placeholder="Pilih lokasi" required />
+        <x-select label="Lokasi" wire:model="location_id" :options="$locations" option-value="id" option-label="name"
+            placeholder="Pilih lokasi" required />
     </div>
 
     <!-- Status -->
     <div>
-        <x-select label="Status" wire:model="status" :options="$statuses" option-value="value" option-label="label" placeholder="Pilih status" required />
+        <x-select label="Status" wire:model="status" :options="$statuses" option-value="value" option-label="label"
+            placeholder="Pilih status" required />
     </div>
 
     <!-- Condition -->
     <div>
-        <x-select label="Kondisi" wire:model="condition" :options="$conditions" option-value="value" option-label="label" placeholder="Pilih kondisi" required />
+        <x-select label="Kondisi" wire:model="condition" :options="$conditions" option-value="value"
+            option-label="label" placeholder="Pilih kondisi" required />
     </div>
 
     <!-- Value -->
     <div>
-        <x-input label="Nilai Asset (Rp)" wire:model="value" placeholder="Masukkan nilai asset" type="number" step="0.01" min="0" />
+        <x-input label="Nilai Asset (Rp)" wire:model="value" placeholder="Masukkan nilai asset" type="number"
+            step="0.01" min="0" />
     </div>
 
     <!-- Purchase Date -->
@@ -51,7 +56,7 @@
 
     <!-- Submit Button -->
     <div class="flex gap-2 justify-end pt-4">
-        <x-button label="Batal" class="btn-ghost" wire:click="$dispatch('closeDrawer')" />
+        <x-button label="Batal" class="btn-ghost" wire:click="$dispatch('close-drawer')" />
         <x-button label="{{ $isEdit ? 'Update' : 'Simpan' }}" class="btn-primary" type="submit" spinner="save" />
     </div>
 </form>

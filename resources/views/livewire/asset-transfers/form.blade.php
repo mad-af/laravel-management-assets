@@ -80,7 +80,7 @@
     </fieldset>
 
     <div class="flex gap-3 justify-end pt-4">
-        <x-button label="Batal" class="btn-ghost btn-sm" type="button" wire:click="$dispatch('closeDrawer')" />
+        <x-button label="Batal" class="btn-ghost btn-sm" type="button" wire:click="$dispatch('close-drawer')" />
         <button class="btn btn-sm btn-primary" type="submit">
             {{ $isEdit ? 'Update' : 'Simpan' }}
         </button>

@@ -1,6 +1,6 @@
 <form action="{{ route('vehicles.store-odometer') }}" method="POST" class="space-y-2">
     @csrf
-    
+
     <!-- Asset Selection -->
     <x-select name="asset_id" label="Vehicle" class="select-sm" wire:model.live="asset_id" :options="$assets"
         option-value="id" option-label="display_name" placeholder="Select vehicle" required />
@@ -22,7 +22,7 @@
         placeholder="Enter additional notes (optional)" />
 
     <div class="flex gap-3 justify-end pt-4">
-        <x-button label="Cancel" class="btn-ghost btn-sm" type="button" wire:click="$dispatch('closeDrawer')" />
+        <x-button label="Cancel" class="btn-ghost btn-sm" type="button" wire:click="$dispatch('close-drawer')" />
         <button class="btn btn-sm btn-primary" type="submit">
             Save
         </button>

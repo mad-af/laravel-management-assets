@@ -14,7 +14,7 @@
                     @if($this->isActionSaveProfile())
                         {{ 'Save Vehicle Profile' }}
                     @elseif($this->isActionSaveOdometer())
-                        {{ 'Save Odometer Log' }}
+                        {{ 'Add Odometer Log' }}
                     @endif
                 </h2>
                 <button wire:click="closeDrawer" class="btn btn-sm btn-circle btn-ghost">
