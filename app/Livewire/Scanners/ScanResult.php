@@ -34,8 +34,8 @@ class ScanResult extends Component
     public function updateAttributes($payload)
     {
         $this->scanStatus = $payload['scanStatus'] ?? $this->scanStatus;
-        $this->tagScanned = $payload['tagScanned'] ?? $this->tagScanned;
-        $this->assetScanned = $payload['assetScanned'] ?? $this->assetScanned;
+        $this->tagScanned = $payload['tagScanned'] ?? null;
+        $this->assetScanned = $payload['assetScanned'] ?? null;
 
         if ($this->scanStatus === self::SCAN_STATUS_SUCCESS) {
             $this->updateRow();
