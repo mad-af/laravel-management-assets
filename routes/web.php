@@ -96,7 +96,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('scanners', function () {
         return view('dashboard.scanners.index1');
     })->name('scanners.index');
-
+ 
     // Maintenance Routes
     Route::get('maintenances', [MaintenanceController::class, 'index'])->name('maintenances.index');
     Route::post('maintenances', [MaintenanceController::class, 'store'])->name('maintenances.store');

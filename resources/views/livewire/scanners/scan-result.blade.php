@@ -1,9 +1,7 @@
 <x-info-card icon="o-magnifying-glass" title="Hasil Scan" class="flex-1">
 
   {{-- Success State --}}
-  <div class="space-y-4
-   {{-- {{ $scanStatus === self::SCAN_STATUS_SUCCESS ? 'block' : 'hidden' }} --}}
-    ">
+  <div class="space-y-4 {{ $scanStatus === self::SCAN_STATUS_SUCCESS ? 'block' : 'hidden' }}">
     @php
       $headers = [
         ['key' => 'key', 'label' => 'Key', 'class' => 'font-bold'],
@@ -32,22 +30,18 @@
     </div>
 
     {{-- Action Buttons --}}
-    <div class="action-buttons 
-    {{-- {{ $assetScanned ? 'block' : 'hidden' }} --}}
-     ">
+    <div class="action-buttons {{ $assetScanned ? 'block' : 'hidden' }}">
       <div class="space-y-4">
-        <div class="status-buttons 
-          {{-- {{ isset($assetScanned['status']) && $assetScanned['status'] === \App\Enums\AssetStatus::ACTIVE->value ? 'block' : 'hidden' }} --}}
-           ">
+        <div class="status-buttons {{ isset($assetScanned['status']) && $assetScanned['status'] === \App\Enums\AssetStatus::ACTIVE->value ? 'block' : 'hidden' }}">
           <div class="flex gap-4">
-            <x-button label="Maintenance" icon="o-wrench-screwdriver" class="flex-1 w-full btn-secondary btn-sm" />
-            <x-button label="Check Out" icon="o-arrow-up-tray" class="flex-1 w-full btn-accent btn-sm" />
+            <x-button label="Maintenance" icon="o-wrench-screwdriver" class="flex-1 w-full btn-secondary btn-sm" wire:click="openDrawerMaintenance" />
+            <x-button label="Check Out" icon="o-arrow-up-tray" class="flex-1 w-full btn-accent btn-sm" wire:click="openDrawerCheckOut" />
           </div>
         </div>
 
         <div
           class="checkin-button {{ isset($assetScanned['status']) && $assetScanned['status'] === \App\Enums\AssetStatus::CHECKED_OUT->value ? 'block' : 'hidden' }}">
-          <x-button label="Check In" icon="o-arrow-down-tray" class="flex-1 w-full btn-primary btn-sm" />
+          <x-button label="Check In" icon="o-arrow-down-tray" class="flex-1 w-full btn-primary btn-sm" wire:click="openDrawerCheckIn" />
         </div>
 
         <a href="" class="w-full btn btn-sm">

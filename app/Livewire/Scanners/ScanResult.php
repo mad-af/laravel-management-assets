@@ -69,6 +69,21 @@ class ScanResult extends Component
         }
     }
 
+    public function openDrawerMaintenance()
+    {
+        $this->dispatch('drawer:openDrawerMaintenance', assetId: $this->assetScanned['id']);
+    }
+
+    public function openDrawerCheckOut()
+    {
+        $this->dispatch('drawer:openDrawerCheckOut', assetId: $this->assetScanned['id']);
+    }
+
+    public function openDrawerCheckIn()
+    {
+        $this->dispatch('drawer:openDrawerCheckIn', assetId: $this->assetScanned['id']);
+    }
+
     public function render()
     {
         return view('livewire.scanners.scan-result');

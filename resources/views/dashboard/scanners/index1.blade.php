@@ -15,4 +15,5 @@
         <livewire:scanners.scan-history />
     </div>
 
+    <livewire:scanners.drawer />
 @endsection
