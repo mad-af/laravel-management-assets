@@ -9,6 +9,11 @@ class ScanHistory extends Component
 {
     public array $rows = [];
 
+    public function mount()
+    {
+        $this->dispatch('scanner:history');
+    }
+
     #[On('scanHistory:updateAttributes')]
     public function updateAttributes($payload)
     {

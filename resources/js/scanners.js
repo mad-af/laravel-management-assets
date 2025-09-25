@@ -14,10 +14,11 @@ class QRBarcodeScanner {
 
         this.BrowserMultiFormatReader = new BrowserMultiFormatReader();
 
+        this.syncHistory();
         window.addEventListener("scanner:start", () => this.start());
         window.addEventListener("scanner:stop", () => this.stop());
         window.addEventListener("scanner:switch", () => this.switchCamera());
-        this.dispatchUpdateHistoryAttributes({ rows: this.scanHistory });
+        window.addEventListener("scanner:history", () => this.syncHistory());
     }
 
     async start() {
@@ -29,6 +30,8 @@ class QRBarcodeScanner {
                 "Mohon izinkan akses kamera."
             ),
         });
+
+        this.syncHistory();
 
         try {
             if (!this.currentDeviceId) {
@@ -251,6 +254,10 @@ class QRBarcodeScanner {
         } catch (error) {
             console.log("Could not play scan sound:", error);
         }
+    }
+
+    syncHistory() {
+        this.dispatchUpdateHistoryAttributes({ rows: this.scanHistory });
     }
 
     setAlert(type, title, message) {
