@@ -4,8 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Company extends Model
 {
@@ -14,7 +14,7 @@ class Company extends Model
     protected $fillable = [
         'name',
         'code',
-        'location_id',
+        'hq_branch_id',
         'tax_id',
         'address',
         'phone',
@@ -34,12 +34,23 @@ class Company extends Model
         return $this->hasMany(User::class);
     }
 
-
-
-    public function location(): BelongsTo
+    public function branches(): HasMany
     {
-        return $this->belongsTo(Location::class);
+        return $this->hasMany(Branch::class);
     }
 
+    public function employees(): HasMany
+    {
+        return $this->hasMany(Employee::class);
+    }
 
+    public function hqBranch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class, 'hq_branch_id');
+    }
+
+    public function userCompanies(): HasMany
+    {
+        return $this->hasMany(UserCompany::class);
+    }
 }

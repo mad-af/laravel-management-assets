@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
-use App\Enums\AssetStatus;
 use App\Enums\AssetCondition;
 use App\Enums\AssetLogAction;
+use App\Enums\AssetStatus;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -23,7 +23,9 @@ class Asset extends Model
         'tag_code',
         'name',
         'category_id',
-        'location_id',
+        'branch_id',
+        'brand',
+        'model',
         'status',
         'condition',
         'value',
@@ -40,8 +42,6 @@ class Asset extends Model
         'condition' => AssetCondition::class,
     ];
 
-
-
     /**
      * Get the category that owns the asset.
      */
@@ -51,11 +51,11 @@ class Asset extends Model
     }
 
     /**
-     * Get the location that owns the asset.
+     * Get the branch that owns the asset.
      */
-    public function location(): BelongsTo
+    public function branch(): BelongsTo
     {
-        return $this->belongsTo(Location::class);
+        return $this->belongsTo(Branch::class);
     }
 
     /**
@@ -83,11 +83,11 @@ class Asset extends Model
     }
 
     /**
-     * Get the location histories for the asset.
+     * Get the branch histories for the asset.
      */
-    public function locationHistories(): HasMany
+    public function branchHistories(): HasMany
     {
-        return $this->hasMany(AssetLocationHistory::class)->orderBy('changed_at', 'desc');
+        return $this->hasMany(AssetBranchHistory::class)->orderBy('created_at', 'desc');
     }
 
     /**
@@ -167,7 +167,7 @@ class Asset extends Model
      */
     public function getStatusBadgeColorAttribute(): string
     {
-        return match($this->status) {
+        return match ($this->status) {
             'active' => 'badge-success',
             'damaged' => 'badge-warning',
             'lost' => 'badge-error',
@@ -181,7 +181,7 @@ class Asset extends Model
      */
     public function getConditionBadgeColorAttribute(): string
     {
-        return match($this->condition) {
+        return match ($this->condition) {
             'excellent' => 'badge-success',
             'good' => 'badge-primary',
             'fair' => 'badge-warning',
@@ -195,7 +195,7 @@ class Asset extends Model
      */
     public function getFormattedValueAttribute(): string
     {
-        return 'Rp ' . number_format($this->value, 0, ',', '.');
+        return 'Rp '.number_format($this->value, 0, ',', '.');
     }
 
     /**
@@ -216,7 +216,7 @@ class Asset extends Model
         static::creating(function ($asset) {
             if (empty($asset->tag_code)) {
                 $ulid = (string) Str::ulid(); // 26 char
-                $short = substr($ulid, 0, 6) . substr($ulid, -6); // 12 char
+                $short = substr($ulid, 0, 6).substr($ulid, -6); // 12 char
                 $asset->tag_code = $short;
             }
         });
@@ -243,7 +243,7 @@ class Asset extends Model
                     }
                 }
 
-                if (!empty($changes) && Auth::check()) {
+                if (! empty($changes) && Auth::check()) {
                     $asset->logs()->create([
                         'user_id' => Auth::id(),
                         'action' => AssetLogAction::UPDATED,
