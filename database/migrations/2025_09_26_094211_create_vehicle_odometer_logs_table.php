@@ -13,14 +13,13 @@ return new class extends Migration
     {
         Schema::create('vehicle_odometer_logs', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->uuid('asset_id');
-            $table->integer('reading_km');
-            $table->timestamp('read_at');
-            $table->enum('source', ['manual', 'telematics', 'service'])->default('manual');
-            $table->text('notes')->nullable();
+            $table->uuid('vehicle_profile_id');
+            $table->integer('odometer_km');
+            $table->enum('source', ['manual', 'maintenance']);
+            $table->string('notes')->nullable();
             $table->timestamps();
-            
-            $table->foreign('asset_id')->references('id')->on('assets')->onDelete('cascade');
+
+            $table->foreign('vehicle_profile_id')->references('id')->on('vehicle_profiles')->onDelete('cascade');
         });
     }
 

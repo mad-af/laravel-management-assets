@@ -13,20 +13,18 @@ return new class extends Migration
     {
         Schema::create('asset_loans', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('asset_id')->constrained()->onDelete('cascade');
-            $table->foreignUuid('borrower_id')->references('id')->on('users')->onDelete('cascade');
+            $table->uuid('asset_id');
+            $table->uuid('employee_id');
             $table->timestamp('checkout_at');
             $table->timestamp('due_at');
             $table->timestamp('checkin_at')->nullable();
-            $table->string('condition_out');
-            $table->string('condition_in')->nullable();
+            $table->enum('condition_out', ['good', 'fair', 'poor']);
+            $table->enum('condition_in', ['good', 'fair', 'poor'])->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();
-            
-            $table->index(['asset_id', 'checkout_at']);
-            $table->index(['borrower_id', 'checkout_at']);
-            $table->index('due_at');
-            $table->index('checkin_at');
+
+            $table->foreign('asset_id')->references('id')->on('assets')->onDelete('cascade');
+            $table->foreign('employee_id')->references('id')->on('employees')->onDelete('cascade');
         });
     }
 

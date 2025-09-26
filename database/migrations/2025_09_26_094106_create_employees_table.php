@@ -13,17 +13,17 @@ return new class extends Migration
     {
         Schema::create('employees', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('company_id')->constrained('companies')->onDelete('cascade');
-            $table->foreignUuid('branch_id')->nullable()->constrained('branches')->onDelete('set null');
-            $table->integer('employee_number')->nullable()->unique();
+            $table->uuid('company_id');
+            $table->uuid('branch_id')->nullable();
+            $table->integer('employee_number')->unique()->nullable();
             $table->string('full_name');
             $table->string('email')->nullable();
             $table->string('phone')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
-            
-            $table->index(['company_id', 'is_active']);
-            $table->index('branch_id');
+
+            $table->foreign('company_id')->references('id')->on('companies')->onDelete('cascade');
+            $table->foreign('branch_id')->references('id')->on('branches')->onDelete('set null');
         });
     }
 

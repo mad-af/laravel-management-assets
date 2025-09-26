@@ -15,6 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->string('name')->unique();
             $table->string('code')->unique();
+            $table->uuid('hq_branch_id')->nullable();
             $table->string('tax_id')->nullable();
             $table->text('address')->nullable();
             $table->string('phone')->nullable();

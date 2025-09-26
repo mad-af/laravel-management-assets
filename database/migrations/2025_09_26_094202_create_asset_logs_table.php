@@ -13,16 +13,15 @@ return new class extends Migration
     {
         Schema::create('asset_logs', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('asset_id')->constrained()->onDelete('cascade');
-            $table->foreignUuid('user_id')->constrained()->onDelete('cascade');
-            $table->string('action'); // created, updated, deleted, status_changed, etc.
-            $table->json('changed_fields')->nullable(); // Store old and new values
+            $table->uuid('asset_id');
+            $table->uuid('user_id');
+            $table->string('action');
+            $table->json('changed_fields')->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();
-            
-            $table->index(['asset_id', 'created_at']);
-            $table->index('user_id');
-            $table->index('action');
+
+            $table->foreign('asset_id')->references('id')->on('assets')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

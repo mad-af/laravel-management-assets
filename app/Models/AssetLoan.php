@@ -48,36 +48,4 @@ class AssetLoan extends Model
         return $this->belongsTo(Employee::class);
     }
 
-    /**
-     * Check if the loan is overdue.
-     */
-    public function isOverdue(): bool
-    {
-        return $this->checkin_at === null && $this->due_at < now();
-    }
-
-    /**
-     * Check if the loan is active (not returned).
-     */
-    public function isActive(): bool
-    {
-        return $this->checkin_at === null;
-    }
-
-    /**
-     * Scope a query to only include active loans.
-     */
-    public function scopeActive($query)
-    {
-        return $query->whereNull('checkin_at');
-    }
-
-    /**
-     * Scope a query to only include overdue loans.
-     */
-    public function scopeOverdue($query)
-    {
-        return $query->whereNull('checkin_at')->where('due_at', '<', now());
-    }
-
 }

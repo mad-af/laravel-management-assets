@@ -11,8 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('asset_transfers', function (Blueprint $table) {
-            $table->string('type')->default('location')->after('transfer_no');
+        Schema::create('categories', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->string('name')->unique();
+            $table->boolean('is_active')->default(true);
+            $table->timestamps();
         });
     }
 
@@ -21,8 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('asset_transfers', function (Blueprint $table) {
-            $table->dropColumn('type');
-        });
+        Schema::dropIfExists('categories');
     }
 };
