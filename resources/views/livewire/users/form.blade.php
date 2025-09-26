@@ -21,6 +21,12 @@
                     <x-avatar placeholder="{{ strtoupper(substr($userCompany['name'], 0, 2)) }}"
                         class="!w-8 !rounded-lg !bg-primary !font-bold border-2 border-base-100" />
                 </x-slot:avatar>
+                <x-slot:value>
+                    <span class="text-sm">{{ $userCompany['code'] }}</span>
+                </x-slot:value>
+                <x-slot:sub-value>
+                    <span class="text-xs">{{ $userCompany['name'] }}</span>
+                </x-slot:sub-value>
             </x-list-item>
             @endscope
 

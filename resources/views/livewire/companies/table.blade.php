@@ -12,7 +12,7 @@
             <div class="flex gap-2">
                 <x-dropdown>
                     <x-slot:trigger>
-                        <x-button icon="o-funnel" class="btn-sm ">
+                        <x-button icon="o-funnel" class="btn-sm">
                             Filter Status
                         </x-button>
                     </x-slot:trigger>
@@ -28,7 +28,7 @@
         <div>
             @php
                 $headers = [
-                    ['key' => 'name', 'label' => 'Perusahaan', 'class' => 'w-56'],
+                    ['key' => 'name', 'label' => 'Perusahaan'],
                     ['key' => 'contact', 'label' => 'Kontak'],
                     ['key' => 'location', 'label' => 'Location'],
                     ['key' => 'address', 'label' => 'Alamat'],
@@ -38,15 +38,15 @@
                     ['key' => 'actions', 'label' => 'Aksi', 'class' => 'w-20'],
                 ];
             @endphp
-            <x-table :headers="$headers" :rows="$companies" striped show-empty-text>
+            <x-table :headers="$headers" :rows="$companies" wire:model="expanded" striped show-empty-text expandable>
                 @scope('cell_name', $company)
                 <div class="flex gap-3 items-center">
                     @if($company->logo)
                         <img src="{{ asset('storage/' . $company->logo) }}" alt="{{ $company->name }}"
                             class="object-cover w-10 h-10 rounded-lg">
                     @else
-                        <x-avatar placeholder="{{ strtoupper(substr($company->name, 0, 2)) }}"
-                            class="!w-10 !rounded-lg !bg-primary !font-bold" />
+                    <x-avatar placeholder="{{ strtoupper(substr($company->name, 0, 2)) }}"
+                        class="!w-9 !rounded-lg !bg-primary !font-bold border-2 border-base-100" />
                     @endif
                     <div>
                         <div class="font-medium">{{ $company->name }}</div>
@@ -121,6 +121,13 @@
                         </button>
                     </li>
                 </x-action-dropdown>
+                @endscope
+
+                {{-- Special `expansion` slot --}}
+                @scope('expansion', $company)
+                    <div class="p-8 font-bold bg-base-200">
+                        Hello, {{ $company->name }}!
+                    </div>
                 @endscope
             </x-table>
         </div>

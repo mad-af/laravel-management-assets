@@ -54,16 +54,17 @@ class Form extends Component
 
     public function loadLocations()
     {
-        $this->allLocations = Location::where('is_active', true)
-            ->orderBy('name')
-            ->get()
-            ->map(function ($location) {
-                return [
-                    'id' => $location->id,
-                    'name' => $location->name
-                ];
-            })
-            ->toArray();
+        $this->allLocations = [];
+        // $this->allLocations = Location::where('is_active', true)
+        //     ->orderBy('name')
+        //     ->get()
+        //     ->map(function ($location) {
+        //         return [
+        //             'id' => $location->id,
+        //             'name' => $location->name
+        //         ];
+        //     })
+        //     ->toArray();
     }
 
 

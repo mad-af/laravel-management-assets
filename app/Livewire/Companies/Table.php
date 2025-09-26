@@ -11,7 +11,10 @@ class Table extends Component
     use WithPagination;
 
     public $search = '';
+
     public $statusFilter = '';
+
+    public array $expanded = [2];
 
     protected $queryString = ['search', 'statusFilter'];
 
@@ -44,18 +47,18 @@ class Table extends Component
     {
         $companies = Company::query()
             ->when($this->search, function ($query) {
-                $query->where('name', 'like', '%' . $this->search . '%')
-                      ->orWhere('code', 'like', '%' . $this->search . '%')
-                      ->orWhere('email', 'like', '%' . $this->search . '%');
-            })
+                $query->where('name', 'like', '%'.$this->search.'%')
+                    ->orWhere('code', 'like', '%'.$this->search.'%')
+                    ->orWhere('email', 'like', '%'.$this->search.'%');
+                })
             ->when($this->statusFilter === 'active', function ($query) {
                 $query->where('is_active', true);
             })
             ->when($this->statusFilter === 'inactive', function ($query) {
                 $query->where('is_active', false);
             })
-            ->with('location')
-            ->withCount(['users'])
+            // ->with('location')
+            ->withCount(['userCompanies'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
