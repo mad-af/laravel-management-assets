@@ -1,12 +1,12 @@
 <form wire:submit="save" class="space-y-4">
     <!-- Category Name -->
     <div>
-        <x-input label="Nama Kategori" wire:model="name" placeholder="Masukkan nama kategori" required />
+        <x-input label="Nama Kategori" wire:model="name" placeholder="Masukkan nama kategori" class="input-sm" required />
     </div>
 
     <!-- Status -->
     <div>
-        <x-checkbox label="Aktif" wire:model="is_active" />
+        <x-checkbox label="Aktif" wire:model="is_active" class="text-sm checkbox-sm" />
     </div>
 
     <!-- Submit Button -->

@@ -10,7 +10,7 @@
 
             {{-- Filter Dropdowns --}}
             <div class="flex gap-2">
-                <x-dropdown>
+                {{-- <x-dropdown>
                     <x-slot:trigger>
                         <x-button icon="o-funnel" class="btn-sm">
                             Filter Status
@@ -20,7 +20,7 @@
                     <x-menu-item title="Semua Status" wire:click="$set('statusFilter', '')" />
                     <x-menu-item title="Aktif" wire:click="$set('statusFilter', 'active')" />
                     <x-menu-item title="Tidak Aktif" wire:click="$set('statusFilter', 'inactive')" />
-                </x-dropdown>
+                </x-dropdown> --}}
 
                 <x-dropdown>
                     <x-slot:trigger>

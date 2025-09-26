@@ -1,7 +1,7 @@
 <x-nav sticky full-width>
     <x-slot:brand>
         <!-- Mobile menu button -->
-        <label for="drawer-toggle" class="btn btn-square btn-ghost lg:hidden">
+        <label for="main-drawer" class="btn btn-square btn-ghost lg:hidden">
             <x-icon name="o-bars-3" class="w-6 h-6" />
         </label>
 
