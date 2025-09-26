@@ -30,7 +30,6 @@
                 $headers = [
                     ['key' => 'name', 'label' => 'Perusahaan'],
                     ['key' => 'contact', 'label' => 'Kontak'],
-                    ['key' => 'address', 'label' => 'Alamat'],
                     ['key' => 'is_active', 'label' => 'Status'],
                     ['key' => 'created_at', 'label' => 'Dibuat'],
                     ['key' => 'actions', 'label' => 'Aksi', 'class' => 'w-20'],
@@ -65,14 +64,6 @@
                         <span class="text-base-content/50">-</span>
                     @endif
                 </div>
-                @endscope
-
-                @scope('cell_address', $company)
-                @if($company->address)
-                    <div class="max-w-xs text-sm" title="{{ $company->address }}">{{ $company->address }}</div>
-                @else
-                    <span class="text-base-content/50">-</span>
-                @endif
                 @endscope
 
                 @scope('cell_is_active', $company)

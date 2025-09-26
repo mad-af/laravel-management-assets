@@ -21,8 +21,6 @@ class Form extends Component
 
     public $tax_id = '';
 
-    public $address = '';
-
     public $phone = '';
 
     public $email = '';
@@ -43,7 +41,6 @@ class Form extends Component
         'name' => 'required|string|max:255',
         'code' => 'required|string|max:10|unique:companies,code',
         'tax_id' => 'nullable|string|max:50',
-        'address' => 'nullable|string',
         'phone' => 'nullable|string|max:20',
         'email' => 'nullable|email|max:255',
         'website' => 'nullable|url|max:255',
@@ -87,7 +84,6 @@ class Form extends Component
         $this->name = $company->name;
         $this->code = $company->code;
         $this->tax_id = $company->tax_id;
-        $this->address = $company->address;
         $this->phone = $company->phone;
         $this->email = $company->email;
         $this->website = $company->website;
@@ -102,7 +98,7 @@ class Form extends Component
     public function resetForm()
     {
         $this->reset([
-            'companyId', 'name', 'code', 'hq_branch_id', 'tax_id', 'address',
+            'companyId', 'name', 'code', 'hq_branch_id', 'tax_id', 
             'phone', 'email', 'website', 'image', 'is_active', 'isEdit',
         ]);
         $this->is_active = true;

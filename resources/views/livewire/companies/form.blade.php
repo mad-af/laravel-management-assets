@@ -39,9 +39,6 @@
     <!-- NPWP / Tax ID -->
     <x-input label="NPWP / Tax ID" wire:model="tax_id" placeholder="Masukkan NPWP / Tax ID" class="input-sm" />
 
-    <!-- Alamat -->
-    <x-textarea label="Alamat" wire:model="address" placeholder="Masukkan alamat perusahaan" rows="3" class="textarea-sm" />
-
     <!-- Telepon -->
     <x-input label="Telepon" wire:model="phone" placeholder="Masukkan nomor telepon" type="tel" class="input-sm" />
 
