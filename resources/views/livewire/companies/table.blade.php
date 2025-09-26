@@ -43,8 +43,8 @@
                         <img src="{{ asset('storage/' . $company->logo) }}" alt="{{ $company->name }}"
                             class="object-cover w-10 h-10 rounded-lg">
                     @else
-                    <x-avatar placeholder="{{ strtoupper(substr($company->name, 0, 2)) }}"
-                        class="!w-9 !rounded-lg !bg-primary !font-bold border-2 border-base-100" />
+                        <x-avatar placeholder="{{ strtoupper(substr($company->name, 0, 2)) }}"
+                            class="!w-9 !rounded-lg !bg-primary !font-bold border-2 border-base-100" />
                     @endif
                     <div>
                         <div class="font-medium">{{ $company->name }}</div>
@@ -109,9 +109,25 @@
 
                 {{-- Special `expansion` slot --}}
                 @scope('expansion', $company)
-                    <div class="p-8 font-bold bg-base-200">
-                        Hello, {{ $company->name }}!
-                    </div>
+                <div class="text-sm font-semibold">
+                    Cabang ({{ $company->branches->count() }})
+                </div>
+
+                @php
+                    $branchHeaders = [
+                        ['key' => 'is_hq', 'label' => 'Cabang Utama'],
+                        ['key' => 'name', 'label' => 'Cabang'],
+                        ['key' => 'address', 'label' => 'Alamat'],
+                    ];
+                @endphp
+
+                <x-table :headers="$branchHeaders" :rows="$company->branches" no-headers no-hover show-empty-text>
+                    @scope('cell_is_hq', $branch)
+                    @if($branch->is_hq)
+                        <x-badge value="Cabang Utama" class="badge-success badge-sm" />
+                    @endif
+                    @endscope
+                </x-table>
                 @endscope
             </x-table>
         </div>

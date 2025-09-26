@@ -1,50 +1,69 @@
 <form wire:submit="save" class="space-y-2">
-    <!-- Company Name -->
-    <x-input wire:model="name" placeholder="Enter company name" required class="input-sm">
+    <!-- Unggah Logo -->
+    <x-file label="Logo Perusahaan" wire:model="image" accept="image/png, image/jpeg">
+        @if ($image)
+            <x-avatar :image="$image" class="!w-16 !rounded-lg !bg-primary !font-bold border-2 border-base-100" />
+        @else 
+            <div class="flex flex-col justify-center items-center w-16 h-16 rounded-lg bg-base-200 text-base-content/60">
+                <x-icon name="o-cloud-arrow-up" class="w-8 h-8" />
+                <span>Unggah</span>
+            </div>
+        @endif
+    </x-file>
+
+    <!-- Nama Perusahaan -->
+    <x-input wire:model="name" placeholder="Masukkan nama perusahaan" required class="input-sm">
         <x-slot:label>
-            <span class="text-xs font-bold label-text text-base-content">Company Name</span>
+            <span class="text-xs font-bold label-text text-base-content">Nama Perusahaan</span>
         </x-slot:label>
     </x-input>
 
-    <!-- Company Code -->
-    <x-input label="Company Code" wire:model="code" placeholder="Enter company code (max 10 chars)" maxlength="10"
-        required class="input-sm" />
+    <!-- Kode Perusahaan (unik) -->
+    <x-input label="Kode Perusahaan" wire:model="code" placeholder="Masukkan kode perusahaan (maks. 4 karakter)" maxlength="4" required class="input-sm">
+        <x-slot:append>
+            <x-button label="Generate" wire:click="generateCode" class="join-item btn-sm" />
+        </x-slot:append>
+    </x-input>
 
-    <!-- Tax ID -->
-    <x-input label="Tax ID" wire:model="tax_id" placeholder="Enter tax identification number" class="input-sm" />
+    <!-- Kantor Induk (HQ) - opsional -->
+    <x-select
+        label="Kantor Induk (HQ)"
+        wire:model="hq_branch_id"
+        :options="$branches"
+        option-value="id"
+        option-label="name"
+        placeholder="Pilih kantor induk"
+        class="select-sm"
+    />
 
-    <!-- Location Single Select -->
-    <x-select label="Location" wire:model="location_id" :options="$allLocations" option-value="id" option-label="name"
-        placeholder="Select location for this company" class="select-sm" />
+    <!-- NPWP / Tax ID -->
+    <x-input label="NPWP / Tax ID" wire:model="tax_id" placeholder="Masukkan NPWP / Tax ID" class="input-sm" />
 
-    <!-- Address -->
-    <x-textarea label="Address" wire:model="address" placeholder="Enter company address" rows="3" class="textarea-sm" />
+    <!-- Alamat -->
+    <x-textarea label="Alamat" wire:model="address" placeholder="Masukkan alamat perusahaan" rows="3" class="textarea-sm" />
 
-    <!-- Phone -->
-    <x-input label="Phone" wire:model="phone" placeholder="Enter phone number" type="tel" class="input-sm" />
+    <!-- Telepon -->
+    <x-input label="Telepon" wire:model="phone" placeholder="Masukkan nomor telepon" type="tel" class="input-sm" />
 
     <!-- Email -->
-    <x-input label="Email" wire:model="email" placeholder="Enter email address" type="email" class="input-sm" />
+    <x-input label="Email" wire:model="email" placeholder="Masukkan alamat email" type="email" class="input-sm" />
 
     <!-- Website -->
-    <x-input label="Website" wire:model="website" placeholder="https://example.com" type="url" class="input-sm" />
+    <x-input label="Website" wire:model="website" placeholder="https://contoh.com" type="url" class="input-sm" />
 
-    <!-- Image Upload -->
-    <x-file label="Company Logo" wire:model="image" accept="image/*" class="!file-input-sm" />
+    <!-- Status Aktif -->
+    <x-checkbox label="Aktif" wire:model="is_active" class="text-sm checkbox-sm" />
 
-    <!-- Status Toggle -->
-    <x-toggle label="Active Status" wire:model="is_active" right />
-
-    <!-- Action Buttons -->
+    <!-- Tombol Aksi -->
     <div class="flex gap-2 pt-4">
-        <x-button type="submit" class="flex-1 btn-primary btn-sm" spinner="save">
-            <x-icon name="o-check" class="mr-2 w-4 h-4" />
-            {{ $isEdit ? 'Update Company' : 'Create Company' }}
+        <x-button type="button" class="flex-1 btn-sm"
+            wire:click="{{ $isEdit ? '$dispatch(\'closeEditDrawer\')' : '$dispatch(\'closeDrawer\')' }}">
+            Batal
         </x-button>
 
-        <x-button type="button" class="flex-1  btn-sm"
-            wire:click="{{ $isEdit ? '$dispatch(\'closeEditDrawer\')' : '$dispatch(\'closeDrawer\')' }}">
-            Cancel
+        <x-button type="submit" class="flex-1 btn-primary btn-sm" spinner="save">
+            <x-icon name="o-check" class="mr-2 w-4 h-4" />
+            {{ $isEdit ? 'Update' : 'Simpan ' }}
         </x-button>
     </div>
 </form>

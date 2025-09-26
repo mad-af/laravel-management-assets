@@ -46,21 +46,39 @@ class Table extends Component
     public function render()
     {
         $companies = Company::query()
+            // Grouped search (biar orWhere tidak bocor ke filter lain)
             ->when($this->search, function ($query) {
-                $query->where('name', 'like', '%'.$this->search.'%')
-                    ->orWhere('code', 'like', '%'.$this->search.'%')
-                    ->orWhere('email', 'like', '%'.$this->search.'%');
-                })
-            ->when($this->statusFilter === 'active', function ($query) {
-                $query->where('is_active', true);
+                $s = '%'.$this->search.'%';
+                $query->where(function ($q) use ($s) {
+                    $q->where('name', 'like', $s)
+                        ->orWhere('code', 'like', $s)
+                        ->orWhere('email', 'like', $s);
+                });
             })
-            ->when($this->statusFilter === 'inactive', function ($query) {
-                $query->where('is_active', false);
-            })
-            // ->with('location')
+            ->when($this->statusFilter === 'active', fn ($q) => $q->where('is_active', true))
+            ->when($this->statusFilter === 'inactive', fn ($q) => $q->where('is_active', false))
+            // Eager load branches
+            ->with([
+                'branches' => function ($q) {
+                    $q->select('id', 'company_id', 'name', 'address', 'is_active') // tambah kolom lain bila perlu
+                        ->where('is_active', true); // aktifkan jika hanya ingin cabang aktif
+                },
+            ])
             ->withCount(['userCompanies'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
+
+        // Tandai branch mana yang HQ (inject properti dinamis is_hq)
+        $companies->getCollection()->transform(function ($company) {
+            $hqId = $company->hq_branch_id ?? null;
+            if ($company->relationLoaded('branches')) {
+                $company->branches->each(function ($branch) use ($hqId) {
+                    $branch->is_hq = ($branch->id === $hqId);
+                });
+            }
+
+            return $company;
+        });
 
         return view('livewire.companies.table', compact('companies'));
     }

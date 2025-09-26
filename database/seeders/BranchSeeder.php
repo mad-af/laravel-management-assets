@@ -26,18 +26,21 @@ class BranchSeeder extends Seeder
                 'id' => Str::uuid(),
                 'company_id' => $companies->where('code', 'TMI')->first()->id,
                 'name' => 'Kantor Pusat Jakarta',
+                'address' => 'Jl. Sudirman No. 123, Jakarta Pusat, DKI Jakarta 10220',
                 'is_active' => true,
             ],
             [
                 'id' => Str::uuid(),
                 'company_id' => $companies->where('code', 'TMI')->first()->id,
                 'name' => 'Cabang Bandung',
+                'address' => 'Jl. Gatot Subroto No. 456, Bandung, Jawa Barat 40123',
                 'is_active' => true,
             ],
             [
                 'id' => Str::uuid(),
                 'company_id' => $companies->where('code', 'TMI')->first()->id,
                 'name' => 'Cabang Surabaya',
+                'address' => 'Jl. Ahmad Yani No. 789, Surabaya, Jawa Timur 60234',
                 'is_active' => true,
             ],
             
@@ -46,12 +49,14 @@ class BranchSeeder extends Seeder
                 'id' => Str::uuid(),
                 'company_id' => $companies->where('code', 'SDN')->first()->id,
                 'name' => 'Kantor Pusat Bandung',
+                'address' => 'Jl. Gatot Subroto No. 456, Bandung, Jawa Barat 40123',
                 'is_active' => true,
             ],
             [
                 'id' => Str::uuid(),
                 'company_id' => $companies->where('code', 'SDN')->first()->id,
                 'name' => 'Cabang Jakarta',
+                'address' => 'Jl. Sudirman No. 123, Jakarta Pusat, DKI Jakarta 10220',
                 'is_active' => true,
             ],
             
@@ -60,12 +65,14 @@ class BranchSeeder extends Seeder
                 'id' => Str::uuid(),
                 'company_id' => $companies->where('code', 'IBT')->first()->id,
                 'name' => 'Kantor Pusat Surabaya',
+                'address' => 'Jl. Ahmad Yani No. 789, Surabaya, Jawa Timur 60234',
                 'is_active' => true,
             ],
             [
                 'id' => Str::uuid(),
                 'company_id' => $companies->where('code', 'IBT')->first()->id,
                 'name' => 'Cabang Malang',
+                'address' => 'Jl. Gatot Subroto No. 456, Malang, Jawa Timur 60234',
                 'is_active' => true,
             ],
         ];

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->uuid('company_id');
             $table->string('name');
+            $table->text('address')->nullable();
             $table->boolean('is_active')->default(true);
             $table->timestamps();
 

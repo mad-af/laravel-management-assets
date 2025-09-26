@@ -11,7 +11,6 @@ table(companies) {
   code : VARCHAR [UNIQUE]
   fk(hq_branch_id) : UUID [NULL]
   tax_id : VARCHAR [NULL]
-  address : TEXT [NULL]
   phone : VARCHAR [NULL]
   email : VARCHAR [NULL]
   website : VARCHAR [NULL]
@@ -52,6 +51,7 @@ table(branches) {
   pk(id) : UUID
   fk(company_id) : UUID
   name : VARCHAR
+  address : TEXT [NULL]
   is_active : BOOLEAN [DEFAULT: true]
   created_at : TIMESTAMP
   updated_at : TIMESTAMP
