@@ -36,7 +36,6 @@ table(user_companies) {
   pk(id) : UUID
   fk(user_id) : UUID
   fk(company_id) : UUID
-  company_role : ENUM(admin, staff, auditor) [DEFAULT: staff]
   created_at : TIMESTAMP
   updated_at : TIMESTAMP
 }

@@ -4,17 +4,17 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Enums\UserRole;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasUuids;
+    use HasFactory, HasUuids, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -36,7 +36,6 @@ class User extends Authenticatable
      */
     protected $hidden = [
         'password',
-        'remember_token',
     ];
 
     /**
@@ -69,43 +68,20 @@ class User extends Authenticatable
         return $this->hasMany(AssetLog::class);
     }
 
-    /**
-     * Check if user is admin
-     */
-    public function isAdmin(): bool
-    {
-        return $this->role === UserRole::ADMIN;
-    }
-
-    /**
-     * Check if user is staff
-     */
-    public function isStaff(): bool
-    {
-        return $this->role === UserRole::STAFF;
-    }
-
-    /**
-     * Check if user is auditor
-     */
-    public function isAuditor(): bool
-    {
-        return $this->role === UserRole::AUDITOR;
-    }
-
-    /**
-     * Check if user has admin or staff privileges
-     */
-    public function canManageAssets(): bool
-    {
-        return $this->role === UserRole::ADMIN || $this->role === UserRole::STAFF;
-    }
-
     // Relationships
     public function company(): BelongsTo
     {
         return $this->belongsTo(Company::class);
     }
 
-    // Note: AssetLoan relationships removed as we now use borrower_name string instead of borrower_id foreign key
+    public function userCompanies(): HasMany
+    {
+        return $this->hasMany(UserCompany::class);
+    }
+
+    public function companies(): HasMany
+    {
+        return $this->hasMany(UserCompany::class);
+    }
+
 }

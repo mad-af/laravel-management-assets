@@ -57,7 +57,7 @@ class Table extends Component
     public function render()
     {
         $query = User::query()
-            ->with(['company']);
+            ->with(['userCompanies.company']);
 
         // Apply search filter
         if ($this->search) {

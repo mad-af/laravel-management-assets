@@ -12,7 +12,7 @@
             <div class="flex gap-2">
                 <x-dropdown>
                     <x-slot:trigger>
-                        <x-button icon="o-funnel" class="btn-sm ">
+                        <x-button icon="o-funnel" class="btn-sm">
                             Filter Status
                         </x-button>
                     </x-slot:trigger>
@@ -24,7 +24,7 @@
 
                 <x-dropdown>
                     <x-slot:trigger>
-                        <x-button icon="o-user-group" class="btn-sm ">
+                        <x-button icon="o-user-group" class="btn-sm">
                             Filter Role
                         </x-button>
                     </x-slot:trigger>
@@ -59,10 +59,20 @@
                 @endscope
 
                 @scope('cell_company', $user)
-                @if($user->company)
-                    <div class="lg:tooltip" data-tip="{{ $user->company->name }}">
-                        <x-avatar placeholder="{{ strtoupper(substr($user->company->name, 0, 2)) }}"
-                            class="!w-10 !rounded-lg !bg-primary !font-bold" />
+                @if($user->userCompanies->count() > 0)
+                    <div class="flex -space-x-2">
+                        @foreach($user->userCompanies->take(3) as $userCompany)
+                            <div class="lg:tooltip" data-tip="{{ $userCompany->company->name }} ({{ $userCompany->company->code }})">
+                                <x-avatar placeholder="{{ strtoupper(substr($userCompany->company->name, 0, 2)) }}"
+                                    class="!w-8 !rounded-lg !bg-primary !font-bold border-2 border-base-100" />
+                            </div>
+                        @endforeach
+                        @if($user->userCompanies->count() > 3)
+                            <div class="lg:tooltip" data-tip="+{{ $user->userCompanies->count() - 3 }} perusahaan lainnya">
+                                <x-avatar placeholder="+{{ $user->userCompanies->count() - 3 }}"
+                                    class="!w-8 !rounded-lg !bg-base-300 !text-base-content !font-bold border-2 border-base-100" />
+                            </div>
+                        @endif
                     </div>
                 @else
                     <span class="text-base-content/50">-</span>
@@ -70,7 +80,7 @@
                 @endscope
 
                 @scope('cell_role', $user)
-                <x-badge value="{{ $user->role->label() }}" class="{{ $user->role->badgeColor() }} badge-sm" />
+                <x-badge value="{{ $user->role->label() }}" class="badge-sm badge-{{ $user->role->color() }}" />
                 @endscope
 
                 @scope('cell_created_at', $user)

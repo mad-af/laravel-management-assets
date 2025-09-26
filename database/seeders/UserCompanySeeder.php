@@ -28,19 +28,16 @@ class UserCompanySeeder extends Seeder
                 'id' => Str::uuid(),
                 'user_id' => $users->where('email', 'admin@example.com')->first()->id,
                 'company_id' => $companies->where('code', 'TMI')->first()->id,
-                'company_role' => 'admin',
             ],
             [
                 'id' => Str::uuid(),
                 'user_id' => $users->where('email', 'admin@example.com')->first()->id,
                 'company_id' => $companies->where('code', 'SDN')->first()->id,
-                'company_role' => 'admin',
             ],
             [
                 'id' => Str::uuid(),
                 'user_id' => $users->where('email', 'admin@example.com')->first()->id,
                 'company_id' => $companies->where('code', 'IBT')->first()->id,
-                'company_role' => 'admin',
             ],
             
             // TMI users
@@ -48,13 +45,11 @@ class UserCompanySeeder extends Seeder
                 'id' => Str::uuid(),
                 'user_id' => $users->where('email', 'budi.santoso@teknologimaju.co.id')->first()->id,
                 'company_id' => $companies->where('code', 'TMI')->first()->id,
-                'company_role' => 'admin',
             ],
             [
                 'id' => Str::uuid(),
                 'user_id' => $users->where('email', 'siti.nurhaliza@teknologimaju.co.id')->first()->id,
                 'company_id' => $companies->where('code', 'TMI')->first()->id,
-                'company_role' => 'staff',
             ],
             
             // SDN users
@@ -62,13 +57,11 @@ class UserCompanySeeder extends Seeder
                 'id' => Str::uuid(),
                 'user_id' => $users->where('email', 'ahmad.wijaya@solusidigitak.co.id')->first()->id,
                 'company_id' => $companies->where('code', 'SDN')->first()->id,
-                'company_role' => 'admin',
             ],
             [
                 'id' => Str::uuid(),
                 'user_id' => $users->where('email', 'dewi.lestari@solusidigitak.co.id')->first()->id,
                 'company_id' => $companies->where('code', 'SDN')->first()->id,
-                'company_role' => 'staff',
             ],
             
             // IBT users
@@ -76,7 +69,6 @@ class UserCompanySeeder extends Seeder
                 'id' => Str::uuid(),
                 'user_id' => $users->where('email', 'rudi.hartono@inovasibisnis.co.id')->first()->id,
                 'company_id' => $companies->where('code', 'IBT')->first()->id,
-                'company_role' => 'admin',
             ],
         ];
 

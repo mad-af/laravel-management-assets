@@ -21,7 +21,7 @@ enum UserRole: string
      */
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::ADMIN => 'Administrator',
             self::STAFF => 'Staff',
             self::AUDITOR => 'Auditor',
@@ -33,7 +33,7 @@ enum UserRole: string
      */
     public function description(): string
     {
-        return match($this) {
+        return match ($this) {
             self::ADMIN => 'Akses penuh dan manajemen sistem',
             self::STAFF => 'Pengguna standar dengan akses terbatas',
             self::AUDITOR => 'Akses hanya baca untuk keperluan audit',
@@ -45,10 +45,11 @@ enum UserRole: string
      */
     public function color(): string
     {
-        return match($this) {
+        return match ($this) {
             self::ADMIN => 'error',
             self::STAFF => 'info',
             self::AUDITOR => 'warning',
         };
+
     }
 }
