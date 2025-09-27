@@ -5,6 +5,7 @@
             <x-icon name="o-bars-3" class="w-6 h-6" />
         </label>
 
+        <!-- Breadcrumb Controller -->
         <div class="hidden flex-1 lg:flex">
             <livewire:breadcrumb-component :pageTitle="$pageTitle ?? null" :pageDescription="$pageDescription ?? null"
                 :backRoute="$backRoute ?? null" :showBreadcrumbs="true" />
@@ -12,6 +13,9 @@
     </x-slot:brand>
 
     <x-slot:actions>
+        <!-- Branch Controller -->
+        <livewire:branch-switcher />
+
         <!-- Theme Controller -->
         <x-dropdown>
             <x-slot:trigger>
@@ -29,9 +33,10 @@
         <!-- User menu -->
         <x-dropdown>
             <x-slot:trigger>
-                <x-avatar placeholder="{{ substr(Auth::user()->name, 0, 2) }}" class="!w-8 !h-8 cursor-pointer bg-primary" />
+                <x-avatar placeholder="{{ substr(Auth::user()->name, 0, 2) }}"
+                    class="!w-8 !h-8 cursor-pointer bg-primary" />
             </x-slot:trigger>
-                <x-menu-item title="Edit Password" icon="o-key" link="/profile/password" />
+            <x-menu-item title="Edit Password" icon="o-key" link="/profile/password" />
         </x-dropdown>
     </x-slot:actions>
 </x-nav>
