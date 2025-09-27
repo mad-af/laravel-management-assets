@@ -2,21 +2,20 @@
   <div class="space-y-4 card-body">
 
     {{-- Tabs Perusahaan --}}
-<div class="gap-1 items-center min-w-max tabs tabs-box tabs-sm w-fit">
-  @foreach ($this->companies as $company)
-  <div class="lg:tooltip" data-tip="{{ $company->name }} ({{ $company->code }})">
-    <input
-      type="radio"
-      name="company_tabs"
-      class="tab checked:bg-base-100 checked:shadow"
-      aria-label="[{{ $company->code }}] {{ \Illuminate\Support\Str::limit($company->name, 15) }}"
-      wire:model.live="selectedCompanyId"
-      value="{{ $company->id }}"
-    />
-  </div>
-  @endforeach
-</div>
-
+    <div class="gap-1 items-center min-w-max tabs tabs-box tabs-sm w-fit">
+      @foreach ($this->companies as $company)
+      <div class="lg:tooltip" data-tip="{{ $company->name }} ({{ $company->code }})">
+        <input
+          type="radio"
+          name="company_tabs"
+          class="tab checked:bg-base-100 checked:shadow"
+          aria-label="[{{ $company->code }}] {{ \Illuminate\Support\Str::limit($company->name, 15) }}"
+          wire:model.live="selectedCompanyId"
+          value="{{ $company->id }}"
+        />
+      </div>
+      @endforeach
+    </div>
 
     {{-- Header with Search and Action Buttons --}}
     <div class="flex flex-col gap-4 sm:flex-row">
@@ -57,9 +56,8 @@
         <span class="font-medium">{{ $branch->name }}</span>
         @endscope
 
-
-
         @scope('cell_is_active', $branch)
+        
         @if($branch->is_active)
           <x-badge value="Aktif" class="badge-success badge-sm" />
         @else

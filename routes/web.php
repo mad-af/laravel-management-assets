@@ -11,6 +11,7 @@ use App\Http\Controllers\AssetLogController;
 use App\Http\Controllers\AssetTransferController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\CompanyController;
@@ -82,6 +83,10 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     // Category Management Routes
     Route::resource('categories', CategoryController::class);
     Route::patch('categories/{category}/activate', [CategoryController::class, 'activate'])->name('categories.activate');
+
+    // Category Management Routes
+    Route::resource('employees', EmployeeController::class);
+    Route::patch('employees/{employee}/activate', [EmployeeController::class, 'activate'])->name('employees.activate');
     
     // Branch Management Routes
     Route::resource('branches', BranchController::class);

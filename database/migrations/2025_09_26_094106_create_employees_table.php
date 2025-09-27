@@ -15,7 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->uuid('company_id');
             $table->uuid('branch_id')->nullable();
-            $table->integer('employee_number')->unique()->nullable();
+            $table->string('employee_number')->unique()->nullable();
             $table->string('full_name');
             $table->string('email')->nullable();
             $table->string('phone')->nullable();

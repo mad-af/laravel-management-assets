@@ -61,9 +61,14 @@
             'label' => 'Cabang'
         ],
         [
+            'route' => 'employees.index',
+            'icon' => 'o-user-group',
+            'label' => 'Karyawan'
+        ],
+        [
             'route' => 'users.index',
-            'icon' => 'o-users',
-            'label' => 'Manajemen Pengguna'
+            'icon' => 'o-user',
+            'label' => 'Akun'
         ],
         [
             'route' => 'categories.index',
