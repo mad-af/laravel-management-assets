@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Livewire\Locations;
+namespace App\Livewire\Branches;
 
-use App\Models\Location;
+use App\Models\Branch;
 use Livewire\Component;
 use Mary\Traits\Toast;
 
@@ -10,7 +10,7 @@ class Form extends Component
 {
     use Toast;
 
-    public $locationId;
+    public $branchId;
     public $name = '';
     public $address = '';
     public $city = '';
@@ -35,28 +35,28 @@ class Form extends Component
         'resetForm' => 'resetForm'
     ];
 
-    public function mount($locationId = null)
+    public function mount($branchId = null)
     {
-        $this->locationId = $locationId;
+        $this->branchId = $branchId;
         
-        if ($locationId) {
+        if ($branchId) {
             $this->isEdit = true;
-            $this->loadLocation();
+            $this->loadBranch();
         }
     }
 
-    public function loadLocation()
+    public function loadBranch()
     {
-        if ($this->locationId) {
-            $location = Location::find($this->locationId);
-            if ($location) {
-                $this->name = $location->name;
-                $this->address = $location->address;
-                $this->city = $location->city;
-                $this->state = $location->state;
-                $this->country = $location->country;
-                $this->postal_code = $location->postal_code;
-                $this->is_active = $location->is_active;
+        if ($this->branchId) {
+            $branch = Branch::find($this->branchId);
+            if ($branch) {
+                $this->name = $branch->name;
+                $this->address = $branch->address;
+                $this->city = $branch->city;
+                $this->state = $branch->state;
+                $this->country = $branch->country;
+                $this->postal_code = $branch->postal_code;
+                $this->is_active = $branch->is_active;
             }
         }
     }
@@ -66,9 +66,9 @@ class Form extends Component
         $this->validate();
 
         try {
-            if ($this->isEdit && $this->locationId) {
-                $location = Location::find($this->locationId);
-                $location->update([
+            if ($this->isEdit && $this->branchId) {
+                $branch = Branch::find($this->branchId);
+                $branch->update([
                     'name' => $this->name,
                     'address' => $this->address,
                     'city' => $this->city,
@@ -80,7 +80,7 @@ class Form extends Component
                 $this->success('Location updated successfully!');
                 $this->dispatch('location-updated');
             } else {
-                Location::create([
+                Branch::create([    
                     'name' => $this->name,
                     'address' => $this->address,
                     'city' => $this->city,
@@ -112,6 +112,6 @@ class Form extends Component
 
     public function render()
     {
-        return view('livewire.locations.form');
+        return view('livewire.branches.form');
     }
 }

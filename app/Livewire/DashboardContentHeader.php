@@ -59,10 +59,10 @@ class DashboardContentHeader extends Component
         switch ($this->buttonAction) {
             case 'openUserDrawer':
             case 'openAssetTransferDrawer':
-            case 'openLocationDrawer':
             case 'openCategoryDrawer':
             case 'openCompanyDrawer':
             case 'openAssetDrawer':
+            case 'openBranchDrawer':
             case 'openAssetLoanDrawer':
                 $this->dispatch('open-drawer');
                 break;

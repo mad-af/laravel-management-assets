@@ -11,15 +11,15 @@
             <!-- Drawer Header -->
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-lg font-semibold">
-                    {{ $editingLocationId ? 'Edit Location' : 'Add New Location' }}
+                    {{ $editingBranchId ? 'Edit Branch' : 'Add New Branch' }}
                 </h2>
                 <button wire:click="closeDrawer" class="btn btn-sm btn-circle btn-ghost">
                     <x-icon name="o-x-mark" class="w-5 h-5" />
                 </button>
             </div>
 
-            <!-- Location Form -->
-            <livewire:locations.form :locationId="$editingLocationId" :key="'location-form-' . ($editingLocationId ?? 'new')" />
+            <!-- Branch Form -->        
+            <livewire:branches.form :branchId="$editingBranchId" :key="'branch-form-' . ($editingBranchId ?? 'new')" />
         </div>
     </div>
 </div>

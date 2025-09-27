@@ -2,22 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Location;
+use App\Models\Branch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
-class LocationController extends Controller
+class BranchController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $locations = Location::withCount('assets')
+        $branches = Branch::withCount('assets')
             ->orderBy('is_active', 'desc')
             ->orderBy('name')
             ->paginate(10);
-        return view('dashboard.locations.index', compact('locations'));
+        return view('dashboard.branches.index', compact('branches'));
     }
 
     /**
@@ -25,7 +25,7 @@ class LocationController extends Controller
      */
     public function create()
     {
-        return view('dashboard.locations.create');
+        return view('dashboard.branches.create');
     }
 
     /**
@@ -38,7 +38,7 @@ class LocationController extends Controller
             'is_active' => 'boolean',
         ]);
 
-        Location::create([
+        Branch::create([
             'name' => $request->name,
             'is_active' => $request->has('is_active'),
         ]);
@@ -50,69 +50,69 @@ class LocationController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Location $location)
+    public function show(Branch $branch)
     {
-        $location->load(['assets' => function($query) {
+        $branch->load(['assets' => function($query) {
             $query->with(['category', 'logs' => function($q) {
                 $q->latest()->limit(5)->with('user');
             }]);
         }]);
         
-        return view('dashboard.locations.show', compact('location'));
+        return view('dashboard.branches.show', compact('branch'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Location $location)
+    public function edit(Branch $branch)
     {
-        return view('dashboard.locations.edit', compact('location'));
+        return view('dashboard.branches.edit', compact('branch'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Location $location)
+    public function update(Request $request, Branch $branch)
     {
         $request->validate([
-            'name' => 'required|string|max:255|unique:locations,name,' . $location->id,
+            'name' => 'required|string|max:255|unique:branches,name,' . $branch->id,
             'is_active' => 'boolean',
         ]);
 
-        $location->update([
+        $branch->update([
             'name' => $request->name,
             'is_active' => $request->has('is_active'),
         ]);
 
-        return redirect()->route('locations.index')
-            ->with('success', 'Location updated successfully.');
+        return redirect()->route('branches.index')
+            ->with('success', 'Branch updated successfully.');
     }
 
     /**
      * Deactivate the specified resource.
      */
-    public function destroy(Location $location)
+    public function destroy(Branch $branch)
     {
-        // Check if location has assets
-        if ($location->assets()->count() > 0) {
-            return redirect()->route('locations.index')
-                ->with('error', 'Cannot deactivate location that has assets assigned to it.');
+        // Check if branch has assets
+        if ($branch->assets()->count() > 0) {
+            return redirect()->route('branches.index')
+                ->with('error', 'Cannot deactivate branch that has assets assigned to it.');
         }
 
-        $location->update(['is_active' => false]);
+        $branch->update(['is_active' => false]);
 
-        return redirect()->route('locations.index')
-            ->with('success', 'Location deactivated successfully.');
+        return redirect()->route('branches.index')
+            ->with('success', 'Branch deactivated successfully.');
     }
 
     /**
      * Activate the specified resource.
      */
-    public function activate(Location $location)
+    public function activate(Branch $branch)
     {
-        $location->update(['is_active' => true]);
+        $branch->update(['is_active' => true]);
 
-        return redirect()->route('locations.index')
-            ->with('success', 'Location activated successfully.');
+        return redirect()->route('branches.index')
+            ->with('success', 'Branch activated successfully.');
     }
 }

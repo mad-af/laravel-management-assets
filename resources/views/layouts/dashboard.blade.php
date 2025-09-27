@@ -31,7 +31,7 @@
         {{-- CONTENT --}}
         <x-slot:content class="!p-0">
             @include('partials.header')
-            <main class="flex-1 p-6 bg-base-200">
+            <main class="flex-1 p-6 space-y-4 bg-base-200">
                 @yield('content')
             </main>
         </x-slot:content>

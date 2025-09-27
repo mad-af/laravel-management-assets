@@ -3,73 +3,73 @@
         [
             'route' => 'dashboard',
             'icon' => 'o-home',
-            'label' => 'Dashboard'
+            'label' => 'Beranda'
         ],
         [
             'route' => 'scanners.index',
             'icon' => 'o-qr-code',
-            'label' => 'QR/Barcode Scanner'
+            'label' => 'Pemindai QR/Barcode'
         ],
         [
             'type' => 'submenu',
             'icon' => 'o-cube',
-            'label' => 'Asset Management',
+            'label' => 'Manajemen Aset',
             'children' => [
                 [
                     'route' => 'assets.index',
                     'icon' => 'o-cube',
-                    'label' => 'Assets'
+                    'label' => 'Daftar Aset'
                 ],
                 [
                     'route' => 'asset-transfers.index',
                     'icon' => 'o-arrow-path',
-                    'label' => 'Asset Transfers'
+                    'label' => 'Transfer Aset'
                 ],
                 [
                     'route' => 'asset-loans.index',
                     'icon' => 'o-clipboard-document-list',
-                    'label' => 'Asset Loans'
+                    'label' => 'Peminjaman Aset'
                 ],
                 [
                     'route' => 'asset-logs.index',
                     'icon' => 'o-document-text',
-                    'label' => 'Asset Logs'
+                    'label' => 'Log Aset'
                 ],
             ]
         ],
         [
             'route' => 'maintenances.index',
             'icon' => 'o-wrench-screwdriver',
-            'label' => 'Maintenance'
+            'label' => 'Perawatan'
         ],
         [
             'route' => 'vehicles.index',
             'icon' => 'o-truck',
-            'label' => 'Vehicles'
+            'label' => 'Kendaraan'
         ],
     ];
 
     $masterDataMenuItems = [
         [
-            'route' => 'users.index',
-            'icon' => 'o-users',
-            'label' => 'User Management'
-        ],
-        [
             'route' => 'companies.index',
             'icon' => 'o-building-office',
-            'label' => 'Companies'
+            'label' => 'Perusahaan'
+        ],
+        [
+            'route' => 'branches.index',
+            'icon' => 'o-building-office-2',
+            'label' => 'Cabang'
+        ],
+        [
+            'route' => 'users.index',
+            'icon' => 'o-users',
+            'label' => 'Manajemen Pengguna'
         ],
         [
             'route' => 'categories.index',
             'icon' => 'o-folder',
-            'label' => 'Categories'
+            'label' => 'Kategori'
         ],
-        [
-            'route' => 'locations.index',
-            'icon' => 'o-map-pin',
-            'label' => 'Locations'
-        ]
     ];
 @endphp
 
@@ -79,9 +79,9 @@
         <h2 class="text-2xl font-bold text-primary">Dashboard</h2>
     </div>
 
-    {{-- Main Menu --}}
+    {{-- Menu Utama --}}
     <x-menu activate-by-route>
-        <x-menu title="Main Menu" />
+        <x-menu title="Menu Utama" />
 
         @foreach($mainMenuItems as $item)
             @if(isset($item['type']) && $item['type'] === 'submenu')
@@ -96,20 +96,20 @@
             @endif
         @endforeach
 
-        <x-menu-separator title="Master Data" />
+        <x-menu-separator title="Data Master" />
 
         @foreach($masterDataMenuItems as $item)
             <x-menu-item title="{{ $item['label'] }}" icon="{{ $item['icon'] }}" link="{{ route($item['route']) }}" />
         @endforeach
     </x-menu>
 
-    {{-- User Info - Fixed at bottom --}}
+    {{-- Info Pengguna - Tetap di bawah --}}
     <div class="p-4 mt-auto border-base-content/10">
         @if($user = auth()->user())
             <x-menu-separator />
             <x-list-item :item="$user" value="name" sub-value="email" no-separator no-hover class="-mx-2 !-my-2 rounded">
                 <x-slot:actions>
-                    <x-button icon="o-power" class="btn-circle btn-ghost btn-xs" tooltip-left="Logout" no-wire-navigate
+                    <x-button icon="o-power" class="btn-circle btn-ghost btn-xs" tooltip-left="Keluar" no-wire-navigate
                         onclick="logout()" />
                 </x-slot:actions>
             </x-list-item>
@@ -117,22 +117,18 @@
     </div>
 </div>
 
-
 <script>
     function logout() {
-        // Create a form dynamically and submit it
         const form = document.createElement('form');
         form.method = 'POST';
         form.action = '{{ route("logout") }}';
 
-        // Add CSRF token
         const csrfToken = document.createElement('input');
         csrfToken.type = 'hidden';
         csrfToken.name = '_token';
         csrfToken.value = '{{ csrf_token() }}';
         form.appendChild(csrfToken);
 
-        // Add to body and submit
         document.body.appendChild(form);
         form.submit();
     }

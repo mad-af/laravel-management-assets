@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\Locations;
+namespace App\Livewire\Branches;
 
 use Livewire\Component;
 use Livewire\Attributes\Url;
@@ -10,17 +10,17 @@ class Drawer extends Component
     #[Url(as: 'action')]       // ?action=create|edit
     public ?string $action = null;
 
-    #[Url(as: 'location_id')]  // ?location_id=123
-    public ?string $location_id = null;
+    #[Url(as: 'branch_id')]  // ?branch_id=123
+    public ?string $branch_id = null;
 
     public bool $showDrawer = false;
-    public ?string $editingLocationId = null;
+    public ?string $editingBranchId = null;
 
     protected $listeners = [
         'close-drawer' => 'closeDrawer',
         'open-drawer' => 'openDrawer',
         'open-edit-drawer' => 'openEditDrawer',
-        'location-saved' => 'closeDrawer',
+        'branch-saved' => 'closeDrawer',
     ];
 
     public function mount()
@@ -34,7 +34,7 @@ class Drawer extends Component
         $this->applyActionFromUrl();
     }
 
-    public function updatedLocationId()
+    public function updatedBranchId()
     {
         $this->applyActionFromUrl();
     }
@@ -43,25 +43,25 @@ class Drawer extends Component
     {
         if ($this->action === 'create') {
             $this->showDrawer = true;
-            $this->editingLocationId = null;
-        } elseif ($this->action === 'edit' && $this->location_id) {
+            $this->editingBranchId = null;
+        } elseif ($this->action === 'edit' && $this->branch_id) {
             $this->showDrawer   = true;
-            $this->editingLocationId = $this->location_id;
+            $this->editingBranchId = $this->branch_id;
         } // else: biarkan state tetap (jangan auto-tutup tiap update)
     }
 
-    public function openEditDrawer($locationId)
+    public function openEditDrawer($branchId)
     {
         $this->action = 'edit';
-        $this->location_id = $locationId;
+        $this->branch_id = $branchId;
         $this->applyActionFromUrl();
     }
 
-    public function openDrawer($locationId = null)
+    public function openDrawer($branchId = null)
     {
-        if ($locationId) {
+        if ($branchId) {
             $this->action = 'edit';
-            $this->location_id = $locationId;
+            $this->branch_id = $branchId;
         } else {
             $this->action = 'create';
         }
@@ -71,16 +71,16 @@ class Drawer extends Component
     public function closeDrawer()
     {
         $this->showDrawer = false;
-        $this->editingLocationId = null;
+        $this->editingBranchId = null;
         $this->dispatch('resetForm');
 
         // hapus query di URL (Url-bound akan pushState)
         $this->action = null;
-        $this->location_id = null;
+        $this->branch_id = null;
     }
 
     public function render()
     {
-        return view('livewire.locations.drawer');
+        return view('livewire.branches.drawer');
     }
 }
