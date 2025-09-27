@@ -40,7 +40,6 @@ class Table extends Component
         // Ambil daftar perusahaan (sesuaikan scoping/authorization kamu)
         $this->companies = Company::query()
             ->select('id', 'name', 'code')
-            ->orderBy('name')
             ->get();
 
         // Set default tab: dari URL/param jika ada, kalau tidak pakai first()
