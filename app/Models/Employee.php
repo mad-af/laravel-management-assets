@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Employee extends Model
 {
-    use HasFactory, HasUuids;
+use HasFactory, HasUuids;
 
     protected $fillable = [
         'company_id',

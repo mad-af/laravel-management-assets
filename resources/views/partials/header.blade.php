@@ -5,7 +5,6 @@
             <x-icon name="o-bars-3" class="w-6 h-6" />
         </label>
 
-        <!-- Breadcrumb Controller -->
         <div class="hidden flex-1 lg:flex">
             <livewire:breadcrumb-component :pageTitle="$pageTitle ?? null" :pageDescription="$pageDescription ?? null"
                 :backRoute="$backRoute ?? null" :showBreadcrumbs="true" />
@@ -13,6 +12,7 @@
     </x-slot:brand>
 
     <x-slot:actions>
+
         <!-- Branch Controller -->
         <livewire:branch-switcher />
 
