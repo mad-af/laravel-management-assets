@@ -47,8 +47,7 @@
 
                     <x-menu-item title="Semua Lokasi" wire:click="$set('branchFilter', '')" />
                     @foreach($branches as $branch)
-                        <x-menu-item title="{{ $branch->name }}"
-                            wire:click="$set('branchFilter', '{{ $branch->id }}')" />
+                        <x-menu-item title="{{ $branch->name }}" wire:click="$set('branchFilter', '{{ $branch->id }}')" />
                     @endforeach
                 </x-dropdown>
             </div>
@@ -58,52 +57,56 @@
         <div>
             @php
                 $headers = [
-                    ['key' => 'code', 'label' => 'Kode Asset', 'class' => 'w-40'],
                     ['key' => 'name', 'label' => 'Nama Asset'],
                     ['key' => 'category', 'label' => 'Kategori'],
-                    ['key' => 'branch', 'label' => 'Cabang'],
-                    ['key' => 'status', 'label' => 'Status', 'class' => 'w-44'],
-                    ['key' => 'value', 'label' => 'Nilai', 'class' => 'w-36'],
-                    ['key' => 'created_at', 'label' => 'Dibuat'],
-                    ['key' => 'actions', 'label' => 'Aksi', 'class' => 'w-20'],
+                    ['key' => 'status', 'label' => 'Status'],
+                    ['key' => 'condition', 'label' => 'Kondisi'],
+                    ['key' => 'last_seen_at', 'label' => 'Terakhir Dilihat'],
+                    ['key' => 'actions', 'label' => 'Aksi'],
                 ];
             @endphp
             <x-table :headers="$headers" :rows="$assets" striped show-empty-text>
-                @scope('cell_code', $asset)
-                <div class="flex flex-col">
-                    <span class="font-medium">{{ $asset->code }}</span>
-                    @if($asset->tag_code)
-                        <span class="text-xs text-base-content/60">Tag: {{ $asset->tag_code }}</span>
-                    @endif
-                </div>
-                @endscope
 
                 @scope('cell_name', $asset)
-                <span class="font-medium">{{ $asset->name }}</span>
+                <div class="flex gap-2 items-center">
+                    @if (true)
+                    <div class="flex justify-center items-center font-bold rounded-lg border-2 size-13 bg-base-300 border-base-100">
+                        <x-icon name="o-photo" class="w-6 h-6 text-base-content/60" />
+                    </div>
+                    @else
+                    <x-avatar image=""
+                        class="!w-13 !rounded-lg !bg-base-300 !font-bold border-2 border-base-100">
+                    </x-avatar>
+                    @endif
+                    <div>
+                        <div class="font-mono text-xs truncate text-base-content/60">{{ $asset->code }}</div>
+                        <div class="font-medium">{{ $asset->name }}</div>
+                        <div class="text-xs text-base-content/60">Tag: {{ $asset->tag_code }}</div>
+                    </div>
+                </div>
                 @endscope
 
                 @scope('cell_category', $asset)
                 {{ $asset->category?->name ?? '-' }}
                 @endscope
 
-                @scope('cell_branch', $asset)
-                {{ $asset->branch?->name ?? '-' }}
-                @endscope
-
                 @scope('cell_status', $asset)
                 <x-badge value="{{ $asset->status->label() }}" class="badge-{{ $asset->status->color() }} badge-sm" />
                 @endscope
 
-                @scope('cell_value', $asset)
-                @if($asset->value)
-                    Rp {{ number_format($asset->value, 0, ',', '.') }}
+                @scope('cell_condition', $asset)
+                <x-badge value="{{ $asset->condition->label() }}"
+                    class="badge-outline badge-{{ $asset->condition->color() }} badge-sm" />
+                @endscope
+
+                @scope('cell_last_seen_at', $asset)
+                @if($asset->last_seen_at)
+                    <span title="{{ $asset->last_seen_at->format('d M Y H:i:s') }}">
+                        {{ $asset->last_seen_at->locale('id')->diffForHumans() }}
+                    </span>
                 @else
                     -
                 @endif
-                @endscope
-
-                @scope('cell_created_at', $asset)
-                {{ $asset->created_at->format('d M Y') }}
                 @endscope
 
                 @scope('cell_actions', $asset)
