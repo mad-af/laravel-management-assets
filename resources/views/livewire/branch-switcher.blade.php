@@ -1,5 +1,5 @@
 
-<x-select-group :options="$grouped" wire:model.live="selectedUser"
+<x-select-group :options="$grouped" wire:model.live="selectedBranch"
     class="select-sm w-full sm:!w-48 border border-base-300 focus:outline-none focus:border-primary whitespace-nowrap">
     <x-slot:prepend>
         <span

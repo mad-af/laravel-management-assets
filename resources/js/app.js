@@ -1,25 +1,25 @@
-import './bootstrap';
-import './scanners';
-import QRCode from 'qrcode';
-import JsBarcode from 'jsbarcode';
+import "./bootstrap";
+import "./scanners";
+import QRCode from "qrcode";
+import JsBarcode from "jsbarcode";
 
 // Simple Theme Management
 function changeTheme(theme) {
     // Save to localStorage
-    localStorage.setItem('theme', theme);
-    
+    localStorage.setItem("theme", theme);
+
     // Apply theme
-    document.documentElement.setAttribute('data-theme', theme);
-    
+    document.documentElement.setAttribute("data-theme", theme);
+
     // Update active state using the centralized function
     updateThemeActiveState(theme);
 }
 
 // Initialize theme on page load
 function initTheme() {
-    const savedTheme = localStorage.getItem('theme') || 'light';
-    document.documentElement.setAttribute('data-theme', savedTheme);
-    
+    const savedTheme = localStorage.getItem("theme") || "light";
+    document.documentElement.setAttribute("data-theme", savedTheme);
+
     // Update active state when DOM is ready
     updateThemeActiveState(savedTheme);
 }
@@ -27,14 +27,16 @@ function initTheme() {
 // Update theme active state
 function updateThemeActiveState(theme) {
     // Remove active class from all theme options
-    document.querySelectorAll('.theme-option').forEach(option => {
-        option.classList.remove('active');
+    document.querySelectorAll(".theme-option").forEach((option) => {
+        option.classList.remove("active");
     });
-    
+
     // Find and mark active theme
-    const activeOption = document.querySelector(`[onclick="changeTheme('${theme}')"]`);
+    const activeOption = document.querySelector(
+        `[onclick="changeTheme('${theme}')"]`
+    );
     if (activeOption) {
-        activeOption.classList.add('active');
+        activeOption.classList.add("active");
     }
 }
 
@@ -42,30 +44,32 @@ function updateThemeActiveState(theme) {
 function enhancedInitTheme() {
     // Apply theme immediately
     initTheme();
-    
+
     // Watch for DOM changes and reapply theme state
     const observer = new MutationObserver(() => {
-        const savedTheme = localStorage.getItem('theme') || 'light';
+        const savedTheme = localStorage.getItem("theme") || "light";
         // Ensure theme is still applied
-        if (document.documentElement.getAttribute('data-theme') !== savedTheme) {
-            document.documentElement.setAttribute('data-theme', savedTheme);
+        if (
+            document.documentElement.getAttribute("data-theme") !== savedTheme
+        ) {
+            document.documentElement.setAttribute("data-theme", savedTheme);
         }
         // Update active states if theme options are present
         if (document.querySelector('[onclick*="changeTheme"]')) {
             updateThemeActiveState(savedTheme);
         }
     });
-    
+
     // Start observing
     observer.observe(document.body, {
         childList: true,
-        subtree: true
+        subtree: true,
     });
 }
 
 // Initialize theme with enhanced features
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', enhancedInitTheme);
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", enhancedInitTheme);
 } else {
     enhancedInitTheme();
 }
@@ -76,8 +80,8 @@ window.changeTheme = changeTheme;
 // Print QR/Barcode function
 function printQRBarcode(tagCode, assetName, assetCode, purchaseYear) {
     // Create a new window for printing
-    const printWindow = window.open('', '_blank', 'width=800,height=600');
-    
+    const printWindow = window.open("", "_blank", "width=800,height=600");
+
     // Create the HTML content for the print window
     const printContent = `<!DOCTYPE html>
     <html>
@@ -204,7 +208,11 @@ function printQRBarcode(tagCode, assetName, assetCode, purchaseYear) {
         <div class="meta">
             <div><b>Name:</b> ${assetName}</div>
             <div><b>Code:</b> ${assetCode}</div>
-            ${purchaseYear ? `<div><b>Purchase Year:</b> ${purchaseYear}</div>` : ''}
+            ${
+                purchaseYear
+                    ? `<div><b>Purchase Year:</b> ${purchaseYear}</div>`
+                    : ""
+            }
         </div>
 
         <div class="codes">
@@ -226,31 +234,36 @@ function printQRBarcode(tagCode, assetName, assetCode, purchaseYear) {
     </body>
     </html>
     `;
-    
+
     printWindow.document.write(printContent);
     printWindow.document.close();
-    
+
     // Wait for the window to load, then generate codes
-    printWindow.onload = function() {
+    printWindow.onload = function () {
         // Generate QR Code using tag_code
-        const qrCanvas = printWindow.document.getElementById('qrcode');
-        QRCode.toCanvas(qrCanvas, tagCode, {
-            width: 200,
-            height: 200,
-            margin: 2
-        }, function(error) {
-            if (error) console.error('QR Code generation error:', error);
-        });
-        
+        const qrCanvas = printWindow.document.getElementById("qrcode");
+        QRCode.toCanvas(
+            qrCanvas,
+            tagCode,
+            {
+                width: 200,
+                height: 200,
+                margin: 2,
+            },
+            function (error) {
+                if (error) console.error("QR Code generation error:", error);
+            }
+        );
+
         // Generate Barcode using tag_code
-        const barcodeSvg = printWindow.document.getElementById('barcode');
+        const barcodeSvg = printWindow.document.getElementById("barcode");
         JsBarcode(barcodeSvg, tagCode, {
             format: "CODE128",
             width: 2,
             height: 100,
             displayValue: true,
             fontSize: 14,
-            margin: 10
+            margin: 10,
         });
     };
 }
@@ -259,13 +272,10 @@ function printQRBarcode(tagCode, assetName, assetCode, purchaseYear) {
 window.printQRBarcode = printQRBarcode;
 
 function initScannerIfPresent() {
-    if (document.body.dataset.route != 'scanners.index') return;
+    if (document.body.dataset.route != "scanners.index") return;
 
     // hindari double init
     if (!window._cameraScanner) {
         window._cameraScanner = new window.QRBarcodeScanner();
     }
 }
-
-document.addEventListener('DOMContentLoaded', initScannerIfPresent);
-document.addEventListener('livewire:navigated', initScannerIfPresent);
