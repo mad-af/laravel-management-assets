@@ -28,7 +28,7 @@ enum AssetStatus: string
             self::INACTIVE => 'Inactive',
             self::LOST => 'Lost',
             self::MAINTENANCE => 'Maintenance',
-            self::ON_LOAN => 'on_loan',
+            self::ON_LOAN => 'On Loan',
         };
     }
 

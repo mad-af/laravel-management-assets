@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\AssetLogAction;
+use App\Enums\AssetStatus;
 use App\Models\Asset;
 use App\Models\AssetLog;
+use App\Models\Branch;
 use App\Models\Category;
-use App\Models\Location;
-use App\Enums\AssetStatus;
-use App\Enums\AssetLogAction;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
-use Illuminate\Http\JsonResponse;
 
 class AssetController extends Controller
 {
@@ -21,20 +21,20 @@ class AssetController extends Controller
      */
     public function index(Request $request): View
     {
-        $query = Asset::with(['category', 'location']);
+        $query = Asset::with(['category', 'branch']);
 
         // Apply filters
         if ($request->filled('search')) {
             $search = $request->get('search');
             $query->where(function ($q) use ($search) {
                 $q->where('code', 'like', "%{$search}%")
-                  ->orWhere('name', 'like', "%{$search}%")
-                  ->orWhereHas('category', function ($categoryQuery) use ($search) {
-                      $categoryQuery->where('name', 'like', "%{$search}%");
-                  })
-                  ->orWhereHas('location', function ($locationQuery) use ($search) {
-                      $locationQuery->where('name', 'like', "%{$search}%");
-                  });
+                    ->orWhere('name', 'like', "%{$search}%")
+                    ->orWhereHas('category', function ($categoryQuery) use ($search) {
+                        $categoryQuery->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('branch', function ($branchQuery) use ($search) {
+                        $branchQuery->where('name', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -42,8 +42,8 @@ class AssetController extends Controller
             $query->byCategory($request->get('category'));
         }
 
-        if ($request->filled('location')) {
-            $query->byLocation($request->get('location'));
+        if ($request->filled('branch')) {
+            $query->where('branch_id', $request->get('branch'));
         }
 
         if ($request->filled('status')) {
@@ -56,9 +56,9 @@ class AssetController extends Controller
 
         $assets = $query->orderBy('created_at', 'desc')->paginate(15);
         $categories = Category::active()->orderBy('name')->get();
-        $locations = Location::active()->orderBy('name')->get();
+        $branches = Branch::where('is_active', true)->orderBy('name')->get();
 
-        return view('dashboard.assets.index', compact('assets', 'categories', 'locations'));
+        return view('dashboard.assets.index', compact('assets', 'categories', 'branches'));
     }
 
     /**
@@ -67,9 +67,9 @@ class AssetController extends Controller
     public function create(): View
     {
         $categories = Category::active()->orderBy('name')->get();
-        $locations = Location::active()->orderBy('name')->get();
+        $branches = Branch::where('is_active', true)->orderBy('name')->get();
 
-        return view('dashboard.assets.create', compact('categories', 'locations'));
+        return view('dashboard.assets.create', compact('categories', 'branches'));
     }
 
     /**
@@ -81,7 +81,7 @@ class AssetController extends Controller
             'code' => 'required|string|max:255|unique:assets,code',
             'name' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
-            'location_id' => 'required|exists:locations,id',
+            'branch_id' => 'required|exists:branches,id',
             'status' => 'required|in:active,damaged,lost,maintenance,checked_out',
             'condition' => 'required|in:excellent,good,fair,poor',
             'value' => 'required|numeric|min:0',
@@ -110,7 +110,7 @@ class AssetController extends Controller
      */
     public function show(Asset $asset): View
     {
-        $asset->load(['category', 'location', 'logs.user']);
+        $asset->load(['category', 'logs.user']);
 
         return view('dashboard.assets.show', compact('asset'));
     }
@@ -121,9 +121,9 @@ class AssetController extends Controller
     public function edit(Asset $asset): View
     {
         $categories = Category::active()->orderBy('name')->get();
-        $locations = Location::active()->orderBy('name')->get();
+        $branches = Branch::where('is_active', true)->orderBy('name')->get();
 
-        return view('dashboard.assets.edit', compact('asset', 'categories', 'locations'));
+        return view('dashboard.assets.edit', compact('asset', 'categories', 'branches'));
     }
 
     /**
@@ -132,10 +132,10 @@ class AssetController extends Controller
     public function update(Request $request, Asset $asset): RedirectResponse
     {
         $validated = $request->validate([
-            'code' => 'required|string|max:255|unique:assets,code,' . $asset->id,
+            'code' => 'required|string|max:255|unique:assets,code,'.$asset->id,
             'name' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
-            'location_id' => 'required|exists:locations,id',
+            'branch_id' => 'required|exists:branches,id',
             'status' => 'required|in:active,damaged,lost,maintenance,checked_out',
             'condition' => 'required|in:excellent,good,fair,poor',
             'value' => 'required|numeric|min:0',
@@ -193,9 +193,9 @@ class AssetController extends Controller
                     'code' => $asset->code,
                     'name' => $asset->name,
                     'status' => $asset->status,
-                    'status_badge_color' => $asset->status_badge_color
-                ]
-            ]
+                    'status_badge_color' => $asset->status_badge_color,
+                ],
+            ],
         ]);
     }
 
@@ -204,7 +204,7 @@ class AssetController extends Controller
      */
     public function destroy(Asset $asset): RedirectResponse
     {
-        
+
         // Asset deletion - logging handled by model observer
 
         $assetName = $asset->name;
@@ -219,29 +219,22 @@ class AssetController extends Controller
      */
     public function export(Request $request)
     {
-        $query = Asset::with(['category', 'location']);
+        $query = Asset::with(['category']);
 
         // Apply same filters as index
         if ($request->filled('search')) {
             $search = $request->get('search');
             $query->where(function ($q) use ($search) {
                 $q->where('code', 'like', "%{$search}%")
-                  ->orWhere('name', 'like', "%{$search}%")
-                  ->orWhereHas('category', function ($categoryQuery) use ($search) {
-                      $categoryQuery->where('name', 'like', "%{$search}%");
-                  })
-                  ->orWhereHas('location', function ($locationQuery) use ($search) {
-                      $locationQuery->where('name', 'like', "%{$search}%");
-                  });
+                    ->orWhere('name', 'like', "%{$search}%")
+                    ->orWhereHas('category', function ($categoryQuery) use ($search) {
+                        $categoryQuery->where('name', 'like', "%{$search}%");
+                    });
             });
         }
 
         if ($request->filled('category')) {
             $query->byCategory($request->get('category'));
-        }
-
-        if ($request->filled('location')) {
-            $query->byLocation($request->get('location'));
         }
 
         if ($request->filled('status')) {
@@ -260,33 +253,33 @@ class AssetController extends Controller
                 'asset_id' => null, // This is a bulk action
                 'user_id' => Auth::id(),
                 'action' => 'exported',
-                'notes' => 'Assets exported to CSV (' . $assets->count() . ' records)',
+                'notes' => 'Assets exported to CSV ('.$assets->count().' records)',
             ]);
         }
 
-        $filename = 'assets_' . date('Y-m-d_H-i-s') . '.csv';
-        
+        $filename = 'assets_'.date('Y-m-d_H-i-s').'.csv';
+
         $headers = [
             'Content-Type' => 'text/csv',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Content-Disposition' => 'attachment; filename="'.$filename.'"',
         ];
 
-        $callback = function() use ($assets) {
+        $callback = function () use ($assets) {
             $file = fopen('php://output', 'w');
-            
+
             // CSV headers
             fputcsv($file, [
                 'Code',
                 'Name',
                 'Category',
-                'Location',
+                'Branch',
                 'Status',
                 'Condition',
                 'Value',
                 'Purchase Date',
                 'Description',
                 'Created At',
-                'Updated At'
+                'Updated At',
             ]);
 
             // CSV data
@@ -295,7 +288,7 @@ class AssetController extends Controller
                     $asset->code,
                     $asset->name,
                     $asset->category->name,
-                    $asset->location->name,
+                    $asset->branch->name,
                     ucfirst($asset->status),
                     ucfirst($asset->condition),
                     $asset->value,
@@ -333,7 +326,7 @@ class AssetController extends Controller
                 ->groupBy('condition')
                 ->orderBy('count', 'desc')
                 ->get(),
-            'recent_assets' => Asset::with(['category', 'location'])
+            'recent_assets' => Asset::with(['category', 'branch'])
                 ->orderBy('created_at', 'desc')
                 ->limit(5)
                 ->get(),
@@ -348,16 +341,16 @@ class AssetController extends Controller
     public function searchByCode(Request $request): JsonResponse
     {
         $code = $request->get('code');
-        
-        if (!$code) {
+
+        if (! $code) {
             return response()->json([
                 'found' => false,
-                'message' => 'Kode tidak boleh kosong'
+                'message' => 'Kode tidak boleh kosong',
             ], 400);
         }
 
         // Search by tag_code first, then by code
-        $asset = Asset::with(['category', 'location'])
+        $asset = Asset::with(['category', 'branch'])
             ->where('tag_code', $code)
             ->orWhere('code', $code)
             ->first();
@@ -365,7 +358,7 @@ class AssetController extends Controller
         if ($asset) {
             // Update last_seen_at
             $asset->update(['last_seen_at' => now()]);
-            
+
             // Log the scan activity
             AssetLog::create([
                 'asset_id' => $asset->id,
@@ -376,8 +369,8 @@ class AssetController extends Controller
                     'scanned_code' => $code,
                     'scan_timestamp' => now()->toISOString(),
                     'user_agent' => $request->userAgent(),
-                    'ip_address' => $request->ip()
-                ])
+                    'ip_address' => $request->ip(),
+                ]),
             ]);
 
             return response()->json([
@@ -396,20 +389,20 @@ class AssetController extends Controller
                     'purchase_price' => $asset->purchase_price,
                     'category' => $asset->category ? [
                         'id' => $asset->category->id,
-                        'name' => $asset->category->name
+                        'name' => $asset->category->name,
                     ] : null,
-                    'location' => $asset->location ? [
-                        'id' => $asset->location->id,
-                        'name' => $asset->location->name
+                    'branch' => $asset->branch ? [
+                        'id' => $asset->branch->id,
+                        'name' => $asset->branch->name,
                     ] : null,
-                    'last_seen_at' => $asset->last_seen_at?->format('Y-m-d H:i:s')
-                ]
+                    'last_seen_at' => $asset->last_seen_at?->format('Y-m-d H:i:s'),
+                ],
             ]);
         }
 
         return response()->json([
             'found' => false,
-            'message' => 'Asset dengan kode tersebut tidak ditemukan'
+            'message' => 'Asset dengan kode tersebut tidak ditemukan',
         ]);
     }
 
@@ -430,17 +423,17 @@ class AssetController extends Controller
         $asset = Asset::findOrFail($validated['asset_id']);
 
         // Check if asset is available for checkout
-        if ($asset->status === AssetStatus::CHECKED_OUT) {
+        if ($asset->status === AssetStatus::ON_LOAN) {
             return response()->json([
                 'success' => false,
-                'message' => 'Asset sudah dalam status checked out'
+                'message' => 'Asset sudah dalam status checked out',
             ], 400);
         }
 
-        if (in_array($asset->status, [AssetStatus::DAMAGED, AssetStatus::LOST, AssetStatus::MAINTENANCE])) {
+        if (in_array($asset->status, [AssetStatus::LOST, AssetStatus::MAINTENANCE])) {
             return response()->json([
                 'success' => false,
-                'message' => 'Asset tidak dapat di-checkout karena status: ' . $asset->status
+                'message' => 'Asset tidak dapat di-checkout karena status: '.$asset->status,
             ], 400);
         }
 
@@ -455,14 +448,14 @@ class AssetController extends Controller
         ]);
 
         // Update asset status
-        $asset->update(['status' => AssetStatus::CHECKED_OUT]);
+        $asset->update(['status' => AssetStatus::ON_LOAN]);
 
         // Log the checkout
         AssetLog::create([
             'asset_id' => $asset->id,
             'user_id' => Auth::id(),
             'action' => AssetLogAction::CHECKED_OUT,
-            'notes' => 'Asset checked out to: ' . $validated['borrower_name'],
+            'notes' => 'Asset checked out to: '.$validated['borrower_name'],
         ]);
 
         return response()->json([
@@ -474,10 +467,10 @@ class AssetController extends Controller
                     'code' => $asset->code,
                     'name' => $asset->name,
                     'status' => $asset->status,
-                    'status_badge_color' => $asset->status_badge_color
+                    'status_badge_color' => $asset->status_badge_color,
                 ],
-                'loan' => $loan
-            ]
+                'loan' => $loan,
+            ],
         ]);
     }
 
@@ -496,10 +489,10 @@ class AssetController extends Controller
         $asset = Asset::findOrFail($validated['asset_id']);
 
         // Check if asset is checked out
-        if ($asset->status !== AssetStatus::CHECKED_OUT) {
+        if ($asset->status !== AssetStatus::ON_LOAN) {
             return response()->json([
                 'success' => false,
-                'message' => 'Asset tidak dalam status checked out'
+                'message' => 'Asset tidak dalam status checked out',
             ], 400);
         }
 
@@ -508,10 +501,10 @@ class AssetController extends Controller
             ->whereNull('checkin_at')
             ->first();
 
-        if (!$loan) {
+        if (! $loan) {
             return response()->json([
                 'success' => false,
-                'message' => 'Tidak ditemukan record peminjaman aktif untuk asset ini'
+                'message' => 'Tidak ditemukan record peminjaman aktif untuk asset ini',
             ], 400);
         }
 
@@ -519,21 +512,19 @@ class AssetController extends Controller
         $loan->update([
             'checkin_at' => $validated['checkin_at'],
             'condition_in' => $validated['condition_in'],
-            'notes' => $loan->notes . ($validated['notes'] ? '\n\nCheckin Notes: ' . $validated['notes'] : ''),
+            'notes' => $loan->notes.($validated['notes'] ? '\n\nCheckin Notes: '.$validated['notes'] : ''),
         ]);
 
         // Determine new asset status based on condition
         $newStatus = AssetStatus::ACTIVE;
         if (in_array($validated['condition_in'], ['poor'])) {
             $newStatus = AssetStatus::MAINTENANCE;
-        } elseif (in_array($validated['condition_in'], ['fair'])) {
-            $newStatus = AssetStatus::DAMAGED;
         }
 
         // Update asset status and condition
         $asset->update([
             'status' => $newStatus,
-            'condition' => $validated['condition_in']
+            'condition' => $validated['condition_in'],
         ]);
 
         // Log the checkin
@@ -541,7 +532,7 @@ class AssetController extends Controller
             'asset_id' => $asset->id,
             'user_id' => Auth::id(),
             'action' => AssetLogAction::CHECKED_IN,
-            'notes' => 'Asset checked in with condition: ' . $validated['condition_in'],
+            'notes' => 'Asset checked in with condition: '.$validated['condition_in'],
         ]);
 
         return response()->json([
@@ -555,10 +546,10 @@ class AssetController extends Controller
                     'status' => $asset->status,
                     'status_badge_color' => $asset->status_badge_color,
                     'condition' => $asset->condition,
-                    'condition_badge_color' => $asset->condition_badge_color
+                    'condition_badge_color' => $asset->condition_badge_color,
                 ],
-                'loan' => $loan
-            ]
+                'loan' => $loan,
+            ],
         ]);
     }
 }

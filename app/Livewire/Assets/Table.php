@@ -4,7 +4,7 @@ namespace App\Livewire\Assets;
 
 use App\Models\Asset;
 use App\Models\Category;
-use App\Models\Location;
+use App\Models\Branch;
 use App\Enums\AssetStatus;
 use App\Traits\WithAlert;
 use Livewire\Component;
@@ -17,9 +17,9 @@ class Table extends Component
     public $search = '';
     public $statusFilter = '';
     public $categoryFilter = '';
-    public $locationFilter = '';
+    public $branchFilter = '';
 
-    protected $queryString = ['search', 'statusFilter', 'categoryFilter', 'locationFilter'];
+    protected $queryString = ['search', 'statusFilter', 'categoryFilter', 'branchFilter'];
 
     protected $listeners = [
         'asset-saved' => '$refresh',
@@ -41,7 +41,7 @@ class Table extends Component
         $this->resetPage();
     }
 
-    public function updatingLocationFilter()
+    public function updatingBranchFilter()
     {
         $this->resetPage();
     }
@@ -80,7 +80,7 @@ class Table extends Component
     public function render()
     {
         $assets = Asset::query()
-            ->with(['category', 'location'])
+            ->with(['category', 'branch'])
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('name', 'like', '%' . $this->search . '%')
@@ -94,16 +94,16 @@ class Table extends Component
             ->when($this->categoryFilter, function ($query) {
                 $query->where('category_id', $this->categoryFilter);
             })
-            ->when($this->locationFilter, function ($query) {
-                $query->where('location_id', $this->locationFilter);
+            ->when($this->branchFilter, function ($query) {
+                $query->where('branch_id', $this->branchFilter);
             })
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
         $categories = Category::active()->orderBy('name')->get();
-        $locations = Location::active()->orderBy('name')->get();
+        $branches = Branch::orderBy('name')->get();
         $statuses = AssetStatus::cases();
 
-        return view('livewire.assets.table', compact('assets', 'categories', 'locations', 'statuses'));
+        return view('livewire.assets.table', compact('assets', 'categories', 'branches', 'statuses'));
     }
 }

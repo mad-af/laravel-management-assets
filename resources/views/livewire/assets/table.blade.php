@@ -12,7 +12,7 @@
             <div class="flex gap-2">
                 <x-dropdown>
                     <x-slot:trigger>
-                        <x-button icon="o-funnel" class="btn-sm ">
+                        <x-button icon="o-funnel" class="btn-sm">
                             Filter Status
                         </x-button>
                     </x-slot:trigger>
@@ -26,7 +26,7 @@
 
                 <x-dropdown>
                     <x-slot:trigger>
-                        <x-button icon="o-tag" class="btn-sm ">
+                        <x-button icon="o-tag" class="btn-sm">
                             Filter Kategori
                         </x-button>
                     </x-slot:trigger>
@@ -40,15 +40,15 @@
 
                 <x-dropdown>
                     <x-slot:trigger>
-                        <x-button icon="o-map-pin" class="btn-sm ">
+                        <x-button icon="o-map-pin" class="btn-sm">
                             Filter Lokasi
                         </x-button>
                     </x-slot:trigger>
 
-                    <x-menu-item title="Semua Lokasi" wire:click="$set('locationFilter', '')" />
-                    @foreach($locations as $location)
-                        <x-menu-item title="{{ $location->name }}"
-                            wire:click="$set('locationFilter', '{{ $location->id }}')" />
+                    <x-menu-item title="Semua Lokasi" wire:click="$set('branchFilter', '')" />
+                    @foreach($branches as $branch)
+                        <x-menu-item title="{{ $branch->name }}"
+                            wire:click="$set('branchFilter', '{{ $branch->id }}')" />
                     @endforeach
                 </x-dropdown>
             </div>
@@ -61,7 +61,7 @@
                     ['key' => 'code', 'label' => 'Kode Asset', 'class' => 'w-40'],
                     ['key' => 'name', 'label' => 'Nama Asset'],
                     ['key' => 'category', 'label' => 'Kategori'],
-                    ['key' => 'location', 'label' => 'Lokasi'],
+                    ['key' => 'branch', 'label' => 'Cabang'],
                     ['key' => 'status', 'label' => 'Status', 'class' => 'w-44'],
                     ['key' => 'value', 'label' => 'Nilai', 'class' => 'w-36'],
                     ['key' => 'created_at', 'label' => 'Dibuat'],
@@ -86,12 +86,12 @@
                 {{ $asset->category?->name ?? '-' }}
                 @endscope
 
-                @scope('cell_location', $asset)
-                {{ $asset->location?->name ?? '-' }}
+                @scope('cell_branch', $asset)
+                {{ $asset->branch?->name ?? '-' }}
                 @endscope
 
                 @scope('cell_status', $asset)
-                <x-badge value="{{ $asset->status->label() }}" class="{{ $asset->status->badgeColor() }} badge-sm" />
+                <x-badge value="{{ $asset->status->label() }}" class="badge-{{ $asset->status->color() }} badge-sm" />
                 @endscope
 
                 @scope('cell_value', $asset)

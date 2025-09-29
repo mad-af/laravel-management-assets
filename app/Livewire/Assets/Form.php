@@ -4,7 +4,7 @@ namespace App\Livewire\Assets;
 
 use App\Models\Asset;
 use App\Models\Category;
-use App\Models\Location;
+use App\Models\Branch;
 use App\Enums\AssetStatus;
 use App\Enums\AssetCondition;
 use Livewire\Component;
@@ -50,7 +50,7 @@ class Form extends Component
     {
         $this->assetId = $assetId;
         $this->status = AssetStatus::ACTIVE->value;
-        $this->condition = AssetCondition::EXCELLENT->value;
+        $this->condition = AssetCondition::GOOD->value;
         
         if ($assetId) {
             $this->isEdit = true;
@@ -130,7 +130,7 @@ class Form extends Component
         $this->category_id = '';
         $this->location_id = '';
         $this->status = AssetStatus::ACTIVE->value;
-        $this->condition = AssetCondition::EXCELLENT->value;
+        $this->condition = AssetCondition::GOOD->value;
         $this->value = '';
         $this->purchase_date = '';
         $this->description = '';
@@ -144,7 +144,7 @@ class Form extends Component
     public function render()
     {
         $categories = Category::active()->orderBy('name')->get();
-        $locations = Location::active()->orderBy('name')->get();
+        $locations = Branch::orderBy('name')->get();
         
         $statuses = collect(AssetStatus::cases())->map(function ($status) {
             return (object) [
