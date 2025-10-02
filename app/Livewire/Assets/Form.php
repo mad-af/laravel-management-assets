@@ -7,12 +7,14 @@ use App\Enums\AssetStatus;
 use App\Models\Asset;
 use App\Models\Branch;
 use App\Models\Category;
+use App\Services\ImageUploadService;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 use Mary\Traits\Toast;
 
 class Form extends Component
 {
-    use Toast;
+    use Toast, WithFileUploads;
 
     public $assetId;
 
@@ -21,6 +23,10 @@ class Form extends Component
     public $tag_code = '';
 
     public $image;
+
+    public $imageFile;
+
+    public $tempImagePath;
 
     public $name = '';
 
@@ -55,6 +61,7 @@ class Form extends Component
         'brand' => 'nullable|string|max:255',
         'model' => 'nullable|string|max:255',
         'image' => 'nullable|string|max:255',
+        'imageFile' => 'nullable|image|max:2048',
         'status' => 'required',
         'condition' => 'required',
         'value' => 'nullable|numeric|min:0',
@@ -65,6 +72,8 @@ class Form extends Component
     protected $listeners = [
         'editAsset' => 'edit',
         'resetForm' => 'resetForm',
+        'imageUploaded' => 'handleImageUploaded',
+        'imageRemoved' => 'handleImageRemoved',
     ];
 
     public function mount($assetId = null)
@@ -82,6 +91,67 @@ class Form extends Component
         } else {
             // $this->generateCode();
         }
+    }
+
+    /**
+     * Handle image file upload when file is selected
+     */
+    public function updatedImageFile()
+    {
+        // Reset tempImagePath first
+        $this->tempImagePath = null;
+
+        $this->validate([
+            'imageFile' => 'required|image|max:2048',
+        ]);
+
+        try {
+            $imageUploadService = new ImageUploadService;
+
+            // Upload to temporary folder
+            $tempPath = $imageUploadService->uploadTemporary($this->imageFile, [
+                'quality' => 85,
+                'max_width' => 1200,
+                'max_height' => 800,
+                'convert_to_webp' => true,
+            ]);
+
+            if ($tempPath) {
+                $this->tempImagePath = $tempPath;
+                $this->success('Gambar berhasil diupload sementara');
+
+                // Force re-render
+                $this->dispatch('$refresh');
+            } else {
+                $this->error('Gagal mengupload gambar');
+            }
+
+        } catch (\Exception $e) {
+            $this->error('Gagal mengupload gambar: '.$e->getMessage());
+            $this->tempImagePath = null;
+        }
+
+        $this->dispatch('$refresh');
+    }
+
+    /**
+     * Remove uploaded image
+     */
+    public function removeImage()
+    {
+        if ($this->tempImagePath) {
+            $imageUploadService = new ImageUploadService;
+            $imageUploadService->delete($this->tempImagePath);
+            $this->tempImagePath = null;
+        }
+
+        $this->imageFile = null;
+        $this->image = '';
+
+        $this->success('Gambar berhasil dihapus');
+
+        // Force re-render
+        $this->dispatch('$refresh');
     }
 
     public function loadAsset()
@@ -178,6 +248,15 @@ class Form extends Component
         }
 
         try {
+            $imageUploadService = new ImageUploadService;
+            $finalImagePath = $this->image;
+
+            // Handle image upload from temporary to permanent storage
+            if ($this->tempImagePath) {
+                $finalImagePath = $imageUploadService->moveFromTemporary($this->tempImagePath, 'assets');
+                $this->tempImagePath = null; // Clear temp path after moving
+            }
+
             $data = [
                 'code' => $this->code,
                 'tag_code' => $this->tag_code ?: null,
@@ -186,7 +265,7 @@ class Form extends Component
                 'branch_id' => $this->branch_id,
                 'brand' => $this->brand ?: null,
                 'model' => $this->model ?: null,
-                'image' => $this->image ?: null,
+                'image' => $finalImagePath ?: null,
                 'status' => AssetStatus::from($this->status),
                 'condition' => AssetCondition::from($this->condition),
                 'value' => $this->value ?: null,
@@ -212,6 +291,13 @@ class Form extends Component
 
     public function resetForm()
     {
+        // Clean up temporary image if exists
+        if ($this->tempImagePath) {
+            $imageUploadService = new ImageUploadService;
+            $imageUploadService->delete($this->tempImagePath);
+            $this->tempImagePath = null;
+        }
+
         $this->code = '';
         $this->tag_code = '';
         $this->name = '';
@@ -220,6 +306,7 @@ class Form extends Component
         $this->brand = '';
         $this->model = '';
         $this->image = '';
+        $this->imageFile = null;
         $this->status = AssetStatus::ACTIVE->value;
         $this->condition = AssetCondition::GOOD->value;
         $this->value = '';
@@ -230,6 +317,16 @@ class Form extends Component
         if (! $this->isEdit) {
             $this->generateCode();
         }
+    }
+
+    public function handleImageUploaded($tempPath)
+    {
+        $this->tempImagePath = $tempPath;
+    }
+
+    public function handleImageRemoved()
+    {
+        $this->tempImagePath = null;
     }
 
     public function render()

@@ -58,13 +58,13 @@
                 @scope('cell_name', $asset)
                 <div class="flex gap-2 items-center">
                     @if (true)
-                    <div class="flex justify-center items-center font-bold rounded-lg border-2 size-13 bg-base-300 border-base-100">
-                        <x-icon name="o-photo" class="w-6 h-6 text-base-content/60" />
-                    </div>
+                        <div
+                            class="flex justify-center items-center font-bold rounded-lg border-2 size-13 bg-base-300 border-base-100">
+                            <x-icon name="o-photo" class="w-6 h-6 text-base-content/60" />
+                        </div>
                     @else
-                    <x-avatar image=""
-                        class="!w-13 !rounded-lg !bg-base-300 !font-bold border-2 border-base-100">
-                    </x-avatar>
+                        <x-avatar image="" class="!w-13 !rounded-lg !bg-base-300 !font-bold border-2 border-base-100">
+                        </x-avatar>
                     @endif
                     <div>
                         <div class="font-mono text-xs truncate text-base-content/60">{{ $asset->code }}</div>
@@ -99,7 +99,8 @@
 
                 @scope('cell_actions', $asset)
                 <x-action-dropdown :model="$asset">
-                    <li>
+                    {{-- Disabled --}}
+                    <li class="opacity-50 cursor-not-allowed pointer-events-none"> 
                         <a href="{{ route('assets.show', $asset) }}"
                             onclick="document.getElementById('dropdown-menu-{{ $asset->id }}').hidePopover()">
                             <x-icon name="o-eye" class="w-4 h-4" />

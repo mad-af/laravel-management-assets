@@ -11,25 +11,23 @@
             hint="Kode aset terisi otomatis, bisa diubah manual bila perlu." :readonly="!$codeIsset">
             <x-slot:append>
                 @if(!$codeIsset)
-                    <x-button icon="o-pencil-square" tooltip-left="Input manual" class="join-item btn-sm" wire:click="$set('codeIsset', true)" />
+                    <x-button icon="o-pencil-square" tooltip-left="Input manual" class="join-item btn-sm"
+                        wire:click="$set('codeIsset', true)" />
                 @else
-                    <x-button icon="o-calculator" tooltip-left="Generate otomatis" class="join-item btn-sm" wire:click="$set('codeIsset', false); $wire.generateCode()" />
+                    <x-button icon="o-calculator" tooltip-left="Generate otomatis" class="join-item btn-sm"
+                        wire:click="$set('codeIsset', false); $wire.generateCode()" />
                 @endif
             </x-slot:append>
         </x-input>
     </div>
 
-    <!-- Unggah Logo -->
-    <x-file label="Gambar Asset" wire:model="image" accept="image/png, image/jpeg">
-        @if ($image)
-            <x-avatar :image="$image" class="!w-16 !rounded-lg !bg-primary !font-bold border-2 border-base-100" />
-        @else 
-            <div class="flex flex-col justify-center items-center w-16 h-16 rounded-lg bg-base-200 text-base-content/60">
-                <x-icon name="o-cloud-arrow-up" class="w-8 h-8" />
-                <span>Unggah</span>
-            </div>
-        @endif
-    </x-file>
+    <!-- Upload Gambar Asset -->
+    <div>
+        <livewire:components.image-upload 
+            :current-image="$image" 
+            label="Gambar Asset" 
+            wire:key="image-upload-{{ $asset->id ?? 'new' }}" />
+    </div>
 
     <!-- Asset Name -->
     <div>
@@ -60,8 +58,8 @@
 
     <!-- Value -->
     <div>
-        <x-input label="Nilai Asset (Rp)" prefix="Rp" wire:model="value" placeholder="Masukkan nilai asset" type="number"
-            step="0.01" min="0" class="input-sm" />
+        <x-input label="Nilai Asset (Rp)" prefix="Rp" wire:model="value" placeholder="Masukkan nilai asset"
+            type="number" step="0.01" min="0" class="input-sm" />
     </div>
 
     <!-- Purchase Date -->

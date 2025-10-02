@@ -6,12 +6,11 @@ use App\Models\Branch;
 use App\Models\Company;
 use Illuminate\Support\Str;
 use Livewire\Component;
-use Livewire\WithFileUploads;
 use Mary\Traits\Toast;
 
 class Form extends Component
 {
-    use Toast, WithFileUploads;
+    use Toast;
 
     public $companyId;
 
