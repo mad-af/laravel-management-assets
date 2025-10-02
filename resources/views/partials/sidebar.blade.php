@@ -3,12 +3,14 @@
         [
             'route' => 'dashboard',
             'icon' => 'o-home',
-            'label' => 'Beranda'
+            'label' => 'Beranda',
+            'disabled' => true
         ],
         [
             'route' => 'scanners.index',
             'icon' => 'o-qr-code',
-            'label' => 'Pemindai QR/Barcode'
+            'label' => 'Pemindai QR/Barcode',
+            'disabled' => true
         ],
         [
             'type' => 'submenu',
@@ -23,29 +25,34 @@
                 [
                     'route' => 'asset-transfers.index',
                     'icon' => 'o-arrow-path',
-                    'label' => 'Transfer Aset'
+                    'label' => 'Transfer Aset',
+                    'disabled' => true
                 ],
                 [
                     'route' => 'asset-loans.index',
                     'icon' => 'o-clipboard-document-list',
-                    'label' => 'Peminjaman Aset'
+                    'label' => 'Peminjaman Aset',
+                    'disabled' => true
                 ],
                 [
                     'route' => 'asset-logs.index',
                     'icon' => 'o-document-text',
-                    'label' => 'Log Aset'
+                    'label' => 'Log Aset',
+                    'disabled' => true
                 ],
             ]
         ],
         [
             'route' => 'maintenances.index',
             'icon' => 'o-wrench-screwdriver',
-            'label' => 'Perawatan'
+            'label' => 'Perawatan',
+            'disabled' => true
         ],
         [
             'route' => 'vehicles.index',
             'icon' => 'o-truck',
-            'label' => 'Kendaraan'
+            'label' => 'Kendaraan',
+            'disabled' => true
         ],
     ];
 
@@ -63,12 +70,12 @@
         [
             'route' => 'employees.index',
             'icon' => 'o-user-group',
-            'label' => 'Karyawan'
+            'label' => 'Karyawan',
         ],
         [
             'route' => 'users.index',
             'icon' => 'o-user',
-            'label' => 'Akun'
+            'label' => 'Akun',
         ],
         [
             'route' => 'categories.index',
@@ -92,19 +99,37 @@
             @if(isset($item['type']) && $item['type'] === 'submenu')
                 <x-menu-sub title="{{ $item['label'] }}" icon="{{ $item['icon'] }}">
                     @foreach($item['children'] as $child)
-                        <x-menu-item title="{{ $child['label'] }}" icon="{{ $child['icon'] }}"
-                            link="{{ route($child['route']) }}" />
+                        @if(isset($child['disabled']) && $child['disabled'])
+                            <x-menu-item title="{{ $child['label'] }}" icon="{{ $child['icon'] }}"
+                                class="opacity-50 cursor-not-allowed pointer-events-none" badge="soon" badge-classes="badge-soft badge-info">
+                            </x-menu-item>
+                        @else
+                            <x-menu-item title="{{ $child['label'] }}" icon="{{ $child['icon'] }}"
+                                link="{{ route($child['route']) }}" />
+                        @endif
                     @endforeach
                 </x-menu-sub>
             @else
-                <x-menu-item title="{{ $item['label'] }}" icon="{{ $item['icon'] }}" link="{{ route($item['route']) }}" />
+                @if(isset($item['disabled']) && $item['disabled'])
+                    <x-menu-item title="{{ $item['label'] }}" icon="{{ $item['icon'] }}"
+                        class="opacity-50 cursor-not-allowed pointer-events-none" badge="soon" badge-classes="badge-soft badge-info">
+                    </x-menu-item>
+                @else
+                    <x-menu-item title="{{ $item['label'] }}" icon="{{ $item['icon'] }}" link="{{ route($item['route']) }}" />
+                @endif
             @endif
         @endforeach
 
         <x-menu-separator title="Data Master" />
 
         @foreach($masterDataMenuItems as $item)
-            <x-menu-item title="{{ $item['label'] }}" icon="{{ $item['icon'] }}" link="{{ route($item['route']) }}" />
+            @if(isset($item['disabled']) && $item['disabled'])
+                <x-menu-item title="{{ $item['label'] }}" icon="{{ $item['icon'] }}"
+                    class="opacity-50 cursor-not-allowed pointer-events-none" badge="soon" badge-classes="badge-soft badge-info">
+                </x-menu-item>
+            @else
+                <x-menu-item title="{{ $item['label'] }}" icon="{{ $item['icon'] }}" link="{{ route($item['route']) }}" />
+            @endif
         @endforeach
     </x-menu>
 
