@@ -20,6 +20,8 @@ class Form extends Component
 
     public $tag_code = '';
 
+    public $image;
+
     public $name = '';
 
     public $category_id = '';
@@ -52,6 +54,7 @@ class Form extends Component
         'branch_id' => 'required|exists:branches,id',
         'brand' => 'nullable|string|max:255',
         'model' => 'nullable|string|max:255',
+        'image' => 'nullable|string|max:255',
         'status' => 'required',
         'condition' => 'required',
         'value' => 'nullable|numeric|min:0',
@@ -90,9 +93,10 @@ class Form extends Component
                 $this->tag_code = $asset->tag_code;
                 $this->name = $asset->name;
                 $this->category_id = $asset->category_id;
-            $this->branch_id = $asset->branch_id;
+                $this->branch_id = $asset->branch_id;
                 $this->brand = $asset->brand;
                 $this->model = $asset->model;
+                $this->image = $asset->image;
                 $this->status = $asset->status->value;
                 $this->condition = $asset->condition->value;
                 $this->value = $asset->value;
@@ -109,7 +113,6 @@ class Form extends Component
                 // Generate asset code using helper function
                 $this->code = generate_asset_code($this->category_id, $this->branch_id);
             } catch (\Exception $e) {
-                dd($e);
 
             }
         }
@@ -183,6 +186,7 @@ class Form extends Component
                 'branch_id' => $this->branch_id,
                 'brand' => $this->brand ?: null,
                 'model' => $this->model ?: null,
+                'image' => $this->image ?: null,
                 'status' => AssetStatus::from($this->status),
                 'condition' => AssetCondition::from($this->condition),
                 'value' => $this->value ?: null,
@@ -215,6 +219,7 @@ class Form extends Component
         $this->branch_id = session_get(\App\Support\SessionKey::BranchId);
         $this->brand = '';
         $this->model = '';
+        $this->image = '';
         $this->status = AssetStatus::ACTIVE->value;
         $this->condition = AssetCondition::GOOD->value;
         $this->value = '';

@@ -26,6 +26,7 @@ class Asset extends Model
         'branch_id',
         'brand',
         'model',
+        'image',
         'status',
         'condition',
         'value',

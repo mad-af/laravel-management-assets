@@ -19,6 +19,18 @@
         </x-input>
     </div>
 
+    <!-- Unggah Logo -->
+    <x-file label="Gambar Asset" wire:model="image" accept="image/png, image/jpeg">
+        @if ($image)
+            <x-avatar :image="$image" class="!w-16 !rounded-lg !bg-primary !font-bold border-2 border-base-100" />
+        @else 
+            <div class="flex flex-col justify-center items-center w-16 h-16 rounded-lg bg-base-200 text-base-content/60">
+                <x-icon name="o-cloud-arrow-up" class="w-8 h-8" />
+                <span>Unggah</span>
+            </div>
+        @endif
+    </x-file>
+
     <!-- Asset Name -->
     <div>
         <x-input label="Nama Asset" wire:model="name" placeholder="Masukkan nama asset" class="input-sm" required />
@@ -48,7 +60,7 @@
 
     <!-- Value -->
     <div>
-        <x-input label="Nilai Asset (Rp)" wire:model="value" placeholder="Masukkan nilai asset" type="number"
+        <x-input label="Nilai Asset (Rp)" prefix="Rp" wire:model="value" placeholder="Masukkan nilai asset" type="number"
             step="0.01" min="0" class="input-sm" />
     </div>
 

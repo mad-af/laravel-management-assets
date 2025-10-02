@@ -80,6 +80,7 @@ table(assets) {
   fk(branch_id) : UUID
   brand : VARCHAR(64) [NULL]
   model : VARCHAR(64) [NULL]
+  image : VARCHAR(255) [NULL]
   status : ENUM(active, inactive, lost, maintenance, on_loan) [DEFAULT: active]
   condition : ENUM(good, fair, poor) [DEFAULT: good]
   value : DECIMAL(15,2)
