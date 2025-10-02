@@ -2,38 +2,56 @@
 
 namespace App\Livewire\Assets;
 
-use App\Models\Asset;
-use App\Models\Category;
-use App\Models\Branch;
-use App\Enums\AssetStatus;
 use App\Enums\AssetCondition;
+use App\Enums\AssetStatus;
+use App\Models\Asset;
+use App\Models\Branch;
+use App\Models\Category;
 use Livewire\Component;
 use Mary\Traits\Toast;
-use Illuminate\Support\Str;
 
 class Form extends Component
 {
     use Toast;
 
     public $assetId;
+
     public $code = '';
+
     public $tag_code = '';
+
     public $name = '';
+
     public $category_id = '';
-    public $location_id = '';
+
+    public $branch_id = '';
+
+    public $brand = '';
+
+    public $model = '';
+
     public $status;
+
     public $condition;
+
     public $value = '';
+
     public $purchase_date = '';
+
     public $description = '';
+
     public $isEdit = false;
+
+    public $codeIsset = false;
 
     protected $rules = [
         'code' => 'required|string|max:255',
         'tag_code' => 'nullable|string|max:255',
         'name' => 'required|string|max:255',
         'category_id' => 'required|exists:categories,id',
-        'location_id' => 'required|exists:locations,id',
+        'branch_id' => 'required|exists:branches,id',
+        'brand' => 'nullable|string|max:255',
+        'model' => 'nullable|string|max:255',
         'status' => 'required',
         'condition' => 'required',
         'value' => 'nullable|numeric|min:0',
@@ -43,7 +61,7 @@ class Form extends Component
 
     protected $listeners = [
         'editAsset' => 'edit',
-        'resetForm' => 'resetForm'
+        'resetForm' => 'resetForm',
     ];
 
     public function mount($assetId = null)
@@ -51,12 +69,15 @@ class Form extends Component
         $this->assetId = $assetId;
         $this->status = AssetStatus::ACTIVE->value;
         $this->condition = AssetCondition::GOOD->value;
-        
+
+        // Get branch_id from session using helper
+        $this->branch_id = session_get(\App\Support\SessionKey::BranchId);
+
         if ($assetId) {
             $this->isEdit = true;
             $this->loadAsset();
         } else {
-            $this->generateCode();
+            // $this->generateCode();
         }
     }
 
@@ -69,7 +90,9 @@ class Form extends Component
                 $this->tag_code = $asset->tag_code;
                 $this->name = $asset->name;
                 $this->category_id = $asset->category_id;
-                $this->location_id = $asset->location_id;
+            $this->branch_id = $asset->branch_id;
+                $this->brand = $asset->brand;
+                $this->model = $asset->model;
                 $this->status = $asset->status->value;
                 $this->condition = $asset->condition->value;
                 $this->value = $asset->value;
@@ -81,16 +104,75 @@ class Form extends Component
 
     public function generateCode()
     {
-        if (!$this->isEdit && empty($this->code)) {
-            $lastAsset = Asset::orderBy('created_at', 'desc')->first();
-            $nextNumber = $lastAsset ? (int)substr($lastAsset->code, -3) + 1 : 1;
-            $this->code = 'AST-' . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
+        if (! $this->isEdit) {
+            try {
+                // Generate asset code using helper function
+                $this->code = generate_asset_code($this->category_id, $this->branch_id);
+            } catch (\Exception $e) {
+                dd($e);
+
+            }
         }
+    }
+
+    // Auto-generate code when category changes
+    public function updatedCategoryId()
+    {
+        if (! $this->isEdit && ! empty($this->category_id) && ! empty($this->branch_id)) {
+            $this->generateCode();
+        }
+    }
+
+    public function generateTagCode()
+    {
+        if (empty($this->tag_code)) {
+            try {
+                $this->tag_code = generate_asset_tag_code();
+            } catch (\Exception $e) {
+                $this->error('Failed to generate tag code: '.$e->getMessage());
+            }
+        }
+    }
+
+    public function generateBothCodes()
+    {
+        $this->generateCode();
+        $this->generateTagCode();
+    }
+
+    public function validateCodes()
+    {
+        $errors = [];
+
+        // Validate asset code
+        if (! empty($this->code) && ! validate_asset_code($this->code)) {
+            $errors[] = 'Asset code format is invalid';
+        }
+
+        // Validate tag code
+        if (! empty($this->tag_code) && ! validate_asset_tag_code($this->tag_code)) {
+            $errors[] = 'Tag code format is invalid';
+        }
+
+        if (! empty($errors)) {
+            foreach ($errors as $error) {
+                $this->error($error);
+            }
+
+            return false;
+        }
+
+        return true;
     }
 
     public function save()
     {
         $this->validate();
+
+        // Validate codes using helper functions
+        if (! $this->validateCodes()) {
+            return; // Stop if validation fails
+        }
 
         try {
             $data = [
@@ -98,7 +180,9 @@ class Form extends Component
                 'tag_code' => $this->tag_code ?: null,
                 'name' => $this->name,
                 'category_id' => $this->category_id,
-                'location_id' => $this->location_id,
+                'branch_id' => $this->branch_id,
+                'brand' => $this->brand ?: null,
+                'model' => $this->model ?: null,
                 'status' => AssetStatus::from($this->status),
                 'condition' => AssetCondition::from($this->condition),
                 'value' => $this->value ?: null,
@@ -118,7 +202,7 @@ class Form extends Component
                 $this->resetForm();
             }
         } catch (\Exception $e) {
-            $this->error('An error occurred: ' . $e->getMessage());
+            $this->error('An error occurred: '.$e->getMessage());
         }
     }
 
@@ -128,15 +212,17 @@ class Form extends Component
         $this->tag_code = '';
         $this->name = '';
         $this->category_id = '';
-        $this->location_id = '';
+        $this->branch_id = session_get(\App\Support\SessionKey::BranchId);
+        $this->brand = '';
+        $this->model = '';
         $this->status = AssetStatus::ACTIVE->value;
         $this->condition = AssetCondition::GOOD->value;
         $this->value = '';
         $this->purchase_date = '';
         $this->description = '';
         $this->resetValidation();
-        
-        if (!$this->isEdit) {
+
+        if (! $this->isEdit) {
             $this->generateCode();
         }
     }
@@ -144,22 +230,22 @@ class Form extends Component
     public function render()
     {
         $categories = Category::active()->orderBy('name')->get();
-        $locations = Branch::orderBy('name')->get();
-        
+        $branches = Branch::orderBy('name')->get();
+
         $statuses = collect(AssetStatus::cases())->map(function ($status) {
             return (object) [
                 'value' => $status->value,
-                'label' => $status->label()
-            ];
-        });
-        
-        $conditions = collect(AssetCondition::cases())->map(function ($condition) {
-            return (object) [
-                'value' => $condition->value,
-                'label' => $condition->label()
+                'label' => $status->label(),
             ];
         });
 
-        return view('livewire.assets.form', compact('categories', 'locations', 'statuses', 'conditions'));
+        $conditions = collect(AssetCondition::cases())->map(function ($condition) {
+            return (object) [
+                'value' => $condition->value,
+                'label' => $condition->label(),
+            ];
+        });
+
+        return view('livewire.assets.form', compact('categories', 'branches', 'statuses', 'conditions'));
     }
 }
