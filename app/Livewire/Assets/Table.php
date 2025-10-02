@@ -2,21 +2,25 @@
 
 namespace App\Livewire\Assets;
 
-use App\Models\Asset;
-use App\Models\Category;
-use App\Models\Branch;
 use App\Enums\AssetStatus;
+use App\Models\Asset;
+use App\Models\Branch;
+use App\Models\Category;
+use App\Support\SessionKey;
 use App\Traits\WithAlert;
 use Livewire\Component;
 use Livewire\WithPagination;
 
 class Table extends Component
 {
-    use WithPagination, WithAlert;
+    use WithAlert, WithPagination;
 
     public $search = '';
+
     public $statusFilter = '';
+
     public $categoryFilter = '';
+
     public $branchFilter = '';
 
     protected $queryString = ['search', 'statusFilter', 'categoryFilter', 'branchFilter'];
@@ -62,12 +66,12 @@ class Table extends Component
             $asset = Asset::findOrFail($assetId);
             $assetName = $asset->name;
             $asset->delete();
-            
+
             $this->showSuccessAlert(
                 "Asset '{$assetName}' berhasil dihapus.",
                 'Asset Dihapus'
             );
-            
+
             $this->dispatch('asset-deleted');
         } catch (\Exception $e) {
             $this->showErrorAlert(
@@ -79,13 +83,19 @@ class Table extends Component
 
     public function render()
     {
+        // Get current branch ID from session
+        $currentBranchId = session_get(SessionKey::BranchId);
+
         $assets = Asset::query()
             ->with(['category', 'branch'])
+            ->when($currentBranchId, function ($query) use ($currentBranchId) {
+                $query->where('branch_id', $currentBranchId);
+            })
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
-                    $q->where('name', 'like', '%' . $this->search . '%')
-                      ->orWhere('code', 'like', '%' . $this->search . '%')
-                      ->orWhere('tag_code', 'like', '%' . $this->search . '%');
+                    $q->where('name', 'like', '%'.$this->search.'%')
+                        ->orWhere('code', 'like', '%'.$this->search.'%')
+                        ->orWhere('tag_code', 'like', '%'.$this->search.'%');
                 });
             })
             ->when($this->statusFilter, function ($query) {
@@ -101,9 +111,9 @@ class Table extends Component
             ->paginate(10);
 
         $categories = Category::active()->orderBy('name')->get();
-        $branches = Branch::orderBy('name')->get();
         $statuses = AssetStatus::cases();
+        // dd($assets);
 
-        return view('livewire.assets.table', compact('assets', 'categories', 'branches', 'statuses'));
+        return view('livewire.assets.table', compact('assets', 'categories', 'statuses'));
     }
 }

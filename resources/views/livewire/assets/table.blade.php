@@ -38,18 +38,6 @@
                     @endforeach
                 </x-dropdown>
 
-                <x-dropdown>
-                    <x-slot:trigger>
-                        <x-button icon="o-map-pin" class="btn-sm">
-                            Filter Lokasi
-                        </x-button>
-                    </x-slot:trigger>
-
-                    <x-menu-item title="Semua Lokasi" wire:click="$set('branchFilter', '')" />
-                    @foreach($branches as $branch)
-                        <x-menu-item title="{{ $branch->name }}" wire:click="$set('branchFilter', '{{ $branch->id }}')" />
-                    @endforeach
-                </x-dropdown>
             </div>
         </div>
 

@@ -40,6 +40,7 @@ class BranchSwitcher extends Component
         foreach ($companies as $company) {
             $branches = Branch::where('company_id', $company->id)
                 ->where('is_active', true)
+                ->orderByRaw('CASE WHEN id = ? THEN 0 ELSE 1 END', [$company->hq_branch_id])
                 ->orderBy('name')
                 ->get(['id', 'name']);
 
@@ -125,6 +126,9 @@ class BranchSwitcher extends Component
     {
         // Simpan ke session
         session_put(SessionKey::BranchId, $value);
+
+        // Reload halaman untuk memperbarui semua data
+        $this->js('window.location.reload()');
     }
 
     public function render()
