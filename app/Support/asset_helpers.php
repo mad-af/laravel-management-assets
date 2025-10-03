@@ -103,7 +103,7 @@ if (!function_exists('validate_asset_code')) {
     function validate_asset_code($code)
     {
         // Pattern: 4 letters - 3 letters - 3 digits
-        return preg_match('/^[A-Z]{4}-[A-Z]{3}-\d{3}$/', $code);
+        return preg_match('/^[A-Z]{3}-[A-Z]{4}-\d{3}$/', $code);
     }
 }
 

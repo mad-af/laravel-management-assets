@@ -10,7 +10,7 @@ use Livewire\Component;
 
 class BranchSwitcher extends Component
 {
-    /** @var array<string, array<int, array{id:string,name:string}>> */
+    /** @var array<string, array<int, array{id:string,name:string,company_id:string}>> */
     public array $grouped = [];
 
     public ?string $selectedBranch = null;
@@ -42,13 +42,14 @@ class BranchSwitcher extends Component
                 ->where('is_active', true)
                 ->orderByRaw('CASE WHEN id = ? THEN 0 ELSE 1 END', [$company->hq_branch_id])
                 ->orderBy('name')
-                ->get(['id', 'name']);
+                ->get(['id', 'name', 'company_id']);
 
             if ($branches->isNotEmpty()) {
                 $grouped[$company->name] = $branches
                     ->map(fn ($b) => [
                         'id' => $b->id,
                         'name' => $b->name,
+                        'company_id' => $b->company_id,
                     ])
                     ->toArray();
             }
@@ -68,6 +69,12 @@ class BranchSwitcher extends Component
         if ($sessionBranch && $this->isBranchValid($sessionBranch)) {
             $this->selectedBranch = $sessionBranch;
 
+            // Pastikan company_id juga tersimpan di session
+            $companyId = $this->getCompanyIdByBranchId($sessionBranch);
+            if ($companyId && ! session_get(SessionKey::CompanyId)) {
+                session_put(SessionKey::CompanyId, $companyId);
+            }
+
             return;
         }
 
@@ -76,6 +83,12 @@ class BranchSwitcher extends Component
         if ($defaultBranch) {
             $this->selectedBranch = $defaultBranch;
             session_put(SessionKey::BranchId, $defaultBranch);
+
+            // Simpan company_id untuk default branch
+            $companyId = $this->getCompanyIdByBranchId($defaultBranch);
+            if ($companyId) {
+                session_put(SessionKey::CompanyId, $companyId);
+            }
         }
     }
 
@@ -124,11 +137,33 @@ class BranchSwitcher extends Component
      */
     public function updatedSelectedBranch($value): void
     {
+        // Cari company_id dari branch yang dipilih
+        $companyId = $this->getCompanyIdByBranchId($value);
+
         // Simpan ke session
         session_put(SessionKey::BranchId, $value);
+        if ($companyId) {
+            session_put(SessionKey::CompanyId, $companyId);
+        }
 
         // Reload halaman untuk memperbarui semua data
         $this->js('window.location.reload()');
+    }
+
+    /**
+     * Ambil company_id berdasarkan branch_id yang dipilih
+     */
+    protected function getCompanyIdByBranchId(string $branchId): ?string
+    {
+        foreach ($this->grouped as $branches) {
+            foreach ($branches as $branch) {
+                if ($branch['id'] == $branchId) {
+                    return $branch['company_id'];
+                }
+            }
+        }
+
+        return null;
     }
 
     public function render()

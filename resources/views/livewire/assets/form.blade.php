@@ -2,7 +2,7 @@
     <!-- Category -->
     <div>
         <x-select label="Kategori" wire:model.live="category_id" :options="$categories" option-value="id"
-            class="select-sm" option-label="name" placeholder="Pilih kategori" required />
+            class="select-sm" option-label="name" placeholder="Pilih kategori" required :disabled="$isEdit" />
     </div>
 
     <!-- Asset Code -->
@@ -37,13 +37,19 @@
     <!-- Status -->
     <div>
         <x-select label="Status" wire:model="status" :options="$statuses" option-value="value" option-label="label"
-            placeholder="Pilih status" required class="select-sm" />
+            placeholder="Pilih status" required class="select-sm" :disabled="$isEdit" />
     </div>
 
     <!-- Condition -->
     <div>
         <x-select label="Kondisi" wire:model="condition" :options="$conditions" option-value="value"
             option-label="label" placeholder="Pilih kondisi" required class="select-sm" />
+    </div>
+
+    <!-- Value -->
+    <div>
+        <x-input label="Nilai Asset (Rp)" prefix="Rp" wire:model="value" placeholder="Masukkan nilai asset"
+            type="number" step="0.01" min="0" class="input-sm" required/>
     </div>
 
     <!-- Brand -->
@@ -54,12 +60,6 @@
     <!-- Model -->
     <div>
         <x-input label="Model/Tipe" wire:model="model" placeholder="Masukkan model/tipe asset" class="input-sm" />
-    </div>
-
-    <!-- Value -->
-    <div>
-        <x-input label="Nilai Asset (Rp)" prefix="Rp" wire:model="value" placeholder="Masukkan nilai asset"
-            type="number" step="0.01" min="0" class="input-sm" />
     </div>
 
     <!-- Purchase Date -->

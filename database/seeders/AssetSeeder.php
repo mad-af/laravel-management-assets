@@ -36,16 +36,19 @@ class AssetSeeder extends Seeder
         $furnitureCategory = $categories->where('name', 'Furniture')->first();
         $electronicCategory = $categories->where('name', 'Elektronik')->first();
 
+        // Get branch IDs
+        $jakartaBranchId = $branches->where('name', 'Kantor Pusat Jakarta')->first()->id;
+        $bandungBranchId = $branches->where('name', 'Kantor Pusat Bandung')->first()->id;
+        $surabayaBranchId = $branches->where('name', 'Kantor Pusat Surabaya')->first()->id;
+
         $assets = [
             // TMI Assets
             [
                 'id' => Str::uuid(),
                 'company_id' => $tmiCompany->id,
-                'code' => 'TMI-LT-001',
-                'tag_code' => 'LT001',
                 'name' => 'Laptop Dell Latitude 5520',
                 'category_id' => $computerCategory->id,
-                'branch_id' => $branches->where('name', 'Kantor Pusat Jakarta')->first()->id,
+                'branch_id' => $jakartaBranchId,
                 'brand' => 'Dell',
                 'model' => 'Latitude 5520',
                 'status' => AssetStatus::ACTIVE,
@@ -57,11 +60,9 @@ class AssetSeeder extends Seeder
             [
                 'id' => Str::uuid(),
                 'company_id' => $tmiCompany->id,
-                'code' => 'TMI-PC-001',
-                'tag_code' => 'PC001',
                 'name' => 'Desktop HP EliteDesk 800',
                 'category_id' => $computerCategory->id,
-                'branch_id' => $branches->where('name', 'Kantor Pusat Jakarta')->first()->id,
+                'branch_id' => $jakartaBranchId,
                 'brand' => 'HP',
                 'model' => 'EliteDesk 800 G6',
                 'status' => AssetStatus::ACTIVE,
@@ -73,11 +74,9 @@ class AssetSeeder extends Seeder
             [
                 'id' => Str::uuid(),
                 'company_id' => $tmiCompany->id,
-                'code' => 'TMI-PR-001',
-                'tag_code' => 'PR001',
                 'name' => 'Printer Canon ImageClass MF445dw',
                 'category_id' => $officeCategory->id,
-                'branch_id' => $branches->where('name', 'Kantor Pusat Jakarta')->first()->id,
+                'branch_id' => $jakartaBranchId,
                 'brand' => 'Canon',
                 'model' => 'ImageClass MF445dw',
                 'status' => AssetStatus::ACTIVE,
@@ -89,11 +88,9 @@ class AssetSeeder extends Seeder
             [
                 'id' => Str::uuid(),
                 'company_id' => $tmiCompany->id,
-                'code' => 'TMI-CAR-001',
-                'tag_code' => 'CAR001',
                 'name' => 'Toyota Avanza 1.3 G MT',
                 'category_id' => $vehicleCategory->id,
-                'branch_id' => $branches->where('name', 'Kantor Pusat Jakarta')->first()->id,
+                'branch_id' => $jakartaBranchId,
                 'brand' => 'Toyota',
                 'model' => 'Avanza 1.3 G MT',
                 'status' => AssetStatus::ACTIVE,
@@ -107,11 +104,9 @@ class AssetSeeder extends Seeder
             [
                 'id' => Str::uuid(),
                 'company_id' => $sdnCompany->id,
-                'code' => 'SDN-LT-001',
-                'tag_code' => 'SDN-LT001',
                 'name' => 'Laptop Lenovo ThinkPad E14',
                 'category_id' => $computerCategory->id,
-                'branch_id' => $branches->where('name', 'Kantor Pusat Bandung')->first()->id,
+                'branch_id' => $bandungBranchId,
                 'brand' => 'Lenovo',
                 'model' => 'ThinkPad E14 Gen 3',
                 'status' => AssetStatus::ACTIVE,
@@ -123,11 +118,9 @@ class AssetSeeder extends Seeder
             [
                 'id' => Str::uuid(),
                 'company_id' => $sdnCompany->id,
-                'code' => 'SDN-MJ-001',
-                'tag_code' => 'SDN-MJ001',
                 'name' => 'Meja Kerja Kayu Jati',
                 'category_id' => $furnitureCategory->id,
-                'branch_id' => $branches->where('name', 'Kantor Pusat Bandung')->first()->id,
+                'branch_id' => $bandungBranchId,
                 'brand' => 'Custom',
                 'model' => 'Meja Eksekutif',
                 'status' => AssetStatus::ACTIVE,
@@ -141,11 +134,9 @@ class AssetSeeder extends Seeder
             [
                 'id' => Str::uuid(),
                 'company_id' => $ibtCompany->id,
-                'code' => 'IBT-AC-001',
-                'tag_code' => 'IBT-AC001',
                 'name' => 'AC Split Daikin 1.5 PK',
                 'category_id' => $electronicCategory->id,
-                'branch_id' => $branches->where('name', 'Kantor Pusat Surabaya')->first()->id,
+                'branch_id' => $surabayaBranchId,
                 'brand' => 'Daikin',
                 'model' => 'FTV35AXV14',
                 'status' => AssetStatus::ACTIVE,
@@ -157,11 +148,9 @@ class AssetSeeder extends Seeder
             [
                 'id' => Str::uuid(),
                 'company_id' => $ibtCompany->id,
-                'code' => 'IBT-LT-001',
-                'tag_code' => 'IBT-LT001',
                 'name' => 'Laptop ASUS VivoBook 14',
                 'category_id' => $computerCategory->id,
-                'branch_id' => $branches->where('name', 'Kantor Pusat Surabaya')->first()->id,
+                'branch_id' => $surabayaBranchId,
                 'brand' => 'ASUS',
                 'model' => 'VivoBook 14 A416',
                 'status' => AssetStatus::ON_LOAN,
@@ -173,6 +162,10 @@ class AssetSeeder extends Seeder
         ];
 
         foreach ($assets as $asset) {
+            // Generate unique codes for each asset
+            $asset['code'] = generate_asset_code($asset['category_id'], $asset['branch_id']);
+            $asset['tag_code'] = generate_asset_tag_code();
+
             Asset::create($asset);
         }
     }

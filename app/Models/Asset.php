@@ -23,6 +23,7 @@ class Asset extends Model
         'tag_code',
         'name',
         'category_id',
+        'company_id',
         'branch_id',
         'brand',
         'model',

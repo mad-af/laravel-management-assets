@@ -32,6 +32,8 @@ class Form extends Component
 
     public $category_id = '';
 
+    public $company_id = '';
+
     public $branch_id = '';
 
     public $brand = '';
@@ -83,6 +85,7 @@ class Form extends Component
         $this->condition = AssetCondition::GOOD->value;
 
         // Get branch_id from session using helper
+        $this->company_id = session_get(\App\Support\SessionKey::CompanyId);
         $this->branch_id = session_get(\App\Support\SessionKey::BranchId);
 
         if ($assetId) {
@@ -249,12 +252,23 @@ class Form extends Component
 
         try {
             $imageUploadService = new ImageUploadService;
-            $finalImagePath = $this->image;
+            $finalImagePath = $this->image; // Keep existing image by default
 
             // Handle image upload from temporary to permanent storage
             if ($this->tempImagePath) {
+                // Move from temporary to permanent storage
                 $finalImagePath = $imageUploadService->moveFromTemporary($this->tempImagePath, 'assets');
                 $this->tempImagePath = null; // Clear temp path after moving
+
+                // Delete old image if exists and is different from new one
+                if ($this->image && $this->image !== $finalImagePath) {
+                    $imageUploadService->delete($this->image);
+                }
+            }
+            // If tempImagePath is null but we had an image before, it might have been removed
+            elseif ($this->tempImagePath === null && ! $this->imageFile && $this->isEdit) {
+                // Check if image was intentionally removed (this would be handled by handleImageRemoved)
+                // Keep the existing image path unless explicitly removed
             }
 
             $data = [
@@ -262,6 +276,7 @@ class Form extends Component
                 'tag_code' => $this->tag_code ?: null,
                 'name' => $this->name,
                 'category_id' => $this->category_id,
+                'company_id' => $this->company_id,
                 'branch_id' => $this->branch_id,
                 'brand' => $this->brand ?: null,
                 'model' => $this->model ?: null,
@@ -322,11 +337,27 @@ class Form extends Component
     public function handleImageUploaded($tempPath)
     {
         $this->tempImagePath = $tempPath;
+        // Clear any existing imageFile since we're using the component's upload
+        $this->imageFile = null;
     }
 
     public function handleImageRemoved()
     {
-        $this->tempImagePath = null;
+        // Clean up temporary image if exists
+        if ($this->tempImagePath) {
+            $imageUploadService = new ImageUploadService;
+            $imageUploadService->delete($this->tempImagePath);
+            $this->tempImagePath = null;
+        }
+
+        $this->imageFile = null;
+
+        // Mark that image should be removed by clearing the current image path
+        // This will be handled in save() method
+        if ($this->isEdit) {
+            // For edit mode, we'll clear the image on save
+            $this->image = '';
+        }
     }
 
     public function render()

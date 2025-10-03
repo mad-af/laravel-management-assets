@@ -56,14 +56,13 @@ class ImageUpload extends Component
                 $this->tempImagePath = $tempPath;
                 $this->success('Gambar berhasil diupload');
                 
-                // Emit event to parent component
-                $this->dispatch('imageUploaded', $tempPath);
+                // Emit event to parent component with temp path
+                $this->dispatch('imageUploaded', tempPath: $tempPath);
             } else {
                 $this->error('Gagal mengupload gambar');
             }
 
         } catch (\Exception $e) {
-            // dd($e);
             $this->error('Gagal mengupload gambar: ' . $e->getMessage());
             $this->tempImagePath = null;
         }
