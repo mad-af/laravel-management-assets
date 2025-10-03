@@ -13,7 +13,7 @@ class VehicleOdometerLog extends Model
     
     protected $fillable = [
         'asset_id',
-        'reading_km',
+        'odometer_km',
         'read_at',
         'source',
         'notes',
@@ -21,7 +21,7 @@ class VehicleOdometerLog extends Model
     
     protected $casts = [
         'asset_id' => 'string',
-        'reading_km' => 'integer',
+        'odometer_km' => 'integer',
         'read_at' => 'datetime',
         'source' => VehicleOdometerSource::class,
     ];

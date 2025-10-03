@@ -297,10 +297,22 @@ class Form extends Component
                 $this->success('Asset updated successfully!');
                 $this->resetForm();
             } else {
-                Asset::create($data);
+                $asset = Asset::create($data);
                 $this->success('Asset created successfully!');
+
+                // Check if the created asset is a vehicle (Kendaraan category)
+                $vehicleCategory = Category::where('name', 'Kendaraan')->first();
+                if ($vehicleCategory && $asset->category_id === $vehicleCategory->id) {
+                    // Show alert for vehicle profile completion
+                    $this->dispatch('show-vehicle-profile-alert', [
+                        'assetId' => $asset->id,
+                        'assetName' => $asset->name,
+                        'profileUrl' => '/admin/vehicles?action=save-profile&asset_id='.$asset->id,
+                    ]);
+                }
+
                 $this->resetForm();
-            } 
+            }
             $this->dispatch('asset-saved');
         } catch (\Exception $e) {
             $this->error('An error occurred: '.$e->getMessage());

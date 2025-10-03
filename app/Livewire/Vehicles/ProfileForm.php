@@ -28,10 +28,6 @@ class ProfileForm extends Component
 
     public $last_service_date = '';
 
-    public $service_interval_km = '';
-
-    public $service_interval_days = '';
-
     public $service_target_odometer_km = '';
 
     public $next_service_date = '';
@@ -42,10 +38,6 @@ class ProfileForm extends Component
 
     public $vin = '';
 
-    public $brand = '';
-
-    public $model = '';
-
     public $isEdit = false;
 
     protected function rules()
@@ -54,19 +46,15 @@ class ProfileForm extends Component
 
         return [
             'asset_id' => 'required|exists:assets,id',
-            'year_purchase' => 'nullable|integer|min:1900|max:'.($currentYear + 1),
+            'year_purchase' => 'nullable|integer|min:1900|max:'.$currentYear,
             'year_manufacture' => 'nullable|integer|min:1900|max:'.($currentYear + 1),
             'current_odometer_km' => 'nullable|integer|min:0',
             'last_service_date' => 'nullable|date',
-            'service_interval_km' => 'nullable|integer|min:1',
-            'service_interval_days' => 'nullable|integer|min:1',
-            'service_target_odometer_km' => 'required|integer|min:0',
+            'service_target_odometer_km' => 'nullable|integer|min:0',
             'next_service_date' => 'nullable|date',
             'annual_tax_due_date' => 'nullable|date',
-            'plate_no' => 'required|string|max:20',
+            'plate_no' => 'nullable|string|max:20',
             'vin' => 'nullable|string|max:50',
-            'brand' => 'required|string|max:100',
-            'model' => 'required|string|max:100',
         ];
     }
 
@@ -125,15 +113,11 @@ class ProfileForm extends Component
             $this->year_manufacture = $vehicle->year_manufacture;
             $this->current_odometer_km = $vehicle->current_odometer_km;
             $this->last_service_date = optional($vehicle->last_service_date)->format('Y-m-d');
-            $this->service_interval_km = $vehicle->service_interval_km;
-            $this->service_interval_days = $vehicle->service_interval_days;
             $this->service_target_odometer_km = $vehicle->service_target_odometer_km;
             $this->next_service_date = optional($vehicle->next_service_date)->format('Y-m-d');
             $this->annual_tax_due_date = optional($vehicle->annual_tax_due_date)->format('Y-m-d');
             $this->plate_no = $vehicle->plate_no;
             $this->vin = $vehicle->vin;
-            $this->brand = $vehicle->brand;
-            $this->model = $vehicle->model;
         } else {
             $this->vehicleId = null;
             $this->resetForm();
@@ -146,15 +130,11 @@ class ProfileForm extends Component
         $this->year_manufacture = '';
         $this->current_odometer_km = '';
         $this->last_service_date = '';
-        $this->service_interval_km = '';
-        $this->service_interval_days = '';
         $this->service_target_odometer_km = '';
         $this->next_service_date = '';
         $this->annual_tax_due_date = '';
         $this->plate_no = '';
         $this->vin = '';
-        $this->brand = '';
-        $this->model = '';
         $this->resetValidation();
     }
 
@@ -169,15 +149,11 @@ class ProfileForm extends Component
                 'year_manufacture' => $this->year_manufacture ?: null,
                 'current_odometer_km' => $this->current_odometer_km ?: null,
                 'last_service_date' => $this->last_service_date ?: null,
-                'service_interval_km' => $this->service_interval_km ?: null,
-                'service_interval_days' => $this->service_interval_days ?: null,
                 'service_target_odometer_km' => $this->service_target_odometer_km ?: null,
                 'next_service_date' => $this->next_service_date ?: null,
                 'annual_tax_due_date' => $this->annual_tax_due_date ?: null,
                 'plate_no' => $this->plate_no,
                 'vin' => $this->vin,
-                'brand' => $this->brand,
-                'model' => $this->model,
             ];
 
             if ($this->isEdit) {

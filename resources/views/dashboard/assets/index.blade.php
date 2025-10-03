@@ -4,7 +4,7 @@
 
 @section('content')
     <livewire:dashboard-content-header title='Assets Management' description='Kelola data aset dalam sistem.'
-        buttonText='Add Asset' buttonIcon='o-plus' buttonAction='openAssetDrawer' />
+        buttonText='Tambah Asset' buttonIcon='o-plus' buttonAction='openAssetDrawer' />
 
     <livewire:assets.table />
 

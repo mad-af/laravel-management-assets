@@ -2,33 +2,38 @@
 
 namespace App\Livewire\Vehicles;
 
-use App\Models\VehicleOdometerLog;
-use App\Models\Asset;
 use App\Enums\VehicleOdometerSource;
+use App\Models\Asset;
 use App\Models\Category;
+use App\Models\VehicleOdometerLog;
 use App\Support\SessionKey;
 use App\Traits\WithAlert;
 use Livewire\Component;
 use Mary\Traits\Toast;
-use Illuminate\Support\Facades\Auth;
 
 class OdometerForm extends Component
 {
     use Toast, WithAlert;
 
     public $odometerLogId;
+
     public $asset_id = '';
-    public $reading_km = '';
+
+    public $odometer_km = '';
+
     public $read_at = '';
+
     public $source = VehicleOdometerSource::MANUAL;
+
     public $notes = '';
+
     public $isEdit = false;
 
     protected function rules()
     {
         return [
             'asset_id' => 'required|exists:assets,id',
-            'reading_km' => 'required|integer|min:0',
+            'odometer_km' => 'required|integer|min:0',
             'read_at' => 'required|date',
             'source' => 'required|in:manual,telematics,service',
             'notes' => 'nullable|string|max:500',
@@ -37,7 +42,7 @@ class OdometerForm extends Component
 
     protected $listeners = [
         'editOdometerLog' => 'edit',
-        'resetOdometerForm' => 'resetForm'
+        'resetOdometerForm' => 'resetForm',
     ];
 
     public function updatedAssetId($value)
@@ -48,6 +53,7 @@ class OdometerForm extends Component
         // treat empty/blank as reset
         if (\Illuminate\Support\Str::of((string) $value)->trim()->isEmpty()) {
             $this->resetForm();
+
             return;
         }
 
@@ -63,7 +69,7 @@ class OdometerForm extends Component
 
     public function resetForm()
     {
-        $this->reading_km = '';
+        $this->odometer_km = '';
         $this->read_at = now()->format('Y-m-d H:i');
         $this->source = '';
         $this->notes = '';
@@ -77,7 +83,7 @@ class OdometerForm extends Component
         try {
             $data = [
                 'asset_id' => $this->asset_id,
-                'reading_km' => $this->reading_km,
+                'odometer_km' => $this->odometer_km,
                 'read_at' => $this->read_at,
                 'source' => VehicleOdometerSource::from($this->source),
                 'notes' => $this->notes ?: null,
@@ -96,7 +102,7 @@ class OdometerForm extends Component
 
             $this->resetForm();
         } catch (\Exception $e) {
-            $this->showErrorAlert('Gagal menyimpan log odometer: ' . $e->getMessage(), 'Error');
+            $this->showErrorAlert('Gagal menyimpan log odometer: '.$e->getMessage(), 'Error');
         }
     }
 
@@ -114,14 +120,15 @@ class OdometerForm extends Component
             ->orderByDesc('created_at')
             ->get()
             ->map(function ($asset) {
-                $asset->display_name = $asset->name . ' (' . $asset->code . ')';
+                $asset->display_name = $asset->name.' ('.$asset->code.')';
+
                 return $asset;
             });
-        
+
         $sources = collect(VehicleOdometerSource::options())->map(function ($label, $value) {
             return ['value' => $value, 'label' => $label];
         })->values()->toArray();
-        
+
         return view('livewire.vehicles.odometer-form', compact('assets', 'sources'))
             ->with('odometerLogId', $this->odometerLogId)
             ->with('isEdit', $this->isEdit);

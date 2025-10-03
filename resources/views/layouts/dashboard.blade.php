@@ -43,6 +43,9 @@
     {{-- Alert Component --}}
     <livewire:alert />
 
+    {{-- Vehicle Profile Alert Component --}}
+    <livewire:vehicle-profile-alert />
+
     {{-- Session Flash Messages Handler --}}
     @if(session('success') || session('error'))
         <script>

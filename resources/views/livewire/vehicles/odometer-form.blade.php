@@ -6,7 +6,7 @@
         option-value="id" option-label="display_name" placeholder="Select vehicle" required />
 
     <!-- Odometer Reading -->
-    <x-input name="reading_km" label="Odometer Reading (km)" class="input-sm" wire:model="reading_km" type="number"
+    <x-input name="odometer_km" label="Odometer Reading (km)" class="input-sm" wire:model="odometer_km" type="number"
         min="0" placeholder="Enter odometer reading" required />
 
     <!-- Read Date/Time -->

@@ -193,7 +193,7 @@ table(vehicle_profiles) {
 table(vehicle_odometer_logs) {
   pk(id) : UUID
   fk(asset_id) : UUID
-  reading_km : INT
+  odometer_km : INT
   read_at : TIMESTAMP
   source : ENUM(manual, service) [DEFAULT: manual]
   notes : TEXT [NULL]
