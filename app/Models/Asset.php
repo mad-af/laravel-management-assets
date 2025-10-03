@@ -139,14 +139,6 @@ class Asset extends Model
     {
         parent::boot();
 
-        static::creating(function ($asset) {
-            if (empty($asset->tag_code)) {
-                $ulid = (string) Str::ulid(); // 26 char
-                $short = substr($ulid, 0, 6).substr($ulid, -6); // 12 char
-                $asset->tag_code = $short;
-            }
-        });
-
         static::created(function ($asset) {
             if (Auth::check()) {
                 $asset->logs()->create([

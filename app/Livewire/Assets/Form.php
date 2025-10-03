@@ -92,7 +92,7 @@ class Form extends Component
             $this->isEdit = true;
             $this->loadAsset();
         } else {
-            // $this->generateCode();
+            $this->generateCode();
         }
     }
 
@@ -181,10 +181,13 @@ class Form extends Component
 
     public function generateCode()
     {
-        if (! $this->isEdit) {
+        if (!$this->isEdit) {
             try {
                 // Generate asset code using helper function
-                $this->code = generate_asset_code($this->category_id, $this->branch_id);
+                $this->tag_code = generate_asset_tag_code();
+                if ($this->category_id) {
+                    $this->code = generate_asset_code($this->category_id, $this->branch_id);
+                }
             } catch (\Exception $e) {
 
             }
@@ -292,13 +295,13 @@ class Form extends Component
                 $asset = Asset::find($this->assetId);
                 $asset->update($data);
                 $this->success('Asset updated successfully!');
-                $this->dispatch('asset-updated');
+                $this->resetForm();
             } else {
                 Asset::create($data);
                 $this->success('Asset created successfully!');
-                $this->dispatch('asset-saved');
                 $this->resetForm();
-            }
+            } 
+            $this->dispatch('asset-saved');
         } catch (\Exception $e) {
             $this->error('An error occurred: '.$e->getMessage());
         }
