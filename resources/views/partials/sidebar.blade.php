@@ -52,7 +52,6 @@
             'route' => 'vehicles.index',
             'icon' => 'o-truck',
             'label' => 'Kendaraan',
-            'disabled' => true
         ],
     ];
 

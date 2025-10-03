@@ -4,6 +4,7 @@ namespace App\Livewire\Vehicles;
 
 use App\Models\Asset;
 use App\Models\Category;
+use App\Support\SessionKey;
 use App\Traits\WithAlert;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -65,10 +66,15 @@ class Table extends Component
 
     public function render()
     {
+        $currentBranchId = session_get(SessionKey::BranchId);
+        
         $vehicleCategory = Category::where('name', 'Kendaraan')->first();
         
         $vehicles = Asset::query()
-            ->with(['category', 'location', 'vehicleProfile'])
+            ->with(['category', 'branch', 'vehicleProfile'])
+            ->when($currentBranchId, function ($query) use ($currentBranchId) {
+                $query->where('branch_id', $currentBranchId);
+            })
             ->where('category_id', $vehicleCategory?->id)
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {

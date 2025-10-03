@@ -53,7 +53,7 @@
                                 </div>
                                 <div>
                                     <label class="text-sm font-medium text-base-content/70">Lokasi</label>
-                                    <p class="text-base-content">{{ $log->asset->location->name ?? 'N/A' }}</p>
+                                    <p class="text-base-content">{{ $log->asset->branch->name ?? 'N/A' }}</p>
                                 </div>
                                 <div>
                                     <label class="text-sm font-medium text-base-content/70">Status</label>

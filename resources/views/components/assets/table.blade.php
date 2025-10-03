@@ -33,7 +33,7 @@
                     </td>
                     <td class="min-w-0">
                         <span
-                            class="text-xs whitespace-nowrap badge badge-outline">{{ $asset->location->name ?? 'N/A' }}</span>
+                            class="text-xs whitespace-nowrap badge badge-outline">{{ $asset->branch->name ?? 'N/A' }}</span>
                     </td>
                     <td class="min-w-0">
                         <span

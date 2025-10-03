@@ -6,6 +6,7 @@ use App\Models\VehicleOdometerLog;
 use App\Models\Asset;
 use App\Enums\VehicleOdometerSource;
 use App\Models\Category;
+use App\Support\SessionKey;
 use App\Traits\WithAlert;
 use Livewire\Component;
 use Mary\Traits\Toast;
@@ -101,9 +102,14 @@ class OdometerForm extends Component
 
     public function render()
     {
+        $currentBranchId = session_get(SessionKey::BranchId);
         $vehicleCategory = Category::where('name', 'Kendaraan')->first();
 
         $assets = Asset::query()
+            ->with(['branch'])
+            ->when($currentBranchId, function ($query) use ($currentBranchId) {
+                $query->where('branch_id', $currentBranchId);
+            })
             ->where('category_id', $vehicleCategory?->id)
             ->orderByDesc('created_at')
             ->get()

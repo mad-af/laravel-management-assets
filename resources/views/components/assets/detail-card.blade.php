@@ -28,7 +28,7 @@
             <div>
                 <label class="text-sm font-semibold text-base-content/70">Location</label>
                 <p class="mt-1">
-                    <span class="badge badge-outline badge-sm">{{ $asset->location->name }}</span>
+                    <span class="badge badge-outline badge-sm">{{ $asset->branch->name }}</span>
                 </p>
             </div>
 

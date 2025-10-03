@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\AssetTransferStatus;
-use App\Enums\AssetTransferPriority;
 use App\Enums\AssetLocationChangeType;
-use App\Models\AssetTransfer;
+use App\Enums\AssetTransferPriority;
+use App\Enums\AssetTransferStatus;
 use App\Models\Asset;
+use App\Models\AssetTransfer;
 use App\Models\Location;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,7 +21,7 @@ class AssetTransferController extends Controller
      */
     private function generateTransferNo()
     {
-        return 'TRF-' . date('Ymd') . '-' . strtoupper(Str::random(4));
+        return 'TRF-'.date('Ymd').'-'.strtoupper(Str::random(4));
     }
 
     /**
@@ -42,12 +42,12 @@ class AssetTransferController extends Controller
      */
     public function create()
     {
-        dd("Hello");
+        dd('Hello');
         $assets = Asset::where('company_id', Auth::user()->company_id)
             ->where('status', 'active')
             ->with('location')
             ->get();
-        
+
         $locations = Location::where('is_active', true)->get();
 
         return view('dashboard.asset-transfers.create', compact('assets', 'locations'));
@@ -58,7 +58,7 @@ class AssetTransferController extends Controller
      */
     public function store(Request $request)
     {
-        
+
         $request->validate([
             'reason' => 'required|string|max:500',
             'from_location_id' => 'required|exists:locations,id',
@@ -76,16 +76,16 @@ class AssetTransferController extends Controller
         try {
             DB::transaction(function () use ($request) {
                 $user = Auth::user();
-                
+
                 // Ensure user has company_id
-                if (!$user->company_id) {
+                if (! $user->company_id) {
                     Log::error('User attempting to create asset transfer without company_id', [
                         'user_id' => $user->id,
-                        'user_email' => $user->email
+                        'user_email' => $user->email,
                     ]);
                     throw new \Exception('User account is not properly configured. Please contact administrator.');
                 }
-                
+
                 $transfer = AssetTransfer::create([
                     'company_id' => $user->company_id,
                     'transfer_no' => $this->generateTransferNo(),
@@ -112,18 +112,18 @@ class AssetTransferController extends Controller
             // Success: redirect back without query params and show success message
             return redirect('/admin/asset-transfers')
                 ->with('success', 'Transfer aset berhasil dibuat.');
-                
+
         } catch (\Exception $e) {
             Log::error('Asset transfer creation failed', [
                 'error' => $e->getMessage(),
                 'user_id' => Auth::id(),
-                'request_data' => $request->all()
+                'request_data' => $request->all(),
             ]);
-            
+
             // Error: redirect back with query params and show error message
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Gagal membuat transfer aset: ' . $e->getMessage());
+                ->with('error', 'Gagal membuat transfer aset: '.$e->getMessage());
         }
     }
 
@@ -133,7 +133,7 @@ class AssetTransferController extends Controller
     public function show(AssetTransfer $assetTransfer)
     {
         $assetTransfer->load(['company', 'requestedBy', 'approvedBy', 'fromLocation', 'toLocation', 'items.asset.location', 'items.fromLocation', 'items.toLocation']);
-        
+
         // Prepare data for detail-info component
         $transferData = [
             'transfer_no' => $assetTransfer->transfer_no,
@@ -150,7 +150,7 @@ class AssetTransferController extends Controller
             'reason' => $assetTransfer->reason,
             'notes' => $assetTransfer->notes,
         ];
-        
+
         // Prepare data for items-table component
         $itemsData = $assetTransfer->items->map(function ($item) {
             return [
@@ -160,19 +160,19 @@ class AssetTransferController extends Controller
                 'asset_model' => $item->asset->model ?? '',
                 'from_location' => $item->fromLocation->name ?? 'N/A',
                 'to_location' => $item->toLocation->name ?? 'N/A',
-                'current_location' => $item->asset->location->name ?? 'Unknown',
+                'current_location' => $item->asset->branch->name ?? 'Unknown',
                 'status' => $item->status?->value ?? 'pending',
                 'quantity' => $item->quantity,
                 'notes' => $item->notes,
             ];
         })->toArray();
-        
+
         // Prepare data for quick-actions component
         $quickActionsData = [
             'status' => $assetTransfer->status->value,
             'id' => $assetTransfer->id,
         ];
-        
+
         // Prepare data for timeline component
         $timelineData = [
             'created_at' => $assetTransfer->created_at,
@@ -182,7 +182,7 @@ class AssetTransferController extends Controller
             'approved_by' => $assetTransfer->approvedBy->name ?? null,
             'executed_at' => $assetTransfer->executed_at,
         ];
-        
+
         return view('dashboard.asset-transfers.show', compact('assetTransfer', 'transferData', 'itemsData', 'quickActionsData', 'timelineData'));
     }
 
@@ -200,7 +200,7 @@ class AssetTransferController extends Controller
             ->where('status', 'active')
             ->with('location')
             ->get();
-        
+
         $locations = Location::where('is_active', true)->get();
         $assetTransfer->load(['items', 'fromLocation', 'toLocation']);
 
@@ -255,19 +255,19 @@ class AssetTransferController extends Controller
             // Success: redirect back without query params and show success message
             return redirect('/admin/asset-transfers')
                 ->with('success', 'Transfer aset berhasil diupdate.');
-                
+
         } catch (\Exception $e) {
             Log::error('Asset transfer update failed', [
                 'error' => $e->getMessage(),
                 'user_id' => Auth::id(),
                 'transfer_id' => $assetTransfer->id,
-                'request_data' => $request->all()
+                'request_data' => $request->all(),
             ]);
-            
+
             // Error: redirect back with query params and show error message
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Gagal mengupdate transfer aset: ' . $e->getMessage());
+                ->with('error', 'Gagal mengupdate transfer aset: '.$e->getMessage());
         }
     }
 
@@ -301,23 +301,23 @@ class AssetTransferController extends Controller
             foreach ($assetTransfer->items as $item) {
                 // Update asset location
                 $item->asset->update([
-                    'location_id' => $item->to_location_id
+                    'location_id' => $item->to_location_id,
                 ]);
-                
+
                 // Update item status
                 $item->update([
                     'transferred_at' => now(),
                 ]);
 
-                // Create location history
-                $item->asset->locationHistories()->create([
-                    'from_location_id' => $item->from_location_id,
-                    'to_location_id' => $item->to_location_id,
+                // Create branch history
+                $item->asset->branchHistories()->create([
+                    'from_branch_id' => $item->from_location_id,
+                    'to_branch_id' => $item->to_location_id,
                     'changed_at' => now(),
                     'changed_by' => Auth::id(),
                     'transfer_id' => $assetTransfer->id,
                     'change_type' => AssetLocationChangeType::TRANSFER,
-                    'remark' => 'Transfer: ' . $assetTransfer->transfer_no,
+                    'remark' => 'Transfer: '.$assetTransfer->transfer_no,
                 ]);
             }
 

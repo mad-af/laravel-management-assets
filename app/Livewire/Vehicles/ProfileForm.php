@@ -2,43 +2,60 @@
 
 namespace App\Livewire\Vehicles;
 
-use App\Models\VehicleProfile;
 use App\Models\Asset;
 use App\Models\Category;
+use App\Models\VehicleProfile;
+use App\Support\SessionKey;
 use App\Traits\WithAlert;
 use Livewire\Component;
 use Mary\Traits\Toast;
-use Illuminate\Support\Facades\Auth;
 
 class ProfileForm extends Component
 {
     use Toast, WithAlert;
 
     public $assetId;
+
     public $vehicleId;
+
     public $asset_id = '';
+
     public $year_purchase = '';
+
     public $year_manufacture = '';
+
     public $current_odometer_km = '';
+
     public $last_service_date = '';
+
     public $service_interval_km = '';
+
     public $service_interval_days = '';
+
     public $service_target_odometer_km = '';
+
     public $next_service_date = '';
+
     public $annual_tax_due_date = '';
+
     public $plate_no = '';
+
     public $vin = '';
+
     public $brand = '';
+
     public $model = '';
+
     public $isEdit = false;
 
     protected function rules()
     {
         $currentYear = date('Y');
+
         return [
             'asset_id' => 'required|exists:assets,id',
-            'year_purchase' => 'nullable|integer|min:1900|max:' . ($currentYear + 1),
-            'year_manufacture' => 'nullable|integer|min:1900|max:' . ($currentYear + 1),
+            'year_purchase' => 'nullable|integer|min:1900|max:'.($currentYear + 1),
+            'year_manufacture' => 'nullable|integer|min:1900|max:'.($currentYear + 1),
             'current_odometer_km' => 'nullable|integer|min:0',
             'last_service_date' => 'nullable|date',
             'service_interval_km' => 'nullable|integer|min:1',
@@ -55,7 +72,7 @@ class ProfileForm extends Component
 
     protected $listeners = [
         'editVehicle' => 'edit',
-        'resetForm' => 'resetForm'
+        'resetForm' => 'resetForm',
     ];
 
     public function updatedAssetId($value)
@@ -70,6 +87,7 @@ class ProfileForm extends Component
         // treat empty/blank as reset
         if (\Illuminate\Support\Str::of((string) $value)->trim()->isEmpty()) {
             $this->resetForm();
+
             return;
         }
 
@@ -79,7 +97,7 @@ class ProfileForm extends Component
     public function mount($assetId = null)
     {
         $this->asset_id = $assetId;
-        
+
         if ($assetId) {
             $this->loadVehicle();
         }
@@ -97,7 +115,6 @@ class ProfileForm extends Component
         }
 
         $vehicle = Asset::with('vehicleProfile')->find($this->assetId)?->vehicleProfile;
-
 
         if ($vehicle) {
             $this->isEdit = true;
@@ -176,21 +193,27 @@ class ProfileForm extends Component
 
             $this->resetForm();
         } catch (\Exception $e) {
-            $this->showErrorAlert('Gagal menyimpan profil kendaraan: ' . $e->getMessage(), 'Error');
+            $this->showErrorAlert('Gagal menyimpan profil kendaraan: '.$e->getMessage(), 'Error');
         }
     }
 
     public function render()
     {
         // asumsi $vehicleCategory sudah diambil seperti di bawah
+        $currentBranchId = session_get(SessionKey::BranchId);
         $vehicleCategory = Category::where('name', 'Kendaraan')->first();
 
         $assets = Asset::query()
+            ->with(['branch'])
+            ->when($currentBranchId, function ($query) use ($currentBranchId) {
+                $query->where('branch_id', $currentBranchId);
+            })
             ->where('category_id', $vehicleCategory?->id)
             ->orderByDesc('created_at')
             ->get()
             ->map(function ($asset) {
-                $asset->display_name = $asset->name . ' (' . $asset->code . ')';
+                $asset->display_name = $asset->name.' ('.$asset->code.')';
+
                 return $asset;
             });
 

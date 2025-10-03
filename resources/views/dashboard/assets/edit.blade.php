@@ -91,21 +91,21 @@
                             @enderror
                         </div>
 
-                        <!-- Location Field -->
+                        <!-- Branch Field -->
                         <div class="form-control">
                             <label class="block mb-1 label">
-                                <span class="label-text">Lokasi</span>
+                                <span class="label-text">Cabang</span>
                                 <span class="label-text-alt text-error">*</span>
                             </label>
-                            <select name="location_id" class="select select-bordered @error('location_id') select-error @enderror" required>
-                                <option value="">Pilih Lokasi</option>
-                                @foreach($locations as $location)
-                                    <option value="{{ $location->id }}" {{ old('location_id', $asset->location_id) == $location->id ? 'selected' : '' }}>
-                                        {{ $location->name }}
+                            <select name="branch_id" class="select select-bordered @error('branch_id') select-error @enderror" required>
+                                <option value="">Pilih Cabang</option>
+                                @foreach($branches as $branch)
+                                    <option value="{{ $branch->id }}" {{ old('branch_id', $asset->branch_id) == $branch->id ? 'selected' : '' }}>
+                                        {{ $branch->name }}
                                     </option>
                                 @endforeach
                             </select>
-                            @error('location_id')
+                            @error('branch_id')
                                 <label class="label">
                                     <span class="label-text-alt text-error">{{ $message }}</span>
                                 </label>

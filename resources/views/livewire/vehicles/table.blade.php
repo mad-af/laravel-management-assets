@@ -12,7 +12,7 @@
             <div class="flex gap-2">
                 <x-dropdown>
                     <x-slot:trigger>
-                        <x-button icon="o-funnel" class="btn-sm ">
+                        <x-button icon="o-funnel" class="btn-sm">
                             Filter Status
                         </x-button>
                     </x-slot:trigger>
@@ -30,20 +30,34 @@
         <div>
             @php
                 $headers = [
-                    ['key' => 'name', 'label' => 'Vehicle Name'],
-                    ['key' => 'code', 'label' => 'Asset Code'],
+                    ['key' => 'name', 'label' => 'Nama Kendaraan'],
                     ['key' => 'current_odometer_km', 'label' => 'Odometer (km)', 'class' => 'text-right'],
-                    ['key' => 'license_plate', 'label' => 'License Plate'],
+                    ['key' => 'license_plate', 'label' => 'Plat Nomor'],
                     ['key' => 'brand_model', 'label' => 'Brand & Model'],
                     ['key' => 'status', 'label' => 'Status'],
-                    ['key' => 'condition', 'label' => 'Condition'],
-                    ['key' => 'location', 'label' => 'Location'],
+                    ['key' => 'condition', 'label' => 'Kondisi'],
                     ['key' => 'actions', 'label' => 'Actions', 'class' => 'w-20'],
                 ];
             @endphp
             <x-table :headers="$headers" :rows="$vehicles" striped show-empty-text>
-                @scope('cell_name', $vehicle)
-                <span class="font-medium">{{ $vehicle->name }}</span>
+                @scope('cell_name', $asset)
+                <div class="flex gap-2 items-center">
+                    @if (!$asset->image)
+                        <div
+                            class="flex justify-center items-center font-bold rounded-lg border-2 size-13 bg-base-300 border-base-100">
+                            <x-icon name="o-photo" class="w-6 h-6 text-base-content/60" />
+                        </div>
+                    @else
+                        <x-avatar :image="asset('storage/' . $asset->image)"
+                            class="!w-13 !rounded-lg !bg-base-300 !font-bold border-2 border-base-100">
+                        </x-avatar>
+                    @endif
+                    <div>
+                        <div class="font-mono text-xs truncate text-base-content/60">{{ $asset->code }}</div>
+                        <div class="font-medium">{{ $asset->name }}</div>
+                        <div class="text-xs text-base-content/60">Tag: {{ $asset->tag_code }}</div>
+                    </div>
+                </div>
                 @endscope
 
                 @scope('cell_code', $vehicle)
@@ -67,16 +81,12 @@
 
                 @scope('cell_status', $vehicle)
                 <x-badge value="{{ $vehicle->status->label() }}"
-                    class="{{ $vehicle->status->badgeColor() }} badge-sm" />
+                    class="badge-{{ $vehicle->status->color() }} badge-sm" />
                 @endscope
 
                 @scope('cell_condition', $vehicle)
                 <x-badge value="{{ $vehicle->condition->label() }}"
-                    class="{{ $vehicle->condition->badgeColor() }} badge-sm" />
-                @endscope
-
-                @scope('cell_location', $vehicle)
-                <span class="text-sm">{{ $vehicle->location?->name ?? '-' }}</span>
+                    class="badge-{{ $vehicle->condition->color() }} badge-outline badge-sm" />
                 @endscope
 
                 @scope('cell_actions', $vehicle)
@@ -86,15 +96,7 @@
                             class="flex gap-2 items-center p-2 text-sm rounded text-primary"
                             onclick="document.getElementById('dropdown-menu-{{ $vehicle->id }}').hidePopover()">
                             <x-icon name="o-calculator" class="w-4 h-4" />
-                            Add Odometer
-                        </button>
-                    </li>
-                    <li>
-                        <button wire:click="viewDetail('{{ $vehicle->id }}')"
-                            class="flex gap-2 items-center p-2 text-sm rounded"
-                            onclick="document.getElementById('dropdown-menu-{{ $vehicle->id }}').hidePopover()">
-                            <x-icon name="o-eye" class="w-4 h-4" />
-                            Detail
+                            Tambah Odometer
                         </button>
                     </li>
                     <li>
@@ -102,15 +104,15 @@
                             class="flex gap-2 items-center p-2 text-sm rounded"
                             onclick="document.getElementById('dropdown-menu-{{ $vehicle->id }}').hidePopover()">
                             <x-icon name="o-truck" class="w-4 h-4" />
-                            Save Vehicle Profile
+                            Update Profil Kendaraan
                         </button>
                     </li>
-                    <li>
-                        <button wire:click="delete('{{ $vehicle->id }}')"
-                            wire:confirm="Are you sure you want to delete this vehicle?"
-                            class="flex gap-2 items-center p-2 text-sm rounded text-error">
-                            <x-icon name="o-trash" class="w-4 h-4" />
-                            Delete
+                    <li class="opacity-50 cursor-not-allowed pointer-events-none">
+                        <button wire:click="viewDetail('{{ $vehicle->id }}')"
+                            class="flex gap-2 items-center p-2 text-sm rounded"
+                            onclick="document.getElementById('dropdown-menu-{{ $vehicle->id }}').hidePopover()" >
+                            <x-icon name="o-eye" class="w-4 h-4" />
+                            Detail
                         </button>
                     </li>
                 </x-action-dropdown>
