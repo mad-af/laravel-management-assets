@@ -14,6 +14,11 @@ class KanbanCard extends Component
         $this->maintenance = $maintenance;
     }
 
+    public function openEditDrawer()
+    {
+        $this->dispatch('open-edit-drawer', $this->maintenance->id);
+    }
+
     public function render()
     {
         return view('livewire.maintenances.kanban-card');
