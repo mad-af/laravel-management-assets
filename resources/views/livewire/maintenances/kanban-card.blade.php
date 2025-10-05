@@ -35,19 +35,19 @@
             @if($maintenance->scheduled_date)
                 <div class="flex gap-1 items-center">
                     <x-icon name="o-calendar" class="w-3 h-3" />
-                    <span>{{ $maintenance->scheduled_date->format('M d, Y') }}</span>
+                    <span>{{ $maintenance->scheduled_date->format('d M Y') }}</span>
                 </div>
             @endif
             @if($maintenance->completed_date)
                 <div class="flex gap-1 items-center">
                     <x-icon name="o-check-circle" class="w-3 h-3" />
-                    <span>Completed: {{ $maintenance->completed_date->format('M d, Y') }}</span>
+                    <span>Selesai: {{ $maintenance->completed_date->format('d M Y') }}</span>
                 </div>
             @endif
             @if($maintenance->cost)
                 <div class="flex gap-1 items-center">
                     <x-icon name="o-currency-dollar" class="w-3 h-3" />
-                    <span>${{ number_format($maintenance->cost, 2) }}</span>
+                    <span>Rp {{ number_format($maintenance->cost, 0, ',', '.') }}</span>
                 </div>
             @endif
         </div>

@@ -7,21 +7,28 @@ use Livewire\Component;
 class DashboardContentHeader extends Component
 {
     public $title;
+
     public $description;
+
     public $buttonText;
+
     public $buttonIcon = 'o-plus';
+
     public $buttonClass = 'btn-primary btn-sm';
+
     public $buttonAction;
-    
+
     // Back button properties
     public $showBackButton = false;
+
     public $backButtonUrl;
+
     public $backButtonIcon = 'o-arrow-left';
+
     public $backButtonClass = 'btn-ghost btn-sm';
-    
+
     // Additional buttons properties (workaround for Livewire v3 slot issues)
     public $additionalButtons = [];
-
 
     public function mount(
         $title,
@@ -65,6 +72,7 @@ class DashboardContentHeader extends Component
             case 'openBranchDrawer':
             case 'openEmployeeDrawer':
             case 'openAssetLoanDrawer':
+            case 'openMaintenanceDrawer':
                 $this->dispatch('open-drawer');
                 break;
             case 'openVehicleOdometerDrawer':

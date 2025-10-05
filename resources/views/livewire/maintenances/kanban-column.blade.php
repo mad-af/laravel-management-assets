@@ -16,8 +16,8 @@
                 <div class="p-3 rounded-full">
                     <x-icon name="o-inbox" class="w-6 h-6" />
                 </div>
-                <p class="text-sm opacity-70">No maintenance items</p>
-                <p class="text-xs opacity-50">Items will appear here when added</p>
+                <p class="text-sm opacity-70">Tidak ada item perawatan</p>
+                <p class="text-xs opacity-50">Item akan muncul di sini ketika ditambahkan</p>
             </div>
         @endforelse
     </div>

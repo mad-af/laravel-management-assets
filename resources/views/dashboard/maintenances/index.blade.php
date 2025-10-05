@@ -5,8 +5,8 @@
 @section('content')
 
     <!-- Dashboard Content Header -->
-    <x-dashboard-content-header title="Perawatan Aset" description="Kelola dan pantau aktivitas perawatan aset"
-        button-text="Tambah Perawatan" button-icon="o-plus" button-action="addMaintenance()" :additional-buttons="[
+    <livewire:dashboard-content-header title="Perawatan Aset" description="Kelola dan pantau aktivitas perawatan aset"
+        button-text="Tambah Perawatan" button-icon="o-plus" button-action="openMaintenanceDrawer" :additional-buttons="[
             [
                 'text' => 'Filter',
                 'icon' => 'o-funnel',
@@ -17,10 +17,6 @@
 
     <livewire:maintenances.kanban-board />
 
-    <!-- Maintenance Drawer -->
-    <x-maintenances.drawer />
-
-    <!-- Maintenance Scripts -->
-    <x-maintenances.scripts />
+    <livewire:maintenances.drawer />
 
 @endsection
