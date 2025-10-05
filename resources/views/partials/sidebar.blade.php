@@ -46,7 +46,6 @@
             'route' => 'maintenances.index',
             'icon' => 'o-wrench-screwdriver',
             'label' => 'Perawatan',
-            'disabled' => true
         ],
         [
             'route' => 'vehicles.index',
