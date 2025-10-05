@@ -4,10 +4,22 @@ namespace App\Livewire\Maintenances;
 
 use App\Enums\MaintenanceStatus;
 use App\Models\AssetMaintenance;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 
 class KanbanBoard extends Component
 {
+    protected $listeners = [
+        'maintenance-saved' => '$refresh',
+        'refresh-kanban-board' => '$refresh',
+    ];
+
+    public function refreshBoard()
+    {
+        Log::info('KanbanBoard: refreshBoard method called');
+        $this->render();
+    }
+
     public function render()
     {
         // Get all maintenance statuses

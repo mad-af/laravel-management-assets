@@ -10,7 +10,9 @@
     <!-- Column Content -->
     <div class="overflow-y-auto flex-1 px-2 pt-2 space-y-2 rounded-lg">
         @forelse($maintenances as $maintenance)
-            <livewire:maintenances.kanban-card :maintenance="$maintenance" :key="$maintenance->id" />
+            <div wire:key="maintenance-{{ $maintenance->id }}">
+                <livewire:maintenances.kanban-card :maintenance="$maintenance" :key="$maintenance->id" />
+            </div>
         @empty
             <div class="flex flex-col gap-2 justify-center items-center py-8 text-center">
                 <div class="p-3 rounded-full">

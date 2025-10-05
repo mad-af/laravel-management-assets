@@ -9,6 +9,7 @@ use App\Models\Asset;
 use App\Models\AssetMaintenance;
 use App\Models\User;
 use App\Support\SessionKey;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Mary\Traits\Toast;
 
@@ -166,6 +167,9 @@ class Form extends Component
             }
 
             $this->dispatch('maintenance-saved');
+            Log::info('Form: Dispatching maintenance-saved event');
+            $this->dispatch('$refresh')->to('maintenances.kanban-board');
+            Log::info('Form: Dispatching $refresh to maintenances.kanban-board');
             $this->dispatch('close-drawer');
 
         } catch (\Exception $e) {
