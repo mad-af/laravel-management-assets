@@ -1,137 +1,104 @@
-<form wire:submit="save" class="space-y-6">
-    {{-- Asset Selection --}}
+<form wire:submit="save" class="space-y-2">
+    
+    <!-- Asset Selection -->
     <div>
-        <x-select 
-            label="Aset" 
-            wire:model="asset_id" 
-            :options="$assets" 
-            placeholder="Pilih aset..."
-            searchable
-            required
-        />
+        <x-select label="Aset" wire:model.live="asset_id" :options="$assets" option-value="value" option-label="label"
+            placeholder="Pilih aset..." searchable required class="select-sm" />
     </div>
 
-    {{-- Title --}}
+    <!-- Invoice No -->
     <div>
-        <x-input 
-            label="Judul Perawatan" 
-            wire:model="title" 
-            placeholder="Masukkan judul perawatan..."
-            required
-        />
+        <x-input label="No. Invoice" wire:model="invoice_no" placeholder="Masukkan nomor invoice..." 
+            class="input-sm" />
     </div>
 
-    {{-- Description --}}
+    <!-- Title -->
     <div>
-        <x-textarea 
-            label="Deskripsi" 
-            wire:model="description" 
-            placeholder="Masukkan deskripsi perawatan..."
-            rows="3"
-            required
-        />
+        <x-input label="Judul Perawatan" wire:model="title" placeholder="Masukkan judul perawatan..." 
+            class="input-sm" required />
     </div>
 
-    {{-- Type, Status, Priority in a row --}}
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div>
-            <x-select 
-                label="Jenis Perawatan" 
-                wire:model="type" 
-                :options="$maintenanceTypes" 
-                placeholder="Pilih jenis..."
-                required
-            />
-        </div>
-        
-        <div>
-            <x-select 
-                label="Status" 
-                wire:model="status" 
-                :options="$maintenanceStatuses" 
-                placeholder="Pilih status..."
-                required
-            />
-        </div>
-        
-        <div>
-            <x-select 
-                label="Prioritas" 
-                wire:model="priority" 
-                :options="$maintenancePriorities" 
-                placeholder="Pilih prioritas..."
-                required
-            />
-        </div>
-    </div>
-
-    {{-- Cost and Assigned To in a row --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-            <x-input 
-                label="Biaya (Rp)" 
-                wire:model="cost" 
-                type="number"
-                step="0.01"
-                min="0"
-                placeholder="0"
-                prefix="Rp"
-            />
-        </div>
-        
-        <div>
-            <x-select 
-                label="Ditugaskan Kepada" 
-                wire:model="assigned_to" 
-                :options="$users" 
-                placeholder="Pilih teknisi..."
-                searchable
-            />
-        </div>
-    </div>
-
-    {{-- Dates in a row --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-            <x-input 
-                label="Tanggal Terjadwal" 
-                wire:model="scheduled_date" 
-                type="date"
-            />
-        </div>
-        
-        <div>
-            <x-input 
-                label="Tanggal Selesai" 
-                wire:model="completed_date" 
-                type="date"
-            />
-        </div>
-    </div>
-
-    {{-- Notes --}}
+    <!-- Type -->
     <div>
-        <x-textarea 
-            label="Catatan" 
-            wire:model="notes" 
-            placeholder="Catatan tambahan..."
-            rows="2"
-        />
+        <x-select label="Jenis Perawatan" wire:model="type" :options="$maintenanceTypes" option-value="value" option-label="label"
+            placeholder="Pilih jenis..." required class="select-sm" />
     </div>
 
-    {{-- Action Buttons --}}
-    <div class="flex justify-end space-x-3 pt-4 border-t">
-        <x-button 
-            label="Batal" 
-            wire:click="$dispatch('close-drawer')"
-            class="btn-ghost"
-        />
-        
-        <x-button 
-            label="{{ $isEdit ? 'Perbarui' : 'Simpan' }}" 
-            type="submit" 
-            spinner="save"
-            class="btn-primary"
-        />
+    <!-- Status -->
+    <div>
+        <x-select label="Status" wire:model="status" :options="$maintenanceStatuses" option-value="value" option-label="label"
+            placeholder="Pilih status..." required class="select-sm" />
+    </div>
+
+    <!-- Priority -->
+    <div>
+        <x-select label="Prioritas" wire:model="priority" :options="$maintenancePriorities" option-value="value" option-label="label"
+            placeholder="Pilih prioritas..." required class="select-sm" />
+    </div>
+
+    <!-- Started At -->
+    <div>
+        <x-input label="Tanggal Mulai" wire:model="started_at" type="datetime-local" class="input-sm" />
+    </div>
+
+    <!-- Estimated Completed At -->
+    <div>
+        <x-input label="Estimasi Tanggal Selesai" wire:model="estimated_completed_at" type="datetime-local" class="input-sm" />
+    </div>
+
+    <!-- Completed At -->
+    {{-- <div>
+        <x-input label="Tanggal Selesai" wire:model="completed_at" type="datetime-local" class="input-sm" />
+    </div> --}}
+
+    <!-- Cost -->
+    <div>
+        <x-input label="Biaya (Rp)" prefix="Rp" wire:model="cost" placeholder="Masukkan biaya perawatan" 
+            type="number" step="0.01" min="0" class="input-sm" required />
+    </div>
+
+    <!-- Technician Name -->
+    <div>
+        <x-input label="Nama Teknisi" wire:model="technician_name" placeholder="Masukkan nama teknisi..." 
+            class="input-sm" />
+    </div>
+
+    <!-- Vendor Name -->
+    <div>
+        <x-input label="Nama Vendor" wire:model="vendor_name" placeholder="Masukkan nama vendor..." 
+            class="input-sm" />
+    </div>
+
+    <!-- Odometer KM at Service -->
+    @if($this->isVehicle)
+    <div>
+        <x-input label="Odometer saat Service (KM)" wire:model="odometer_km_at_service" placeholder="Masukkan odometer..." 
+            type="number" min="0" class="input-sm" />
+    </div>
+    @endif
+
+    <!-- Next Service Target Odometer KM -->
+    @if($this->isVehicle)
+    <div>
+        <x-input label="Target Odometer Service Berikutnya (KM)" wire:model="next_service_target_odometer_km" 
+            placeholder="Masukkan target odometer..." type="number" min="0" class="input-sm" />
+    </div>
+    @endif
+
+    <!-- Next Service Date -->
+    <div>
+        <x-input label="Tanggal Service Berikutnya" wire:model="next_service_date" type="date" class="input-sm" />
+    </div>
+
+    <!-- Notes -->
+    <div>
+        <x-textarea label="Catatan" wire:model="notes" placeholder="Catatan tambahan..." 
+            rows="2" class="textarea-sm" />
+    </div>
+
+    <!-- Submit Button -->
+    <div class="flex gap-2 justify-end pt-4">
+        <x-button label="Batal" class="btn-ghost btn-sm" wire:click="$dispatch('close-drawer')" />
+        <x-button label="{{ $isEdit ? 'Update' : 'Simpan' }}" class="btn-primary btn-sm" type="submit" spinner="save" />
     </div>
 </form>

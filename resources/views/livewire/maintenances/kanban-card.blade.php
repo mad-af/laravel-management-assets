@@ -2,10 +2,10 @@
     <div class="p-4 card-body">
         <!-- Priority and Type Badges -->
         <div class="flex justify-between items-start mb-2">
-            <span class="badge {{ $maintenance->priority->color() }} badge-xs">
+            <span class="badge badge-{{ $maintenance->priority->color() }} badge-xs">
                 {{ $maintenance->priority->label() }}
             </span>
-            <span class="badge {{ $maintenance->type->color() }} badge-xs">
+            <span class="badge badge-outline badge-{{ $maintenance->type->color() }} badge-xs">
                 {{ $maintenance->type->label() }}
             </span>
         </div>
@@ -46,7 +46,7 @@
             @endif
             @if($maintenance->cost)
                 <div class="flex gap-1 items-center">
-                    <x-icon name="o-currency-dollar" class="w-3 h-3" />
+                    {{-- <x-icon name="o-currency-dollar" class="w-3 h-3" /> --}}
                     <span>Rp {{ number_format($maintenance->cost, 0, ',', '.') }}</span>
                 </div>
             @endif
