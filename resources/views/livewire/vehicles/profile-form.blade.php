@@ -1,5 +1,4 @@
-<form action="{{ route('vehicles.store-profile') }}" method="POST" class="space-y-2">
-    @csrf
+<form wire:submit="save" class="space-y-2">
 
     <!-- Asset Selection -->
     <x-select name="asset_id" label="Aset" class="select-sm" wire:model.live="asset_id" :options="$assets"
@@ -22,7 +21,7 @@
 
     <!-- Current Odometer -->
     <x-input name="current_odometer_km" label="Odometer Saat Ini (km)" class="input-sm" wire:model="current_odometer_km"
-        type="number" min="0" placeholder="Masukkan pembacaan odometer saat ini" :readonly=$isEdit />
+        type="number" min="0" placeholder="Masukkan pembacaan odometer saat ini" :readonly=$isEdit required />
 
     <!-- Last Service Date -->
     <x-datetime name="last_service_date" label="Tanggal Service Terakhir" class="input-sm" wire:model="last_service_date"
@@ -44,7 +43,7 @@
     <div class="flex gap-3 justify-end pt-4">
         <x-button label="Batal" class="btn-ghost btn-sm" type="button" wire:click="$dispatch('close-drawer')" />
         <button class="btn btn-sm btn-primary" type="submit">
-            {{ $vehicleId ? 'Perbarui' : 'Simpan' }}
+            {{ $assetId ? 'Perbarui' : 'Simpan' }}
         </button>
     </div>
 </form>

@@ -16,8 +16,6 @@ class ProfileForm extends Component
 
     public $assetId;
 
-    public $vehicleId;
-
     public $asset_id = '';
 
     public $year_purchase = '';
@@ -106,8 +104,6 @@ class ProfileForm extends Component
 
         if ($vehicle) {
             $this->isEdit = true;
-            // ensure vehicleId is available for update path
-            $this->vehicleId = (string) $vehicle->id;
 
             $this->year_purchase = $vehicle->year_purchase;
             $this->year_manufacture = $vehicle->year_manufacture;
@@ -119,7 +115,6 @@ class ProfileForm extends Component
             $this->plate_no = $vehicle->plate_no;
             $this->vin = $vehicle->vin;
         } else {
-            $this->vehicleId = null;
             $this->resetForm();
         }
     }
@@ -157,18 +152,20 @@ class ProfileForm extends Component
             ];
 
             if ($this->isEdit) {
-                $vehicle = VehicleProfile::find($this->vehicleId);
-                $vehicle->update($data);
+                $vehicleProfile = VehicleProfile::where('asset_id', $this->assetId)->first();
+                $vehicleProfile->update($data);
                 $this->showSuccessAlert('Profil kendaraan berhasil diperbarui.', 'Berhasil');
                 $this->dispatch('vehicle-updated');
             } else {
-                VehicleProfile::create($data);
+                VehicleProfile::create(array_merge($data, ['asset_id' => $this->assetId]));
                 $this->showSuccessAlert('Profil kendaraan berhasil dibuat.', 'Berhasil');
                 $this->dispatch('vehicle-saved');
             }
 
             $this->resetForm();
+            $this->dispatch('close-drawer');
         } catch (\Exception $e) {
+            dd($e);
             $this->showErrorAlert('Gagal menyimpan profil kendaraan: '.$e->getMessage(), 'Error');
         }
     }
