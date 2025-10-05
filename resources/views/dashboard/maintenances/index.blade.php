@@ -5,39 +5,22 @@
 @section('content')
 
     <!-- Dashboard Content Header -->
-    <x-dashboard-content-header title="Asset Maintenance" description="Manage and track asset maintenance activities"
-        button-text="Add Maintenance" button-icon="o-plus" button-action="addMaintenance()" :additional-buttons="[
-                                [
-                                    'text' => 'Filter',
-                                    'icon' => 'o-funnel',
-                                    'class' => ' btn-sm',
-                                    'action' => 'openFilterDrawer()'
-                                ]
-                            ]" />
+    <x-dashboard-content-header title="Perawatan Aset" description="Kelola dan pantau aktivitas perawatan aset"
+        button-text="Tambah Perawatan" button-icon="o-plus" button-action="addMaintenance()" :additional-buttons="[
+            [
+                'text' => 'Filter',
+                'icon' => 'o-funnel',
+                'class' => ' btn-sm',
+                'action' => 'openFilterDrawer()'
+            ]
+        ]" />
 
-    <!-- Kanban Board -->
-    <div class="h-[calc(100vh-12rem)]">
-        @php
-            $maintenances = \App\Models\AssetMaintenance::with(['asset', 'assignedUser'])
-                ->orderBy('created_at', 'desc')
-                ->get();
-
-            $statusColumns = collect(\App\Enums\MaintenanceStatus::cases())->map(function ($status) use ($maintenances) {
-                return [
-                    'status' => $status,
-                    'maintenances' => $maintenances->where('status', $status)
-                ];
-            })->toArray();
-        @endphp
-
-        <x-maintenances.kanban-board :status-columns="$statusColumns" />
-    </div>
+    <livewire:maintenances.kanban-board />
 
     <!-- Maintenance Drawer -->
     <x-maintenances.drawer />
 
-    <!-- Filter Drawer -->
-    <x-maintenances.filter-drawer />
-
+    <!-- Maintenance Scripts -->
     <x-maintenances.scripts />
+
 @endsection
