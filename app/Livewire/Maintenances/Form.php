@@ -7,9 +7,9 @@ use App\Enums\MaintenanceStatus;
 use App\Enums\MaintenanceType;
 use App\Models\Asset;
 use App\Models\AssetMaintenance;
+use App\Models\Employee;
 use App\Models\User;
 use App\Support\SessionKey;
-use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Mary\Traits\Toast;
 
@@ -20,6 +20,12 @@ class Form extends Component
     public $maintenanceId;
 
     public $asset_id = '';
+
+    public $employee_id = '';
+
+    public $employeeSearchTerm = '';
+
+    public array $employees = [];
 
     public $title = '';
 
@@ -53,8 +59,22 @@ class Form extends Component
 
     public $isEdit = false;
 
+    public string $branchId;
+
+    // Cache properties to avoid repeated data fetching
+    private $assetsCache = null;
+
+    private $usersCache = null;
+
+    private $maintenanceTypesCache = null;
+
+    private $maintenanceStatusesCache = null;
+
+    private $maintenancePrioritiesCache = null;
+
     protected $rules = [
         'asset_id' => 'required|exists:assets,id',
+        'employee_id' => 'nullable|exists:employees,id',
         'title' => 'required|string|max:255',
         'type' => 'required',
         'status' => 'required',
@@ -75,6 +95,7 @@ class Form extends Component
     protected $messages = [
         'asset_id.required' => 'Aset wajib dipilih.',
         'asset_id.exists' => 'Aset yang dipilih tidak valid.',
+        'employee_id.exists' => 'Karyawan yang dipilih tidak valid.',
         'title.required' => 'Judul wajib diisi.',
         'title.max' => 'Judul maksimal 255 karakter.',
         'type.required' => 'Jenis perawatan wajib dipilih.',
@@ -99,7 +120,11 @@ class Form extends Component
 
     public function mount($maintenanceId = null)
     {
+        $this->branchId = session_get(SessionKey::BranchId);
         $this->maintenanceId = $maintenanceId;
+
+        // Initialize with empty employees array - will be loaded on demand
+        $this->employees = [];
 
         if ($maintenanceId) {
             $this->isEdit = true;
@@ -108,14 +133,33 @@ class Form extends Component
             // Set default values for new maintenance
             $this->status = MaintenanceStatus::OPEN->value;
             $this->priority = MaintenancePriority::MEDIUM->value;
+            // Load initial employees for new form
+            $this->loadInitialEmployees();
         }
+    }
+
+    private function loadInitialEmployees()
+    {
+        $this->employees = Employee::where('is_active', true)
+            ->where('branch_id', $this->branchId)
+            ->limit(10)
+            ->orderBy('full_name')
+            ->get()
+            ->map(function ($employee) {
+                return [
+                    'id' => $employee->id,
+                    'full_name' => $employee->full_name,
+                    'employee_number' => $employee->employee_number,
+                ];
+            })->toArray();
     }
 
     public function loadMaintenance()
     {
-        $maintenance = AssetMaintenance::findOrFail($this->maintenanceId);
+        $maintenance = AssetMaintenance::with('employee')->findOrFail($this->maintenanceId);
 
         $this->asset_id = $maintenance->asset_id;
+        $this->employee_id = $maintenance->employee_id;
         $this->title = $maintenance->title;
         $this->type = $maintenance->type->value;
         $this->status = $maintenance->status->value;
@@ -131,6 +175,32 @@ class Form extends Component
         $this->next_service_target_odometer_km = $maintenance->next_service_target_odometer_km;
         $this->next_service_date = $maintenance->next_service_date?->format('Y-m-d');
         $this->invoice_no = $maintenance->invoice_no;
+
+        // Load employees with selected employee included
+        $this->loadEmployeesWithSelected($maintenance->employee);
+    }
+
+    private function loadEmployeesWithSelected($selectedEmployee = null)
+    {
+        // Load initial employees
+        $this->loadInitialEmployees();
+
+        // Ensure selected employee is in search results for editing
+        if ($selectedEmployee) {
+            $selectedEmployeeData = [
+                'id' => $selectedEmployee->id,
+                'full_name' => $selectedEmployee->full_name,
+                'employee_number' => $selectedEmployee->employee_number,
+            ];
+
+            // Check if selected employee is already in search results
+            $exists = collect($this->employees)->contains('id', $selectedEmployee->id);
+
+            if (! $exists) {
+                // Add selected employee to the beginning of search results
+                array_unshift($this->employees, $selectedEmployeeData);
+            }
+        }
     }
 
     public function save()
@@ -140,6 +210,7 @@ class Form extends Component
         try {
             $data = [
                 'asset_id' => $this->asset_id,
+                'employee_id' => $this->employee_id ?: null,
                 'title' => $this->title,
                 'type' => $this->type,
                 'status' => $this->status,
@@ -178,6 +249,7 @@ class Form extends Component
     public function resetForm()
     {
         $this->asset_id = '';
+        $this->employee_id = '';
         $this->title = '';
         $this->type = '';
         $this->status = MaintenanceStatus::OPEN->value;
@@ -196,6 +268,136 @@ class Form extends Component
         $this->isEdit = false;
         $this->maintenanceId = null;
         $this->resetValidation();
+
+        // Reset cache
+        $this->clearCache();
+
+        // Reload initial employees
+        $this->loadInitialEmployees();
+    }
+
+    private function clearCache()
+    {
+        $this->assetsCache = null;
+        $this->usersCache = null;
+        $this->maintenanceTypesCache = null;
+        $this->maintenanceStatusesCache = null;
+        $this->maintenancePrioritiesCache = null;
+    }
+
+    public function searchEmployees($value = '')
+    {
+        $this->employeeSearchTerm = $value;
+
+        if (empty($value)) {
+            // Return first 10 employees when no search term
+            $this->employees = Employee::where('is_active', true)
+                ->where('branch_id', $this->branchId)
+                ->limit(10)
+                ->orderBy('full_name')
+                ->get()
+                ->map(function ($employee) {
+                    return [
+                        'id' => $employee->id,
+                        'full_name' => $employee->full_name,
+                        'employee_number' => $employee->employee_number,
+                    ];
+                })->toArray();
+        } else {
+            // Search employees by name or employee number
+            $this->employees = Employee::where('is_active', true)
+                ->where('branch_id', $this->branchId)
+                ->where(function ($query) use ($value) {
+                    $query->where('full_name', 'like', '%'.$value.'%')
+                        ->orWhere('employee_number', 'like', '%'.$value.'%');
+                })
+                ->limit(20)
+                ->orderBy('full_name')
+                ->get()
+                ->map(function ($employee) {
+                    return [
+                        'id' => $employee->id,
+                        'full_name' => $employee->full_name,
+                        'employee_number' => $employee->employee_number,
+                    ];
+                })->toArray();
+        }
+    }
+
+    // Computed properties to cache data and avoid repeated queries
+    public function getAssetsProperty()
+    {
+        if ($this->assetsCache === null) {
+            $this->assetsCache = Asset::with('category')
+                ->where('branch_id', $this->branchId)
+                ->where('status', '!=', \App\Enums\AssetStatus::LOST)
+                ->orderBy('name')
+                ->get()
+                ->map(function ($asset) {
+                    return (object) [
+                        'value' => $asset->id,
+                        'label' => $asset->name.' ('.$asset->code.') - '.($asset->category->name ?? 'Tanpa Kategori'),
+                    ];
+                });
+        }
+
+        return $this->assetsCache;
+    }
+
+    public function getUsersProperty()
+    {
+        if ($this->usersCache === null) {
+            $this->usersCache = User::orderBy('name')->get()->map(function ($user) {
+                return (object) [
+                    'value' => $user->id,
+                    'label' => $user->name.' ('.$user->role->value.')',
+                ];
+            });
+        }
+
+        return $this->usersCache;
+    }
+
+    public function getMaintenanceTypesProperty()
+    {
+        if ($this->maintenanceTypesCache === null) {
+            $this->maintenanceTypesCache = collect(MaintenanceType::cases())->map(function ($type) {
+                return (object) [
+                    'value' => $type->value,
+                    'label' => $type->label(),
+                ];
+            });
+        }
+
+        return $this->maintenanceTypesCache;
+    }
+
+    public function getMaintenanceStatusesProperty()
+    {
+        if ($this->maintenanceStatusesCache === null) {
+            $this->maintenanceStatusesCache = collect(MaintenanceStatus::cases())->map(function ($status) {
+                return (object) [
+                    'value' => $status->value,
+                    'label' => $status->label(),
+                ];
+            });
+        }
+
+        return $this->maintenanceStatusesCache;
+    }
+
+    public function getMaintenancePrioritiesProperty()
+    {
+        if ($this->maintenancePrioritiesCache === null) {
+            $this->maintenancePrioritiesCache = collect(MaintenancePriority::cases())->map(function ($priority) {
+                return (object) [
+                    'value' => $priority->value,
+                    'label' => $priority->label(),
+                ];
+            });
+        }
+
+        return $this->maintenancePrioritiesCache;
     }
 
     public function getIsVehicleProperty()
@@ -223,53 +425,13 @@ class Form extends Component
 
     public function render()
     {
-        $currentBranchId = session_get(SessionKey::BranchId);
-        $assets = Asset::with('category')
-            ->where('branch_id', $currentBranchId)
-            ->where('status', '!=', \App\Enums\AssetStatus::LOST)
-            ->orderBy('name')
-            ->get()
-            ->map(function ($asset) {
-                return (object) [
-                    'value' => $asset->id,
-                    'label' => $asset->name.' ('.$asset->code.') - '.($asset->category->name ?? 'Tanpa Kategori'),
-                ];
-            });
-
-        $maintenanceTypes = collect(MaintenanceType::cases())->map(function ($type) {
-            return (object) [
-                'value' => $type->value,
-                'label' => $type->label(),
-            ];
-        });
-
-        $maintenanceStatuses = collect(MaintenanceStatus::cases())->map(function ($status) {
-            return (object) [
-                'value' => $status->value,
-                'label' => $status->label(),
-            ];
-        });
-
-        $maintenancePriorities = collect(MaintenancePriority::cases())->map(function ($priority) {
-            return (object) [
-                'value' => $priority->value,
-                'label' => $priority->label(),
-            ];
-        });
-
-        $users = User::orderBy('name')->get()->map(function ($user) {
-            return (object) [
-                'value' => $user->id,
-                'label' => $user->name.' ('.$user->role->value.')',
-            ];
-        });
-
-        return view('livewire.maintenances.form', compact(
-            'assets',
-            'maintenanceTypes',
-            'maintenanceStatuses',
-            'maintenancePriorities',
-            'users'
-        ));
+        return view('livewire.maintenances.form', [
+            'assets' => $this->assets,
+            'maintenanceTypes' => $this->maintenanceTypes,
+            'maintenanceStatuses' => $this->maintenanceStatuses,
+            'maintenancePriorities' => $this->maintenancePriorities,
+            'users' => $this->users,
+            'employees' => $this->employees,
+        ]);
     }
 }

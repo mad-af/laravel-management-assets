@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\AssetLogAction;
+use App\Enums\AssetStatus;
+use App\Enums\MaintenanceStatus;
 use App\Models\Asset;
 use App\Models\AssetLog;
 use App\Models\AssetMaintenance;
-use App\Enums\AssetStatus;
-use App\Enums\AssetLogAction;
-use App\Enums\MaintenanceStatus;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\RedirectResponse;
 
 class MaintenanceController extends Controller
 {
@@ -42,7 +43,7 @@ class MaintenanceController extends Controller
         ]);
 
         // Set default status if not provided
-        if (!isset($validated['status'])) {
+        if (! isset($validated['status'])) {
             $validated['status'] = MaintenanceStatus::OPEN->value;
         }
 
@@ -63,13 +64,60 @@ class MaintenanceController extends Controller
                 'user_id' => Auth::id(),
                 'action' => AssetLogAction::STATUS_CHANGED,
                 'changed_fields' => [
-                    'status' => ['old' => $oldStatus->value, 'new' => AssetStatus::MAINTENANCE->value]
+                    'status' => ['old' => $oldStatus->value, 'new' => AssetStatus::MAINTENANCE->value],
                 ],
-                'notes' => 'Asset moved to maintenance: ' . $validated['title'],
+                'notes' => 'Asset moved to maintenance: '.$validated['title'],
             ]);
         }
 
         return redirect()->route('maintenances.index');
+    }
+
+    /**
+     * Generate PDF report for maintenance.
+     */
+    public function generatePDF(AssetMaintenance $maintenance)
+    {
+        // Load relationships
+        $maintenance->load(['asset', 'assignedUser']);
+
+        // Prepare data for PDF template
+        $data = (object) [
+            'work_order_no' => 'WO-'.str_pad($maintenance->id, 6, '0', STR_PAD_LEFT),
+            'workshop' => (object) [
+                'name' => 'Workshop Maintenance',
+                'address' => 'Jl. Maintenance No. 123',
+            ],
+            'vehicle' => (object) [
+                'vehicle_no' => $maintenance->asset->asset_code ?? 'N/A',
+                'brand' => (object) [
+                    'name' => $maintenance->asset->brand ?? 'Unknown',
+                ],
+                'type' => $maintenance->asset->model ?? 'Unknown',
+            ],
+            'employee' => (object) [
+                'name' => $maintenance->assignedUser->name ?? 'N/A',
+                'phone' => $maintenance->assignedUser->phone ?? 'N/A',
+            ],
+            'start_date' => $maintenance->scheduled_date ?? $maintenance->created_at,
+            'estimation_end_date' => $maintenance->scheduled_date ?
+                \Carbon\Carbon::parse($maintenance->scheduled_date)->addDays(7) :
+                \Carbon\Carbon::parse($maintenance->created_at)->addDays(7),
+            'note' => $maintenance->notes ?? $maintenance->description ?? 'No notes available',
+            'maintenance' => $maintenance,
+        ];
+
+        // Prepare service instruction items
+        $item = collect([
+            (object) ['instruction' => $maintenance->title],
+            (object) ['instruction' => $maintenance->description],
+        ]);
+
+        // Generate PDF
+        $pdf = Pdf::loadView('pdf-template.maintenance-report', compact('data', 'item'));
+
+        // Return PDF as response
+        return $pdf->stream('maintenance-report-'.$maintenance->id.'.pdf');
     }
 
     /**
@@ -81,7 +129,7 @@ class MaintenanceController extends Controller
         if (request()->wantsJson()) {
             return response()->json([
                 'success' => true,
-                'maintenance' => $maintenance->load(['asset', 'assignedUser'])
+                'maintenance' => $maintenance->load(['asset', 'assignedUser']),
             ]);
         }
 
@@ -116,7 +164,7 @@ class MaintenanceController extends Controller
                 'asset_id' => $maintenance->asset_id,
                 'user_id' => Auth::id(),
                 'action' => AssetLogAction::UPDATED,
-                'notes' => 'Maintenance updated: ' . $validated['title'],
+                'notes' => 'Maintenance updated: '.$validated['title'],
             ]);
         }
 

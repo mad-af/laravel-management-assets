@@ -4,6 +4,7 @@ namespace App\Livewire\Maintenances;
 
 use App\Enums\MaintenanceStatus;
 use App\Models\AssetMaintenance;
+use App\Support\SessionKey;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -31,7 +32,15 @@ class KanbanColumn extends Component
 
     public function loadMaintenances()
     {
+        // Get current branch ID from session
+        $currentBranchId = session_get(SessionKey::BranchId);
+
         $this->maintenances = AssetMaintenance::with(['asset', 'assignedUser'])
+            ->whereHas('asset', function ($query) use ($currentBranchId) {
+                $query->when($currentBranchId, function ($q) use ($currentBranchId) {
+                    $q->where('branch_id', $currentBranchId);
+                });
+            })
             ->where('status', $this->status)
             ->orderBy('priority')
             ->orderBy('scheduled_date')

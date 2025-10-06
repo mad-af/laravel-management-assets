@@ -30,10 +30,12 @@
 
                 @if($this->canPrintReport())
                     <li>
-                        <button class="flex gap-2 items-center p-2 text-sm rounded">
+                        <a href="{{ route('maintenances.pdf', $maintenance) }}" 
+                           target="_blank" 
+                           class="flex gap-2 items-center p-2 text-sm rounded hover:bg-gray-100">
                             <x-icon name="o-printer" class="w-4 h-4" />
                             Cetak Laporan
-                        </button>
+                        </a>
                     </li>
                 @endif
 

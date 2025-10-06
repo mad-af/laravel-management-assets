@@ -107,6 +107,7 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::post('maintenances', [MaintenanceController::class, 'store'])->name('maintenances.store');
     Route::get('maintenances/{maintenance}/edit', [MaintenanceController::class, 'edit'])->name('maintenances.edit');
     Route::put('maintenances/{maintenance}', [MaintenanceController::class, 'update'])->name('maintenances.update');
+    Route::get('maintenances/{maintenance}/pdf', [MaintenanceController::class, 'generatePDF'])->name('maintenances.pdf');
     
 });
 

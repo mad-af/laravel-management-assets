@@ -15,6 +15,7 @@ class AssetMaintenance extends Model
 
     protected $fillable = [
         'asset_id',
+        'employee_id',
         'title',
         'type',
         'status',
@@ -47,6 +48,11 @@ class AssetMaintenance extends Model
     public function asset(): BelongsTo
     {
         return $this->belongsTo(Asset::class);
+    }
+
+    public function employee(): BelongsTo
+    {
+        return $this->belongsTo(Employee::class);
     }
 
     public function assignedUser(): BelongsTo

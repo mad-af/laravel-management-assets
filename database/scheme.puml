@@ -119,6 +119,7 @@ table(asset_loans) {
 table(asset_maintenances) {
   pk(id) : UUID
   fk(asset_id) : UUID
+  fk(employee_id) : UUID [NULL]
   title : VARCHAR
   type : ENUM(preventive, corrective)
   status : ENUM(open, in_progress, completed, cancelled) [DEFAULT: open]
@@ -216,6 +217,7 @@ companies ||--o{ user_companies : "memberships"
 categories ||--o{ assets : "has many"
 branches ||--o{ assets : "has many"
 employees ||--o{ asset_loans : "borrows"
+employees ||--o{ asset_maintenances : "assigned to"
 assets ||--o{ asset_logs : "has many"
 assets ||--o{ asset_loans : "has many"
 assets ||--o{ asset_maintenances : "has many"
