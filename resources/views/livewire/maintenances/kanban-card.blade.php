@@ -1,4 +1,4 @@
-<div class="border shadow-sm transition-shadow cursor-pointer card bg-base-100 border-base-300 hover:shadow-md" wire:click="openEditDrawer">
+<div class="border shadow-sm transition-shadow cursor-pointer card bg-base-100 border-base-300 hover:shadow-md" >
     <div class="p-4 card-body">
         <!-- Priority and Type Badges -->
         <div class="flex justify-between items-start mb-2">

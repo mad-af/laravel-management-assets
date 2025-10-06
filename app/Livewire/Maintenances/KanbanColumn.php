@@ -22,6 +22,11 @@ class KanbanColumn extends Component
         $this->badgeColorClass = 'badge-'.$status->color();
     }
 
+    public function openEditDrawer($maintenanceId)
+    {
+        $this->dispatch('open-edit-drawer', $maintenanceId);
+    }
+
     public function render()
     {
         return view('livewire.maintenances.kanban-column');

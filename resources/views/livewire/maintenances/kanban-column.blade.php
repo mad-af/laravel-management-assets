@@ -10,9 +10,21 @@
     <!-- Column Content -->
     <div class="overflow-y-auto flex-1 px-2 pt-2 space-y-2 rounded-lg">
         @forelse($maintenances as $maintenance)
-            <div wire:key="maintenance-{{ $maintenance->id }}">
-                <livewire:maintenances.kanban-card :maintenance="$maintenance" :key="$maintenance->id" />
-            </div>
+            <x-kanban-card-dropdown :model="$maintenance">
+                <x-slot:trigger>
+                    <div wire:key="maintenance-{{ $maintenance->id }}" class="!w-full">
+                        <livewire:maintenances.kanban-card :maintenance="$maintenance" :key="$maintenance->id" />
+                    </div>
+                </x-slot:trigger>
+
+                <li>
+                    <button wire:click="openEditDrawer('{{ $maintenance->id }}')"
+                        class="flex gap-2 items-center p-2 text-sm rounded">
+                        <x-icon name="o-pencil" class="w-4 h-4" />
+                        Edit
+                    </button>
+                </li>
+            </x-kanban-card-dropdown>
         @empty
             <div class="flex flex-col gap-2 justify-center items-center py-8 text-center">
                 <div class="p-3 rounded-full">

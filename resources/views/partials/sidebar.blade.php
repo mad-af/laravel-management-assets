@@ -10,7 +10,6 @@
             'route' => 'scanners.index',
             'icon' => 'o-qr-code',
             'label' => 'Pemindai QR/Barcode',
-            'disabled' => true
         ],
         [
             'type' => 'submenu',
@@ -43,14 +42,27 @@
             ]
         ],
         [
+            'type' => 'submenu',
+            'icon' => 'o-truck',
+            'label' => 'Kendaraan',
+            'children' => [
+                [
+                    'route' => 'vehicles.index',
+                    'icon' => 'o-truck',
+                    'label' => 'Daftar Kendaraan',
+                ],
+                [
+                    'route' => 'vehicles.index',
+                    'icon' => 'o-document-currency-dollar',
+                    'label' => 'Pajak',
+                    'disabled' => true
+                ],
+            ]
+        ],
+        [
             'route' => 'maintenances.index',
             'icon' => 'o-wrench-screwdriver',
             'label' => 'Perawatan',
-        ],
-        [
-            'route' => 'vehicles.index',
-            'icon' => 'o-truck',
-            'label' => 'Kendaraan',
         ],
     ];
 
@@ -99,7 +111,8 @@
                     @foreach($item['children'] as $child)
                         @if(isset($child['disabled']) && $child['disabled'])
                             <x-menu-item title="{{ $child['label'] }}" icon="{{ $child['icon'] }}"
-                                class="opacity-50 cursor-not-allowed pointer-events-none" badge="soon" badge-classes="badge-soft badge-info">
+                                class="opacity-50 cursor-not-allowed pointer-events-none" badge="soon"
+                                badge-classes="badge-soft badge-info">
                             </x-menu-item>
                         @else
                             <x-menu-item title="{{ $child['label'] }}" icon="{{ $child['icon'] }}"
@@ -110,7 +123,8 @@
             @else
                 @if(isset($item['disabled']) && $item['disabled'])
                     <x-menu-item title="{{ $item['label'] }}" icon="{{ $item['icon'] }}"
-                        class="opacity-50 cursor-not-allowed pointer-events-none" badge="soon" badge-classes="badge-soft badge-info">
+                        class="opacity-50 cursor-not-allowed pointer-events-none" badge="soon"
+                        badge-classes="badge-soft badge-info">
                     </x-menu-item>
                 @else
                     <x-menu-item title="{{ $item['label'] }}" icon="{{ $item['icon'] }}" link="{{ route($item['route']) }}" />
@@ -123,7 +137,8 @@
         @foreach($masterDataMenuItems as $item)
             @if(isset($item['disabled']) && $item['disabled'])
                 <x-menu-item title="{{ $item['label'] }}" icon="{{ $item['icon'] }}"
-                    class="opacity-50 cursor-not-allowed pointer-events-none" badge="soon" badge-classes="badge-soft badge-info">
+                    class="opacity-50 cursor-not-allowed pointer-events-none" badge="soon"
+                    badge-classes="badge-soft badge-info">
                 </x-menu-item>
             @else
                 <x-menu-item title="{{ $item['label'] }}" icon="{{ $item['icon'] }}" link="{{ route($item['route']) }}" />
