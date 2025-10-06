@@ -202,6 +202,20 @@ table(vehicle_odometer_logs) {
   updated_at : TIMESTAMP
 }
 
+table(vehicle_taxes) {
+  pk(id) : UUID
+  fk(asset_id) : UUID
+  tax_period_start : DATE
+  tax_period_end : DATE
+  due_date : DATE
+  payment_date : DATE
+  amount : DECIMAL(15,2)
+  receipt_no : VARCHAR(64) [NULL]
+  notes : TEXT [NULL]
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
 ' ==========================
 ' Relationships
 ' ==========================
@@ -240,5 +254,6 @@ asset_transfers ||--o{ asset_branch_history : "writes"
 
 assets ||--|| vehicle_profiles : "has one"
 assets ||--o{ vehicle_odometer_logs : "has many"
+assets ||--o{ vehicle_taxes : "has many"
 
 @enduml

@@ -38,7 +38,7 @@
 
     <!-- Annual Tax Due Date -->
     <x-datetime name="annual_tax_due_date" label="Tanggal Jatuh Tempo Pajak Tahunan" class="input-sm" wire:model="annual_tax_due_date"
-        type="date" />
+        type="date" hint="Diisi untuk kelengkapan data pajak kendaraan" />
 
     <div class="flex gap-3 justify-end pt-4">
         <x-button label="Batal" class="btn-ghost btn-sm" type="button" wire:click="$dispatch('close-drawer')" />

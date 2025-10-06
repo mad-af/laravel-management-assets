@@ -52,10 +52,9 @@
                     'label' => 'Daftar Kendaraan',
                 ],
                 [
-                    'route' => 'vehicles.index',
+                    'route' => 'vehicle-taxes.index',
                     'icon' => 'o-document-currency-dollar',
                     'label' => 'Pajak',
-                    'disabled' => true
                 ],
             ]
         ],

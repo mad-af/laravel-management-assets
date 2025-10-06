@@ -12,7 +12,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
 
 class Asset extends Model
 {
@@ -125,7 +124,15 @@ class Asset extends Model
     }
 
     /**
-     * Check if asset is a vehicle.
+     * Get the vehicle taxes for the asset.
+     */
+    public function vehicleTaxes(): HasMany
+    {
+        return $this->hasMany(VehicleTax::class)->orderBy('due_date', 'desc');
+    }
+
+    /**
+     * Get the latest vehicle tax record.
      */
     public function isVehicle(): bool
     {
@@ -182,5 +189,4 @@ class Asset extends Model
             }
         });
     }
-
 }

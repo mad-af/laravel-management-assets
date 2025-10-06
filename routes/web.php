@@ -1,20 +1,21 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\ForgotPasswordController;
-use App\Http\Controllers\Auth\ResetPasswordController;
-use App\Http\Controllers\UserController;
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\AssetLoanController;
 use App\Http\Controllers\AssetLogController;
 use App\Http\Controllers\AssetTransferController;
-use App\Http\Controllers\VehicleController;
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\BranchController;
-use App\Http\Controllers\MaintenanceController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CompanyController;
+use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\MaintenanceController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\VehicleController;
+use App\Http\Controllers\VehicleTaxController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
@@ -50,36 +51,40 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     Route::get('dashboard', function () {
         return view('dashboard.index');
     })->name('dashboard');
-    
+
     // User Management Routes
     Route::resource('users', UserController::class);
-    
+
     // Asset Management Routes
     Route::resource('assets', AssetController::class);
     Route::patch('assets/{asset}/status', [AssetController::class, 'updateStatus'])->name('assets.update-status');
     Route::get('assets/export', [AssetController::class, 'export'])->name('assets.export');
     Route::get('assets/statistics', [AssetController::class, 'statistics'])->name('assets.statistics');
-    
+
     // Asset Loan Routes
     Route::resource('asset-loans', AssetLoanController::class);
     Route::patch('asset-loans/{assetLoan}/checkin', [AssetLoanController::class, 'checkin'])->name('asset-loans.checkin');
-    
+
     // Asset Log Routes
     Route::get('asset-logs/export', [AssetLogController::class, 'export'])->name('asset-logs.export');
     Route::get('asset-logs/statistics', [AssetLogController::class, 'statistics'])->name('asset-logs.statistics');
     Route::get('assets/{asset}/logs', [AssetLogController::class, 'forAsset'])->name('assets.logs');
     Route::get('asset-logs/for-asset/{asset}', [AssetLogController::class, 'forAsset'])->name('asset-logs.for-asset');
     Route::resource('asset-logs', AssetLogController::class)->only(['index', 'show']);
-    
+
     // Asset Transfer Routes
     Route::resource('asset-transfers', AssetTransferController::class);
     Route::patch('asset-transfers/{assetTransfer}/execute', [AssetTransferController::class, 'execute'])->name('asset-transfers.execute');
-    
+
     // Vehicle Management Routes
     Route::resource('vehicles', VehicleController::class);
     Route::post('vehicles/profile', [VehicleController::class, 'storeProfile'])->name('vehicles.store-profile');
     Route::post('vehicles/odometer', [VehicleController::class, 'storeOdometer'])->name('vehicles.store-odometer');
-    
+
+    // Vehicle Tax Management Routes
+    Route::resource('vehicle-taxes', VehicleTaxController::class);
+    Route::get('vehicle-taxes/api', [VehicleTaxController::class, 'api'])->name('vehicle-taxes.api');
+
     // Category Management Routes
     Route::resource('categories', CategoryController::class);
     Route::patch('categories/{category}/activate', [CategoryController::class, 'activate'])->name('categories.activate');
@@ -87,28 +92,28 @@ Route::prefix('admin')->middleware('auth')->group(function () {
     // Category Management Routes
     Route::resource('employees', EmployeeController::class);
     Route::patch('employees/{employee}/activate', [EmployeeController::class, 'activate'])->name('employees.activate');
-    
+
     // Branch Management Routes
     Route::resource('branches', BranchController::class);
     Route::patch('branches/{branch}/activate', [BranchController::class, 'activate'])->name('branches.activate');
-    
+
     // Company Management Routes
     Route::resource('companies', CompanyController::class);
     Route::patch('companies/{company}/activate', [CompanyController::class, 'activate'])->name('companies.activate');
     Route::patch('companies/{company}/deactivate', [CompanyController::class, 'deactivate'])->name('companies.deactivate');
-    
+
     // Scanner Routes
     Route::get('scanners', function () {
         return view('dashboard.scanners.index1');
     })->name('scanners.index');
- 
+
     // Maintenance Routes
     Route::get('maintenances', [MaintenanceController::class, 'index'])->name('maintenances.index');
     Route::post('maintenances', [MaintenanceController::class, 'store'])->name('maintenances.store');
     Route::get('maintenances/{maintenance}/edit', [MaintenanceController::class, 'edit'])->name('maintenances.edit');
     Route::put('maintenances/{maintenance}', [MaintenanceController::class, 'update'])->name('maintenances.update');
     Route::get('maintenances/{maintenance}/pdf', [MaintenanceController::class, 'generatePDF'])->name('maintenances.pdf');
-    
+
 });
 
 // API Routes for Scanner
