@@ -97,36 +97,29 @@ class Table extends Component
             });
         }
 
-        // Status filter based on tax due dates
+        // Status filter based on tax due dates using VehicleProfile scopes
         switch ($this->statusFilter) {
             case 'overdue':
                 $query->whereHas('vehicleProfile', function ($q) {
-                    $q->where('annual_tax_due_date', '<', now())
-                        ->whereNotNull('annual_tax_due_date');
+                    $q->overdue();
                 });
                 break;
 
             case 'due_soon':
-                $query->where(function ($q) {
-                    // Vehicle profile due soon (dalam 3 bulan)
-                    $q->whereHas('vehicleProfile', function ($subQ) {
-                        $subQ->where('annual_tax_due_date', '>', now())
-                            ->where('annual_tax_due_date', '<=', now()->addMonths(3))
-                            ->whereNotNull('annual_tax_due_date');
-                    });
+                $query->whereHas('vehicleProfile', function ($q) {
+                    $q->dueSoon();
                 });
                 break;
 
             case 'paid':
-                $query->whereHas('vehicleTaxes', function ($q) {
-                    $q->whereNotNull('payment_date')
-                        ->where('due_date', '>=', now()->subMonths(9));
+                $query->whereHas('vehicleProfile', function ($q) {
+                    $q->paid();
                 });
                 break;
 
             case 'not_valid':
                 $query->whereHas('vehicleProfile', function ($q) {
-                    $q->whereNull('annual_tax_due_date');
+                    $q->notValid();
                 });
                 break;
         }
@@ -143,30 +136,23 @@ class Table extends Component
     {
         return $this->getBaseVehicleQuery()
             ->whereHas('vehicleProfile', function ($q) {
-                $q->where('annual_tax_due_date', '<', now())
-                    ->whereNotNull('annual_tax_due_date');
+                $q->overdue();
             })->count();
     }
 
     public function getDueSoonCountProperty()
     {
         return $this->getBaseVehicleQuery()
-            ->where(function ($q) {
-                // Vehicle profile due soon (dalam 3 bulan)
-                $q->whereHas('vehicleProfile', function ($subQ) {
-                    $subQ->where('annual_tax_due_date', '>', now())
-                        ->where('annual_tax_due_date', '<=', now()->addMonths(3))
-                        ->whereNotNull('annual_tax_due_date');
-                });
+            ->whereHas('vehicleProfile', function ($q) {
+                $q->dueSoon();
             })->count();
     }
 
     public function getPaidCountProperty()
     {
         return $this->getBaseVehicleQuery()
-            ->whereHas('vehicleTaxes', function ($q) {
-                $q->whereNotNull('payment_date')
-                    ->where('due_date', '>=', now()->subMonths(9));
+            ->whereHas('vehicleProfile', function ($q) {
+                $q->paid();
             })->count();
     }
 
@@ -174,7 +160,7 @@ class Table extends Component
     {
         return $this->getBaseVehicleQuery()
             ->whereHas('vehicleProfile', function ($q) {
-                $q->whereNull('annual_tax_due_date');
+                $q->notValid();
             })->count();
     }
 
