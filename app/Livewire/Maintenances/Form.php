@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Maintenances;
 
+use App\Enums\AssetStatus;
 use App\Enums\MaintenancePriority;
 use App\Enums\MaintenanceStatus;
 use App\Enums\MaintenanceType;
@@ -330,7 +331,7 @@ class Form extends Component
         if ($this->assetsCache === null) {
             $this->assetsCache = Asset::with('category')
                 ->where('branch_id', $this->branchId)
-                ->where('status', '!=', \App\Enums\AssetStatus::LOST)
+                ->whereNotIn('status', [AssetStatus::MAINTENANCE, AssetStatus::LOST, AssetStatus::ON_LOAN])
                 ->orderBy('name')
                 ->get()
                 ->map(function ($asset) {
@@ -412,15 +413,6 @@ class Form extends Component
         }
 
         return $asset->category->name === 'Kendaraan';
-    }
-
-    public function getAssetProperty()
-    {
-        if (! $this->asset_id) {
-            return null;
-        }
-
-        return Asset::with(['category', 'vehicleProfile'])->find($this->asset_id);
     }
 
     public function render()

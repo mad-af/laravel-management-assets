@@ -24,11 +24,11 @@ enum AssetStatus: string
     public function label(): string
     {
         return match($this) {
-            self::ACTIVE => 'Active',
-            self::INACTIVE => 'Inactive',
-            self::LOST => 'Lost',
-            self::MAINTENANCE => 'Maintenance',
-            self::ON_LOAN => 'On Loan',
+            self::ACTIVE => 'Aktif',
+            self::INACTIVE => 'Tidak Aktif',
+            self::LOST => 'Hilang',
+            self::MAINTENANCE => 'Perawatan',
+            self::ON_LOAN => 'Di Pinjamkan',
         };
     }
 

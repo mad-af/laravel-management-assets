@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\AssetStatus;
 use App\Enums\MaintenancePriority;
 use App\Enums\MaintenanceStatus;
 use App\Enums\MaintenanceType;
@@ -58,5 +59,47 @@ class AssetMaintenance extends Model
     public function assignedUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'technician_name', 'name');
+    }
+
+    /**
+     * Boot the model to handle asset status updates.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // When maintenance is created, set asset status to maintenance
+        static::created(function ($maintenance) {
+            $maintenance->asset()->update([
+                'status' => AssetStatus::MAINTENANCE,
+            ]);
+        });
+
+        // When maintenance status is updated, check if we need to update asset status
+        static::updated(function ($maintenance) {
+            if ($maintenance->wasChanged('status')) {
+                $newStatus = $maintenance->status;
+
+                // If maintenance is completed or cancelled, set asset back to active
+                if (in_array($newStatus, [MaintenanceStatus::COMPLETED, MaintenanceStatus::CANCELLED])) {
+                    $maintenance->asset()->update([
+                        'status' => AssetStatus::ACTIVE,
+                    ]);
+                }
+                // If maintenance is reopened (back to open or in_progress), set asset to maintenance
+                elseif (in_array($newStatus, [MaintenanceStatus::OPEN, MaintenanceStatus::IN_PROGRESS])) {
+                    $maintenance->asset()->update([
+                        'status' => AssetStatus::MAINTENANCE,
+                    ]);
+                }
+            }
+        });
+
+        // When maintenance is deleted, set asset back to active
+        static::deleted(function ($maintenance) {
+            $maintenance->asset()->update([
+                'status' => AssetStatus::ACTIVE,
+            ]);
+        });
     }
 }
