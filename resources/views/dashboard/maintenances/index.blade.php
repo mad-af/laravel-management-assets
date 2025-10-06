@@ -14,8 +14,6 @@
                     'action' => 'openFilterDrawer()'
                 ]
             ]" />
-
-    <button class="btn" onclick="(() => { Livewire.dispatch('refresh-kanban')})()">cona</button>
     
     <livewire:maintenances.kanban-board />
 

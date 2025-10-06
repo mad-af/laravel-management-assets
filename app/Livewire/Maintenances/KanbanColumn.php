@@ -90,6 +90,12 @@ class KanbanColumn extends Component
         return ! in_array($this->status, [MaintenanceStatus::COMPLETED, MaintenanceStatus::CANCELLED]);
     }
 
+    public function canEdit()
+    {
+        // Laporan tidak bisa diedit jika status adalah COMPLETED atau CANCELLED
+        return in_array($this->status, [MaintenanceStatus::OPEN]);
+    }
+
     public function render()
     {
         return view('livewire.maintenances.kanban-column');
