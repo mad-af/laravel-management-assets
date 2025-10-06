@@ -98,9 +98,17 @@
                         <span class="text-sm">{{ \Carbon\Carbon::parse($annualTaxDueDate)->format('d M Y') }}</span>
                         @php
                             $dueDate = \Carbon\Carbon::parse($annualTaxDueDate);
+                            // Cek apakah ada vehicle tax yang sudah dibayar dalam 9 bulan terakhir
+                            $recentPaidTax = $vehicle->vehicleTaxes->where('payment_date', '!=', null)
+                                ->where('due_date', '>=', now()->subMonths(9))->first();
+                            // Cek apakah ada vehicle tax yang sudah 9 bulan dan belum dibayar
+                            $oldUnpaidTax = $vehicle->vehicleTaxes->where('payment_date', null)
+                                ->where('due_date', '<=', now()->subMonths(9))->first();
                         @endphp
-                        @if($vehicle->vehicleTaxes->where('due_date', $annualTaxDueDate)->whereNotNull('payment_date')->isNotEmpty())
+                        @if($recentPaidTax)
                             <span class="text-xs text-success">Sudah dibayar</span>
+                        @elseif($oldUnpaidTax)
+                            <span class="text-xs text-warning">Jatuh tempo (sudah 9 bulan)</span>
                         @elseif($dueDate->isPast())
                             <span class="text-xs text-error">Terlambat {{ $dueDate->diffForHumans(['parts' => 2, 'join' => ' ']) }}</span>
                         @elseif($dueDate->diffInMonths(now()) <= 3)

@@ -107,19 +107,20 @@ class Table extends Component
                 break;
 
             case 'due_soon':
-                $query->whereHas('vehicleProfile', function ($q) {
-                    $q->where('annual_tax_due_date', '>', now())
-                        ->where('annual_tax_due_date', '<=', now()->addMonths(3))
-                        ->whereNotNull('annual_tax_due_date');
+                $query->where(function ($q) {
+                    // Vehicle profile due soon (dalam 3 bulan)
+                    $q->whereHas('vehicleProfile', function ($subQ) {
+                        $subQ->where('annual_tax_due_date', '>', now())
+                            ->where('annual_tax_due_date', '<=', now()->addMonths(3))
+                            ->whereNotNull('annual_tax_due_date');
+                    });
                 });
                 break;
 
             case 'paid':
-                $query->whereHas('vehicleProfile', function ($q) {
-                    $q->whereNotNull('annual_tax_due_date');
-                })->whereHas('vehicleTaxes', function ($q) {
+                $query->whereHas('vehicleTaxes', function ($q) {
                     $q->whereNotNull('payment_date')
-                        ->whereRaw('due_date = (SELECT annual_tax_due_date FROM vehicle_profiles WHERE vehicle_profiles.asset_id = assets.id)');
+                        ->where('due_date', '>=', now()->subMonths(9));
                 });
                 break;
 
@@ -150,21 +151,22 @@ class Table extends Component
     public function getDueSoonCountProperty()
     {
         return $this->getBaseVehicleQuery()
-            ->whereHas('vehicleProfile', function ($q) {
-                $q->where('annual_tax_due_date', '>', now())
-                    ->where('annual_tax_due_date', '<=', now()->addMonths(3))
-                    ->whereNotNull('annual_tax_due_date');
+            ->where(function ($q) {
+                // Vehicle profile due soon (dalam 3 bulan)
+                $q->whereHas('vehicleProfile', function ($subQ) {
+                    $subQ->where('annual_tax_due_date', '>', now())
+                        ->where('annual_tax_due_date', '<=', now()->addMonths(3))
+                        ->whereNotNull('annual_tax_due_date');
+                });
             })->count();
     }
 
     public function getPaidCountProperty()
     {
         return $this->getBaseVehicleQuery()
-            ->whereHas('vehicleProfile', function ($q) {
-                $q->whereNotNull('annual_tax_due_date');
-            })->whereHas('vehicleTaxes', function ($q) {
+            ->whereHas('vehicleTaxes', function ($q) {
                 $q->whereNotNull('payment_date')
-                    ->whereRaw('due_date = (SELECT annual_tax_due_date FROM vehicle_profiles WHERE vehicle_profiles.asset_id = assets.id)');
+                    ->where('due_date', '>=', now()->subMonths(9));
             })->count();
     }
 
