@@ -67,7 +67,7 @@
 
     <!-- Employee Selection -->
     <div>
-        <x-choices label="Karyawan" wire:model="employee_id" :options="$employees" option-value="id"
+        <x-choices label="PIC (Karyawan)" wire:model="employee_id" :options="$employees" option-value="id"
             placeholder="Cari karyawan..." search-function="searchEmployees" debounce="500ms"
             no-result-text="Tidak ada karyawan ditemukan" class="input-sm" searchable clearable single>
             {{-- Item slot --}}

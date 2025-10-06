@@ -32,9 +32,9 @@
                     <li>
                         <a href="{{ route('maintenances.pdf', $maintenance) }}" 
                            target="_blank" 
-                           class="flex gap-2 items-center p-2 text-sm rounded hover:bg-gray-100">
+                           class="flex gap-2 items-center p-2 text-sm rounded">
                             <x-icon name="o-printer" class="w-4 h-4" />
-                            Cetak Laporan
+                            Cetak Work Order
                         </a>
                     </li>
                 @endif
