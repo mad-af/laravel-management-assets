@@ -103,8 +103,10 @@
                             <span class="text-xs text-success">Sudah dibayar</span>
                         @elseif($dueDate->isPast())
                             <span class="text-xs text-error">Terlambat {{ $dueDate->diffForHumans(['parts' => 2, 'join' => ' ']) }}</span>
+                        @elseif($dueDate->diffInMonths(now()) <= 3)
+                            <span class="text-xs text-warning">Jatuh tempo {{ $dueDate->diffForHumans(['parts' => 2, 'join' => ' ']) }}</span>
                         @else
-                            <span class="text-xs text-warning">{{ $dueDate->diffForHumans(['parts' => 2, 'join' => ' ']) }}</span>
+                            <span class="text-xs text-info">{{ $dueDate->diffForHumans(['parts' => 2, 'join' => ' ']) }}</span>
                         @endif
                     </div>
                 @else

@@ -109,6 +109,7 @@ class Table extends Component
             case 'due_soon':
                 $query->whereHas('vehicleProfile', function ($q) {
                     $q->where('annual_tax_due_date', '>', now())
+                        ->where('annual_tax_due_date', '<=', now()->addMonths(3))
                         ->whereNotNull('annual_tax_due_date');
                 });
                 break;
@@ -151,6 +152,7 @@ class Table extends Component
         return $this->getBaseVehicleQuery()
             ->whereHas('vehicleProfile', function ($q) {
                 $q->where('annual_tax_due_date', '>', now())
+                    ->where('annual_tax_due_date', '<=', now()->addMonths(3))
                     ->whereNotNull('annual_tax_due_date');
             })->count();
     }
