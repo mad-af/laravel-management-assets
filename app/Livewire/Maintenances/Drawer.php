@@ -20,7 +20,6 @@ class Drawer extends Component
         'close-drawer' => 'closeDrawer',
         'open-drawer' => 'openDrawer',
         'open-edit-drawer' => 'openEditDrawer',
-        'maintenance-saved' => 'closeDrawer',
     ];
 
     public function mount()

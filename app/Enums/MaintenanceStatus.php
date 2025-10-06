@@ -28,4 +28,14 @@ enum MaintenanceStatus: string
             self::CANCELLED => 'error',
         };
     }
+
+    public function order(): int
+    {
+        return match($this) {
+            self::OPEN => 1,
+            self::IN_PROGRESS => 2,
+            self::COMPLETED => 3,
+            self::CANCELLED => 3,
+        };
+    }
 }

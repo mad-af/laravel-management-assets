@@ -279,3 +279,8 @@ function initScannerIfPresent() {
         window._cameraScanner = new window.QRBarcodeScanner();
     }
 }
+
+window.addEventListener("reload-page", () => {
+    // Refresh hanya ke main route tanpa parameter dan query parameter
+    window.location.href = window.location.pathname;
+});

@@ -142,7 +142,7 @@ class ProfileForm extends Component
                 'asset_id' => $this->asset_id,
                 'year_purchase' => $this->year_purchase ?: null,
                 'year_manufacture' => $this->year_manufacture ?: null,
-                'current_odometer_km' => $this->current_odometer_km ?: null,
+                'current_odometer_km' => $this->current_odometer_km ?: 0,
                 'last_service_date' => $this->last_service_date ?: null,
                 'service_target_odometer_km' => $this->service_target_odometer_km ?: null,
                 'next_service_date' => $this->next_service_date ?: null,

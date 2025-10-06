@@ -10,8 +10,8 @@ enum MaintenanceType: string
     public function label(): string
     {
         return match($this) {
-            self::PREVENTIVE => 'Preventive',
-            self::CORRECTIVE => 'Corrective',
+            self::PREVENTIVE => 'Pencegahan',
+            self::CORRECTIVE => 'Perbaikan',
         };
     }
 

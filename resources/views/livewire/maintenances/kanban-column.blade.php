@@ -10,7 +10,8 @@
     <!-- Column Content -->
     <div class="overflow-y-auto flex-1 px-2 pt-2 space-y-2 rounded-lg">
         @forelse($maintenances as $maintenance)
-            <x-kanban-card-dropdown :model="$maintenance">
+        {{-- {{ $loop->iteration == 6 && dd($loop) }} --}}
+            <x-kanban-card-dropdown :model="$maintenance" :is-last="$isLast">
                 <x-slot:trigger>
                     <div wire:key="maintenance-{{ $maintenance->id }}" class="!w-full">
                         <livewire:maintenances.kanban-card :maintenance="$maintenance" :key="$maintenance->id" />
@@ -24,6 +25,38 @@
                         Edit
                     </button>
                 </li>
+                
+                @if($this->canPrintReport())
+                    <li>
+                        <button class="flex gap-2 items-center p-2 text-sm rounded">
+                            <x-icon name="o-printer" class="w-4 h-4" />
+                            Cetak Laporan
+                        </button>
+                    </li>
+                @endif
+                                
+                @foreach($this->getAvailableStatuses()->next as $availableStatus)
+                <li>
+                    <button wire:click="moveToStatus('{{ $maintenance->id }}', '{{ $availableStatus->value }}')"
+                        class="flex gap-2 items-center p-2 text-sm rounded text-{{ $availableStatus->color() }}">
+                        <x-icon name="o-arrow-right" class="w-4 h-4" />
+                        Move to {{ $availableStatus->label() }}
+                    </button>
+                </li>
+                @endforeach
+
+                @if(count($this->getAvailableStatuses()->previous) > 0)
+                    <div class="divider m-0"></div>
+                    @foreach($this->getAvailableStatuses()->previous as $availableStatus)
+                    <li>
+                        <button wire:click="moveToStatus('{{ $maintenance->id }}', '{{ $availableStatus->value }}')"
+                            class="flex gap-2 items-center p-2 text-sm rounded">
+                            <x-icon name="o-arrow-left" class="w-4 h-4" />
+                            Move to {{ $availableStatus->label() }}
+                        </button>
+                    </li>
+                    @endforeach
+                @endif
             </x-kanban-card-dropdown>
         @empty
             <div class="flex flex-col gap-2 justify-center items-center py-8 text-center">

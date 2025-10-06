@@ -7,10 +7,10 @@
     </div>
 
     <!-- Invoice No -->
-    <div>
+    {{-- <div>
         <x-input label="No. Invoice" wire:model="invoice_no" placeholder="Masukkan nomor invoice..." 
             class="input-sm" />
-    </div>
+    </div> --}}
 
     <!-- Title -->
     <div>
@@ -27,7 +27,7 @@
     <!-- Status -->
     <div>
         <x-select label="Status" wire:model="status" :options="$maintenanceStatuses" option-value="value" option-label="label"
-            placeholder="Pilih status..." required class="select-sm" />
+            placeholder="Pilih status..." required class="select-sm" disabled />
     </div>
 
     <!-- Priority -->
@@ -73,7 +73,7 @@
     @if($this->isVehicle)
     <div>
         <x-input label="Odometer saat Service (KM)" wire:model="odometer_km_at_service" placeholder="Masukkan odometer..." 
-            type="number" min="0" class="input-sm" />
+            type="number" min="{{ $this->asset?->vehicleProfile?->current_odometer_km ?? 0 }}" class="input-sm" required />
     </div>
     @endif
 

@@ -166,12 +166,9 @@ class Form extends Component
                 $this->success('Perawatan berhasil ditambahkan!');
             }
 
-            $this->dispatch('maintenance-saved');
-            Log::info('Form: Dispatching maintenance-saved event');
-            $this->dispatch('$refresh')->to('maintenances.kanban-board');
-            Log::info('Form: Dispatching $refresh to maintenances.kanban-board');
+            $this->dispatch('refresh-kanban');
             $this->dispatch('close-drawer');
-
+            $this->dispatch('reload-page');
         } catch (\Exception $e) {
             dd($e);
             $this->error('Terjadi kesalahan: '.$e->getMessage());
@@ -213,6 +210,15 @@ class Form extends Component
         }
 
         return $asset->category->name === 'Kendaraan';
+    }
+
+    public function getAssetProperty()
+    {
+        if (! $this->asset_id) {
+            return null;
+        }
+
+        return Asset::with(['category', 'vehicleProfile'])->find($this->asset_id);
     }
 
     public function render()

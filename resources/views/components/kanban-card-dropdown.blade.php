@@ -1,4 +1,4 @@
-@props(['model'])
+@props(['model', 'isLast' => false])
 
 <div>
     <!-- Dropdown Trigger -->
@@ -8,8 +8,8 @@
     </button>
 
     <!-- Dropdown Menu -->
-    <ul class="shadow-sm dropdown dropdown-right menu rounded-box bg-base-100" popover id="dropdown-card-{{ $model->id }}"
-        style="position-anchor: --anchor-{{ $model->id }};">
+    <ul class="shadow-sm dropdown {{ $isLast ? 'dropdown-left' : 'dropdown-right' }} menu rounded-box bg-base-100" popover id="dropdown-card-{{ $model->id }}"
+        style="position-anchor: --anchor-{{ $model->id }};">    
         {{ $slot }}
     </ul>
 </div>

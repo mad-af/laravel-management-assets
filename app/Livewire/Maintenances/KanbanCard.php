@@ -3,8 +3,10 @@
 namespace App\Livewire\Maintenances;
 
 use App\Models\AssetMaintenance;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
+#[On('refresh-kanban')]
 class KanbanCard extends Component
 {
     public AssetMaintenance $maintenance;
