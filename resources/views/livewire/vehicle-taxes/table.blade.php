@@ -118,7 +118,7 @@
                                     $statusText = 'Akan Datang';
                                 }
                             @endphp
-                            <div class="flex items-center justify-between gap-2">
+                            <div class="flex gap-2 justify-between items-center">
                                 <div class="flex-1 min-w-0">
                                     <div class="text-sm font-medium truncate">{{ $taxType->tax_name }}</div>
                                     <div class="text-xs text-base-content/60">{{ $dueDate->format('d M Y') }}</div>
@@ -127,7 +127,7 @@
                             </div>
                         @endforeach
                         @if($taxTypes->count() > 3)
-                            <div class="text-xs text-base-content/50 mt-1">
+                            <div class="mt-1 text-xs text-base-content/50">
                                 +{{ $taxTypes->count() - 3 }} lainnya
                             </div>
                         @endif
@@ -167,11 +167,11 @@
                 <x-action-dropdown :model="$vehicle" id="dropdown-menu-{{ $vehicle->id }}">
                     @if ($this->statusFilter === 'not_valid')
                         <li>
-                            <a href="/admin/vehicles?action=save-profile&asset_id={{ $vehicle->id }}"
-                                class="flex gap-2 items-center p-2 text-sm rounded">
-                                <x-icon name="o-truck" class="w-4 h-4" />
-                                Lengkapi Profil Kendaraan
-                            </a>
+                            <button wire:click="$dispatch('open-tax-type-drawer', { assetId: '{{ $vehicle->id }}' })"
+                                class="flex gap-2 items-center p-2 w-full text-sm text-left rounded">
+                                <x-icon name="o-document" class="w-4 h-4" />
+                                Konfigurasi Pajak
+                            </button>
                         </li>
                     @else
                         <li>

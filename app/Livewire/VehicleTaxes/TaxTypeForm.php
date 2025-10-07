@@ -62,7 +62,7 @@ class TaxTypeForm extends Component
         // Load dropdown data
         $this->loadAssets();
         $this->loadTaxTypeOptions();
-
+        $this->loadVehicleTaxType();
     }
 
     /**
@@ -109,7 +109,7 @@ class TaxTypeForm extends Component
 
         if ($pkbTaxType) {
             $this->pkb_tax_type_id = $pkbTaxType->id;
-            $this->due_date = $pkbTaxType->due_date;
+            $this->due_date = $pkbTaxType->due_date?->format('Y-m-d');
         }
 
         // Load existing KIR tax type
@@ -119,7 +119,7 @@ class TaxTypeForm extends Component
 
         if ($kirTaxType) {
             $this->kir_tax_type_id = $kirTaxType->id;
-            $this->due_date_kir = $kirTaxType->due_date;
+            $this->due_date_kir = $kirTaxType->due_date?->format('Y-m-d');
             $this->is_kir = true;
         }
     }
@@ -172,8 +172,9 @@ class TaxTypeForm extends Component
             }
 
             $this->success('Data pajak kendaraan berhasil disimpan!');
-            $this->dispatch('vehicle-tax-type-saved');
+            $this->dispatch('close-drawer');
             $this->resetForm();
+            $this->dispatch('reload-page');
         } catch (\Throwable $e) {
             $this->error('Terjadi kesalahan: '.$e->getMessage());
         }
@@ -188,6 +189,7 @@ class TaxTypeForm extends Component
 
     public function resetForm(): void
     {
+        $this->asset_id = null;
         $this->reset([
             'asset_id', 'due_date', 'due_date_kir', 'is_kir', 'isEdit',
         ]);
