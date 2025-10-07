@@ -26,8 +26,11 @@ class Table extends Component
         'statusFilter' => ['except' => ''],
     ];
 
+    public $currentBranchId = '';
+
     public function mount()
     {
+        $this->currentBranchId = session_get(SessionKey::BranchId);
         // Set default company if user has access to only one
         if (empty($this->selectedCompanyId)) {
             $companies = $this->getCompaniesProperty();
@@ -66,8 +69,7 @@ class Table extends Component
             return collect();
         }
 
-        $currentBranchId = session_get(SessionKey::BranchId);
-        $query = Asset::forBranch($currentBranchId)
+        $query = Asset::forBranch($this->currentBranchId)
             ->with([
                 'category',
                 'branch',
@@ -111,30 +113,34 @@ class Table extends Component
 
     public function getTotalVehiclesProperty()
     {
-        return $this->getBaseVehicleQuery()->count();
+        return $this->getBaseVehicleQuery()->forBranch($this->currentBranchId)->count();
     }
 
     public function getOverdueCountProperty()
     {
         return $this->getBaseVehicleQuery()
+            ->forBranch($this->currentBranchId)
             ->overdue()->count();
     }
 
     public function getDueSoonCountProperty()
     {
         return $this->getBaseVehicleQuery()
+            ->forBranch($this->currentBranchId)
             ->dueSoon()->count();
     }
 
     public function getPaidCountProperty()
     {
         return $this->getBaseVehicleQuery()
+            ->forBranch($this->currentBranchId)
             ->paid()->count();
     }
 
     public function getNotValidCountProperty()
     {
         return $this->getBaseVehicleQuery()
+            ->forBranch($this->currentBranchId)
             ->notValid()->count();
     }
 

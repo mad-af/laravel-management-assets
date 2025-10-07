@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\VehicleTaxTypeEnum;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -61,14 +62,14 @@ class VehicleTaxHistory extends Model
         // Calculate the next due date based on tax type and latest history
         $nextDueDate = $vehicleTaxType->due_date;
         if ($latestHistory) {
-            $baseDate = $latestHistory->paid_date;
+            $baseDate = $latestHistory->due_date;
 
             if ($vehicleTaxType->tax_type === VehicleTaxTypeEnum::PKB_TAHUNAN) {
                 // PKB Tahunan: add 1 year
-                $nextDueDate = \Carbon\Carbon::parse($baseDate)->addYear();
+                $nextDueDate = Carbon::parse($baseDate)->addYear();
             } elseif ($vehicleTaxType->tax_type === VehicleTaxTypeEnum::KIR) {
                 // KIR: add 6 months
-                $nextDueDate = \Carbon\Carbon::parse($baseDate)->addMonths(6);
+                $nextDueDate = Carbon::parse($baseDate)->addMonths(6);
             }
         }
 

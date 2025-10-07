@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\VehicleTaxTypeEnum;
 use App\Models\VehicleTaxHistory;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -48,8 +49,20 @@ class CheckVehicleTaxDueDates extends Command
         VehicleTaxHistory::with('vehicleTaxType')
             ->whereIn('id', $latestHistoryIds)
             ->chunk(100, function ($histories) use ($threeMonthsFromNow, &$createdCount) {
-                $filtered = $histories->filter(function ($history) use ($threeMonthsFromNow) {
-                    return $history->vehicleTaxType && $history->due_date->lte($threeMonthsFromNow);
+                $filtered = $histories->filter(callback: function ($history) use ($threeMonthsFromNow) {
+
+                    // Calculate the next due date based on tax type and latest history
+                    $nextDueDate = $history->due_date;
+                    $baseDate = $history->due_date;
+                    if ($history->vehicleTaxType->tax_type === VehicleTaxTypeEnum::PKB_TAHUNAN) {
+                        // PKB Tahunan: add 1 year
+                        $nextDueDate = Carbon::parse($baseDate)->addYear();
+                    } elseif ($history->vehicleTaxType->tax_type === VehicleTaxTypeEnum::KIR) {
+                        // KIR: add 6 months
+                        $nextDueDate = Carbon::parse($baseDate)->addMonths(6);
+                    }
+
+                    return $history->vehicleTaxType && $nextDueDate->lte($threeMonthsFromNow);
                 });
 
                 foreach ($filtered as $history) {
