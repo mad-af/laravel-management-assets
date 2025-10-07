@@ -2,7 +2,11 @@
 
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
+
+// Schedule the vehicle tax due date check to run daily at 00:00
+Schedule::command('vehicle-tax:check-due-dates')->dailyAt('00:00')->timezone('Asia/Jakarta');

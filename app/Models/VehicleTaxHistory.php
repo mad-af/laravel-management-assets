@@ -15,6 +15,7 @@ class VehicleTaxHistory extends Model
         'vehicle_tax_type_id',
         'asset_id',
         'paid_date',
+        'due_date',
         'year',
         'amount',
         'receipt_no',
@@ -23,6 +24,7 @@ class VehicleTaxHistory extends Model
 
     protected $casts = [
         'paid_date' => 'date',
+        'due_date' => 'date',
         'amount' => 'decimal:2',
         'year' => 'integer',
     ];
@@ -53,13 +55,13 @@ class VehicleTaxHistory extends Model
             ->whereHas('vehicleTaxType', function ($query) use ($vehicleTaxType) {
                 $query->where('tax_type', $vehicleTaxType->tax_type);
             })
-            ->orderBy('created_at', 'desc')
+            ->orderBy('due_date', 'desc')
             ->first();
 
         // Calculate the next due date based on tax type and latest history
         $nextDueDate = $vehicleTaxType->due_date;
         if ($latestHistory) {
-            $baseDate = $latestHistory->paid_date ?? $vehicleTaxType->due_date;
+            $baseDate = $latestHistory->paid_date;
 
             if ($vehicleTaxType->tax_type === VehicleTaxTypeEnum::PKB_TAHUNAN) {
                 // PKB Tahunan: add 1 year
@@ -74,6 +76,7 @@ class VehicleTaxHistory extends Model
             'vehicle_tax_type_id' => $vehicleTaxType->id,
             'asset_id' => $vehicleTaxType->asset_id,
             'year' => $nextDueDate ? $nextDueDate->year : now()->year,
+            'due_date' => $nextDueDate,
             'paid_date' => null,
             'amount' => null,
             'receipt_no' => null,
