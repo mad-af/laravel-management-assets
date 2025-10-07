@@ -5,6 +5,7 @@ namespace App\Livewire\VehicleTaxes;
 use App\Models\Asset;
 use App\Models\VehicleTaxHistory;
 use App\Models\VehicleTaxType;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 use Mary\Traits\Toast;
 
@@ -13,8 +14,7 @@ class TaxPaymentForm extends Component
     use Toast;
 
     // State
-    public ?string $vehicleTaxId = null;
-
+    #[Url('asset_id')]
     public ?string $asset_id = null;
     public ?string $vehicle_tax_type_id = null;
     public ?string $paid_date = null;
@@ -44,16 +44,16 @@ class TaxPaymentForm extends Component
         'resetForm' => 'resetForm',
     ];
 
-    public function mount(?string $vehicleTaxId = null): void
+    public function mount(?string $assetId = null): void
     {
-        $this->vehicleTaxId = $vehicleTaxId;
+        $this->asset_id = $assetId;
         $this->year = date('Y'); // Set default year to current year
 
         // Load dropdown data
         $this->loadAssets();
         $this->loadVehicleTaxTypes();
 
-        if ($vehicleTaxId) {
+        if ($this->asset_id) {
             $this->isEdit = true;
             $this->loadVehicleTaxHistory();
         }
@@ -149,7 +149,6 @@ class TaxPaymentForm extends Component
 
     public function edit(string $vehicleTaxId): void
     {
-        $this->vehicleTaxId = $vehicleTaxId;
         $this->isEdit = true;
         $this->loadVehicleTaxHistory();
     }

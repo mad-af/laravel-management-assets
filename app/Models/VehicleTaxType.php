@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\VehicleTaxTypeEnum;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -19,6 +20,7 @@ class VehicleTaxType extends Model
 
     protected $casts = [
         'due_date' => 'date',
+        'tax_type' => VehicleTaxTypeEnum::class,
     ];
 
     /**

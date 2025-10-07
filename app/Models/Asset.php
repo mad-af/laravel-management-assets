@@ -202,6 +202,28 @@ class Asset extends Model
     }
 
     /**
+     * Scope untuk mengambil asset yang merupakan kendaraan berdasarkan kategori
+     */
+    public function scopeVehicles(Builder $query): Builder
+    {
+        return $query->whereHas('category', function ($q) {
+            $q->where('name', 'Kendaraan');
+        });
+    }
+
+    /**
+     * Scope untuk filter berdasarkan branch tertentu
+     */
+    public function scopeForBranch(Builder $query, ?string $branchId): Builder
+    {
+        if ($branchId) {
+            return $query->where('branch_id', $branchId);
+        }
+
+        return $query;
+    }
+
+    /**
      * Boot the model.
      */
     protected static function boot()

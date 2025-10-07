@@ -25,7 +25,7 @@
             <!-- Form Content Based on Action -->
             @if($action === 'tax-type')
                 <!-- Vehicle Tax Type Form -->
-                <livewire:vehicle-taxes.tax-type-form :vehicleTaxTypeId="$asset_id"
+                <livewire:vehicle-taxes.tax-type-form :assetId="$asset_id"
                     :key="'vehicle-tax-type-form-' . ($asset_id ?? 'new')" />
             @elseif($action === 'tax-payment')
                 <!-- Vehicle Tax History Form -->

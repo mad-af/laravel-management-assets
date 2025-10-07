@@ -2,8 +2,10 @@
 
 namespace App\Livewire\VehicleTaxes;
 
+use App\Enums\VehicleTaxTypeEnum;
 use App\Models\Asset;
 use App\Models\VehicleTaxType;
+use Livewire\Attributes\Url;
 use Livewire\Component;
 use Mary\Traits\Toast;
 
@@ -11,14 +13,21 @@ class TaxTypeForm extends Component
 {
     use Toast;
 
+    #[Url(as: 'asset_id')] // ?asset_id=123
     public ?string $asset_id = null;
+
     public ?string $tax_type = null;
+
     public ?string $due_date = null;
 
     public bool $isEdit = false;
 
     // Dropdown sources
     public array $assets = [];
+
+    public array $taxTypeOptions = [];
+
+    public bool $is_kir = false;
 
     protected $rules = [
         'asset_id' => 'required|uuid|exists:assets,id',
@@ -31,17 +40,18 @@ class TaxTypeForm extends Component
         'resetForm' => 'resetForm',
     ];
 
-    public function mount(?string $asset_id = null): void
+    public function mount(?string $assetId = null): void
     {
-        $this->asset_id = $asset_id;
+        $this->asset_id = $assetId;
 
         // Load dropdown data
         $this->loadAssets();
+        $this->loadTaxTypeOptions();
 
-        if ($asset_id) {
-            $this->isEdit = true;
-            $this->loadVehicleTaxType();
-        }
+        // if ($asset_id) {
+        //     $this->isEdit = true;
+        //     $this->loadVehicleTaxType();
+        // }
     }
 
     /**
@@ -49,17 +59,27 @@ class TaxTypeForm extends Component
      */
     protected function loadAssets(): void
     {
-        $this->assets = Asset::query()
-            ->where('is_active', true)
+        $branchId = session('selected_branch_id');
+
+        $this->assets = Asset::vehicles()
+            ->forBranch($branchId)
             ->orderBy('name')
             ->get(['id', 'name', 'code'])
             ->map(function ($asset) {
                 return [
                     'id' => $asset->id,
-                    'name' => $asset->name . ' (' . $asset->code . ')',
+                    'name' => $asset->name.' ('.$asset->code.')',
                 ];
             })
             ->toArray();
+    }
+
+    /**
+     * Load tax type options from enum
+     */
+    protected function loadTaxTypeOptions(): void
+    {
+        $this->taxTypeOptions = VehicleTaxTypeEnum::options();
     }
 
     /**
@@ -74,7 +94,7 @@ class TaxTypeForm extends Component
         }
 
         $this->asset_id = $vehicleTaxType->asset_id;
-        $this->tax_type = $vehicleTaxType->tax_type;
+        $this->tax_type = $vehicleTaxType->tax_type?->value;
         $this->due_date = $vehicleTaxType->due_date?->format('Y-m-d');
     }
 

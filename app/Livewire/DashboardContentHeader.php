@@ -79,9 +79,6 @@ class DashboardContentHeader extends Component
             case 'openVehicleOdometerDrawer':
                 $this->dispatch('open-odometer-drawer');
                 break;
-            case 'openVehicleTaxTypeDrawer':
-                $this->dispatch('open-tax-type-drawer');
-                break;
             default:
                 $this->dispatch($this->buttonAction);
                 break;
@@ -93,6 +90,9 @@ class DashboardContentHeader extends Component
         switch ($action) {
             case 'openVehicleProfileDrawer':
                 $this->dispatch('open-profile-drawer');
+                break;
+            case 'openVehicleTaxTypeDrawer':
+                $this->dispatch('open-tax-type-drawer');
                 break;
             default:
                 $this->dispatch($action);

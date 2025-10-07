@@ -6,7 +6,7 @@
     <livewire:dashboard-content-header title='Vehicle Tax Management' description='Kelola data pajak kendaraan dalam sistem.'
         buttonText='Bayar Pajak Kendaraan' buttonIcon='o-calculator' buttonAction='openVehicleTaxDrawer' :additional-buttons="[
                 [
-                    'text' => 'Opsi Pajak Kendaraan',
+                    'text' => 'Konfigurasi Pajak Kendaraan',
                     'icon' => 'o-document',
                     'class' => ' btn-sm',
                     'action' => 'openVehicleTaxTypeDrawer'
