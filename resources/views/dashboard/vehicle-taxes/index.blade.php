@@ -4,7 +4,14 @@
 
 @section('content')
     <livewire:dashboard-content-header title='Vehicle Tax Management' description='Kelola data pajak kendaraan dalam sistem.'
-        buttonText='Add Vehicle Tax' buttonIcon='o-plus' buttonAction='openVehicleTaxDrawer' />
+        buttonText='Bayar Pajak Kendaraan' buttonIcon='o-calculator' buttonAction='openVehicleTaxDrawer' :additional-buttons="[
+                [
+                    'text' => 'Opsi Pajak Kendaraan',
+                    'icon' => 'o-document',
+                    'class' => ' btn-sm',
+                    'action' => 'openVehicleTaxTypeDrawer'
+                ]
+            ]"/>
 
     <livewire:vehicle-taxes.table />
 

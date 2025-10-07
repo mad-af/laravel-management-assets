@@ -3,34 +3,39 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-class VehicleTax extends Model
+
+class VehicleTaxHistory extends Model
 {
-    use HasFactory, HasUuids;
+    use HasUuids;
 
     protected $fillable = [
+        'vehicle_tax_type_id',
         'asset_id',
-        'tax_period_start',
-        'tax_period_end',
-        'due_date',
-        'payment_date',
+        'paid_date',
+        'year',
         'amount',
         'receipt_no',
         'notes',
     ];
 
     protected $casts = [
-        'tax_period_start' => 'date',
-        'tax_period_end' => 'date',
-        'due_date' => 'date',
-        'payment_date' => 'date',
+        'paid_date' => 'date',
         'amount' => 'decimal:2',
+        'year' => 'integer',
     ];
 
     /**
-     * Get the asset that owns the vehicle tax.
+     * Get the vehicle tax type that owns the vehicle tax history.
+     */
+    public function vehicleTaxType(): BelongsTo
+    {
+        return $this->belongsTo(VehicleTaxType::class);
+    }
+
+    /**
+     * Get the asset that owns the vehicle tax history.
      */
     public function asset(): BelongsTo
     {

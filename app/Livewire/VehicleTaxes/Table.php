@@ -69,9 +69,6 @@ class Table extends Component
             'category',
             'branch',
             'vehicleProfile',
-            'vehicleTaxes' => function ($q) {
-                $q->orderBy('due_date', 'desc');
-            },
         ])
             ->where('category_id', $vehicleCategory->id);
 
@@ -100,27 +97,19 @@ class Table extends Component
         // Status filter based on tax due dates using VehicleProfile scopes
         switch ($this->statusFilter) {
             case 'overdue':
-                $query->whereHas('vehicleProfile', function ($q) {
-                    $q->overdue();
-                });
+                $query->overdue();
                 break;
 
             case 'due_soon':
-                $query->whereHas('vehicleProfile', function ($q) {
-                    $q->dueSoon();
-                });
+                $query->dueSoon();
                 break;
 
             case 'paid':
-                $query->whereHas('vehicleProfile', function ($q) {
-                    $q->paid();
-                });
+                $query->paid();
                 break;
 
             case 'not_valid':
-                $query->whereHas('vehicleProfile', function ($q) {
-                    $q->notValid();
-                });
+                $query->notValid();
                 break;
         }
 
@@ -135,33 +124,25 @@ class Table extends Component
     public function getOverdueCountProperty()
     {
         return $this->getBaseVehicleQuery()
-            ->whereHas('vehicleProfile', function ($q) {
-                $q->overdue();
-            })->count();
+            ->overdue()->count();
     }
 
     public function getDueSoonCountProperty()
     {
         return $this->getBaseVehicleQuery()
-            ->whereHas('vehicleProfile', function ($q) {
-                $q->dueSoon();
-            })->count();
+            ->dueSoon()->count();
     }
 
     public function getPaidCountProperty()
     {
         return $this->getBaseVehicleQuery()
-            ->whereHas('vehicleProfile', function ($q) {
-                $q->paid();
-            })->count();
+            ->paid()->count();
     }
 
     public function getNotValidCountProperty()
     {
         return $this->getBaseVehicleQuery()
-            ->whereHas('vehicleProfile', function ($q) {
-                $q->notValid();
-            })->count();
+            ->notValid()->count();
     }
 
     private function getBaseVehicleQuery()

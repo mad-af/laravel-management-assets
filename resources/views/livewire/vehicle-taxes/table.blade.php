@@ -33,7 +33,7 @@
                 @endphp
 
                 @foreach($statusTabs as $tab)
-                    <label class="tab gap-2">
+                    <label class="gap-2 tab">
                         <input type="radio" name="status_tabs" class="checked:bg-base-100 checked:shadow"
                             wire:model.live="statusFilter" value="{{ $tab['value'] }}" />
                         {{ $tab['label'] }}
@@ -57,7 +57,7 @@
                 $headers = [
                     ['key' => 'vehicle_info', 'label' => 'Kendaraan'],
                     ['key' => 'plate_no', 'label' => 'Plat Nomor'],
-                    ['key' => 'last_due_date', 'label' => 'Jatuh Tempo Terakhir'],
+                    ['key' => 'last_tax_types', 'label' => 'Jenis Pajak'],
                     ['key' => 'last_payment', 'label' => 'Pembayaran Terakhir'],
                     ['key' => 'payment_count', 'label' => 'Jumlah Pembayaran'],
                     ['key' => 'actions', 'label' => 'Aksi', 'class' => 'w-24'],
@@ -89,32 +89,47 @@
                 <span class="font-mono font-medium">{{ $vehicle->vehicleProfile?->plate_no ?? '—' }}</span>
                 @endscope
 
-                @scope('cell_last_due_date', $vehicle)
+                @scope('cell_last_tax_types', $vehicle)
                 @php
-                    $annualTaxDueDate = $vehicle->vehicleProfile?->annual_tax_due_date;
+                    $taxTypes = $vehicle->vehicleTaxTypes;
                 @endphp
-                @if($annualTaxDueDate)
-                    <div class="flex flex-col">
-                        <span class="text-sm">{{ \Carbon\Carbon::parse($annualTaxDueDate)->format('d M Y') }}</span>
-                        @php
-                            $dueDate = \Carbon\Carbon::parse($annualTaxDueDate);
-                            // Cek apakah ada vehicle tax yang sudah dibayar dalam 9 bulan terakhir
-                            $recentPaidTax = $vehicle->vehicleTaxes->where('payment_date', '!=', null)
-                                ->where('due_date', '>=', now()->subMonths(9))->first();
-                            // Cek apakah ada vehicle tax yang sudah 9 bulan dan belum dibayar
-                            $oldUnpaidTax = $vehicle->vehicleTaxes->where('payment_date', null)
-                                ->where('due_date', '<=', now()->subMonths(9))->first();
-                        @endphp
-                        @if($recentPaidTax)
-                            <span class="text-xs text-success">Sudah dibayar</span>
-                        @elseif($oldUnpaidTax)
-                            <span class="text-xs text-warning">Jatuh tempo (sudah 9 bulan)</span>
-                        @elseif($dueDate->isPast())
-                            <span class="text-xs text-error">Terlambat {{ $dueDate->diffForHumans(['parts' => 2, 'join' => ' ']) }}</span>
-                        @elseif($dueDate->diffInMonths(now()) <= 3)
-                            <span class="text-xs text-warning">Jatuh tempo {{ $dueDate->diffForHumans(['parts' => 2, 'join' => ' ']) }}</span>
-                        @else
-                            <span class="text-xs text-info">{{ $dueDate->diffForHumans(['parts' => 2, 'join' => ' ']) }}</span>
+                @if($taxTypes->count() > 0)
+                    <div class="flex flex-col gap-1">
+                        @foreach($taxTypes->take(3) as $taxType)
+                            @php
+                                $dueDate = \Carbon\Carbon::parse($taxType->due_date);
+                                $paidHistory = $vehicle->vehicleTaxHistories->where('vehicle_tax_type_id', $taxType->id)->first();
+                                
+                                if ($paidHistory) {
+                                    $status = 'paid';
+                                    $statusClass = 'badge-success';
+                                    $statusText = 'Dibayar';
+                                } elseif ($dueDate->isPast()) {
+                                    $status = 'overdue';
+                                    $statusClass = 'badge-error';
+                                    $statusText = 'Terlambat';
+                                } elseif ($dueDate->diffInMonths(now()) <= 3) {
+                                    $status = 'due_soon';
+                                    $statusClass = 'badge-warning';
+                                    $statusText = 'Jatuh Tempo';
+                                } else {
+                                    $status = 'upcoming';
+                                    $statusClass = 'badge-info';
+                                    $statusText = 'Akan Datang';
+                                }
+                            @endphp
+                            <div class="flex items-center justify-between gap-2">
+                                <div class="flex-1 min-w-0">
+                                    <div class="text-sm font-medium truncate">{{ $taxType->tax_name }}</div>
+                                    <div class="text-xs text-base-content/60">{{ $dueDate->format('d M Y') }}</div>
+                                </div>
+                                <x-badge class="badge-xs {{ $statusClass }}" value="{{ $statusText }}" />
+                            </div>
+                        @endforeach
+                        @if($taxTypes->count() > 3)
+                            <div class="text-xs text-base-content/50 mt-1">
+                                +{{ $taxTypes->count() - 3 }} lainnya
+                            </div>
                         @endif
                     </div>
                 @else
@@ -124,11 +139,11 @@
 
                 @scope('cell_last_payment', $vehicle)
                 @php
-                    $lastPayment = $vehicle->vehicleTaxes->where('payment_date', '!=', null)->first();
+                    $lastPayment = $vehicle->vehicleTaxHistories->sortByDesc('paid_date')->first();
                 @endphp
                 @if($lastPayment)
                     <div class="flex flex-col">
-                        <span class="text-sm">{{ $lastPayment->payment_date->format('d M Y') }}</span>
+                        <span class="text-sm">{{ \Carbon\Carbon::parse($lastPayment->paid_date)->format('d M Y') }}</span>
                         <span class="text-xs text-base-content/70">Rp
                             {{ number_format($lastPayment->amount, 0, ',', '.') }}</span>
                     </div>
@@ -139,12 +154,12 @@
 
                 @scope('cell_payment_count', $vehicle)
                 @php
-                    // $paidCount = $vehicle->vehicleTaxes->where('payment_date', '!=', null)->count();
-                    $totalCount = $vehicle->vehicleTaxes->count();
+                    $paidCount = $vehicle->vehicleTaxHistories->count();
+                    $totalTaxTypes = $vehicle->vehicleTaxTypes->count();
                 @endphp
                 <div class="flex flex-col">
-                    <span class="text-sm font-medium">{{ $totalCount }}</span>
-                    {{-- <span class="text-xs text-base-content/70">pembayaran</span> --}}
+                    <span class="text-sm font-medium">{{ $paidCount }}</span>
+                    <span class="text-xs text-base-content/70">dari {{ $totalTaxTypes }} pajak</span>
                 </div>
                 @endscope
 
@@ -160,19 +175,11 @@
                         </li>
                     @else
                         <li>
-                            <a href="{{ route('vehicles.show', $vehicle->id) }}"
+                            <a href="{{ route('assets.show', $vehicle->id) }}"
                                 class="flex gap-2 items-center p-2 text-sm rounded">
                                 <x-icon name="o-eye" class="w-4 h-4" />
                                 Lihat Detail
                             </a>
-                        </li>
-                        <li>
-                            <button wire:click="delete('{{ $vehicle->id }}')"
-                                wire:confirm="Apakah Anda yakin ingin menghapus kendaraan ini?"
-                                class="flex gap-2 items-center p-2 text-sm rounded text-error">
-                                <x-icon name="o-trash" class="w-4 h-4" />
-                                Hapus
-                            </button>
                         </li>
                     @endif
                 </x-action-dropdown>

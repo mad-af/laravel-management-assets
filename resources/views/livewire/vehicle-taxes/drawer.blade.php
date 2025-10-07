@@ -11,15 +11,26 @@
             <!-- Drawer Header -->
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-lg font-semibold">
-                    {{ $editingVehicleTaxId ? 'Edit Pajak Kendaraan' : 'Tambah Pajak Kendaraan Baru' }}
+                    @if($action === 'tax-type')
+                        Konfigurasi Jenis Pajak
+                    @elseif($action === 'tax-payment')
+                        Pembayaran Pajak Kendaraan
+                    @endif
                 </h2>
                 <button wire:click="closeDrawer" class="btn btn-sm btn-circle btn-ghost">
                     <x-icon name="o-x-mark" class="w-5 h-5" />
                 </button>
             </div>
 
-            <!-- Vehicle Tax Form -->
-            <livewire:vehicle-taxes.form :vehicleTaxId="$editingVehicleTaxId" :key="'vehicle-tax-form-' . ($editingVehicleTaxId ?? 'new')" />
+            <!-- Form Content Based on Action -->
+            @if($action === 'tax-type')
+                <!-- Vehicle Tax Type Form -->
+                <livewire:vehicle-taxes.tax-type-form :vehicleTaxTypeId="$asset_id"
+                    :key="'vehicle-tax-type-form-' . ($asset_id ?? 'new')" />
+            @elseif($action === 'tax-payment')
+                <!-- Vehicle Tax History Form -->
+                <livewire:vehicle-taxes.tax-payment-form :vehicleTaxId="$asset_id" :key="'vehicle-tax-form-' . ($asset_id ?? 'new')" />
+            @endif
         </div>
     </div>
 </div>

@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\AssetCondition;
 use App\Enums\AssetLogAction;
 use App\Enums\AssetStatus;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -124,11 +125,19 @@ class Asset extends Model
     }
 
     /**
-     * Get the vehicle taxes for the asset.
+     * Get the vehicle tax types for the asset.
      */
-    public function vehicleTaxes(): HasMany
+    public function vehicleTaxTypes(): HasMany
     {
-        return $this->hasMany(VehicleTax::class)->orderBy('due_date', 'desc');
+        return $this->hasMany(VehicleTaxType::class)->orderBy('due_date', 'desc');
+    }
+
+    /**
+     * Get the vehicle tax histories for the asset.
+     */
+    public function vehicleTaxHistories(): HasMany
+    {
+        return $this->hasMany(VehicleTaxHistory::class)->orderBy('paid_date', 'desc');
     }
 
     /**
@@ -137,6 +146,59 @@ class Asset extends Model
     public function isVehicle(): bool
     {
         return $this->vehicleProfile()->exists();
+    }
+
+    /**
+     * Scope untuk kendaraan yang pajak tahunannya sudah terlambat (overdue)
+     */
+    public function scopeOverdue(Builder $query): Builder
+    {
+        return $query->whereHas('vehicleTaxTypes', function ($q) {
+            $q->where('due_date', '<', now())
+                ->whereNotNull('due_date');
+        });
+    }
+
+    /**
+     * Scope untuk kendaraan yang pajak tahunannya akan jatuh tempo dalam 3 bulan
+     * ATAU memiliki vehicle_tax_types yang sudah 9 bulan dan belum ada pembayaran
+     */
+    public function scopeDueSoon(Builder $query): Builder
+    {
+        return $query->whereHas('vehicleTaxTypes', function ($q) {
+            $q->where(function ($subQ) {
+                // Due soon (dalam 3 bulan)
+                $subQ->where('due_date', '>', now())
+                    ->where('due_date', '<=', now()->addMonths(3))
+                    ->whereNotNull('due_date');
+            })->orWhere(function ($subQ) {
+                // ATAU sudah 9 bulan dan belum ada pembayaran
+                $subQ->where('due_date', '<=', now()->subMonths(9))
+                    ->whereDoesntHave('vehicleTaxHistories', function ($historyQ) {
+                        $historyQ->whereNotNull('paid_date')
+                            ->where('year', '>=', now()->year);
+                    });
+            });
+        });
+    }
+
+    /**
+     * Scope untuk kendaraan yang sudah membayar pajak dalam 9 bulan terakhir
+     */
+    public function scopePaid(Builder $query): Builder
+    {
+        return $query->whereHas('vehicleTaxHistories', function ($q) {
+            $q->whereNotNull('paid_date')
+                ->where('paid_date', '>=', now()->subMonths(9));
+        });
+    }
+
+    /**
+     * Scope untuk kendaraan yang tidak memiliki vehicle tax types
+     */
+    public function scopeNotValid(Builder $query): Builder
+    {
+        return $query->whereDoesntHave('vehicleTaxTypes');
     }
 
     /**

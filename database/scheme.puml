@@ -183,8 +183,6 @@ table(vehicle_profiles) {
   current_odometer_km : INT [DEFAULT: 0]
   last_service_date : DATE [NULL]
   service_target_odometer_km : INT [NULL]
-  next_service_date : DATE [NULL]
-  annual_tax_due_date : DATE [NULL]
   plate_no : VARCHAR(32) [NULL]
   vin : VARCHAR(64) [NULL]
   created_at : TIMESTAMP
@@ -202,13 +200,21 @@ table(vehicle_odometer_logs) {
   updated_at : TIMESTAMP
 }
 
-table(vehicle_taxes) {
+table(vehicle_tax_types) {
   pk(id) : UUID
   fk(asset_id) : UUID
-  tax_period_start : DATE
-  tax_period_end : DATE
+  tax_type : ENUM(pkb_tahunan, kir)
   due_date : DATE
-  payment_date : DATE
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+table(vehicle_tax_histories) {
+  pk(id) : UUID
+  fk(vehicle_tax_type_id) : UUID
+  fk(asset_id) : UUID
+  paid_date : DATE
+  year : INT
   amount : DECIMAL(15,2)
   receipt_no : VARCHAR(64) [NULL]
   notes : TEXT [NULL]
@@ -254,6 +260,7 @@ asset_transfers ||--o{ asset_branch_history : "writes"
 
 assets ||--|| vehicle_profiles : "has one"
 assets ||--o{ vehicle_odometer_logs : "has many"
-assets ||--o{ vehicle_taxes : "has many"
+assets ||--o{ vehicle_tax_types : "has many"
+vehicle_tax_types ||--o{ vehicle_tax_histories : "has many"
 
 @enduml

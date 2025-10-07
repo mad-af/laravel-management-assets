@@ -6,24 +6,21 @@
             option-value="id" option-label="name" class="select-sm" required />
     </div>
 
-    {{-- Tax Period Start --}}
+    {{-- Vehicle Tax Type --}}
     <div>
-        <x-input label="Periode Pajak Mulai" wire:model="tax_period_start" type="date" class="input-sm" required />
+        <x-select label="Jenis Pajak" placeholder="Pilih jenis pajak" wire:model="vehicle_tax_type_id" :options="$vehicleTaxTypes"
+            option-value="id" option-label="tax_type" class="select-sm" required />
     </div>
 
-    {{-- Tax Period End --}}
+    {{-- Paid Date --}}
     <div>
-        <x-input label="Periode Pajak Berakhir" wire:model="tax_period_end" type="date" class="input-sm" required />
+        <x-input label="Tanggal Pembayaran" wire:model="paid_date" type="date" class="input-sm" required />
     </div>
 
-    {{-- Due Date --}}
+    {{-- Year --}}
     <div>
-        <x-input label="Tanggal Jatuh Tempo" wire:model="due_date" type="date" class="input-sm" required />
-    </div>
-
-    {{-- Payment Date --}}
-    <div>
-        <x-input label="Tanggal Pembayaran" wire:model="payment_date" type="date" class="input-sm" />
+        <x-input label="Tahun" wire:model="year" type="number" min="2000" max="2099"
+            placeholder="2024" class="input-sm" required />
     </div>
 
     {{-- Amount --}}

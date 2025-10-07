@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class VehicleProfile extends Model
 {
@@ -25,7 +25,6 @@ class VehicleProfile extends Model
         'last_service_date',
         'service_target_odometer_km',
         'next_service_date',
-        'annual_tax_due_date',
         'plate_no',
         'vin',
     ];
@@ -34,7 +33,6 @@ class VehicleProfile extends Model
         'asset_id' => 'string',
         'last_service_date' => 'date',
         'next_service_date' => 'date',
-        'annual_tax_due_date' => 'date',
         'current_odometer_km' => 'integer',
         'service_target_odometer_km' => 'integer',
         'year_purchase' => 'integer',
@@ -50,48 +48,18 @@ class VehicleProfile extends Model
     }
 
     /**
-     * Scope untuk kendaraan yang pajak tahunannya sudah terlambat (overdue)
+     * Get the vehicle tax types for the vehicle profile through asset.
      */
-    public function scopeOverdue(Builder $query): Builder
+    public function vehicleTaxTypes(): HasMany
     {
-        return $query->where('annual_tax_due_date', '<', now())
-            ->whereNotNull('annual_tax_due_date');
+        return $this->hasMany(VehicleTaxType::class, 'asset_id', 'asset_id');
     }
 
     /**
-     * Scope untuk kendaraan yang pajak tahunannya akan jatuh tempo dalam 3 bulan
-     * ATAU memiliki vehicle_taxes yang sudah 9 bulan dan belum dibayar
+     * Get the vehicle tax histories for the vehicle profile through asset.
      */
-    public function scopeDueSoon(Builder $query): Builder
+    public function vehicleTaxHistories(): HasMany
     {
-        return $query->where(function ($q) {
-            // Vehicle profile due soon (dalam 3 bulan)
-            $q->where('annual_tax_due_date', '>', now())
-                ->where('annual_tax_due_date', '<=', now()->addMonths(3))
-                ->whereNotNull('annual_tax_due_date');
-        })->orWhereHas('asset.vehicleTaxes', function ($q) {
-            // ATAU vehicle taxes yang sudah 9 bulan dan belum dibayar
-            $q->where('due_date', '<=', now()->subMonths(9))
-                ->whereNull('payment_date');
-        });
-    }
-
-    /**
-     * Scope untuk kendaraan yang sudah membayar pajak dalam 9 bulan terakhir
-     */
-    public function scopePaid(Builder $query): Builder
-    {
-        return $query->whereHas('asset.vehicleTaxes', function ($q) {
-            $q->whereNotNull('payment_date')
-                ->where('due_date', '>=', now()->subMonths(9));
-        });
-    }
-
-    /**
-     * Scope untuk kendaraan yang tidak memiliki tanggal jatuh tempo pajak tahunan
-     */
-    public function scopeNotValid(Builder $query): Builder
-    {
-        return $query->whereNull('annual_tax_due_date');
+        return $this->hasMany(VehicleTaxHistory::class, 'asset_id', 'asset_id');
     }
 }

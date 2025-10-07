@@ -73,10 +73,14 @@ class DashboardContentHeader extends Component
             case 'openEmployeeDrawer':
             case 'openAssetLoanDrawer':
             case 'openMaintenanceDrawer':
+            case 'openVehicleTaxDrawer':
                 $this->dispatch('open-drawer');
                 break;
             case 'openVehicleOdometerDrawer':
                 $this->dispatch('open-odometer-drawer');
+                break;
+            case 'openVehicleTaxTypeDrawer':
+                $this->dispatch('open-tax-type-drawer');
                 break;
             default:
                 $this->dispatch($this->buttonAction);

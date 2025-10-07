@@ -11,16 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('vehicle_taxes', function (Blueprint $table) {
+        Schema::create('vehicle_tax_types', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('asset_id');
-            $table->date('tax_period_start');
-            $table->date('tax_period_end');
+            $table->enum('tax_type', ['pkb_tahunan', 'kir']);
             $table->date('due_date');
-            $table->date('payment_date')->nullable();
-            $table->decimal('amount', 15, 2);
-            $table->string('receipt_no', 64)->nullable();
-            $table->text('notes')->nullable();
             $table->timestamps();
 
             $table->foreign('asset_id')->references('id')->on('assets')->onDelete('cascade');
@@ -32,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('vehicle_taxes');
+        Schema::dropIfExists('vehicle_tax_types');
     }
 };
