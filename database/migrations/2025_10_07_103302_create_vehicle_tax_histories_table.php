@@ -15,9 +15,10 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->uuid('vehicle_tax_type_id');
             $table->uuid('asset_id');
-            $table->date('paid_date');
             $table->integer('year');
-            $table->decimal('amount', 15, 2);
+            $table->date('due_date');
+            $table->date('paid_date')->nullable();
+            $table->decimal('amount', 15, 2)->nullable();
             $table->string('receipt_no', 64)->nullable();
             $table->text('notes')->nullable();
             $table->timestamps();

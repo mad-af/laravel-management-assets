@@ -16,17 +16,26 @@ class TaxPaymentForm extends Component
     // State
     #[Url('asset_id')]
     public ?string $asset_id = null;
+
     public ?string $vehicle_tax_type_id = null;
+
     public ?string $paid_date = null;
+
     public ?int $year = null;
+
     public ?string $amount = null;
+
     public ?string $receipt_no = null;
+
     public string $notes = '';
+
+    public ?string $vehicleTaxId = null;
 
     public bool $isEdit = false;
 
     // Dropdown sources
     public array $assets = [];
+
     public array $vehicleTaxTypes = [];
 
     protected $rules = [
@@ -41,6 +50,7 @@ class TaxPaymentForm extends Component
 
     protected $listeners = [
         'editVehicleTax' => 'edit',
+        'openTaxPaymentForm' => 'openForm',
         'resetForm' => 'resetForm',
     ];
 
@@ -52,11 +62,6 @@ class TaxPaymentForm extends Component
         // Load dropdown data
         $this->loadAssets();
         $this->loadVehicleTaxTypes();
-
-        if ($this->asset_id) {
-            $this->isEdit = true;
-            $this->loadVehicleTaxHistory();
-        }
     }
 
     /**
@@ -71,7 +76,7 @@ class TaxPaymentForm extends Component
             ->map(function ($asset) {
                 return [
                     'id' => $asset->id,
-                    'name' => $asset->name . ' (' . $asset->code . ')',
+                    'name' => $asset->name.' ('.$asset->code.')',
                 ];
             })
             ->toArray();
@@ -99,6 +104,10 @@ class TaxPaymentForm extends Component
      */
     protected function loadVehicleTaxHistory(): void
     {
+        if (! $this->vehicleTaxId) {
+            return;
+        }
+
         $vehicleTaxHistory = VehicleTaxHistory::find($this->vehicleTaxId);
 
         if (! $vehicleTaxHistory) {
@@ -149,8 +158,24 @@ class TaxPaymentForm extends Component
 
     public function edit(string $vehicleTaxId): void
     {
+        $this->vehicleTaxId = $vehicleTaxId;
         $this->isEdit = true;
         $this->loadVehicleTaxHistory();
+    }
+
+    public function openForm(?string $assetId = null, ?string $vehicleTaxId = null): void
+    {
+        $this->resetForm();
+
+        if ($assetId) {
+            $this->asset_id = $assetId;
+        }
+
+        if ($vehicleTaxId) {
+            $this->vehicleTaxId = $vehicleTaxId;
+            $this->isEdit = true;
+            $this->loadVehicleTaxHistory();
+        }
     }
 
     public function resetForm(): void

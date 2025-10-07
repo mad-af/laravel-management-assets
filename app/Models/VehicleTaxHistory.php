@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\VehicleTaxTypeEnum;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -40,5 +41,43 @@ class VehicleTaxHistory extends Model
     public function asset(): BelongsTo
     {
         return $this->belongsTo(Asset::class);
+    }
+
+    /**
+     * Create a new VehicleTaxHistory based on VehicleTaxType with smart date calculation
+     */
+    public static function createFromTaxType(VehicleTaxType $vehicleTaxType): self
+    {
+        // Check for the latest VehicleTaxHistory for this asset and tax type
+        $latestHistory = static::where('asset_id', $vehicleTaxType->asset_id)
+            ->whereHas('vehicleTaxType', function ($query) use ($vehicleTaxType) {
+                $query->where('tax_type', $vehicleTaxType->tax_type);
+            })
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        // Calculate the next due date based on tax type and latest history
+        $nextDueDate = $vehicleTaxType->due_date;
+        if ($latestHistory) {
+            $baseDate = $latestHistory->paid_date ?? $vehicleTaxType->due_date;
+
+            if ($vehicleTaxType->tax_type === VehicleTaxTypeEnum::PKB_TAHUNAN) {
+                // PKB Tahunan: add 1 year
+                $nextDueDate = \Carbon\Carbon::parse($baseDate)->addYear();
+            } elseif ($vehicleTaxType->tax_type === VehicleTaxTypeEnum::KIR) {
+                // KIR: add 6 months
+                $nextDueDate = \Carbon\Carbon::parse($baseDate)->addMonths(6);
+            }
+        }
+
+        return static::create([
+            'vehicle_tax_type_id' => $vehicleTaxType->id,
+            'asset_id' => $vehicleTaxType->asset_id,
+            'year' => $nextDueDate ? $nextDueDate->year : now()->year,
+            'paid_date' => null,
+            'amount' => null,
+            'receipt_no' => null,
+            'notes' => null,
+        ]);
     }
 }

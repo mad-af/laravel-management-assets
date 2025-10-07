@@ -169,10 +169,19 @@
                             <button wire:click="$dispatch('open-tax-type-drawer', { assetId: '{{ $vehicle->id }}' })"
                                 class="flex gap-2 items-center p-2 w-full text-sm text-left rounded">
                                 <x-icon name="o-document" class="w-4 h-4" />
-                                Konfigurasi Pajak
+                                Konfigurasi Pajak Kendaraan
                             </button>
                         </li>
                     @else
+                        @if ($this->statusFilter != 'paid')
+                            <li>
+                                <button wire:click="$dispatch('open-drawer', { assetId: '{{ $vehicle->id }}' })"
+                                    class="flex gap-2 items-center p-2 text-sm rounded text-primary">
+                                    <x-icon name="o-calculator" class="w-4 h-4" />
+                                    Bayar Pajak
+                                </button>
+                            </li>
+                        @endif
                         <li>
                             <a href="{{ route('assets.show', $vehicle->id) }}"
                                 class="flex gap-2 items-center p-2 text-sm rounded">

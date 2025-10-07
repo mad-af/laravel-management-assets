@@ -5,6 +5,7 @@ namespace App\Livewire\VehicleTaxes;
 use App\Models\Asset;
 use App\Models\Category;
 use App\Models\Company;
+use App\Support\SessionKey;
 use App\Traits\WithAlert;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -65,22 +66,14 @@ class Table extends Component
             return collect();
         }
 
-        $query = Asset::with([
-            'category',
-            'branch',
-            'vehicleProfile',
-        ])
+        $currentBranchId = session_get(SessionKey::BranchId);
+        $query = Asset::forBranch($currentBranchId)
+            ->with([
+                'category',
+                'branch',
+                'vehicleProfile',
+            ])
             ->where('category_id', $vehicleCategory->id);
-
-        // Filter by branch from session
-        if (session('selected_branch_id')) {
-            $query->where('branch_id', session('selected_branch_id'));
-        }
-
-        // Filter by company
-        if ($this->selectedCompanyId) {
-            $query->where('company_id', $this->selectedCompanyId);
-        }
 
         // Search functionality
         if ($this->search) {

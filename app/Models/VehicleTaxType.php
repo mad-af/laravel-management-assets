@@ -18,6 +18,17 @@ class VehicleTaxType extends Model
         'due_date',
     ];
 
+    /**
+     * The "booted" method of the model.
+     */
+    protected static function booted(): void
+    {
+        static::created(function (VehicleTaxType $vehicleTaxType) {
+            // Use the dedicated method from VehicleTaxHistory to create history record
+            VehicleTaxHistory::createFromTaxType($vehicleTaxType);
+        });
+    }
+
     protected $casts = [
         'due_date' => 'date',
         'tax_type' => VehicleTaxTypeEnum::class,
