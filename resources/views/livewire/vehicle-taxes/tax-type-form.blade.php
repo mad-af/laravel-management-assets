@@ -29,7 +29,6 @@
         </div>
         @endif
 
-
         {{-- Actions --}}
         <div class="flex gap-2 justify-end pt-4">
             <x-button label="Batal" class="btn-sm btn-ghost" wire:click="$dispatch('close-drawer')" />
