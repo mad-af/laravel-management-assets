@@ -99,7 +99,7 @@
                             @php
                                 $dueDate = \Carbon\Carbon::parse($taxType->due_date);
                                 $paidHistory = $vehicle->vehicleTaxHistories->where('vehicle_tax_type_id', $taxType->id)->first();
-                                
+
                                 if ($paidHistory) {
                                     $status = 'paid';
                                     $statusClass = 'badge-success';
@@ -120,8 +120,7 @@
                             @endphp
                             <div class="flex gap-2 justify-between items-center">
                                 <div class="flex-1 min-w-0">
-                                    <div class="text-sm font-medium truncate">{{ $taxType->tax_name }}</div>
-                                    <div class="text-xs text-base-content/60">{{ $dueDate->format('d M Y') }}</div>
+                                    <div class="text-sm font-medium truncate">{{$taxType->tax_type->label() }}</div>
                                 </div>
                                 <x-badge class="badge-xs {{ $statusClass }}" value="{{ $statusText }}" />
                             </div>
