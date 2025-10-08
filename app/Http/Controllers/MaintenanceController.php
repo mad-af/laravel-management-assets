@@ -114,7 +114,7 @@ class MaintenanceController extends Controller
         ]);
 
         // Generate PDF
-        $pdf = Pdf::loadView('pdf-template.maintenance-report', compact('data', 'item'));
+        $pdf = Pdf::loadView('pdf-template.maintenance-report', compact('data', 'item'))->setPaper('a4', 'landscape');
 
         // Return PDF as response
         return $pdf->stream('maintenance-report-'.$maintenance->id.'.pdf');
