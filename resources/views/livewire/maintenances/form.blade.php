@@ -33,12 +33,12 @@
 
         <!-- Started At -->
         <div>
-            <x-datetime label="Tanggal Mulai" wire:model="started_at" type="datetime-local" class="input-sm" required />
+            <x-datetime label="Tanggal Mulai" wire:model="started_at" class="input-sm" required />
         </div>
 
         <!-- Estimated Completed At -->
         <div>
-            <x-datetime label="Estimasi Tanggal Selesai" wire:model="estimated_completed_at" type="datetime-local"
+            <x-datetime label="Estimasi Tanggal Selesai" wire:model="estimated_completed_at"
                 class="input-sm" />
         </div>
         
@@ -70,6 +70,15 @@
         <div>
             <x-input label="Nama Vendor" wire:model="vendor_name" placeholder="Masukkan nama vendor..." class="input-sm" />
         </div>
+        
+        @if($this->isVehicle)
+            <!-- Odometer KM at Service -->
+            <div>
+                <x-input label="Odometer saat Service (KM)" wire:model="odometer_km_at_service"
+                    placeholder="Masukkan odometer..." type="number"
+                    min="{{ $this->asset?->vehicleProfile?->current_odometer_km ?? 0 }}" class="input-sm" required />
+            </div>
+        @endif
 
         <!-- Notes -->
         <div>

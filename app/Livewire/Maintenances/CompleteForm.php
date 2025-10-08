@@ -19,8 +19,6 @@ class CompleteForm extends Component
 
     public $cost = '';
 
-    public $odometer_km_at_service = '';
-
     public $next_service_target_odometer_km = '';
 
     public $next_service_date = '';
@@ -44,7 +42,6 @@ class CompleteForm extends Component
         // Dynamic validation for odometer fields based on current vehicle odometer
         if ($this->asset && $this->asset->vehicleProfile) {
             $minOdometer = $this->asset->vehicleProfile->current_odometer_km ?? 0;
-            $rules['odometer_km_at_service'] = "required|integer|min:{$minOdometer}";
             $rules['next_service_target_odometer_km'] = "nullable|integer|min:{$minOdometer}";
         }
 
@@ -59,15 +56,12 @@ class CompleteForm extends Component
             'cost.min' => 'Biaya tidak boleh negatif.',
             'invoice_no.max' => 'Nomor invoice maksimal 255 karakter.',
             'next_service_date.date' => 'Tanggal service berikutnya harus berupa tanggal yang valid.',
-            'odometer_km_at_service.required' => 'Odometer saat service wajib diisi untuk kendaraan.',
-            'odometer_km_at_service.integer' => 'Odometer saat service harus berupa angka.',
             'next_service_target_odometer_km.integer' => 'Target odometer service berikutnya harus berupa angka.',
         ];
 
         // Dynamic messages for odometer validation based on current vehicle odometer
         if ($this->asset && $this->asset->vehicleProfile && $this->asset->vehicleProfile->current_odometer_km) {
             $currentOdometer = $this->asset->vehicleProfile->current_odometer_km;
-            $messages['odometer_km_at_service.min'] = "Odometer saat service tidak boleh kurang dari odometer saat ini ({$currentOdometer} KM).";
             $messages['next_service_target_odometer_km.min'] = "Target odometer service berikutnya tidak boleh kurang dari odometer saat ini ({$currentOdometer} KM).";
         }
 
@@ -91,22 +85,17 @@ class CompleteForm extends Component
         $this->asset = $maintenance->asset;
         $this->cost = $maintenance->cost;
         $this->notes = $maintenance->notes;
-        $this->odometer_km_at_service = $maintenance->odometer_km_at_service;
         $this->next_service_target_odometer_km = $maintenance->next_service_target_odometer_km;
         $this->next_service_date = $maintenance->next_service_date?->format('Y-m-d');
         $this->invoice_no = $maintenance->invoice_no;
-
-        // Set default odometer if vehicle and not set
-        if ($this->isVehicle && ! $this->odometer_km_at_service && $this->asset->vehicleProfile) {
-            $this->odometer_km_at_service = $this->asset->vehicleProfile->current_odometer_km;
-        }
     }
 
     public function save()
     {
-        $this->validate();
-
+        // dd("dsada");
+        // dd("das");
         try {
+            $this->validate();
             $maintenance = AssetMaintenance::findOrFail($this->maintenanceId);
 
             $data = [
@@ -119,7 +108,6 @@ class CompleteForm extends Component
 
             // Add odometer fields for vehicles
             if ($this->isVehicle) {
-                $data['odometer_km_at_service'] = $this->odometer_km_at_service ?: null;
                 $data['next_service_target_odometer_km'] = $this->next_service_target_odometer_km ?: null;
             }
 
@@ -127,11 +115,10 @@ class CompleteForm extends Component
             $data['next_service_date'] = $this->next_service_date ?: null;
 
             $maintenance->update($data);
+            $this->dispatch('close-completed-drawer');
 
             $this->success('Perawatan berhasil diselesaikan!');
 
-            $this->dispatch('refresh-kanban');
-            $this->dispatch('close-completed-drawer');
             $this->dispatch('reload-page');
 
         } catch (\Exception $e) {

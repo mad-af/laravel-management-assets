@@ -42,6 +42,8 @@ class Form extends Component
 
     public $vendor_name = '';
 
+    public $odometer_km_at_service = '';
+
     public $notes = '';
 
     public $isEdit = false;
@@ -80,14 +82,11 @@ class Form extends Component
             if ($asset && $asset->vehicleProfile && $asset->vehicleProfile->current_odometer_km) {
                 $minOdometer = $asset->vehicleProfile->current_odometer_km;
                 $rules['odometer_km_at_service'] = "required|integer|min:{$minOdometer}";
-                $rules['next_service_target_odometer_km'] = "nullable|integer|min:{$minOdometer}";
             } else {
                 $rules['odometer_km_at_service'] = 'required|integer|min:0';
-                $rules['next_service_target_odometer_km'] = 'nullable|integer|min:0';
             }
         } else {
             $rules['odometer_km_at_service'] = 'required|integer|min:0';
-            $rules['next_service_target_odometer_km'] = 'nullable|integer|min:0';
         }
 
         return $rules;
@@ -113,7 +112,13 @@ class Form extends Component
             'next_service_target_odometer_km.integer' => 'Target odometer service berikutnya harus berupa angka.',
         ];
 
-        return $messages;   
+        // Dynamic messages for odometer validation based on current vehicle odometer
+        if ($this->asset_id && $asset = Asset::with('vehicleProfile')->find($this->asset_id)) {
+            $currentOdometer = $asset->vehicleProfile->current_odometer_km ?? 0;
+            $messages['odometer_km_at_service.min'] = "Odometer saat service tidak boleh kurang dari odometer saat ini ({$currentOdometer} KM).";
+        }
+
+        return $messages;
     }
 
     protected $listeners = [
@@ -136,6 +141,7 @@ class Form extends Component
             // Set default values for new maintenance
             $this->status = MaintenanceStatus::OPEN->value;
             $this->priority = MaintenancePriority::MEDIUM->value;
+            $this->started_at = now()->format('Y-m-d');
             // Load initial employees for new form
             $this->loadInitialEmployees();
         }
@@ -167,10 +173,16 @@ class Form extends Component
         $this->type = $maintenance->type->value;
         $this->status = $maintenance->status->value;
         $this->priority = $maintenance->priority->value;
-        $this->started_at = $maintenance->started_at?->format('Y-m-d\TH:i');
-        $this->estimated_completed_at = $maintenance->estimated_completed_at?->format('Y-m-d\TH:i');
+        $this->started_at = $maintenance->started_at?->format('Y-m-d');
+        $this->estimated_completed_at = $maintenance->estimated_completed_at?->format('Y-m-d');
         $this->vendor_name = $maintenance->vendor_name;
+        $this->odometer_km_at_service = $maintenance->odometer_km_at_service;
         $this->notes = $maintenance->notes;
+
+        // Set default odometer if vehicle and not set
+        if ($this->isVehicle && ! $this->odometer_km_at_service && $this->asset->vehicleProfile) {
+            $this->odometer_km_at_service = $this->asset->vehicleProfile->current_odometer_km;
+        }
 
         // Load employees with selected employee included
         $this->loadEmployeesWithSelected($maintenance->employee);
@@ -213,15 +225,9 @@ class Form extends Component
                 'priority' => $this->priority,
                 'started_at' => $this->started_at ?: now(),
                 'estimated_completed_at' => $this->estimated_completed_at ?: null,
-                'completed_at' => $this->completed_at ?: null,
-                'cost' => $this->cost ?: 0,
-                'technician_name' => $this->technician_name ?: null,
                 'vendor_name' => $this->vendor_name ?: null,
-                'notes' => $this->notes,
                 'odometer_km_at_service' => $this->odometer_km_at_service ?: null,
-                'next_service_target_odometer_km' => $this->next_service_target_odometer_km ?: null,
-                'next_service_date' => $this->next_service_date ?: null,
-                'invoice_no' => $this->invoice_no ?: null,
+                'notes' => $this->notes,
             ];
 
             if ($this->isEdit) {
