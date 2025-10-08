@@ -80,6 +80,45 @@
             </div>
         @endif
 
+        <!-- Service Tasks -->
+        <div class="pt-2">
+            <fieldset class="p-4 rounded-lg border border-base-300">
+                <legend class="px-2 text-xs font-semibold">Tugas Layanan</legend>
+                
+                <div class="space-y-2 w-full">
+                    @if(count($service_tasks) > 0)
+                        @foreach($service_tasks as $index => $task)
+                            <x-input 
+                                wire:model="service_tasks.{{ $index }}" 
+                                placeholder="Masukkan tugas layanan..." 
+                                class="flex-1 input-sm" 
+                            >
+                            <x-slot:append>
+                                <x-button 
+                                    icon="o-trash" 
+                                    class="btn-sm btn-square text-error" 
+                                    wire:click="removeServiceTask({{ $index }})"
+                                    title="Hapus tugas"
+                                />
+                            </x-slot:append>
+                            </x-input>
+                        @endforeach
+                    @else
+                        <p class="text-xs italic text-center text-base-content/60">Belum ada tugas layanan ditambahkan</p>
+                    @endif
+                    
+                    <div class="w-full">
+                        <x-button 
+                            icon="o-plus" 
+                            label="Tambah Tugas" 
+                            class="w-full btn-sm" 
+                            wire:click="addServiceTask"
+                        />
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+
         <!-- Notes -->
         <div>
             <x-textarea label="Catatan" wire:model="notes" placeholder="Catatan tambahan..." rows="2" class="textarea-sm" />

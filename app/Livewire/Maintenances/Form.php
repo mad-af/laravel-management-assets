@@ -46,6 +46,8 @@ class Form extends Component
 
     public $notes = '';
 
+    public array $service_tasks = [];
+
     public $isEdit = false;
 
     public string $branchId;
@@ -176,6 +178,7 @@ class Form extends Component
         $this->estimated_completed_at = $maintenance->estimated_completed_at?->format('Y-m-d');
         $this->vendor_name = $maintenance->vendor_name;
         $this->notes = $maintenance->notes;
+        $this->service_tasks = $maintenance->service_tasks ?? [];
 
         // Set default odometer if vehicle and not set
         if ($this->isVehicle && ! $this->odometer_km_at_service && $this->asset->vehicleProfile) {
@@ -211,7 +214,7 @@ class Form extends Component
 
     public function save()
     {
-        
+
         try {
             $this->validate();
             $data = [
@@ -226,6 +229,9 @@ class Form extends Component
                 'vendor_name' => $this->vendor_name ?: null,
                 'odometer_km_at_service' => $this->odometer_km_at_service ?: null,
                 'notes' => $this->notes,
+                'service_tasks' => array_filter($this->service_tasks, function ($task) {
+                    return ! empty(trim($task));
+                }),
             ];
 
             if ($this->isEdit) {
@@ -258,6 +264,7 @@ class Form extends Component
         $this->estimated_completed_at = '';
         $this->vendor_name = '';
         $this->notes = '';
+        $this->service_tasks = [];
         $this->isEdit = false;
         $this->maintenanceId = null;
         $this->resetValidation();
@@ -405,6 +412,17 @@ class Form extends Component
         }
 
         return $asset->category->name === 'Kendaraan';
+    }
+
+    public function addServiceTask()
+    {
+        $this->service_tasks[] = '';
+    }
+
+    public function removeServiceTask($index)
+    {
+        unset($this->service_tasks[$index]);
+        $this->service_tasks = array_values($this->service_tasks); // Re-index array
     }
 
     public function render()

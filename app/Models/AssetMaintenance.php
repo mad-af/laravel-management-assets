@@ -33,6 +33,7 @@ class AssetMaintenance extends Model
         'next_service_target_odometer_km',
         'next_service_date',
         'invoice_no',
+        'service_tasks',
     ];
 
     protected $casts = [
@@ -45,6 +46,7 @@ class AssetMaintenance extends Model
         'next_service_date' => 'date',
         'odometer_km_at_service' => 'integer',
         'next_service_target_odometer_km' => 'integer',
+        'service_tasks' => 'array',
     ];
 
     public function asset(): BelongsTo
