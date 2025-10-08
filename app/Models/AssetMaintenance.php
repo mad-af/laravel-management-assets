@@ -15,6 +15,7 @@ class AssetMaintenance extends Model
     use HasUuids;
 
     protected $fillable = [
+        'code',
         'asset_id',
         'employee_id',
         'title',
@@ -67,6 +68,13 @@ class AssetMaintenance extends Model
     protected static function booted()
     {
         // When maintenance is created, set asset status to maintenance and create odometer log
+        static::creating(function ($maintenance) {
+            // Auto-generate code if not provided
+            if (empty($maintenance->code)) {
+                $maintenance->code = generate_maintenance_code();
+            }
+        });
+
         static::created(function ($maintenance) {
             $maintenance->asset()->update([
                 'status' => AssetStatus::MAINTENANCE,

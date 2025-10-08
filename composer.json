@@ -31,7 +31,8 @@
         },
         "files": [
             "app/Support/session_helpers.php",
-            "app/Support/asset_helpers.php"
+            "app/Support/asset_helpers.php",
+            "app/Support/maintenance_helpers.php"
         ]
     },
     "autoload-dev": {

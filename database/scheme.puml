@@ -118,6 +118,7 @@ table(asset_loans) {
 
 table(asset_maintenances) {
   pk(id) : UUID
+  code : VARCHAR [UNIQUE]
   fk(asset_id) : UUID
   fk(employee_id) : UUID [NULL]
   title : VARCHAR
