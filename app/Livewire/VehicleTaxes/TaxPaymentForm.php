@@ -206,8 +206,8 @@ class TaxPaymentForm extends Component
                     'notes' => $this->notes,
                 ]);
 
-                $this->success('Riwayat pajak berhasil diperbarui!');
-                $this->dispatch('vehicle-tax-updated');
+                // $this->success('Riwayat pajak berhasil diperbarui!');
+                // $this->dispatch('vehicle-tax-updated');
             } else {
                 // Update the selected unpaid tax history with payment details
                 $vehicleTaxHistory = VehicleTaxHistory::findOrFail($this->vehicle_tax_history_id);
@@ -218,10 +218,11 @@ class TaxPaymentForm extends Component
                     'notes' => $this->notes,
                 ]);
 
-                $this->success('Pembayaran pajak berhasil dicatat!');
-                $this->dispatch('vehicle-tax-saved');
-                $this->resetForm();
             }
+            $this->success('Pembayaran pajak berhasil dicatat!');
+            $this->dispatch('close-drawer');
+            $this->resetForm();
+            $this->dispatch('reload-page');
         } catch (\Throwable $e) {
             $this->error('Terjadi kesalahan: '.$e->getMessage());
         }
