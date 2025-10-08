@@ -20,6 +20,7 @@
 
             <!-- Maintenance Form -->        
             <livewire:maintenances.form :maintenanceId="$editingMaintenanceId" :key="'maintenance-form-' . ($editingMaintenanceId ?? 'new')" />
+            {{-- <livewire:maintenances.complete-form :maintenanceId="$editingMaintenanceId" :key="'maintenance-form-' . ($editingMaintenanceId ?? 'new')" /> --}}
         </div>
     </div>
 </div>

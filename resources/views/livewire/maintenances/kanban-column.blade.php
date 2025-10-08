@@ -28,6 +28,16 @@
                     </li>
                 @endif
 
+                @if($this->canComplete($maintenance))
+                    <li>
+                        <button wire:click="openCompletedDrawer('{{ $maintenance->id }}')"
+                            class="flex gap-2 items-center p-2 text-sm rounded text-success">
+                            <x-icon name="o-check-circle" class="w-4 h-4" />
+                            Selesaikan
+                        </button>
+                    </li>
+                @endif
+
                 @if($this->canPrintReport())
                     <li>
                         <a href="{{ route('maintenances.pdf', $maintenance) }}" 

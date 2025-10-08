@@ -118,6 +118,17 @@ class KanbanColumn extends Component
         return in_array($this->status, [MaintenanceStatus::OPEN]);
     }
 
+    public function canComplete($maintenance)
+    {
+        // Maintenance dapat diselesaikan jika statusnya IN_PROGRESS
+        return $maintenance->status === MaintenanceStatus::IN_PROGRESS;
+    }
+
+    public function openCompletedDrawer($maintenanceId)
+    {
+        $this->dispatch('open-completed-drawer', maintenanceId: $maintenanceId);
+    }
+
     public function render()
     {
         return view('livewire.maintenances.kanban-column');
