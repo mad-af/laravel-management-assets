@@ -66,7 +66,7 @@
                             @php
                                 $taxStatus = $this->getTaxStatus($vehicle, $taxType);
                             @endphp
-                            <div class="flex gap-2 justify-between items-center">
+                            <div class="flex gap-2 justify-between items-center bg-base-300">
                                 <div class="flex-1 min-w-0">
                                     <div class="text-sm font-medium truncate">{{$taxType->tax_type->label() }}</div>
                                 </div>

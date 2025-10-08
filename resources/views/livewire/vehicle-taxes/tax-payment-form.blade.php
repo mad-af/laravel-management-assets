@@ -5,7 +5,7 @@
         <x-select label="Asset" placeholder="Pilih asset" wire:model.live="asset_id" :options="$assets"
             option-value="id" option-label="name" class="select-sm" required />
     </div>
-    
+
     @if ($asset_id)
         {{-- Vehicle Tax Need Payment --}}
         <div>
@@ -15,15 +15,15 @@
     @endif
 
     @if($vehicle_tax_history_id)
-        {{-- Paid Date --}}
-        <div>
-            <x-input label="Tanggal Pembayaran" wire:model="paid_date" type="date" class="input-sm" required />
-        </div>
-
         {{-- Year --}}
         <div>
             <x-input label="Tahun" wire:model="year" type="number" min="2000" max="2099" placeholder="2024" class="input-sm"
                 required readonly />
+        </div>
+
+        {{-- Paid Date --}}
+        <div>
+            <x-input label="Tanggal Pembayaran" wire:model="paid_date" type="date" class="input-sm" required />
         </div>
 
         {{-- Amount --}}
