@@ -11,7 +11,11 @@
             <!-- Drawer Header -->
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-lg font-semibold">
-                    {{ $editingMaintenanceId ? 'Edit Perawatan' : 'Tambah Perawatan Baru' }}
+                    @if($action === 'complete')
+                        Selesaikan Perawatan
+                    @else
+                        {{ $editingMaintenanceId ? 'Edit Perawatan' : 'Tambah Perawatan Baru' }}
+                    @endif
                 </h2>
                 <button wire:click="closeDrawer" class="btn btn-sm btn-circle btn-ghost">
                     <x-icon name="o-x-mark" class="w-5 h-5" />
@@ -19,8 +23,11 @@
             </div>
 
             <!-- Maintenance Form -->        
-            <livewire:maintenances.form :maintenanceId="$editingMaintenanceId" :key="'maintenance-form-' . ($editingMaintenanceId ?? 'new')" />
-            {{-- <livewire:maintenances.complete-form :maintenanceId="$editingMaintenanceId" :key="'maintenance-form-' . ($editingMaintenanceId ?? 'new')" /> --}}
+            @if($action === 'complete')
+                <livewire:maintenances.complete-form :maintenanceId="$editingMaintenanceId" :key="'maintenance-form-' . ($editingMaintenanceId ?? 'new')" />
+            @else
+                <livewire:maintenances.form :maintenanceId="$editingMaintenanceId" :key="'maintenance-form-' . ($editingMaintenanceId ?? 'new')" />
+            @endif
         </div>
     </div>
 </div>

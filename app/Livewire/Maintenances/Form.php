@@ -40,23 +40,9 @@ class Form extends Component
 
     public $estimated_completed_at = '';
 
-    public $completed_at = '';
-
-    public $cost = '';
-
-    public $technician_name = '';
-
     public $vendor_name = '';
 
     public $notes = '';
-
-    public $odometer_km_at_service = '';
-
-    public $next_service_target_odometer_km = '';
-
-    public $next_service_date = '';
-
-    public $invoice_no = '';
 
     public $isEdit = false;
 
@@ -84,13 +70,8 @@ class Form extends Component
             'priority' => 'required',
             'started_at' => 'nullable|date',
             'estimated_completed_at' => 'nullable|date',
-            'completed_at' => 'nullable|date',
-            'cost' => 'nullable|numeric|min:0',
-            'technician_name' => 'nullable|string|max:255',
             'vendor_name' => 'nullable|string|max:255',
             'notes' => 'nullable|string',
-            'next_service_date' => 'nullable|date',
-            'invoice_no' => 'nullable|string|max:255',
         ];
 
         // Dynamic validation for odometer fields based on current vehicle odometer
@@ -127,48 +108,18 @@ class Form extends Component
             'cost.min' => 'Biaya tidak boleh negatif.',
             'started_at.date' => 'Tanggal mulai harus berupa tanggal yang valid.',
             'estimated_completed_at.date' => 'Tanggal estimasi selesai harus berupa tanggal yang valid.',
-            'completed_at.date' => 'Tanggal selesai harus berupa tanggal yang valid.',
             'next_service_date.date' => 'Tanggal service berikutnya harus berupa tanggal yang valid.',
             'odometer_km_at_service.integer' => 'Odometer saat service harus berupa angka.',
             'next_service_target_odometer_km.integer' => 'Target odometer service berikutnya harus berupa angka.',
         ];
 
-        // Dynamic messages for odometer validation based on current vehicle odometer
-        if ($this->asset_id) {
-            $asset = Asset::with('vehicleProfile')->find($this->asset_id);
-            if ($asset && $asset->vehicleProfile && $asset->vehicleProfile->current_odometer_km) {
-                $currentOdometer = $asset->vehicleProfile->current_odometer_km;
-                $messages['odometer_km_at_service.min'] = "Odometer saat service tidak boleh kurang dari odometer saat ini ({$currentOdometer} km).";
-                $messages['next_service_target_odometer_km.min'] = "Target odometer service berikutnya tidak boleh kurang dari odometer saat ini ({$currentOdometer} km).";
-            } else {
-                $messages['odometer_km_at_service.min'] = 'Odometer saat service tidak boleh negatif.';
-                $messages['next_service_target_odometer_km.min'] = 'Target odometer service berikutnya tidak boleh negatif.';
-            }
-        } else {
-            $messages['odometer_km_at_service.min'] = 'Odometer saat service tidak boleh negatif.';
-            $messages['next_service_target_odometer_km.min'] = 'Target odometer service berikutnya tidak boleh negatif.';
-        }
-
-        return $messages;
+        return $messages;   
     }
 
     protected $listeners = [
         'editMaintenance' => 'edit',
         'resetForm' => 'resetForm',
     ];
-
-    /**
-     * Handle asset selection change - set default odometer value
-     */
-    public function updatedAssetId($value)
-    {
-        if ($value && $this->isVehicle) {
-            $asset = Asset::with('vehicleProfile')->find($value);
-            if ($asset && $asset->vehicleProfile && $asset->vehicleProfile->current_odometer_km) {
-                $this->odometer_km_at_service = $asset->vehicleProfile->current_odometer_km;
-            }
-        }
-    }
 
     public function mount($maintenanceId = null)
     {
@@ -218,15 +169,8 @@ class Form extends Component
         $this->priority = $maintenance->priority->value;
         $this->started_at = $maintenance->started_at?->format('Y-m-d\TH:i');
         $this->estimated_completed_at = $maintenance->estimated_completed_at?->format('Y-m-d\TH:i');
-        $this->completed_at = $maintenance->completed_at?->format('Y-m-d\TH:i');
-        $this->cost = $maintenance->cost;
-        $this->technician_name = $maintenance->technician_name;
         $this->vendor_name = $maintenance->vendor_name;
         $this->notes = $maintenance->notes;
-        $this->odometer_km_at_service = $maintenance->odometer_km_at_service;
-        $this->next_service_target_odometer_km = $maintenance->next_service_target_odometer_km;
-        $this->next_service_date = $maintenance->next_service_date?->format('Y-m-d');
-        $this->invoice_no = $maintenance->invoice_no;
 
         // Load employees with selected employee included
         $this->loadEmployeesWithSelected($maintenance->employee);
@@ -267,7 +211,7 @@ class Form extends Component
                 'type' => $this->type,
                 'status' => $this->status,
                 'priority' => $this->priority,
-                'started_at' => $this->started_at ?: null,
+                'started_at' => $this->started_at ?: now(),
                 'estimated_completed_at' => $this->estimated_completed_at ?: null,
                 'completed_at' => $this->completed_at ?: null,
                 'cost' => $this->cost ?: 0,
@@ -308,15 +252,8 @@ class Form extends Component
         $this->priority = MaintenancePriority::MEDIUM->value;
         $this->started_at = '';
         $this->estimated_completed_at = '';
-        $this->completed_at = '';
-        $this->cost = '';
-        $this->technician_name = '';
         $this->vendor_name = '';
         $this->notes = '';
-        $this->odometer_km_at_service = '';
-        $this->next_service_target_odometer_km = '';
-        $this->next_service_date = '';
-        $this->invoice_no = '';
         $this->isEdit = false;
         $this->maintenanceId = null;
         $this->resetValidation();

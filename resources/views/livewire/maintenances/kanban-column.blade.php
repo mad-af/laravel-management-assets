@@ -28,16 +28,6 @@
                     </li>
                 @endif
 
-                @if($this->canComplete($maintenance))
-                    <li>
-                        <button wire:click="openCompletedDrawer('{{ $maintenance->id }}')"
-                            class="flex gap-2 items-center p-2 text-sm rounded text-success">
-                            <x-icon name="o-check-circle" class="w-4 h-4" />
-                            Selesaikan
-                        </button>
-                    </li>
-                @endif
-
                 @if($this->canPrintReport())
                     <li>
                         <a href="{{ route('maintenances.pdf', $maintenance) }}" 
@@ -60,7 +50,7 @@
                 @endforeach
 
                 @if(count($this->getAvailableStatuses()->previous) > 0)
-                    <div class="divider m-0"></div>
+                    <div class="m-0 divider"></div>
                     @foreach($this->getAvailableStatuses()->previous as $availableStatus)
                         <li>
                             <button wire:click="moveToStatus('{{ $maintenance->id }}', '{{ $availableStatus->value }}')"

@@ -100,10 +100,15 @@ class KanbanColumn extends Component
 
     public function moveToStatus($maintenanceId, $newStatus)
     {
-        $maintenance = AssetMaintenance::findOrFail($maintenanceId);
-        $maintenance->update(['status' => $newStatus]);
-
-        $this->dispatch('reload-page');
+        if ($newStatus === MaintenanceStatus::COMPLETED->value) {
+            $this->dispatch('open-complete-drawer', maintenanceId: $maintenanceId);
+            // $this->dispatch('open-completed-drawer', $maintenanceId);
+        } else {
+            $maintenance = AssetMaintenance::findOrFail($maintenanceId);
+            $maintenance->update(['status' => $newStatus]);
+    
+            $this->dispatch('reload-page');
+        }
     }
 
     public function canPrintReport()
@@ -116,12 +121,6 @@ class KanbanColumn extends Component
     {
         // Laporan tidak bisa diedit jika status adalah COMPLETED atau CANCELLED
         return in_array($this->status, [MaintenanceStatus::OPEN]);
-    }
-
-    public function canComplete($maintenance)
-    {
-        // Maintenance dapat diselesaikan jika statusnya IN_PROGRESS
-        return $maintenance->status === MaintenanceStatus::IN_PROGRESS;
     }
 
     public function openCompletedDrawer($maintenanceId)

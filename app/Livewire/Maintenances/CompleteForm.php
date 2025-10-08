@@ -4,7 +4,6 @@ namespace App\Livewire\Maintenances;
 
 use App\Enums\MaintenanceStatus;
 use App\Models\AssetMaintenance;
-use App\Models\Employee;
 use App\Support\SessionKey;
 use Livewire\Component;
 use Mary\Traits\Toast;
@@ -28,23 +27,10 @@ class CompleteForm extends Component
 
     public $notes = '';
 
-    public $employee_id = '';
-
-    public $completed_at = '';
-
-    public $technician_name = '';
-
-    public $vendor_name = '';
-
     // Helper properties
-    public $isEdit = false;
-
     public $asset;
 
     public string $branchId;
-
-    // Cache properties
-    private $employeesCache = null;
 
     protected function rules()
     {
@@ -53,10 +39,6 @@ class CompleteForm extends Component
             'invoice_no' => 'nullable|string|max:255',
             'notes' => 'nullable|string',
             'next_service_date' => 'nullable|date',
-            'employee_id' => 'nullable|exists:employees,id',
-            'completed_at' => 'nullable|date',
-            'technician_name' => 'nullable|string|max:255',
-            'vendor_name' => 'nullable|string|max:255',
         ];
 
         // Dynamic validation for odometer fields based on current vehicle odometer
@@ -77,10 +59,6 @@ class CompleteForm extends Component
             'cost.min' => 'Biaya tidak boleh negatif.',
             'invoice_no.max' => 'Nomor invoice maksimal 255 karakter.',
             'next_service_date.date' => 'Tanggal service berikutnya harus berupa tanggal yang valid.',
-            'employee_id.exists' => 'Karyawan yang dipilih tidak valid.',
-            'completed_at.date' => 'Tanggal selesai harus berupa tanggal yang valid.',
-            'technician_name.max' => 'Nama teknisi maksimal 255 karakter.',
-            'vendor_name.max' => 'Nama vendor maksimal 255 karakter.',
             'odometer_km_at_service.required' => 'Odometer saat service wajib diisi untuk kendaraan.',
             'odometer_km_at_service.integer' => 'Odometer saat service harus berupa angka.',
             'next_service_target_odometer_km.integer' => 'Target odometer service berikutnya harus berupa angka.',
@@ -104,26 +82,19 @@ class CompleteForm extends Component
         if ($maintenanceId) {
             $this->loadMaintenance();
         }
-
-        // Set default completed_at to now
-        $this->completed_at = now()->format('Y-m-d\TH:i');
     }
 
     public function loadMaintenance()
     {
-        $maintenance = AssetMaintenance::with(['asset.vehicleProfile', 'employee'])->findOrFail($this->maintenanceId);
+        $maintenance = AssetMaintenance::with(['asset.vehicleProfile'])->findOrFail($this->maintenanceId);
 
         $this->asset = $maintenance->asset;
-        $this->employee_id = $maintenance->employee_id;
         $this->cost = $maintenance->cost;
-        $this->technician_name = $maintenance->technician_name;
-        $this->vendor_name = $maintenance->vendor_name;
         $this->notes = $maintenance->notes;
         $this->odometer_km_at_service = $maintenance->odometer_km_at_service;
         $this->next_service_target_odometer_km = $maintenance->next_service_target_odometer_km;
         $this->next_service_date = $maintenance->next_service_date?->format('Y-m-d');
         $this->invoice_no = $maintenance->invoice_no;
-        $this->completed_at = $maintenance->completed_at?->format('Y-m-d\TH:i') ?? now()->format('Y-m-d\TH:i');
 
         // Set default odometer if vehicle and not set
         if ($this->isVehicle && ! $this->odometer_km_at_service && $this->asset->vehicleProfile) {
@@ -140,13 +111,10 @@ class CompleteForm extends Component
 
             $data = [
                 'status' => MaintenanceStatus::COMPLETED,
-                'completed_at' => $this->completed_at,
+                'completed_at' => now(),
                 'cost' => $this->cost ?: 0,
-                'technician_name' => $this->technician_name ?: null,
-                'vendor_name' => $this->vendor_name ?: null,
                 'notes' => $this->notes,
                 'invoice_no' => $this->invoice_no ?: null,
-                'employee_id' => $this->employee_id ?: null,
             ];
 
             // Add odometer fields for vehicles
@@ -176,27 +144,19 @@ class CompleteForm extends Component
         return $this->asset && $this->asset->vehicleProfile !== null;
     }
 
-    public function getEmployeesProperty()
+    public function getCanCompleteProperty()
     {
-        if ($this->employeesCache === null) {
-            $this->employeesCache = Employee::where('branch_id', $this->branchId)
-                ->orderBy('name')
-                ->get()
-                ->map(function ($employee) {
-                    return (object) [
-                        'value' => $employee->id,
-                        'label' => $employee->name.' - '.$employee->position,
-                    ];
-                });
+        if (! $this->maintenanceId) {
+            return false;
         }
 
-        return $this->employeesCache;
+        $maintenance = AssetMaintenance::find($this->maintenanceId);
+
+        return $maintenance && $maintenance->status === MaintenanceStatus::IN_PROGRESS;
     }
 
     public function render()
     {
-        return view('livewire.maintenances.complete-form', [
-            'employees' => $this->employees,
-        ]);
+        return view('livewire.maintenances.complete-form');
     }
 }

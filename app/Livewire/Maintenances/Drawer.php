@@ -7,7 +7,7 @@ use Livewire\Attributes\Url;
 
 class Drawer extends Component
 {
-    #[Url(as: 'action')]       // ?action=create|edit
+    #[Url(as: 'action')]       // ?action=create|edit|complete
     public ?string $action = null;
 
     #[Url(as: 'maintenance_id')]  // ?maintenance_id=123
@@ -20,6 +20,7 @@ class Drawer extends Component
         'close-drawer' => 'closeDrawer',
         'open-drawer' => 'openDrawer',
         'open-edit-drawer' => 'openEditDrawer',
+        'open-complete-drawer' => 'openCompleteDrawer',
     ];
 
     public function mount()
@@ -46,7 +47,17 @@ class Drawer extends Component
         } elseif ($this->action === 'edit' && $this->maintenance_id) {
             $this->showDrawer   = true;
             $this->editingMaintenanceId = $this->maintenance_id;
+        } elseif ($this->action === 'complete' && $this->maintenance_id) {
+            $this->showDrawer   = true;
+            $this->editingMaintenanceId = $this->maintenance_id;
         } // else: biarkan state tetap (jangan auto-tutup tiap update)
+    }
+
+    public function openCompleteDrawer($maintenanceId)
+    {
+        $this->action = 'complete';
+        $this->maintenance_id = $maintenanceId;
+        $this->applyActionFromUrl();
     }
 
     public function openEditDrawer($maintenanceId)
