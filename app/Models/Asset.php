@@ -153,43 +153,32 @@ class Asset extends Model
      */
     public function scopeOverdue(Builder $query): Builder
     {
-        return $query->whereHas('vehicleTaxTypes', function ($q) {
-            $q->where('due_date', '<', now())
+        return $query->whereHas('vehicleTaxHistories', function ($q) {
+            $q->whereNull('paid_date')
+                ->where('due_date', '<', now())
                 ->whereNotNull('due_date');
         });
     }
 
     /**
      * Scope untuk kendaraan yang pajak tahunannya akan jatuh tempo dalam 3 bulan
-     * ATAU memiliki vehicle_tax_types yang sudah 9 bulan dan belum ada pembayaran
      */
     public function scopeDueSoon(Builder $query): Builder
     {
-        return $query->whereHas('vehicleTaxTypes', function ($q) {
-            $q->where(function ($subQ) {
-                // Due soon (dalam 3 bulan)
-                $subQ->where('due_date', '>', now())
-                    ->where('due_date', '<=', now()->addMonths(3))
-                    ->whereNotNull('due_date');
-            })->orWhere(function ($subQ) {
-                // ATAU sudah 9 bulan dan belum ada pembayaran
-                $subQ->where('due_date', '<=', now()->subMonths(9))
-                    ->whereDoesntHave('vehicleTaxHistories', function ($historyQ) {
-                        $historyQ->whereNotNull('paid_date')
-                            ->where('year', '>=', now()->year);
-                    });
-            });
+        return $query->whereHas('vehicleTaxHistories', function ($q) {
+            $q->whereNull('paid_date')
+                ->where('due_date', '>', now())
+                ->whereNotNull('due_date');
         });
     }
 
     /**
-     * Scope untuk kendaraan yang sudah membayar pajak dalam 9 bulan terakhir
+     * Scope untuk kendaraan yang sudah membayar pajak
      */
     public function scopePaid(Builder $query): Builder
     {
         return $query->whereHas('vehicleTaxHistories', function ($q) {
-            $q->whereNotNull('paid_date')
-                ->where('paid_date', '>=', now()->subMonths(9));
+            $q->whereNotNull('paid_date');
         });
     }
 

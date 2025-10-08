@@ -29,7 +29,7 @@
                     :key="'vehicle-tax-type-form-' . ($asset_id ?? 'new')" />
             @elseif($action === 'tax-payment')
                 <!-- Vehicle Tax History Form -->
-                <livewire:vehicle-taxes.tax-payment-form :vehicleTaxId="$asset_id" :key="'vehicle-tax-form-' . ($asset_id ?? 'new')" />
+                <livewire:vehicle-taxes.tax-payment-form :assetId="$asset_id" :key="'vehicle-tax-form-' . ($asset_id ?? 'new')" />
             @endif
         </div>
     </div>

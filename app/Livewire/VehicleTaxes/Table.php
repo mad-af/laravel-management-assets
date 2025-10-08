@@ -180,6 +180,111 @@ class Table extends Component
         $this->dispatch('open-vehicle-tax-drawer', ['assetId' => $assetId]);
     }
 
+    /**
+     * Get status tabs configuration
+     */
+    public function getStatusTabs()
+    {
+        return [
+            [
+                'value' => 'overdue',
+                'label' => 'Terlambat',
+                'count' => $this->overdueCount,
+                'badge_class' => 'badge-sm badge-error',
+            ],
+            [
+                'value' => 'due_soon',
+                'label' => 'Jatuh Tempo',
+                'count' => $this->dueSoonCount,
+                'badge_class' => 'badge-sm badge-warning',
+            ],
+            [
+                'value' => 'paid',
+                'label' => 'Dibayar',
+                'count' => $this->paidCount,
+                'badge_class' => 'badge-sm badge-success',
+            ],
+            [
+                'value' => 'not_valid',
+                'label' => 'Belum Valid',
+                'count' => $this->notValidCount,
+                'badge_class' => 'badge-sm badge-ghost badge-soft',
+            ],
+        ];
+    }
+
+    /**
+     * Get table headers configuration
+     */
+    public function getTableHeaders()
+    {
+        return [
+            ['key' => 'vehicle_info', 'label' => 'Kendaraan'],
+            ['key' => 'plate_no', 'label' => 'Plat Nomor'],
+            ['key' => 'last_tax_types', 'label' => 'Jenis Pajak'],
+            ['key' => 'last_payment', 'label' => 'Pembayaran Terakhir'],
+            ['key' => 'payment_count', 'label' => 'Jumlah Pembayaran'],
+            ['key' => 'actions', 'label' => 'Aksi', 'class' => 'w-24'],
+        ];
+    }
+
+    /**
+     * Get last payment for a vehicle
+     */
+    public function getLastPayment($vehicle)
+    {
+        return $vehicle->vehicleTaxHistories->sortByDesc('due_date')->first();
+    }
+
+    /**
+     * Get payment count data for a vehicle
+     */
+    public function getPaymentCount($vehicle)
+    {
+        $paidCount = $vehicle->vehicleTaxHistories->count();
+        $totalTaxTypes = $vehicle->vehicleTaxTypes->count();
+
+        return [
+            'paid_count' => $paidCount,
+            'total_tax_types' => $totalTaxTypes,
+        ];
+    }
+
+    /**
+     * Calculate tax status for a given vehicle tax type
+     */
+    public function getTaxStatus($vehicle, $taxType)
+    {
+        $dueDate = \Carbon\Carbon::parse($taxType->due_date);
+        $paidHistory = $vehicle->vehicleTaxHistories->where('vehicle_tax_type_id', $taxType->id)->first();
+
+        if ($paidHistory && $paidHistory->paid_date) {
+            return [
+                'status' => 'paid',
+                'statusClass' => 'badge-success',
+                'statusText' => 'Dibayar',
+            ];
+        } elseif ($dueDate->isPast()) {
+            return [
+                'status' => 'overdue',
+                'statusClass' => 'badge-error',
+                'statusText' => 'Terlambat',
+            ];
+        } elseif ($dueDate->isFuture()) {
+            return [
+                'status' => 'due_soon',
+                'statusClass' => 'badge-warning',
+                'statusText' => 'Jatuh Tempo',
+            ];
+        } else {
+            return [
+                'status' => 'upcoming',
+                'statusClass' => 'badge-info',
+                'statusText' => 'Akan Datang',
+            ];
+        }
+    }
+
     public function render()
     {
         return view('livewire.vehicle-taxes.table', [

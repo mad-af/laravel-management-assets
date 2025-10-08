@@ -3,36 +3,7 @@
         {{-- Status Taxes Tabs --}}
         <div class="overflow-x-auto">
             <div class="gap-1 items-center min-w-max tabs tabs-box tabs-sm w-fit">
-                @php
-                    $statusTabs = [
-                        [
-                            'value' => 'overdue',
-                            'label' => 'Terlambat',
-                            'count' => $this->overdueCount,
-                            'badge_class' => 'badge-sm badge-error',
-                        ],
-                        [
-                            'value' => 'due_soon',
-                            'label' => 'Jatuh Tempo',
-                            'count' => $this->dueSoonCount,
-                            'badge_class' => 'badge-sm badge-warning',
-                        ],
-                        [
-                            'value' => 'paid',
-                            'label' => 'Dibayar',
-                            'count' => $this->paidCount,
-                            'badge_class' => 'badge-sm badge-success',
-                        ],
-                        [
-                            'value' => 'not_valid',
-                            'label' => 'Belum Valid',
-                            'count' => $this->notValidCount,
-                            'badge_class' => 'badge-sm badge-ghost badge-soft',
-                        ],
-                    ];
-                @endphp
-
-                @foreach($statusTabs as $tab)
+                @foreach($this->getStatusTabs() as $tab)
                     <label class="gap-2 tab">
                         <input type="radio" name="status_tabs" class="checked:bg-base-100 checked:shadow"
                             wire:model.live="statusFilter" value="{{ $tab['value'] }}" />
@@ -63,7 +34,6 @@
                     ['key' => 'actions', 'label' => 'Aksi', 'class' => 'w-24'],
                 ];
             @endphp
-
             <x-table :headers="$headers" :rows="$vehicleAssets" striped show-empty-text>
                 @scope('cell_vehicle_info', $vehicle)
                 <div class="flex gap-2 items-center">
@@ -90,44 +60,23 @@
                 @endscope
 
                 @scope('cell_last_tax_types', $vehicle)
-                @php
-                    $taxTypes = $vehicle->vehicleTaxTypes;
-                @endphp
-                @if($taxTypes->count() > 0)
+                @if($vehicle->vehicleTaxTypes->count() > 0)
                     <div class="flex flex-col gap-1">
-                        @foreach($taxTypes->take(3) as $taxType)
+                        @foreach($vehicle->vehicleTaxTypes->take(3) as $taxType)
                             @php
-                                $dueDate = \Carbon\Carbon::parse($taxType->due_date);
-                                $paidHistory = $vehicle->vehicleTaxHistories->where('vehicle_tax_type_id', $taxType->id)->first();
-
-                                if ($paidHistory) {
-                                    $status = 'paid';
-                                    $statusClass = 'badge-success';
-                                    $statusText = 'Dibayar';
-                                } elseif ($dueDate->isPast()) {
-                                    $status = 'overdue';
-                                    $statusClass = 'badge-error';
-                                    $statusText = 'Terlambat';
-                                } elseif ($dueDate->diffInMonths(now()) <= 3) {
-                                    $status = 'due_soon';
-                                    $statusClass = 'badge-warning';
-                                    $statusText = 'Jatuh Tempo';
-                                } else {
-                                    $status = 'upcoming';
-                                    $statusClass = 'badge-info';
-                                    $statusText = 'Akan Datang';
-                                }
+                                $taxStatus = $this->getTaxStatus($vehicle, $taxType);
                             @endphp
                             <div class="flex gap-2 justify-between items-center">
                                 <div class="flex-1 min-w-0">
                                     <div class="text-sm font-medium truncate">{{$taxType->tax_type->label() }}</div>
                                 </div>
-                                <x-badge class="badge-xs {{ $statusClass }}" value="{{ $statusText }}" />
+                                <x-badge class="badge-xs {{ $taxStatus['statusClass'] }}"
+                                    value="{{ $taxStatus['statusText'] }}" />
                             </div>
                         @endforeach
-                        @if($taxTypes->count() > 3)
+                        @if($vehicle->vehicleTaxTypes->count() > 3)
                             <div class="mt-1 text-xs text-base-content/50">
-                                +{{ $taxTypes->count() - 3 }} lainnya
+                                +{{ $vehicle->vehicleTaxTypes->count() - 3 }} lainnya
                             </div>
                         @endif
                     </div>
@@ -138,9 +87,9 @@
 
                 @scope('cell_last_payment', $vehicle)
                 @php
-                    $lastPayment = $vehicle->vehicleTaxHistories->sortByDesc('paid_date')->first();
+                    $lastPayment = $this->getLastPayment($vehicle);
                 @endphp
-                @if($lastPayment)
+                @if($lastPayment->paid_date)
                     <div class="flex flex-col">
                         <span class="text-sm">{{ \Carbon\Carbon::parse($lastPayment->paid_date)->format('d M Y') }}</span>
                         <span class="text-xs text-base-content/70">Rp
@@ -153,12 +102,11 @@
 
                 @scope('cell_payment_count', $vehicle)
                 @php
-                    $paidCount = $vehicle->vehicleTaxHistories->count();
-                    $totalTaxTypes = $vehicle->vehicleTaxTypes->count();
+                    $paymentData = $this->getPaymentCount($vehicle);
                 @endphp
                 <div class="flex flex-col">
-                    <span class="text-sm font-medium">{{ $paidCount }}</span>
-                    <span class="text-xs text-base-content/70">dari {{ $totalTaxTypes }} pajak</span>
+                    <span class="text-sm font-medium">{{ $paymentData['paid_count'] }}</span>
+                    <span class="text-xs text-base-content/70">dari {{ $paymentData['total_tax_types'] }} pajak</span>
                 </div>
                 @endscope
 
@@ -182,7 +130,7 @@
                                 </button>
                             </li>
                         @endif
-                        <li>
+                        <li class="opacity-50 cursor-not-allowed pointer-events-none">
                             <a href="{{ route('assets.show', $vehicle->id) }}"
                                 class="flex gap-2 items-center p-2 text-sm rounded">
                                 <x-icon name="o-eye" class="w-4 h-4" />

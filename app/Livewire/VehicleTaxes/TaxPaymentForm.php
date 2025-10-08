@@ -4,7 +4,6 @@ namespace App\Livewire\VehicleTaxes;
 
 use App\Models\Asset;
 use App\Models\VehicleTaxHistory;
-use App\Models\VehicleTaxType;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Mary\Traits\Toast;
@@ -17,7 +16,7 @@ class TaxPaymentForm extends Component
     #[Url('asset_id')]
     public ?string $asset_id = null;
 
-    public ?string $vehicle_tax_type_id = null;
+    public ?string $vehicle_tax_history_id = null;
 
     public ?string $paid_date = null;
 
@@ -36,11 +35,11 @@ class TaxPaymentForm extends Component
     // Dropdown sources
     public array $assets = [];
 
-    public array $vehicleTaxTypes = [];
+    public array $vehicleTaxHistories = [];
 
     protected $rules = [
         'asset_id' => 'required|uuid|exists:assets,id',
-        'vehicle_tax_type_id' => 'required|uuid|exists:vehicle_tax_types,id',
+        'vehicle_tax_history_id' => 'required|uuid|exists:vehicle_tax_histories,id',
         'paid_date' => 'required|date',
         'year' => 'required|integer|min:2000|max:2099',
         'amount' => 'required|numeric|min:0',
@@ -61,7 +60,29 @@ class TaxPaymentForm extends Component
 
         // Load dropdown data
         $this->loadAssets();
-        $this->loadVehicleTaxTypes();
+        $this->loadVehicleTaxHistories();
+    }
+
+    /**
+     * Handle asset selection change
+     */
+    public function updatedAssetId(): void
+    {
+        $this->vehicle_tax_history_id = null;
+        $this->resetFormFields();
+        $this->loadVehicleTaxHistories();
+    }
+
+    /**
+     * Handle vehicle tax type selection change
+     */
+    public function updatedVehicleTaxHistoryId(): void
+    {
+        if ($this->vehicle_tax_history_id) {
+            $this->populateFormFromTaxHistory();
+        } else {
+            $this->resetFormFields();
+        }
     }
 
     /**
@@ -69,8 +90,10 @@ class TaxPaymentForm extends Component
      */
     protected function loadAssets(): void
     {
-        $this->assets = Asset::query()
-            ->where('is_active', true)
+        $branchId = session('selected_branch_id');
+
+        $this->assets = Asset::vehicles()
+            ->forBranch($branchId)
             ->orderBy('name')
             ->get(['id', 'name', 'code'])
             ->map(function ($asset) {
@@ -83,20 +106,64 @@ class TaxPaymentForm extends Component
     }
 
     /**
-     * Load vehicle tax types for dropdown
+     * Load vehicle tax types for dropdown - only unpaid taxes for selected asset
      */
-    protected function loadVehicleTaxTypes(): void
+    protected function loadVehicleTaxHistories(): void
     {
-        $this->vehicleTaxTypes = VehicleTaxType::query()
-            ->orderBy('tax_type')
-            ->get(['id', 'tax_type'])
-            ->map(function ($taxType) {
-                return [
-                    'id' => $taxType->id,
-                    'tax_type' => $taxType->tax_type,
-                ];
-            })
-            ->toArray();
+        if (! $this->asset_id) {
+            $this->vehicleTaxHistories = [];
+
+            return;
+        }
+
+        // Get unpaid vehicle tax histories for the selected asset
+        $unpaidTaxHistories = VehicleTaxHistory::with('vehicleTaxType')
+            ->where('asset_id', $this->asset_id)
+            ->whereNull('paid_date')
+            ->whereNotNull('due_date')
+            ->orderBy('due_date', 'asc')
+            ->get();
+
+        $this->vehicleTaxHistories = $unpaidTaxHistories->map(function ($taxHistory) {
+            $status = $this->getTaxStatus($taxHistory);
+
+            return [
+                'id' => $taxHistory->id,
+                'tax_type' => $taxHistory->vehicleTaxType->tax_type->label().' - '.$taxHistory->due_date->format('d/m/Y').' ('.$status.')',
+            ];
+        })->toArray();
+    }
+
+    /**
+     * Populate form fields based on selected tax history
+     */
+    protected function populateFormFromTaxHistory(): void
+    {
+        $taxHistory = VehicleTaxHistory::find($this->vehicle_tax_history_id);
+
+        if (! $taxHistory) {
+            return;
+        }
+
+        $this->year = $taxHistory->year;
+        // Set default paid date to today
+        $this->paid_date = now()->format('Y-m-d');
+        // Keep amount and receipt_no empty for user input
+        $this->amount = null;
+        $this->receipt_no = null;
+        $this->notes = $taxHistory->notes ?? '';
+    }
+
+    /**
+     * Reset form fields except asset_id and vehicle_tax_history_id
+     */
+    protected function resetFormFields(): void
+    {
+        $this->paid_date = null;
+        $this->year = date('Y');
+        $this->amount = null;
+        $this->receipt_no = null;
+        $this->notes = '';
     }
 
     /**
@@ -115,7 +182,7 @@ class TaxPaymentForm extends Component
         }
 
         $this->asset_id = $vehicleTaxHistory->asset_id;
-        $this->vehicle_tax_type_id = $vehicleTaxHistory->vehicle_tax_type_id;
+        $this->vehicle_tax_history_id = $vehicleTaxHistory->vehicle_tax_type_id;
         $this->paid_date = $vehicleTaxHistory->paid_date?->format('Y-m-d');
         $this->year = $vehicleTaxHistory->year;
         $this->amount = $vehicleTaxHistory->amount;
@@ -128,26 +195,30 @@ class TaxPaymentForm extends Component
         $this->validate();
 
         try {
-            $data = [
-                'asset_id' => $this->asset_id,
-                'vehicle_tax_type_id' => $this->vehicle_tax_type_id,
-                'paid_date' => $this->paid_date,
-                'year' => $this->year,
-                'amount' => $this->amount,
-                'receipt_no' => $this->receipt_no,
-                'notes' => $this->notes,
-            ];
-
             if ($this->isEdit && $this->vehicleTaxId) {
+                // Update existing tax history
                 $vehicleTaxHistory = VehicleTaxHistory::findOrFail($this->vehicleTaxId);
-                $vehicleTaxHistory->update($data);
+                $vehicleTaxHistory->update([
+                    'paid_date' => $this->paid_date,
+                    'year' => $this->year,
+                    'amount' => $this->amount,
+                    'receipt_no' => $this->receipt_no,
+                    'notes' => $this->notes,
+                ]);
 
                 $this->success('Riwayat pajak berhasil diperbarui!');
                 $this->dispatch('vehicle-tax-updated');
             } else {
-                VehicleTaxHistory::create($data);
+                // Update the selected unpaid tax history with payment details
+                $vehicleTaxHistory = VehicleTaxHistory::findOrFail($this->vehicle_tax_history_id);
+                $vehicleTaxHistory->update([
+                    'paid_date' => $this->paid_date,
+                    'amount' => $this->amount,
+                    'receipt_no' => $this->receipt_no,
+                    'notes' => $this->notes,
+                ]);
 
-                $this->success('Riwayat pajak berhasil ditambahkan!');
+                $this->success('Pembayaran pajak berhasil dicatat!');
                 $this->dispatch('vehicle-tax-saved');
                 $this->resetForm();
             }
@@ -181,12 +252,30 @@ class TaxPaymentForm extends Component
     public function resetForm(): void
     {
         $this->reset([
-            'vehicleTaxId', 'asset_id', 'vehicle_tax_type_id', 'paid_date',
+            'vehicleTaxId', 'asset_id', 'vehicle_tax_history_id', 'paid_date',
             'year', 'amount', 'receipt_no', 'notes', 'isEdit',
         ]);
 
         $this->year = date('Y'); // Reset year to current year
         $this->resetValidation();
+    }
+
+    /**
+     * Get simple tax status text for display
+     */
+    private function getTaxStatus($taxHistory): string
+    {
+        $dueDate = \Carbon\Carbon::parse($taxHistory->due_date);
+
+        if ($taxHistory->paid_date) {
+            return 'Dibayar';
+        } elseif ($dueDate->isPast()) {
+            return 'Terlambat';
+        } elseif ($dueDate->diffInDays(now()) <= 30) {
+            return 'Jatuh Tempo';
+        } else {
+            return 'Akan Datang';
+        }
     }
 
     public function render()
