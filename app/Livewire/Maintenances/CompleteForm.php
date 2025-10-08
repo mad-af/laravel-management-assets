@@ -92,8 +92,6 @@ class CompleteForm extends Component
 
     public function save()
     {
-        // dd("dsada");
-        // dd("das");
         try {
             $this->validate();
             $maintenance = AssetMaintenance::findOrFail($this->maintenanceId);

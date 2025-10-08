@@ -77,7 +77,7 @@ class Form extends Component
         ];
 
         // Dynamic validation for odometer fields based on current vehicle odometer
-        if ($this->asset_id) {
+        if ($this->isVehicle) {
             $asset = Asset::with('vehicleProfile')->find($this->asset_id);
             if ($asset && $asset->vehicleProfile && $asset->vehicleProfile->current_odometer_km) {
                 $minOdometer = $asset->vehicleProfile->current_odometer_km;
@@ -85,8 +85,6 @@ class Form extends Component
             } else {
                 $rules['odometer_km_at_service'] = 'required|integer|min:0';
             }
-        } else {
-            $rules['odometer_km_at_service'] = 'required|integer|min:0';
         }
 
         return $rules;
@@ -113,7 +111,8 @@ class Form extends Component
         ];
 
         // Dynamic messages for odometer validation based on current vehicle odometer
-        if ($this->asset_id && $asset = Asset::with('vehicleProfile')->find($this->asset_id)) {
+        if ($this->isVehicle) {
+            $asset = Asset::with('vehicleProfile')->find($this->asset_id);
             $currentOdometer = $asset->vehicleProfile->current_odometer_km ?? 0;
             $messages['odometer_km_at_service.min'] = "Odometer saat service tidak boleh kurang dari odometer saat ini ({$currentOdometer} KM).";
         }
@@ -176,7 +175,6 @@ class Form extends Component
         $this->started_at = $maintenance->started_at?->format('Y-m-d');
         $this->estimated_completed_at = $maintenance->estimated_completed_at?->format('Y-m-d');
         $this->vendor_name = $maintenance->vendor_name;
-        $this->odometer_km_at_service = $maintenance->odometer_km_at_service;
         $this->notes = $maintenance->notes;
 
         // Set default odometer if vehicle and not set
@@ -213,9 +211,9 @@ class Form extends Component
 
     public function save()
     {
-        $this->validate();
-
+        
         try {
+            $this->validate();
             $data = [
                 'asset_id' => $this->asset_id,
                 'employee_id' => $this->employee_id ?: null,
