@@ -30,8 +30,6 @@ class ProfileForm extends Component
 
     public $next_service_date = '';
 
-    public $annual_tax_due_date = '';
-
     public $plate_no = '';
 
     public $vin = '';
@@ -50,7 +48,6 @@ class ProfileForm extends Component
             'last_service_date' => 'nullable|date',
             'service_target_odometer_km' => 'nullable|integer|min:0',
             'next_service_date' => 'nullable|date',
-            'annual_tax_due_date' => 'nullable|date',
             'plate_no' => 'nullable|string|max:20',
             'vin' => 'nullable|string|max:50',
         ];
@@ -111,7 +108,6 @@ class ProfileForm extends Component
             $this->last_service_date = optional($vehicle->last_service_date)->format('Y-m-d');
             $this->service_target_odometer_km = $vehicle->service_target_odometer_km;
             $this->next_service_date = optional($vehicle->next_service_date)->format('Y-m-d');
-            $this->annual_tax_due_date = optional($vehicle->annual_tax_due_date)->format('Y-m-d');
             $this->plate_no = $vehicle->plate_no;
             $this->vin = $vehicle->vin;
         } else {
@@ -127,7 +123,6 @@ class ProfileForm extends Component
         $this->last_service_date = '';
         $this->service_target_odometer_km = '';
         $this->next_service_date = '';
-        $this->annual_tax_due_date = '';
         $this->plate_no = '';
         $this->vin = '';
         $this->resetValidation();
@@ -146,7 +141,6 @@ class ProfileForm extends Component
                 'last_service_date' => $this->last_service_date ?: null,
                 'service_target_odometer_km' => $this->service_target_odometer_km ?: null,
                 'next_service_date' => $this->next_service_date ?: null,
-                'annual_tax_due_date' => $this->annual_tax_due_date ?: null,
                 'plate_no' => $this->plate_no,
                 'vin' => $this->vin,
             ];

@@ -4,6 +4,7 @@ namespace App\Livewire\Employees;
 
 use App\Models\Company;
 use App\Models\Employee;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -38,8 +39,10 @@ class Table extends Component
     public function mount(?string $selectedCompanyId = null): void
     {
         // Ambil daftar perusahaan (sesuaikan scoping/authorization kamu)
-        $this->companies = Company::query()
-            ->select('id', 'name', 'code')
+        $user = Auth::user();
+
+        // Ambil perusahaan yang di-assign ke user (sesuaikan relasinya kalau beda)
+        $this->companies = $user->companies()
             ->get();
 
         // Set default tab: dari URL/param jika ada, kalau tidak pakai first()

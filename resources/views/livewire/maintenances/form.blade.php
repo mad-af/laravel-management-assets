@@ -6,6 +6,7 @@
             placeholder="Pilih aset..." searchable required class="select-sm" />
     </div>
 
+    @if ($asset_id)
     <!-- Invoice No -->
     {{-- <div>
         <x-input label="No. Invoice" wire:model="invoice_no" placeholder="Masukkan nomor invoice..." class="input-sm" />
@@ -94,20 +95,18 @@
         <x-input label="Nama Vendor" wire:model="vendor_name" placeholder="Masukkan nama vendor..." class="input-sm" />
     </div>
 
-    <!-- Odometer KM at Service -->
     @if($this->isVehicle)
+        <!-- Odometer KM at Service -->
         <div>
             <x-input label="Odometer saat Service (KM)" wire:model="odometer_km_at_service"
                 placeholder="Masukkan odometer..." type="number"
                 min="{{ $this->asset?->vehicleProfile?->current_odometer_km ?? 0 }}" class="input-sm" required />
         </div>
-    @endif
 
-    <!-- Next Service Target Odometer KM -->
-    @if($this->isVehicle)
+        <!-- Next Service Target Odometer KM -->
         <div>
             <x-input label="Target Odometer Service Berikutnya (KM)" wire:model="next_service_target_odometer_km"
-                placeholder="Masukkan target odometer..." type="number" min="0" class="input-sm" />
+                placeholder="Masukkan target odometer..." type="number" min="{{ $this->asset?->vehicleProfile?->current_odometer_km ?? 0 }}" class="input-sm" />
         </div>
     @endif
 
@@ -126,4 +125,5 @@
         <x-button label="Batal" class="btn-ghost btn-sm" wire:click="$dispatch('close-drawer')" />
         <x-button label="{{ $isEdit ? 'Update' : 'Simpan' }}" class="btn-primary btn-sm" type="submit" spinner="save" />
     </div>
+    @endif
 </form>

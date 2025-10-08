@@ -3,8 +3,10 @@
 namespace App\Livewire\Maintenances;
 
 use App\Enums\MaintenanceStatus;
+use App\Enums\UserRole;
 use App\Models\AssetMaintenance;
 use App\Support\SessionKey;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -57,6 +59,7 @@ class KanbanColumn extends Component
         $availableNextStatuses = [];
         $availablePreviousStatuses = [];
         $currentOrder = $this->status->order();
+        $currentUser = Auth::user();
 
         // Dapatkan semua status
         $allStatuses = MaintenanceStatus::cases();
@@ -73,7 +76,17 @@ class KanbanColumn extends Component
             // - Previous: order yang lebih kecil 1 angka dari current
             // - Next: order yang lebih besar 1 angka dari current
             if ($statusOrder === $currentOrder - 1) {
-                $availablePreviousStatuses[] = $status;
+                // Cek jika ingin kembali dari COMPLETED atau CANCELLED ke IN_PROGRESS
+                // Hanya admin yang bisa melakukan ini
+                if (($this->status === MaintenanceStatus::COMPLETED || $this->status === MaintenanceStatus::CANCELLED)
+                    && $status === MaintenanceStatus::IN_PROGRESS) {
+                    if ($currentUser && $currentUser->role === UserRole::ADMIN) {
+                        $availablePreviousStatuses[] = $status;
+                    }
+                    // Jika bukan admin, skip status ini
+                } else {
+                    $availablePreviousStatuses[] = $status;
+                }
             } elseif ($statusOrder === $currentOrder + 1) {
                 $availableNextStatuses[] = $status;
             }

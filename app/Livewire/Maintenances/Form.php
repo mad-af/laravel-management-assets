@@ -73,51 +73,102 @@ class Form extends Component
 
     private $maintenancePrioritiesCache = null;
 
-    protected $rules = [
-        'asset_id' => 'required|exists:assets,id',
-        'employee_id' => 'nullable|exists:employees,id',
-        'title' => 'required|string|max:255',
-        'type' => 'required',
-        'status' => 'required',
-        'priority' => 'required',
-        'started_at' => 'nullable|date',
-        'estimated_completed_at' => 'nullable|date',
-        'completed_at' => 'nullable|date',
-        'cost' => 'nullable|numeric|min:0',
-        'technician_name' => 'nullable|string|max:255',
-        'vendor_name' => 'nullable|string|max:255',
-        'notes' => 'nullable|string',
-        'odometer_km_at_service' => 'nullable|integer|min:0',
-        'next_service_target_odometer_km' => 'nullable|integer|min:0',
-        'next_service_date' => 'nullable|date',
-        'invoice_no' => 'nullable|string|max:255',
-    ];
+    protected function rules()
+    {
+        $rules = [
+            'asset_id' => 'required|exists:assets,id',
+            'employee_id' => 'nullable|exists:employees,id',
+            'title' => 'required|string|max:255',
+            'type' => 'required',
+            'status' => 'required',
+            'priority' => 'required',
+            'started_at' => 'nullable|date',
+            'estimated_completed_at' => 'nullable|date',
+            'completed_at' => 'nullable|date',
+            'cost' => 'nullable|numeric|min:0',
+            'technician_name' => 'nullable|string|max:255',
+            'vendor_name' => 'nullable|string|max:255',
+            'notes' => 'nullable|string',
+            'next_service_date' => 'nullable|date',
+            'invoice_no' => 'nullable|string|max:255',
+        ];
 
-    protected $messages = [
-        'asset_id.required' => 'Aset wajib dipilih.',
-        'asset_id.exists' => 'Aset yang dipilih tidak valid.',
-        'employee_id.exists' => 'Karyawan yang dipilih tidak valid.',
-        'title.required' => 'Judul wajib diisi.',
-        'title.max' => 'Judul maksimal 255 karakter.',
-        'type.required' => 'Jenis perawatan wajib dipilih.',
-        'status.required' => 'Status wajib dipilih.',
-        'priority.required' => 'Prioritas wajib dipilih.',
-        'cost.numeric' => 'Biaya harus berupa angka.',
-        'cost.min' => 'Biaya tidak boleh negatif.',
-        'started_at.date' => 'Tanggal mulai harus berupa tanggal yang valid.',
-        'estimated_completed_at.date' => 'Tanggal estimasi selesai harus berupa tanggal yang valid.',
-        'completed_at.date' => 'Tanggal selesai harus berupa tanggal yang valid.',
-        'next_service_date.date' => 'Tanggal service berikutnya harus berupa tanggal yang valid.',
-        'odometer_km_at_service.integer' => 'Odometer saat service harus berupa angka.',
-        'odometer_km_at_service.min' => 'Odometer saat service tidak boleh negatif.',
-        'next_service_target_odometer_km.integer' => 'Target odometer service berikutnya harus berupa angka.',
-        'next_service_target_odometer_km.min' => 'Target odometer service berikutnya tidak boleh negatif.',
-    ];
+        // Dynamic validation for odometer fields based on current vehicle odometer
+        if ($this->asset_id) {
+            $asset = Asset::with('vehicleProfile')->find($this->asset_id);
+            if ($asset && $asset->vehicleProfile && $asset->vehicleProfile->current_odometer_km) {
+                $minOdometer = $asset->vehicleProfile->current_odometer_km;
+                $rules['odometer_km_at_service'] = "required|integer|min:{$minOdometer}";
+                $rules['next_service_target_odometer_km'] = "nullable|integer|min:{$minOdometer}";
+            } else {
+                $rules['odometer_km_at_service'] = 'required|integer|min:0';
+                $rules['next_service_target_odometer_km'] = 'nullable|integer|min:0';
+            }
+        } else {
+            $rules['odometer_km_at_service'] = 'required|integer|min:0';
+            $rules['next_service_target_odometer_km'] = 'nullable|integer|min:0';
+        }
+
+        return $rules;
+    }
+
+    protected function messages()
+    {
+        $messages = [
+            'asset_id.required' => 'Aset wajib dipilih.',
+            'asset_id.exists' => 'Aset yang dipilih tidak valid.',
+            'employee_id.exists' => 'Karyawan yang dipilih tidak valid.',
+            'title.required' => 'Judul wajib diisi.',
+            'title.max' => 'Judul maksimal 255 karakter.',
+            'type.required' => 'Jenis perawatan wajib dipilih.',
+            'status.required' => 'Status wajib dipilih.',
+            'priority.required' => 'Prioritas wajib dipilih.',
+            'cost.numeric' => 'Biaya harus berupa angka.',
+            'cost.min' => 'Biaya tidak boleh negatif.',
+            'started_at.date' => 'Tanggal mulai harus berupa tanggal yang valid.',
+            'estimated_completed_at.date' => 'Tanggal estimasi selesai harus berupa tanggal yang valid.',
+            'completed_at.date' => 'Tanggal selesai harus berupa tanggal yang valid.',
+            'next_service_date.date' => 'Tanggal service berikutnya harus berupa tanggal yang valid.',
+            'odometer_km_at_service.integer' => 'Odometer saat service harus berupa angka.',
+            'next_service_target_odometer_km.integer' => 'Target odometer service berikutnya harus berupa angka.',
+        ];
+
+        // Dynamic messages for odometer validation based on current vehicle odometer
+        if ($this->asset_id) {
+            $asset = Asset::with('vehicleProfile')->find($this->asset_id);
+            if ($asset && $asset->vehicleProfile && $asset->vehicleProfile->current_odometer_km) {
+                $currentOdometer = $asset->vehicleProfile->current_odometer_km;
+                $messages['odometer_km_at_service.min'] = "Odometer saat service tidak boleh kurang dari odometer saat ini ({$currentOdometer} km).";
+                $messages['next_service_target_odometer_km.min'] = "Target odometer service berikutnya tidak boleh kurang dari odometer saat ini ({$currentOdometer} km).";
+            } else {
+                $messages['odometer_km_at_service.min'] = 'Odometer saat service tidak boleh negatif.';
+                $messages['next_service_target_odometer_km.min'] = 'Target odometer service berikutnya tidak boleh negatif.';
+            }
+        } else {
+            $messages['odometer_km_at_service.min'] = 'Odometer saat service tidak boleh negatif.';
+            $messages['next_service_target_odometer_km.min'] = 'Target odometer service berikutnya tidak boleh negatif.';
+        }
+
+        return $messages;
+    }
 
     protected $listeners = [
         'editMaintenance' => 'edit',
         'resetForm' => 'resetForm',
     ];
+
+    /**
+     * Handle asset selection change - set default odometer value
+     */
+    public function updatedAssetId($value)
+    {
+        if ($value && $this->isVehicle) {
+            $asset = Asset::with('vehicleProfile')->find($value);
+            if ($asset && $asset->vehicleProfile && $asset->vehicleProfile->current_odometer_km) {
+                $this->odometer_km_at_service = $asset->vehicleProfile->current_odometer_km;
+            }
+        }
+    }
 
     public function mount($maintenanceId = null)
     {
@@ -331,7 +382,7 @@ class Form extends Component
         if ($this->assetsCache === null) {
             $this->assetsCache = Asset::with('category')
                 ->where('branch_id', $this->branchId)
-                ->whereNotIn('status', [AssetStatus::MAINTENANCE, AssetStatus::LOST, AssetStatus::ON_LOAN])
+                // ->whereNotIn('status', [AssetStatus::MAINTENANCE, AssetStatus::LOST, AssetStatus::ON_LOAN])
                 ->orderBy('name')
                 ->get()
                 ->map(function ($asset) {

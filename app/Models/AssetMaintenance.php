@@ -64,15 +64,24 @@ class AssetMaintenance extends Model
     /**
      * Boot the model to handle asset status updates.
      */
-    protected static function boot()
+    protected static function booted()
     {
-        parent::boot();
-
-        // When maintenance is created, set asset status to maintenance
+        // When maintenance is created, set asset status to maintenance and create odometer log
         static::created(function ($maintenance) {
             $maintenance->asset()->update([
                 'status' => AssetStatus::MAINTENANCE,
             ]);
+
+            // Create odometer log if maintenance has odometer data and asset is a vehicle
+            if ($maintenance->odometer_km_at_service && $maintenance->asset->vehicleProfile) {
+                VehicleOdometerLog::create([
+                    'asset_id' => $maintenance->asset_id,
+                    'odometer_km' => $maintenance->odometer_km_at_service,
+                    'read_at' => $maintenance->started_at ?? now(),
+                    'source' => \App\Enums\VehicleOdometerSource::SERVICE,
+                    'notes' => "Buat Maintenance: {$maintenance->title}",
+                ]);
+            }
         });
 
         // When maintenance status is updated, check if we need to update asset status
@@ -85,11 +94,43 @@ class AssetMaintenance extends Model
                     $maintenance->asset()->update([
                         'status' => AssetStatus::ACTIVE,
                     ]);
+
+                    // If maintenance is completed and has vehicle profile, update next service data
+                    if ($newStatus === MaintenanceStatus::COMPLETED && $maintenance->asset->vehicleProfile) {
+                        $updateData = [];
+
+                        if ($maintenance->next_service_target_odometer_km) {
+                            $updateData['service_target_odometer_km'] = $maintenance->next_service_target_odometer_km;
+                        }
+
+                        if ($maintenance->next_service_date) {
+                            $updateData['next_service_date'] = $maintenance->next_service_date;
+                        }
+
+                        if (! empty($updateData)) {
+                            $maintenance->asset->vehicleProfile()->update($updateData);
+                        }
+                    }
                 }
                 // If maintenance is reopened (back to open or in_progress), set asset to maintenance
                 elseif (in_array($newStatus, [MaintenanceStatus::OPEN, MaintenanceStatus::IN_PROGRESS])) {
                     $maintenance->asset()->update([
                         'status' => AssetStatus::MAINTENANCE,
+                    ]);
+
+                }
+            }
+
+            if ($maintenance->wasChanged('odometer_km_at_service')) {
+                // Create odometer log if maintenance has odometer data and asset is a vehicle
+                if ($maintenance->odometer_km_at_service && $maintenance->asset->vehicleProfile) {
+                    // dd("dsda", $maintenance->odometer_km_at_service, $maintenance->asset);
+                    VehicleOdometerLog::create([
+                        'asset_id' => $maintenance->asset_id,
+                        'odometer_km' => $maintenance->odometer_km_at_service,
+                        'read_at' => $maintenance->started_at ?? now(),
+                        'source' => \App\Enums\VehicleOdometerSource::SERVICE,
+                        'notes' => "Update Maintenance: {$maintenance->title}",
                     ]);
                 }
             }
