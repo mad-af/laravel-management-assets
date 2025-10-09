@@ -22,7 +22,7 @@ Route::get('/', function () {
 });
 
 Route::get('/maintenance-report', function () {
-    return view('pdf-template.maintenance-report-example');
+    return view('pdf-template.maintenance-report-example-2');
 });
 
 // Authentication Routes (only for guests)
