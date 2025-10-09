@@ -89,7 +89,7 @@
                 @php
                     $lastPayment = $this->getLastPayment($vehicle);
                 @endphp
-                @if($lastPayment->paid_date)
+                @if($lastPayment?->paid_date)
                     <div class="flex flex-col">
                         <span class="text-sm">{{ \Carbon\Carbon::parse($lastPayment->paid_date)->format('d M Y') }}</span>
                         <span class="text-xs text-base-content/70">Rp
