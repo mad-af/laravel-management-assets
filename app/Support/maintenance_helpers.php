@@ -20,14 +20,14 @@ if (! function_exists('generate_maintenance_code')) {
         $prefix = 'WO-' . $yearMonth . '-';
         
         // Get the last maintenance code for this month
-        $lastMaintenance = AssetMaintenance::where('id', 'LIKE', $prefix . '%')
-            ->orderBy('id', 'desc')
+        $lastMaintenance = AssetMaintenance::where('code', 'LIKE', $prefix . '%')
+            ->orderBy('code', 'desc')
             ->first();
         
         $nextNumber = 1;
         if ($lastMaintenance) {
             // Extract the sequential number from the last maintenance code
-            $lastNumber = (int) substr($lastMaintenance->id, -3);
+            $lastNumber = (int) substr($lastMaintenance->code, -3);
             $nextNumber = $lastNumber + 1;
         }
         
