@@ -5,20 +5,11 @@
     <meta charset="UTF-8" />
     <title>Work Order</title>
     <!-- Tailwind + DaisyUI CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                /* Replace default scale: minimum 10pt */
 
-                extend: {
-                    fontFamily: { tnr: ['"Times New Roman"', 'Times', 'serif'] },
-                },
-            },
-            daisyui: { themes: ["light"] },
-        }
-    </script>
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="http://localhost:8000/build/assets/app-Df1MClhN.css">
+    @vite(array_filter([
+        'resources/css/app.css',
+    ]))
 </head>
 
 <body class="bg-base-200 print:bg-white">
@@ -112,11 +103,13 @@
                     <div class="flex-1 leading-snug">
                         <p>
                             <span class="font-semibold">Tanggal W.O.:</span>
-                            <span class="">{{ $data->start_date ? $data->start_date->format('d F Y') : 'Belum ditentukan' }}</span>
+                            <span
+                                class="">{{ $data->start_date ? $data->start_date->format('d F Y') : 'Belum ditentukan' }}</span>
                         </p>
                         <p>
                             <span class="font-semibold">Estimasi Tanggal Selesai:</span>
-                            <span class="">{{ $data->estimation_end_date ? $data->estimation_end_date->format('d F Y') : 'Belum ditentukan' }}</span>
+                            <span
+                                class="">{{ $data->estimation_end_date ? $data->estimation_end_date->format('d F Y') : 'Belum ditentukan' }}</span>
                         </p>
                     </div>
                 </div>
@@ -243,7 +236,8 @@
 
         <!-- Footer note (optional) -->
         <section class="absolute bottom-4 text-[8px] text-base-content/70">
-            <p>Diterbitkan oleh <span class="font-bold">PT. Gaya Sukses Mandiri Kaseindo</span> · Dokumen Rahasia – Untuk penggunaan internal dan klien.</p>
+            <p>Diterbitkan oleh <span class="font-bold">PT. Gaya Sukses Mandiri Kaseindo</span> · Dokumen Rahasia –
+                Untuk penggunaan internal dan klien.</p>
         </section>
     </main>
 </body>

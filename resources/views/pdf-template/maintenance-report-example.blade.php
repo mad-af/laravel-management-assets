@@ -5,8 +5,8 @@
     <meta charset="UTF-8" />
     <title>Work Order</title>
     <!-- Tailwind + DaisyUI CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
+    {{-- <script src="https://cdn.tailwindcss.com"></script> --}}
+    {{-- <script>
         tailwind.config = {
             theme: {
                 /* Replace default scale: minimum 10pt */
@@ -17,8 +17,13 @@
             },
             daisyui: { themes: ["light"] },
         }
-    </script>
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" />
+    </script> --}}
+    {{-- <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" /> --}}
+
+    @vite(array_filter([
+        'resources/css/app.css',
+    ]))
+    
 </head>
 
 <body class="bg-base-200 print:bg-white">
@@ -226,7 +231,8 @@
 
         <!-- Footer note (optional) -->
         <section class="absolute bottom-4 text-[8px] text-base-content/70">
-            <p>Diterbitkan oleh <span class="font-bold">PT. Gaya Sukses Mandiri Kaseindo</span> · Dokumen Rahasia – Untuk penggunaan internal dan klien.</p>
+            <p>Diterbitkan oleh <span class="font-bold">PT. Gaya Sukses Mandiri Kaseindo</span> · Dokumen Rahasia –
+                Untuk penggunaan internal dan klien.</p>
         </section>
     </main>
 </body>
