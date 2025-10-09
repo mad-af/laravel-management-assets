@@ -107,7 +107,7 @@
         <!-- Vendor -->
         <table class="">
           <tr>
-            <td class="semibold">Kepada</td>
+            <td class="semibold">Kepada:</td>
           </tr>
           <tr>
             <td class="lh-tight">
@@ -119,7 +119,7 @@
         <!-- Asset -->
         <table class="">
           <tr>
-            <td class="semibold">Informasi Aset</td>
+            <td class="semibold">Informasi Aset:</td>
           </tr>
           <tr>
             <td class="lh-tight">
@@ -133,7 +133,7 @@
         <!-- PIC -->
         <table class="">
           <tr>
-            <td class="semibold">Kontak PIC Perusahaan</td>
+            <td class="semibold">Kontak PIC Perusahaan:</td>
           </tr>
           <tr>
             <td class="lh-tight">
