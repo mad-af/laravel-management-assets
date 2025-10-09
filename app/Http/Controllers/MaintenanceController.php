@@ -108,10 +108,7 @@ class MaintenanceController extends Controller
                 'phone' => $maintenance->employee->phone ?? 'N/A',
             ],
             'start_date' => $maintenance->started_at ?? $maintenance->created_at,
-            'estimation_end_date' => $maintenance->estimated_completed_at ??
-                ($maintenance->started_at ?
-                    \Carbon\Carbon::parse($maintenance->started_at)->addDays(7) :
-                    \Carbon\Carbon::parse($maintenance->created_at)->addDays(7)),
+            'estimation_end_date' => $maintenance->estimated_completed_at ?? null,
             'note' => $maintenance->notes ?? $maintenance->description ?? 'No notes available',
             'maintenance' => $maintenance,
         ];

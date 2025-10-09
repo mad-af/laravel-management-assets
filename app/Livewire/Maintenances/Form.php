@@ -229,9 +229,9 @@ class Form extends Component
                 'vendor_name' => $this->vendor_name ?: null,
                 'odometer_km_at_service' => $this->odometer_km_at_service ?: null,
                 'notes' => $this->notes,
-                'service_tasks' => array_filter($this->service_tasks, function ($task) {
+                'service_tasks' => array_values(array_filter($this->service_tasks, function ($task) {
                     return ! empty(trim($task));
-                }),
+                })),
             ];
 
             if ($this->isEdit) {
