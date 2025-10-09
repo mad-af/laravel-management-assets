@@ -160,7 +160,7 @@
       <td class="semibold" style="padding-bottom:4px;">Catatan:</td>
     </tr>
     <tr>
-      <td class="p-2 border" style="height:60px;">
+      <td class="p-2 border" style="height:60px; vertical-align: top;">
         <span class="italic">Tuliskan catatan tambahan atau instruksi khusus di sini...</span>
       </td>
     </tr>
@@ -175,7 +175,7 @@
             <td class="semibold center" style="padding:4px; vertical-align: top;">Dibuat Oleh:</td>
           </tr>
           <tr>
-            <td class="center" style="height:40px; vertical-align: bottom;">( Staff GA )</td>
+            <td class="center" style="padding:4px; height:40px; vertical-align: bottom;">( Staff GA )</td>
           </tr>
         </table>
       </td>
@@ -185,7 +185,7 @@
             <td class="semibold center" style="padding:4px; vertical-align: top;">Disetujui Oleh:</td>
           </tr>
           <tr>
-            <td class="center" style="height:40px; vertical-align: bottom;">( Kepala HR &amp; GA )</td>
+            <td class="center" style="padding:4px; height:40px; vertical-align: bottom;">( Kepala HR &amp; GA )</td>
           </tr>
         </table>
       </td>
@@ -195,7 +195,7 @@
             <td class="semibold center" style="padding:4px; vertical-align: top;">Diterima Oleh:</td>
           </tr>
           <tr>
-            <td class="center" style="height:40px; vertical-align: bottom;">( _________________ )</td>
+            <td class="center" style="padding:4px; height:40px; vertical-align: bottom;">( _________________ )</td>
           </tr>
         </table>
       </td>
