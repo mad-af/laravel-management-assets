@@ -21,6 +21,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/maintenance-report', function () {
+    return view('pdf-template.maintenance-report-example');
+});
+
 // Authentication Routes (only for guests)
 Route::middleware('guest')->group(function () {
     Route::get('/login', function () {
