@@ -19,9 +19,12 @@
     .semibold { font-weight: 600; }
     .center { text-align: center; }
     .right { text-align: right; }
-    .mb-4 { margin-bottom: 12px; }
+    .mb-3 { margin-bottom: 12px; }
+    .mb-3 { margin-bottom: 8px; }
     .mb-2 { margin-bottom: 6px; }
     .mb-1 { margin-bottom: 4px; }
+    .mb-0.5 { margin-bottom: 2px; }
+    .p-1 { padding: 2px; }
     .p-2 { padding: 4px; }
     .p-4 { padding: 8px; }
     .border { border: 1px solid #000; }
@@ -31,29 +34,29 @@
     .title { font-size: 24px; font-weight: 800; letter-spacing: 1px; }
 
     /* Footer fixed ala DOMPDF: akan muncul di setiap halaman, lengkapi ruang via @page */
-    .footer { position: fixed; left: 0; right: 0; bottom: 10mm; }
+    .footer { position: fixed; left: 0; right: 0; bottom: 0mm; }
   </style>
 </head>
 <body>
 
   <!-- Header -->
-  <table class="mb-4">
+  <table class="mb-3">
     <tr>
       <td style="width:70%; vertical-align: top;">
         <div class="mb-2">
           <div class="uppercase bold" style="font-size:16px; line-height:1.2;">PT. GAYA SUKSES MANDIRI KASEINDO</div>
         </div>
-        <div class="small lh-tight">
+        <div class="mb-0.5 small lh-tight">
           <div class="semibold">Surabaya Office | Factory</div>
           <div>Jl. Raya Margomulyo 63A, Surabaya</div>
           <div>Tel: +62 31 7499 050 · surabaya@safeway.co.id</div>
         </div>
-        <div class="small lh-tight">
+        <div class="mb-0.5 small lh-tight">
           <div class="semibold">Jakarta Office</div>
           <div>Kompleks Artha Gading Blok F No. 20, Jakarta</div>
           <div>Tel: +62 21 4585 0806 · jakarta@safeway.co.id</div>
         </div>
-        <div class="small lh-tight">
+        <div class="mb-0.5 small lh-tight">
           <div class="semibold">Semarang Office | Factory</div>
           <div>Kawasan Industri Candi, Blok XIC No. 2C, Semarang</div>
           <div>Tel: +62 24 7627 600 · semarang@safeway.co.id</div>
@@ -67,7 +70,7 @@
   </table>
 
   <!-- WO note & number -->
-  <table class="mb-4 small">
+  <table class="mb-2 small">
     <tr>
       <td colspan="2" style="padding-bottom:6px;">
         Nomor berikut harus dicantumkan pada semua korespondensi, dokumen pengiriman, dan faktur yang terkait:
@@ -76,98 +79,120 @@
     <tr>
       <td style="width:50%; vertical-align: top;">
         <span class="bold">Nomor W.O.:</span>
-        <span class="uppercase">WO-2025-001</span>
+        <span class="uppercase">{{ $data->work_order_no ?? 'WO-000000' }}</span>
       </td>
       <td style="width:50%; vertical-align: top;">
         <table>
           <tr>
-            <td style="width:55%;"><span class="semibold">Tanggal W.O.:</span></td>
-            <td>01 September 2025</td>
+            <span class="bold">Tanggal W.O.:</span>
+            <span style="margin-left: 3px;">{{ $data->start_date ? $data->start_date->format('d F Y') : 'Belum ditentukan' }}</span>
+            {{-- <td style="width:55%;"><span class="semibold">Tanggal W.O.:</span></td>
+            <td>{{ $data->start_date ? $data->start_date->format('d F Y') : 'Belum ditentukan' }}</td> --}}
           </tr>
           <tr>
-            <td><span class="semibold">Estimasi Tanggal Selesai:</span></td>
-            <td>19 Januari 2025</td>
+            <span class="bold">Estimasi Tanggal Selesai:</span>
+            <span style="margin-left: 3px;">{{ $data->estimation_end_date ? $data->estimation_end_date->format('d F Y') : 'Belum ditentukan' }}</span>
+            {{-- <td><span class="semibold">Estimasi Tanggal Selesai:</span></td>
+            <td>{{ $data->estimation_end_date ? $data->estimation_end_date->format('d F Y') : 'Belum ditentukan' }}</td> --}}
           </tr>
         </table>
       </td>
     </tr>
   </table>
 
-  <!-- To / PIC -->
-  <table class="mb-4 small">
+  <!-- Vendor / Asset / PIC (dipisah) -->
+  <table class="mb-3 small">
     <tr>
       <td style="width:50%; vertical-align: top;">
-        <div class="mb-1 semibold">Kepada:</div>
-        <div>PT Bengkel Jaya</div>
-        <div>Jl. Industri No. 123 Surabaya</div>
-        <div>L 1234 AB</div>
-        <div>Toyota - Avanza</div>
+        <!-- Vendor -->
+        <table class="">
+          <tr>
+            <td class="semibold">Kepada</td>
+          </tr>
+          <tr>
+            <td class="lh-tight">
+              <div>PT Bengkel Jaya</div>
+              <div>Jl. Industri No. 123, Surabaya</div>
+            </td>
+          </tr>
+        </table>
+        <!-- Asset -->
+        <table class="">
+          <tr>
+            <td class="semibold">Informasi Aset</td>
+          </tr>
+          <tr>
+            <td class="lh-tight">
+              <div>Jenis: Toyota - Avanza</div>
+              <div>No. Polisi: L 1234 AB</div>
+            </td>
+          </tr>
+        </table>
       </td>
       <td style="width:50%; vertical-align: top;">
-        <div class="mb-1 semibold">Kontak PIC Perusahaan:</div>
-        <div>Budi Santoso</div>
-        <div>08123456789</div>
+        <!-- PIC -->
+        <table class="">
+          <tr>
+            <td class="semibold">Kontak PIC Perusahaan</td>
+          </tr>
+          <tr>
+            <td class="lh-tight">
+              <div>Nama: Budi Santoso</div>
+              <div>Telepon: 08123456789</div>
+            </td>
+          </tr>
+        </table>
       </td>
     </tr>
   </table>
 
+
   <!-- Service Instructions Table -->
-  <table class="mb-4 border small">
+  <table class="mb-3 border small">
     <thead>
       <tr class="bg-gray">
-        <th class="p-2 border center" style="width:30px;">No.</th>
-        <th class="p-2 border center">Instruksi Pekerjaan</th>
-        <th class="p-2 border center" style="width:100px;">Keterangan</th>
+        <th class="p-1 border center" style="width:30px;">No.</th>
+        <th class="p-1 border center">Instruksi Pekerjaan</th>
+        <th class="p-1 border center" style="width:100px;">Keterangan</th>
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <td class="p-2 border center">1</td>
-        <td class="p-2 border">Ganti oli mesin</td>
-        <td class="p-2 border">&nbsp;</td>
-      </tr>
-      <tr>
-        <td class="p-2 border center">2</td>
-        <td class="p-2 border">Cek rem dan kampas</td>
-        <td class="p-2 border">&nbsp;</td>
-      </tr>
-      <tr>
-        <td class="p-2 border center">3</td>
-        <td class="p-2 border">Service AC dan isi freon</td>
-        <td class="p-2 border">&nbsp;</td>
-      </tr>
-      <tr>
-        <td class="p-2 border center">3</td>
-        <td class="p-2 border">Service AC dan isi freon</td>
-        <td class="p-2 border">&nbsp;</td>
-      </tr>
-      <tr>
-        <td class="p-2 border center">3</td>
-        <td class="p-2 border">Service AC dan isi freon</td>
-        <td class="p-2 border">&nbsp;</td>
-      </tr>
-      <tr>
-        <td class="p-2 border center">3</td>
-        <td class="p-2 border">Service AC dan isi freon</td>
-        <td class="p-2 border">&nbsp;</td>
-      </tr>
+      @if(isset($data->maintenance->service_tasks) && is_array($data->maintenance->service_tasks) && count($data->maintenance->service_tasks) > 0)
+        @foreach($data->maintenance->service_tasks as $index => $task)
+          <tr>
+            <td class="p-1 border center">{{ $index + 1 }}</td>
+            <td class="p-1 border">{{ $task }}</td>
+            <td class="p-1 border">&nbsp;</td>
+          </tr>
+        @endforeach
+      @else
+        <tr>
+          <td class="p-1 border center">1</td>
+          <td class="p-1 border">{{ $data->maintenance->title ?? 'Maintenance umum' }}</td>
+          <td class="p-1 border">&nbsp;</td>
+        </tr>
+      @endif
     </tbody>
   </table>
 
   <!-- Notes -->
-  <table class="mb-4 small">
+  <table class="mb-3 small">
     <tr>
       <td class="semibold" style="padding-bottom:4px;">Catatan:</td>
     </tr>
     <tr>
       <td class="p-2 border" style="height:60px; vertical-align: top;">
-        <span class="italic">Tuliskan catatan tambahan atau instruksi khusus di sini...</span>
+        @if($data->note && $data->note !== 'No notes available')
+          {{ $data->note }}
+        @else
+          <span class="italic">Tidak ada catatan tambahan</span>
+        @endif
       </td>
     </tr>
   </table>
 
   <!-- Signatures -->
-  <table class="mb-4 small" style="table-layout: fixed;">
+  <table class="mb-3 small" style="table-layout: fixed;">
     <tr>
       <td class="border" style="width:33%; vertical-align: top;">
         <table style="width:100%; height:60px; border-collapse: collapse;">
