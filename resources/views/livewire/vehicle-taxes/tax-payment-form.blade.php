@@ -28,8 +28,8 @@
 
         {{-- Amount --}}
         <div>
-            <x-input label="Jumlah" wire:model="amount" type="number" step="0.01" min="0" placeholder="0.00"
-                class="input-sm" required />
+            <x-input label="Jumlah Pajak (Rp)" prefix="Rp" wire:model="amount" placeholder="Masukkan jumlah pajak"
+                type="number" step="0.01" min="0" class="input-sm" required/>
         </div>
 
         {{-- Receipt No --}}
