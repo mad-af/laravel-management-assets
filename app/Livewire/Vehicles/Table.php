@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Support\SessionKey;
 use App\Traits\WithAlert;
 use Carbon\Carbon;
+use Carbon\CarbonInterface;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -66,48 +67,53 @@ class Table extends Component
         }
     }
 
-    /**
-     * Format next service date dengan informasi waktu yang tersisa
-     */
     public function formatNextServiceDate($nextServiceDate)
     {
         if (! $nextServiceDate) {
             return null;
         }
 
-        Carbon::setLocale('id');
-        $now = Carbon::now();
-        $serviceDate = Carbon::parse($nextServiceDate);
+        try {
+            // Pakai locale per instance (tanpa setLocale global)
+            $serviceDate = Carbon::parse($nextServiceDate)->locale('id');
+            $now = Carbon::now($serviceDate->timezone);
 
-        $diffInDays = $now->diffInDays($serviceDate, false);
-        $isOverdue = $diffInDays < 0;
-        $absDiffInDays = abs($diffInDays);
+            // Format tanggal dengan nama bulan Indonesia
+            $formattedDate = $serviceDate->translatedFormat('d MMM Y');
 
-        // Format tanggal
-        $formattedDate = $serviceDate->format('d M Y');
-
-        // Hitung informasi waktu
-        if ($absDiffInDays >= 30) {
-            $diffInMonths = $now->diffInMonths($serviceDate, false);
-            $absMonths = abs($diffInMonths);
-            $timeInfo = $isOverdue
-                ? "{$absMonths} bulan yang lalu"
-                : "{$absMonths} bulan lagi";
-        } else {
-            if ($absDiffInDays == 0) {
-                $timeInfo = 'Hari ini';
-            } else {
-                $timeInfo = $isOverdue
-                    ? "{$absDiffInDays} hari yang lalu"
-                    : "{$absDiffInDays} hari lagi";
+            // Same-day
+            if ($serviceDate->isSameDay($now)) {
+                return [
+                    'formatted_date' => $formattedDate,
+                    'time_info' => 'Hari ini',
+                    'is_overdue' => false,
+                    'days_left' => 0,
+                ];
             }
-        }
 
-        return [
-            'formatted_date' => $formattedDate,
-            'time_info' => $timeInfo,
-            'is_overdue' => $isOverdue,
-        ];
+            // Buat frasa human-friendly tanpa awalan/akhiran ("2 bulan 3 hari")
+            $span = $serviceDate->diffForHumans($now, [
+                'parts' => 2,              // ambil 2 unit terbesar (mis: "2 bulan 3 hari")
+                'join' => true,           // gabung dengan spasi
+                'short' => false,          // pakai bentuk lengkap
+                'syntax' => CarbonInterface::DIFF_ABSOLUTE, // tanpa "dalam"/"yang lalu"
+            ]);
+
+            $isOverdue = $serviceDate->lessThan($now);
+            $timeInfo = $isOverdue ? "{$span} yang lalu" : "{$span} lagi";
+
+            // Selisih hari integer (tanpa pecahan), dinormalisasi ke awal hari
+            $daysLeft = $now->startOfDay()->diffInDays($serviceDate->startOfDay(), false);
+
+            return [
+                'formatted_date' => $formattedDate, // contoh: "10 Okt 2025"
+                'time_info' => $timeInfo,      // contoh: "7 hari lagi" / "2 bulan 3 hari yang lalu"
+                'is_overdue' => $isOverdue,
+                'days_left' => $daysLeft,      // contoh: 7 atau -3
+            ];
+        } catch (\Throwable $e) {
+            return null; // atau lempar exception sesuai kebutuhanmu
+        }
     }
 
     public function render()
