@@ -79,7 +79,7 @@ class MaintenanceController extends Controller
     public function generatePDF(AssetMaintenance $maintenance)
     {
         // Load relationships
-        $maintenance->load(['asset', 'assignedUser']);
+        $maintenance->load(['asset.vehicleProfile', 'employee', 'assignedUser']);
 
         // Prepare data for PDF template
         $data = (object) [
@@ -96,28 +96,23 @@ class MaintenanceController extends Controller
                 'type' => $maintenance->asset->model ?? 'Unknown',
             ],
             'employee' => (object) [
-                'name' => $maintenance->assignedUser->name ?? 'N/A',
-                'phone' => $maintenance->assignedUser->phone ?? 'N/A',
+                'name' => $maintenance->employee->name ?? $maintenance->assignedUser->name ?? 'N/A',
+                'phone' => $maintenance->employee->phone ?? $maintenance->assignedUser->phone ?? 'N/A',
             ],
-            'start_date' => $maintenance->scheduled_date ?? $maintenance->created_at,
-            'estimation_end_date' => $maintenance->scheduled_date ?
-                \Carbon\Carbon::parse($maintenance->scheduled_date)->addDays(7) :
-                \Carbon\Carbon::parse($maintenance->created_at)->addDays(7),
+            'start_date' => $maintenance->started_at ?? $maintenance->created_at,
+            'estimation_end_date' => $maintenance->estimated_completed_at ??
+                ($maintenance->started_at ?
+                    \Carbon\Carbon::parse($maintenance->started_at)->addDays(7) :
+                    \Carbon\Carbon::parse($maintenance->created_at)->addDays(7)),
             'note' => $maintenance->notes ?? $maintenance->description ?? 'No notes available',
             'maintenance' => $maintenance,
         ];
 
-        // Prepare service instruction items
-        $item = collect([
-            (object) ['instruction' => $maintenance->title],
-            (object) ['instruction' => $maintenance->description],
-        ]);
-
-        // Generate PDF
-        $pdf = Pdf::loadView('pdf-template.maintenance-report', compact('data', 'item'))->setPaper('a4', 'landscape');
+        // Generate PDF with A5 portrait orientation
+        $pdf = Pdf::loadView('pdf-template.maintenance-report', compact('data'))->setPaper('a5', 'portrait');
 
         // Return PDF as response
-        return $pdf->stream('maintenance-report-'.$maintenance->id.'.pdf');
+        return $pdf->stream('maintenance-report-'.$maintenance->code.'.pdf');
     }
 
     /**

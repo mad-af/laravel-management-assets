@@ -107,16 +107,16 @@
                 <div class="flex gap-4 leading-snug">
                     <p class="flex-1">
                         <span class="font-bold align-middle">Nomor W.O.:</span>
-                        <span class="uppercase align-middle">WO-2025-001</span>
+                        <span class="uppercase align-middle">{{ $data->work_order_no ?? 'WO-000000' }}</span>
                     </p>
                     <div class="flex-1 leading-snug">
                         <p>
                             <span class="font-semibold">Tanggal W.O.:</span>
-                            <span class="">01 September 2025</span>
+                            <span class="">{{ $data->start_date ? $data->start_date->format('d F Y') : 'Belum ditentukan' }}</span>
                         </p>
                         <p>
                             <span class="font-semibold">Estimasi Tanggal Selesai:</span>
-                            <span class="">19 Januari 2025</span>
+                            <span class="">{{ $data->estimation_end_date ? $data->estimation_end_date->format('d F Y') : 'Belum ditentukan' }}</span>
                         </p>
                     </div>
                 </div>
@@ -127,18 +127,18 @@
                 <div>
                     <h3 class="font-semibold">Kepada:</h3>
                     <div class="leading-snug">
-                        <p>PT Bengkel Jaya</p>
-                        <p>Jl. Industri No. 123 Surabaya</p>
-                        <p>L 1234 AB</p>
-                        <p>Toyota - Avanza</p>
+                        <p>{{ $data->workshop->name ?? 'Workshop Maintenance' }}</p>
+                        <p>{{ $data->workshop->address ?? 'Alamat workshop tidak tersedia' }}</p>
+                        <p>{{ $data->vehicle->vehicle_no ?? 'N/A' }}</p>
+                        <p>{{ $data->vehicle->brand->name ?? 'Unknown' }} - {{ $data->vehicle->type ?? 'Unknown' }}</p>
                     </div>
                 </div>
 
                 <div>
                     <h3 class="font-semibold">Kontak PIC Perusahaan:</h3>
                     <div class="leading-snug">
-                        <p>Budi Santoso</p>
-                        <p>08123456789</p>
+                        <p>{{ $data->employee->name ?? 'N/A' }}</p>
+                        <p>{{ $data->employee->phone ?? 'N/A' }}</p>
                     </div>
                 </div>
             </section>
@@ -155,36 +155,49 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td class="px-1 text-center border border-black">1</td>
-                            <td class="px-1 border border-black">Ganti oli mesin</td>
-                            <td class="px-1 border border-black"></td>
-                        </tr>
-                        <tr>
-                            <td class="px-1 text-center border border-black">2</td>
-                            <td class="px-1 border border-black">Cek rem dan kampas</td>
-                            <td class="px-1 border border-black"></td>
-                        </tr>
-                        <tr>
-                            <td class="px-1 text-center border border-black">3</td>
-                            <td class="px-1 border border-black">Service AC dan isi freon</td>
-                            <td class="px-1 border border-black"></td>
-                        </tr>
-                        <tr>
-                            <td class="px-1 text-center border border-black">3</td>
-                            <td class="px-1 border border-black">Service AC dan isi freon</td>
-                            <td class="px-1 border border-black"></td>
-                        </tr>
-                        <tr>
-                            <td class="px-1 text-center border border-black">3</td>
-                            <td class="px-1 border border-black">Service AC dan isi freon</td>
-                            <td class="px-1 border border-black"></td>
-                        </tr>
-                        <tr>
-                            <td class="px-1 text-center border border-black">3</td>
-                            <td class="px-1 border border-black">Service AC dan isi freon</td>
-                            <td class="px-1 border border-black"></td>
-                        </tr>
+                        @if($data->maintenance && $data->maintenance->service_tasks && count($data->maintenance->service_tasks) > 0)
+                            @foreach($data->maintenance->service_tasks as $index => $task)
+                                <tr>
+                                    <td class="px-1 text-center border border-black">{{ $index + 1 }}</td>
+                                    <td class="px-1 border border-black">{{ $task['task'] ?? $task }}</td>
+                                    <td class="px-1 border border-black">{{ $task['notes'] ?? '' }}</td>
+                                </tr>
+                            @endforeach
+                        @else
+                            <!-- Fallback to title and description if no service_tasks -->
+                            @if($data->maintenance && $data->maintenance->title)
+                                <tr>
+                                    <td class="px-1 text-center border border-black">1</td>
+                                    <td class="px-1 border border-black">{{ $data->maintenance->title }}</td>
+                                    <td class="px-1 border border-black"></td>
+                                </tr>
+                            @endif
+                            @if($data->maintenance && $data->maintenance->description)
+                                <tr>
+                                    <td class="px-1 text-center border border-black">2</td>
+                                    <td class="px-1 border border-black">{{ $data->maintenance->description }}</td>
+                                    <td class="px-1 border border-black"></td>
+                                </tr>
+                            @endif
+                            @if(!$data->maintenance || (!$data->maintenance->title && !$data->maintenance->description))
+                                <!-- Default empty rows if no data -->
+                                <tr>
+                                    <td class="px-1 text-center border border-black">1</td>
+                                    <td class="px-1 border border-black">-</td>
+                                    <td class="px-1 border border-black"></td>
+                                </tr>
+                                <tr>
+                                    <td class="px-1 text-center border border-black">2</td>
+                                    <td class="px-1 border border-black">-</td>
+                                    <td class="px-1 border border-black"></td>
+                                </tr>
+                                <tr>
+                                    <td class="px-1 text-center border border-black">3</td>
+                                    <td class="px-1 border border-black">-</td>
+                                    <td class="px-1 border border-black"></td>
+                                </tr>
+                            @endif
+                        @endif
                     </tbody>
                 </table>
             </section>
@@ -193,7 +206,11 @@
             <section>
                 <h3 class="text-xs font-semibold">Catatan:</h3>
                 <div class="border border-black min-h-[60px] p-2 text-xs">
-                    <p class="italic text-gray-600">Tuliskan catatan tambahan atau instruksi khusus di sini...</p>
+                    @if($data->note && $data->note !== 'No notes available')
+                        <p>{{ $data->note }}</p>
+                    @else
+                        <p class="italic text-gray-600">Tuliskan catatan tambahan atau instruksi khusus di sini...</p>
+                    @endif
                 </div>
             </section>
 
