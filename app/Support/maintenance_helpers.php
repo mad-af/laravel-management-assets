@@ -6,8 +6,8 @@ use Illuminate\Support\Str;
 if (! function_exists('generate_maintenance_code')) {
     /**
      * Generate unique maintenance code
-     * Format: MNT-[YEAR][MONTH]-[SEQUENTIAL_NUMBER]
-     * Example: MNT-202412-001, MNT-202412-025
+     * Format: WO-[YEAR][MONTH]-[SEQUENTIAL_NUMBER]
+     * Example: WO-202412-001, WO-202412-025
      *
      * @return string
      */
@@ -17,7 +17,7 @@ if (! function_exists('generate_maintenance_code')) {
         $yearMonth = date('Ym');
         
         // Generate prefix
-        $prefix = 'MNT-' . $yearMonth . '-';
+        $prefix = 'WO-' . $yearMonth . '-';
         
         // Get the last maintenance code for this month
         $lastMaintenance = AssetMaintenance::where('id', 'LIKE', $prefix . '%')
@@ -47,8 +47,8 @@ if (! function_exists('validate_maintenance_code')) {
      */
     function validate_maintenance_code($code)
     {
-        // Pattern: MNT-YYYYMM-XXX (MNT- + 6 digits for year/month + - + 3 digits)
-        return preg_match('/^MNT-\d{6}-\d{3}$/', $code);
+        // Pattern: WO-YYYYMM-XXX (WO- + 6 digits for year/month + - + 3 digits)
+        return preg_match('/^WO-\d{6}-\d{3}$/', $code);
     }
 }
 
@@ -69,7 +69,7 @@ if (! function_exists('parse_maintenance_code')) {
         $yearMonth = $parts[1];
         
         return [
-            'prefix' => 'MNT',
+            'prefix' => 'WO',
             'year' => substr($yearMonth, 0, 4),
             'month' => substr($yearMonth, 4, 2),
             'sequential_number' => (int) $parts[2],

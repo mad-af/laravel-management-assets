@@ -111,8 +111,8 @@
           </tr>
           <tr>
             <td class="lh-tight">
-              <div>PT Bengkel Jaya</div>
-              <div>Jl. Industri No. 123, Surabaya</div>
+              <div>{{ $data->vendor_name ?? 'Tidak tersedia' }}</div>
+              <div>{{ $data->workshop_address ?? '' }}</div>
             </td>
           </tr>
         </table>
@@ -123,8 +123,8 @@
           </tr>
           <tr>
             <td class="lh-tight">
-              <div>Jenis: Toyota - Avanza</div>
-              <div>No. Polisi: L 1234 AB</div>
+              <div>Jenis: {{ $data->asset->brand ?? 'Tidak tersedia' }} - {{ $data->asset->type ?? 'Tidak tersedia' }}</div>
+              <div>Kode Tag: {{ $data->asset->tag_code ?? 'Tidak tersedia' }}</div>
             </td>
           </tr>
         </table>
@@ -137,8 +137,8 @@
           </tr>
           <tr>
             <td class="lh-tight">
-              <div>Nama: Budi Santoso</div>
-              <div>Telepon: 08123456789</div>
+              <div>Nama: {{ $data->employee->name ?? 'Tidak tersedia' }}</div>
+              <div>Telepon: {{ $data->employee->phone ?? 'Tidak tersedia' }}</div>
             </td>
           </tr>
         </table>

@@ -82,11 +82,19 @@ class MaintenanceController extends Controller
         $maintenance->load(['asset.vehicleProfile', 'employee', 'assignedUser']);
 
         // Prepare data for PDF template
+        // dd($maintenance);
         $data = (object) [
-            'work_order_no' => 'WO-'.str_pad($maintenance->id, 6, '0', STR_PAD_LEFT),
+            'work_order_no' => $maintenance->code,
+            'vendor_name' => $maintenance->vendor_name ?? 'Workshop Maintenance',
+            'workshop_address' => '', // Default since not stored in DB
             'workshop' => (object) [
-                'name' => 'Workshop Maintenance',
+                'name' => $maintenance->vendor_name ?? 'Workshop Maintenance',
                 'address' => 'Jl. Maintenance No. 123',
+            ],
+            'asset' => (object) [
+                'brand' => $maintenance->asset->brand ?? 'Unknown',
+                'type' => $maintenance->asset->model ?? 'Unknown',
+                'tag_code' => $maintenance->asset->tag_code ?? 'N/A',
             ],
             'vehicle' => (object) [
                 'vehicle_no' => $maintenance->asset->asset_code ?? 'N/A',
@@ -96,8 +104,8 @@ class MaintenanceController extends Controller
                 'type' => $maintenance->asset->model ?? 'Unknown',
             ],
             'employee' => (object) [
-                'name' => $maintenance->employee->name ?? $maintenance->assignedUser->name ?? 'N/A',
-                'phone' => $maintenance->employee->phone ?? $maintenance->assignedUser->phone ?? 'N/A',
+                'name' => $maintenance->employee->full_name ?? 'N/A',
+                'phone' => $maintenance->employee->phone ?? 'N/A',
             ],
             'start_date' => $maintenance->started_at ?? $maintenance->created_at,
             'estimation_end_date' => $maintenance->estimated_completed_at ??
