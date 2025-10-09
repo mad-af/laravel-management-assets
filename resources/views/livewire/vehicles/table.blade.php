@@ -32,6 +32,8 @@
                 $headers = [
                     ['key' => 'name', 'label' => 'Nama Kendaraan'],
                     ['key' => 'current_odometer_km', 'label' => 'Odometer (km)', 'class' => 'text-right'],
+                    ['key' => 'odometer_target', 'label' => 'Target Odometer', 'class' => 'text-right'],
+                    ['key' => 'next_service', 'label' => 'Perawatan Selanjutnya'],
                     ['key' => 'license_plate', 'label' => 'Plat Nomor'],
                     ['key' => 'brand_model', 'label' => 'Brand & Model'],
                     ['key' => 'status', 'label' => 'Status'],
@@ -66,6 +68,26 @@
 
                 @scope('cell_current_odometer_km', $vehicle)
                 <span class="text-sm">{{ $vehicle->vehicleProfile?->current_odometer_km ?? '-' }}</span>
+                @endscope
+
+                @scope('cell_odometer_target', $vehicle)
+                <span class="text-sm">{{ $vehicle->vehicleProfile?->service_target_odometer_km ?? '-' }}</span>
+                @endscope
+
+                @scope('cell_next_service', $vehicle)
+                @if($vehicle->vehicleProfile?->next_service_date)
+                    @php
+                        $serviceInfo = $this->formatNextServiceDate($vehicle->vehicleProfile->next_service_date);
+                    @endphp
+                    <div class="text-sm">
+                        <div class="font-medium">{{ $serviceInfo['formatted_date'] }}</div>
+                        <div class="text-xs {{ $serviceInfo['is_overdue'] ? 'text-error' : 'text-base-content/60' }}">
+                            {{ $serviceInfo['time_info'] }}
+                        </div>
+                    </div>
+                @else
+                    <span class="text-sm">-</span>
+                @endif
                 @endscope
 
                 @scope('cell_license_plate', $vehicle)

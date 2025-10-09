@@ -80,7 +80,7 @@ class CompleteForm extends Component
 
     public function loadMaintenance()
     {
-        $maintenance = AssetMaintenance::with(['asset.vehicleProfile'])->findOrFail($this->maintenanceId);
+        $maintenance = AssetMaintenance::with(['asset.vehicleProfile', 'asset.category'])->findOrFail($this->maintenanceId);
 
         $this->asset = $maintenance->asset;
         $this->cost = $maintenance->cost;
@@ -126,7 +126,7 @@ class CompleteForm extends Component
 
     public function getIsVehicleProperty()
     {
-        return $this->asset && $this->asset->vehicleProfile !== null;
+        return $this->asset && $this->asset->category->name === "Kendaraan";
     }
 
     public function getCanCompleteProperty()
