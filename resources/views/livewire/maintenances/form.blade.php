@@ -6,6 +6,34 @@
             placeholder="Pilih aset..." searchable required class="select-sm" />
     </div>
 
+    <!-- Vehicle Profile Confirmation Dialog -->
+    @if ($showVehicleProfileConfirmation)
+        <div class="p-4 rounded-lg border border-warning bg-warning/10">
+            <div class="flex items-start gap-3">
+                <x-icon name="o-exclamation-triangle" class="w-5 h-5 text-warning flex-shrink-0 mt-0.5" />
+                <div class="flex-1">
+                    <h4 class="font-semibold text-sm text-warning">Profil Kendaraan Diperlukan</h4>
+                    <p class="text-sm text-base-content/80 mt-1">
+                        Kendaraan yang dipilih belum memiliki profil kendaraan. Profil kendaraan diperlukan untuk membuat maintenance record. 
+                        Apakah Anda ingin mengisi profil kendaraan sekarang?
+                    </p>
+                    <div class="flex gap-2 mt-3">
+                        <x-button 
+                            label="Ya, Isi Profil" 
+                            class="btn-warning btn-sm" 
+                            wire:click="confirmCreateVehicleProfile"
+                        />
+                        <x-button 
+                            label="Batal" 
+                            class="btn-ghost btn-sm" 
+                            wire:click="cancelVehicleProfileCreation"
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
     @if ($asset_id)
         <!-- Title -->
         <div>

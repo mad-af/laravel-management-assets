@@ -48,6 +48,10 @@ class Form extends Component
 
     public array $service_tasks = [];
 
+    public $showVehicleProfileConfirmation = false;
+
+    public $selectedAssetForProfile = null;
+
     public $isEdit = false;
 
     public string $branchId;
@@ -400,6 +404,62 @@ class Form extends Component
         }
 
         return $this->maintenancePrioritiesCache;
+    }
+
+    public function updatedAssetId($value)
+    {
+        if ($value && $this->getIsVehicleForAsset($value)) {
+            $this->checkVehicleProfile($value);
+        }
+    }
+
+    private function getIsVehicleForAsset($assetId)
+    {
+        $asset = Asset::with('category')->find($assetId);
+        if (! $asset || ! $asset->category) {
+            return false;
+        }
+
+        return $asset->category->name === 'Kendaraan';
+    }
+
+    private function checkVehicleProfile($assetId)
+    {
+        $asset = Asset::with(['category', 'vehicleProfile'])->find($assetId);
+
+        if ($asset && $asset->category && $asset->category->name === 'Kendaraan') {
+            if (! $asset->vehicleProfile) {
+                // Show warning and ask for confirmation
+                $this->warning(
+                    'Kendaraan yang dipilih belum memiliki profil kendaraan. Profil kendaraan diperlukan untuk membuat maintenance record.',
+                    'Profil Kendaraan Diperlukan'
+                );
+
+                // Reset asset selection
+                $this->asset_id = '';
+
+                // Set a flag to show confirmation buttons
+                $this->showVehicleProfileConfirmation = true;
+                $this->selectedAssetForProfile = $assetId;
+            }
+        }
+    }
+
+    public function confirmCreateVehicleProfile()
+    {
+        if ($this->selectedAssetForProfile) {
+            $this->redirectRoute('vehicles.index', [
+                'action' => 'save-profile',
+                'asset_id' => $this->selectedAssetForProfile,
+            ]);
+        }
+    }
+
+    public function cancelVehicleProfileCreation()
+    {
+        $this->showVehicleProfileConfirmation = false;
+        $this->selectedAssetForProfile = null;
+        $this->info('Pemilihan kendaraan dibatalkan. Silakan pilih asset lain.');
     }
 
     public function getAssetProperty()
