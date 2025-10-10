@@ -18,6 +18,8 @@ class Table extends Component
 
     public $selectedCompanyId = '';
 
+    public array $expanded = [2];
+
     public $statusFilter = 'due_soon';
 
     protected $queryString = [
@@ -74,6 +76,10 @@ class Table extends Component
                 'category',
                 'branch',
                 'vehicleProfile',
+                'vehicleTaxTypes.tax_type',
+                'vehicleTaxHistories' => function ($query) {
+                    $query->orderBy('paid_date', 'desc');
+                }
             ])
             ->where('category_id', $vehicleCategory->id);
 

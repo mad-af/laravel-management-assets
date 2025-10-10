@@ -34,7 +34,7 @@
                     ['key' => 'actions', 'label' => 'Aksi', 'class' => 'w-24'],
                 ];
             @endphp
-            <x-table :headers="$headers" :rows="$vehicleAssets" striped show-empty-text>
+            <x-table :headers="$headers" :rows="$vehicleAssets" wire:model="expanded" striped show-empty-text expandable>
                 @scope('cell_vehicle_info', $vehicle)
                 <div class="flex gap-2 items-center">
                     @if (!$vehicle->image)
@@ -139,6 +139,66 @@
                         </li>
                     @endif
                 </x-action-dropdown>
+                @endscope
+
+                @scope('expansion', $vehicle)
+                <div class="text-sm font-semibold">
+                    Jenis Pajak ({{ $vehicle->vehicleTaxTypes->count() }})
+                </div>
+
+                @php
+                    $taxTypeHeaders = [
+                        ['key' => 'tax_type', 'label' => 'Jenis Pajak'],
+                        ['key' => 'due_date', 'label' => 'Jatuh Tempo'],
+                        ['key' => 'status', 'label' => 'Status'],
+                        ['key' => 'last_payment', 'label' => 'Pembayaran Terakhir'],
+                    ];
+                @endphp
+
+                <x-table :headers="$taxTypeHeaders" :rows="$vehicle->vehicleTaxTypes" no-headers no-hover
+                    show-empty-text>
+                    @scope('cell_tax_type', $taxType)
+                    <div class="flex flex-col">
+                        <span class="font-medium">{{ $taxType->tax_type->label() }}</span>
+                        <span class="text-xs text-base-content/60">{{ $taxType->tax_type->description() }}</span>
+                    </div>
+                    @endscope
+
+                    @scope('cell_due_date', $taxType)
+                    <span class="text-sm">
+                        {{ \Carbon\Carbon::parse($taxType->due_date)->format('d M Y') }}
+                    </span>
+                    @endscope
+
+                    @scope('cell_status', $taxType)
+                    @php
+                        $taxStatus = $this->getTaxStatus($vehicle, $taxType);
+                    @endphp
+                    <x-badge class="badge-xs {{ $taxStatus['statusClass'] }}" value="{{ $taxStatus['statusText'] }}" />
+                    @endscope
+
+                    @scope('cell_last_payment', $taxType)
+                    @php
+                        $lastPayment = $vehicle->vehicleTaxHistories
+                            ->where('vehicle_tax_type_id', $taxType->id)
+                            ->sortByDesc('paid_date')
+                            ->first();
+                    @endphp
+                    @if($lastPayment && $lastPayment->paid_date)
+                        <div class="flex flex-col">
+                            <span
+                                class="text-sm">{{ \Carbon\Carbon::parse($lastPayment->paid_date)->format('d M Y') }}</span>
+                            @if($lastPayment->amount)
+                                <span class="font-mono text-xs text-base-content/60">
+                                    Rp {{ number_format($lastPayment->amount, 0, ',', '.') }}
+                                </span>
+                            @endif
+                        </div>
+                    @else
+                        <span class="text-base-content/50">Belum ada pembayaran</span>
+                    @endif
+                    @endscope
+                </x-table>
                 @endscope
             </x-table>
         </div>
