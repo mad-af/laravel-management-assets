@@ -1,36 +1,93 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8" />
   <title>Label Aset 3x5cm</title>
   <style>
     /* Ukuran fisik label */
-    @page { size: 5cm 3cm; margin: 0; }
-    html, body { margin: 0; padding: 0; }
-
-    .label {
-      width: 5cm;               /* lebar 5 cm */
-      height: 3cm;              /* tinggi 3 cm */
-      border: 0.5px solid #888;   /* garis tepi label */
-      box-sizing: border-box;
-      padding: 0.15cm;          /* ruang dalam label */
-      font-family: Arial, Helvetica, sans-serif;
-      line-height: 1.15;
-      font-size: 8pt;           /* ukuran teks kecil agar muat */
+    @page {
+      size: 5cm 3cm;
+      margin: 0;
     }
 
-    table { width: 100%; border-collapse: collapse; }
-    .center { text-align: center; }
-    .bold { font-weight: 700; }
-    .muted { font-size: 5pt; }
-    .divider { border-top: 1px solid #000; height: 0; margin: 0.06cm 0 0.08cm; }
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    @media print {
+      body {
+        margin: 0;
+      }
+
+      .label {
+        page-break-inside: avoid;
+        page-break-after: always;
+      }
+    }
+
+    .label {
+      width: 5cm;
+      /* lebar 5 cm */
+      height: 3cm;
+      /* tinggi 3 cm */
+      border: 0.5px solid #888;
+      /* garis tepi label */
+      box-sizing: border-box;
+      padding: 0.15cm;
+      /* ruang dalam label */
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.15;
+      font-size: 8pt;
+      /* ukuran teks kecil agar muat */
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .center {
+      text-align: center;
+    }
+
+    .bold {
+      font-weight: 700;
+    }
+
+    .muted {
+      font-size: 5pt;
+    }
+
+    .divider {
+      border-top: 1px solid #000;
+      height: 0;
+      margin: 0.06cm 0 0.08cm;
+    }
 
     /* Placeholder kotak QR & barcode bila belum ada gambar */
-    .qr-box { width: 1cm; height: 1cm; display: inline-block; }
-    .bar-box { width: auto; height: 0.4cm; display: inline-block; }
+    .qr-box {
+      width: 1cm;
+      height: 1cm;
+      display: inline-block;
+    }
+
+    .qr-box canvas {
+      image-rendering: pixelated;
+    }
+
+    .bar-box {
+      width: auto;
+      height: 0.4cm;
+      display: inline-block;
+    }
   </style>
 </head>
+
 <body>
+  @foreach ($assets as $asset)
   <div class="label">
     <table>
       <!-- HEADER -->
@@ -89,5 +146,7 @@
       </tr>
     </table>
   </div>
+  @endforeach
 </body>
+
 </html>

@@ -8,6 +8,7 @@ use App\Models\Branch;
 use App\Models\Category;
 use App\Support\SessionKey;
 use App\Traits\WithAlert;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -22,6 +23,8 @@ class Table extends Component
     public $categoryFilter = '';
 
     public $branchFilter = '';
+
+    public $selectedAssets = [];
 
     protected $queryString = ['search', 'statusFilter', 'categoryFilter', 'branchFilter'];
 
@@ -81,14 +84,40 @@ class Table extends Component
         }
     }
 
-    public function printQRBarcode($assetId)
+    #[On('print-qr-barcode')]
+    public function printQRBarcode(?string $assetId = null)
     {
-        $asset = Asset::findOrFail($assetId);
+        // Jika ada assetId, print single asset
+        if ($assetId) {
+            $assets = collect([Asset::findOrFail($assetId)]);
+        }
+        // Jika tidak ada assetId, gunakan selectedAssets untuk batch print
+        elseif (! empty($this->selectedAssets)) {
+            $assets = Asset::whereIn('id', $this->selectedAssets)->get();
+        }
+        // Jika tidak ada yang dipilih
+        else {
+            $this->showInfoAlert(
+                'Pilih aset yang akan dicetak.',
+                'Info'
+            );
 
-        $url = route('qr.gateway', ['tag_code' => $asset->tag_code]);
-        $html = view('pdf-template.lebel-asset', compact('asset'))->render();
+            return;
+        }
 
-        $this->dispatch('print-qrbarcode', tagCode: $asset->tag_code, url: $url, html: $html);
+        // Generate HTML dengan semua assets
+        $html = view('pdf-template.lebel-asset', compact('assets'))->render();
+
+        // Prepare data untuk JavaScript
+        $assetsData = $assets->map(function ($asset) {
+            return [
+                'id' => $asset->id,
+                'tag_code' => $asset->tag_code,
+                'url' => route('qr.gateway', parameters: ['tag_code' => $asset->tag_code]),
+            ];
+        })->toArray();
+
+        $this->dispatch('print-qrbarcode', assets: $assetsData, html: $html);
     }
 
     public function render()

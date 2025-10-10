@@ -53,7 +53,7 @@
                     ['key' => 'actions', 'label' => 'Aksi'],
                 ];
             @endphp
-            <x-table :headers="$headers" :rows="$assets" striped show-empty-text>
+            <x-table :headers="$headers" :rows="$assets" striped show-empty-text selectable wire:model="selectedAssets">
 
                 @scope('cell_name', $asset)
                 <div class="flex gap-2 items-center">

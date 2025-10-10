@@ -94,6 +94,9 @@ class DashboardContentHeader extends Component
             case 'openVehicleTaxTypeDrawer':
                 $this->dispatch('open-tax-type-drawer');
                 break;
+            case 'printQrBarcode':
+                $this->dispatch('print-qr-barcode');
+                break;
             default:
                 $this->dispatch($action);
                 break;

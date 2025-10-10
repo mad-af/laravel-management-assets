@@ -9,23 +9,38 @@ import JsBarcode from "jsbarcode";
 // Listen for the print-qrbarcode event from Livewire (unchanged)
 document.addEventListener("livewire:init", () => {
     Livewire.on("print-qrbarcode", (event) => {
-        const { tagCode, url, html } = event;
+        const { assets, html } = event;
 
         const printWindow = window.open("", "_blank", "width=800,height=600");
         printWindow.document.write(html);
         printWindow.document.close();
 
         printWindow.onload = function () {
-            generateQRAndBarcode(printWindow, url, tagCode);
+            // Generate QR dan barcode untuk setiap asset
+            assets.forEach((asset, index) => {
+                generateQRAndBarcode(printWindow, asset.url, asset.tag_code, index);
+            });
+            
+            // Auto print setelah semua QR dan barcode selesai di-generate
+            setTimeout(() => {
+                printWindow.print();
+                // printWindow.close();
+            }, 1000);
         };
     });
 });
 
-function generateQRAndBarcode(printWindow, url, tagCode) {
+function generateQRAndBarcode(printWindow, url, tagCode, index = 0) {
     const doc = printWindow.document;
 
+    // Cari semua placeholder berdasarkan index (untuk multiple assets)
+    const qrPlaceholders = doc.querySelectorAll(".qr-box");
+    const barcodePlaceholders = doc.querySelectorAll(".bar-box");
+    
+    const qrPlaceholder = qrPlaceholders[index];
+    const barcodePlaceholder = barcodePlaceholders[index];
+
     // ---------------------- QR (UNCHANGED) ----------------------
-    const qrPlaceholder = doc.querySelector(".qr-box");
     if (qrPlaceholder && url) {
         const qrCanvas = doc.createElement("canvas");
         qrCanvas.style.width = "1cm";
@@ -49,7 +64,6 @@ function generateQRAndBarcode(printWindow, url, tagCode) {
     }
 
     // ---------------------- BARCODE (FIXED) ----------------------
-    const barcodePlaceholder = doc.querySelector(".bar-box");
     if (barcodePlaceholder && tagCode) {
         const barcodeSvg = doc.createElementNS(
             "http://www.w3.org/2000/svg",
