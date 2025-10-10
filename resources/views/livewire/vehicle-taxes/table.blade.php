@@ -34,7 +34,8 @@
                     ['key' => 'actions', 'label' => 'Aksi', 'class' => 'w-24'],
                 ];
             @endphp
-            <x-table :headers="$headers" :rows="$vehicleAssets" wire:model="expanded" striped show-empty-text expandable>
+            <x-table :headers="$headers" :rows="$vehicleAssets" wire:model="expanded" striped show-empty-text
+                expandable>
                 @scope('cell_vehicle_info', $vehicle)
                 <div class="flex gap-2 items-center">
                     @if (!$vehicle->image)
@@ -147,29 +148,25 @@
                 </div>
 
                 @php
-                // Sort vehicleTaxHistories: unpaid first, then paid, both ordered by due_date ascending
-                $sortedTaxHistories = $vehicle->vehicleTaxHistories->sortBy([
-                    // First sort by paid status (unpaid first)
-                    fn($a, $b) => is_null($a->paid_date) ? -1 : (is_null($b->paid_date) ? 1 : 0),
-                    // Then sort by due_date ascending
-                    fn($a, $b) => $a->due_date <=> $b->due_date
-                ]);
-                
-                $taxTypeHeaders = [
-                    ['key' => 'tax_type', 'label' => 'Jenis Pajak'],
-                    ['key' => 'year', 'label' => 'Tahun'],
-                    ['key' => 'due_date', 'label' => 'Jatuh Tempo'],
-                    ['key' => 'status', 'label' => 'Status'],
-                    ['key' => 'last_payment', 'label' => 'Pembayaran Terakhir'],
-                ];
+                    // Ambil koleksi tax histories yang sudah diurutkan
+                    $taxHistories = $this->getSortedTaxHistories($vehicle);
+
+
+                    $taxTypeHeaders = [
+                        ['key' => 'tax_type', 'label' => 'Jenis Pajak'],
+                        ['key' => 'year', 'label' => 'Tahun'],
+                        ['key' => 'due_date', 'label' => 'Jatuh Tempo'],
+                        ['key' => 'status', 'label' => 'Status'],
+                        ['key' => 'last_payment', 'label' => 'Pembayaran Terakhir'],
+                    ];
                 @endphp
 
-                <x-table :headers="$taxTypeHeaders" :rows="$sortedTaxHistories" no-headers no-hover
-                    show-empty-text>
+                <x-table :headers="$taxTypeHeaders" :rows="$taxHistories" no-headers no-hover show-empty-text>
                     @scope('cell_tax_type', $taxHistory)
                     <div class="flex flex-col">
                         <span class="font-medium">{{ $taxHistory->vehicleTaxType->tax_type->label() }}</span>
-                        <span class="text-xs text-base-content/60">{{ $taxHistory->vehicleTaxType->tax_type->description() }}</span>
+                        <span
+                            class="text-xs text-base-content/60">{{ $taxHistory->vehicleTaxType->tax_type->description() }}</span>
                     </div>
                     @endscope
 
@@ -210,7 +207,8 @@
                     @scope('cell_last_payment', $taxHistory)
                     @if($taxHistory->paid_date)
                         <div class="flex flex-col">
-                            <span class="text-sm">{{ \Carbon\Carbon::parse($taxHistory->paid_date)->format('d M Y') }}</span>
+                            <span
+                                class="text-sm">{{ \Carbon\Carbon::parse($taxHistory->paid_date)->format('d M Y') }}</span>
                             @if($taxHistory->amount)
                                 <span class="font-mono text-xs text-base-content/60">
                                     Rp {{ number_format($taxHistory->amount, 0, ',', '.') }}

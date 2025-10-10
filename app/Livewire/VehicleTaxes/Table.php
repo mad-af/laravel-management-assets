@@ -77,9 +77,7 @@ class Table extends Component
                 'branch',
                 'vehicleProfile',
                 'vehicleTaxTypes',
-                'vehicleTaxHistories' => function ($query) {
-                    $query->limit(6);
-                },
+                'vehicleTaxHistories',
             ])
             ->where('category_id', $vehicleCategory->id);
 
@@ -289,6 +287,34 @@ class Table extends Component
                 'statusText' => 'Akan Datang',
             ];
         }
+    }
+
+    /**
+     * Sort vehicle tax histories based on status filter
+     */
+    public function getSortedTaxHistories($vehicle)
+    {
+        // Ambil koleksi tax histories
+        $taxHistories = $vehicle->vehicleTaxHistories;
+
+        if (in_array($this->statusFilter, ['due_soon', 'overdue'])) {
+            // Skenario 1: due_soon/overdue - Filter yang belum bayar, kemudian urutkan berdasarkan due_date ASCENDING
+            $taxHistories = $taxHistories->filter(fn ($tax) => is_null($tax->paid_date))->sortBy('due_date');
+        } else {
+            // Skenario 2: Status Lainnya - Urutkan:
+            // 1. Yang belum bayar (unpaid) didahulukan
+            // 2. Kemudian urutkan berdasarkan due_date DESCENDING
+            $taxHistories = $taxHistories->sortBy([
+                // Urutan pertama: Berdasarkan status bayar (Unpaid=0, Paid=1) -> Unpaid didahulukan
+                fn ($a) => is_null($a->paid_date) ? 0 : 1,
+
+                // Urutan kedua: Berdasarkan due_date DESCENDING
+                // Kita balik perbandingan $b <=> $a untuk mendapatkan urutan menurun (DESC)
+                fn ($a, $b) => $b->due_date <=> $a->due_date,
+            ]);
+        }
+
+        return $taxHistories;
     }
 
     public function render()
