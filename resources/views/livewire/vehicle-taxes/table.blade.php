@@ -64,7 +64,7 @@
                     <div class="flex flex-col gap-1">
                         @foreach($vehicle->vehicleTaxTypes->take(3) as $taxType)
                             @php
-                                $taxStatus = $this->getTaxStatus($vehicle, $taxType);
+                                $taxStatus = $this->getTaxStatus($taxType);
                             @endphp
                             <div class="flex gap-2 justify-between items-center bg-base-300/60">
                                 <div class="flex-1 min-w-0">
@@ -172,14 +172,14 @@
 
                     @scope('cell_status', $taxType)
                     @php
-                        $taxStatus = $this->getTaxStatus($vehicle, $taxType);
+                        $taxStatus = $this->getTaxStatus($taxType);
                     @endphp
                     <x-badge class="badge-xs {{ $taxStatus['statusClass'] }}" value="{{ $taxStatus['statusText'] }}" />
                     @endscope
 
                     @scope('cell_last_payment', $taxType)
                     @php
-                        $lastPayment = $vehicle->vehicleTaxHistories
+                        $lastPayment = $taxType->asset->vehicleTaxHistories
                             ->where('vehicle_tax_type_id', $taxType->id)
                             ->sortByDesc('paid_date')
                             ->first();

@@ -76,10 +76,10 @@ class Table extends Component
                 'category',
                 'branch',
                 'vehicleProfile',
-                'vehicleTaxTypes.tax_type',
+                'vehicleTaxTypes',
                 'vehicleTaxHistories' => function ($query) {
                     $query->orderBy('paid_date', 'desc');
-                }
+                },
             ])
             ->where('category_id', $vehicleCategory->id);
 
@@ -259,10 +259,10 @@ class Table extends Component
     /**
      * Calculate tax status for a given vehicle tax type
      */
-    public function getTaxStatus($vehicle, $taxType)
+    public function getTaxStatus($taxType)
     {
         $dueDate = \Carbon\Carbon::parse($taxType->due_date);
-        $paidHistory = $vehicle->vehicleTaxHistories->where('vehicle_tax_type_id', $taxType->id)->first();
+        $paidHistory = $taxType->asset->vehicleTaxHistories->where('vehicle_tax_type_id', $taxType->id)->first();
 
         if ($paidHistory && $paidHistory->paid_date) {
             return [
@@ -293,6 +293,7 @@ class Table extends Component
 
     public function render()
     {
+
         return view('livewire.vehicle-taxes.table', [
             'vehicleAssets' => $this->getVehicleAssetsProperty(),
             'companies' => $this->getCompaniesProperty(),

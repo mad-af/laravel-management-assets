@@ -78,9 +78,12 @@ class AssetMaintenance extends Model
         });
 
         static::created(function ($maintenance) {
-            $maintenance->asset()->update([
-                'status' => AssetStatus::MAINTENANCE,
-            ]);
+            // Only set asset to maintenance if the maintenance status is not completed or cancelled
+            if (!in_array($maintenance->status, [MaintenanceStatus::COMPLETED, MaintenanceStatus::CANCELLED])) {
+                $maintenance->asset()->update([
+                    'status' => AssetStatus::MAINTENANCE,
+                ]);
+            }
 
             // Create odometer log if maintenance has odometer data and asset is a vehicle
             if ($maintenance->odometer_km_at_service && $maintenance->asset->vehicleProfile) {

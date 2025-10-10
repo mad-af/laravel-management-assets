@@ -75,7 +75,7 @@
     }
 
     .qr-box canvas {
-      image-rendering: pixelated;
+      /* image-rendering: pixelated; */
     }
 
     .bar-box {
