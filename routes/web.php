@@ -21,8 +21,14 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/maintenance-report', function () {
-    return view('pdf-template.maintenance-report-example-2');
+Route::prefix('pdf-template')->group(function () {
+    Route::get('/maintenance-report', function () {
+        return view('pdf-template.maintenance-report-example-2');
+    });
+
+    Route::get('/lebel-asset', function () {
+        return view('pdf-template.lebel-asset-example');
+    })->name('pdf-template.lebel-asset');
 });
 
 // Authentication Routes (only for guests)
