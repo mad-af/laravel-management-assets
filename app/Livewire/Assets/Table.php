@@ -98,7 +98,7 @@ class Table extends Component
         // Jika tidak ada yang dipilih
         else {
             $this->showInfoAlert(
-                'Pilih aset yang akan dicetak.',
+                'Pilih aset yang akan dicetak dulu.',
                 'Info'
             );
 
