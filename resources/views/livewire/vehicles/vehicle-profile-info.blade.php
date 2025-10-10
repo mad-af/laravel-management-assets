@@ -31,14 +31,6 @@
             'class' => 'font-medium'
         ],
         [
-            'label' => 'Service Interval (KM)',
-            'value' => $vehicle->vehicleProfile?->service_interval_km ? number_format($vehicle->vehicleProfile->service_interval_km) . ' km' : '-'
-        ],
-        [
-            'label' => 'Service Interval (Days)',
-            'value' => $vehicle->vehicleProfile?->service_interval_days ? $vehicle->vehicleProfile->service_interval_days . ' days' : '-'
-        ],
-        [
             'label' => 'Service Target Odometer (KM)',
             'value' => $vehicle->vehicleProfile?->service_target_odometer_km ? number_format($vehicle->vehicleProfile->service_target_odometer_km) . ' km' : '-'
         ],
@@ -54,9 +46,4 @@
             'label' => 'Annual Tax Due Date',
             'value' => $vehicle->vehicleProfile?->annual_tax_due_date?->format('d M Y') ?? '-'
         ],
-    ]" :longTextItems="[
-        [
-            'label' => 'Description',
-            'value' => $vehicle->description
-        ]
     ]" />

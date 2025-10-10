@@ -17,12 +17,12 @@
                         ['key' => 'read_at', 'label' => 'Date & Time'],
                         ['key' => 'odometer_km', 'label' => 'Reading (km)', 'class' => 'text-right'],
                         ['key' => 'source', 'label' => 'Source', 'class' => 'text-center'],
-                        ['key' => 'notes', 'label' => 'Notes', 'class' => 'text-center']
+                        ['key' => 'notes', 'label' => 'Notes']
                     ]" :rows="$odometerLogs" class="table-sm">
                                 @scope('cell_read_at', $log)
                                 <div class="text-sm">
                                     <div class="font-medium">{{ $log->read_at->format('d M Y') }}</div>
-                                    <div class="text-gray-500">{{ $log->read_at->format('H:i') }}</div>
+                                    <div class="text-base-content/40">{{ $log->read_at->format('H:i') }}</div>
                                 </div>
                                 @endscope
 
@@ -32,14 +32,14 @@
 
                                 @scope('cell_source', $log)
                                 <x-badge :value="$log->source->label()" class="badge-sm" :class="[
-                        'badge-primary' => $log->source->value === 'manual',
-                        'badge-info' => $log->source->value === 'telematics',
-                        'badge-success' => $log->source->value === 'service'
-                    ][$log->source->value] ?? 'badge-ghost'" />
+                                    'badge-primary' => $log->source->value === 'manual',
+                                    'badge-info' => $log->source->value === 'telematics',
+                                    'badge-success' => $log->source->value === 'service'
+                                ][$log->source->value] ?? 'badge-ghost'" />
                                 @endscope
 
                                 @scope('cell_notes', $log)
-                                <span class="text-sm text-gray-600">{{ $log->notes ?: '-' }}</span>
+                                <span class="text-sm text-base-content/40">{{ $log->notes ?: '-' }}</span>
                                 @endscope
                             </x-table>
                 @endif
@@ -59,29 +59,29 @@
                         ['key' => 'status', 'label' => 'Status', 'class' => 'w-24']
                     ]" :rows="$maintenances" class="table-sm">
                                 @scope('cell_scheduled_date', $maintenance)
-                                <span class="text-sm font-medium">{{ $maintenance->scheduled_date->format('d M Y') }}</span>
+                                {{-- <span class="text-sm font-medium">{{ $maintenance->scheduled_date->format('d M Y') }}</span> --}}
                                 @endscope
 
                                 @scope('cell_type', $maintenance)
-                                <x-badge :value="ucfirst($maintenance->type)" class="badge-sm badge-outline" />
+                                {{-- <x-badge :value="ucfirst($maintenance->type)" class="badge-sm badge-outline" /> --}}
                                 @endscope
 
                                 @scope('cell_description', $maintenance)
-                                <span class="text-sm">{{ $maintenance->description ?: '-' }}</span>
+                                {{-- <span class="text-sm">{{ $maintenance->description ?: '-' }}</span> --}}
                                 @endscope
 
                                 @scope('cell_cost', $maintenance)
                                 <span
-                                    class="font-mono text-sm">{{ $maintenance->cost ? 'Rp ' . number_format($maintenance->cost) : '-' }}</span>
+                                    {{-- class="font-mono text-sm">{{ $maintenance->cost ? 'Rp ' . number_format($maintenance->cost) : '-' }}</span> --}}
                                 @endscope
 
                                 @scope('cell_status', $maintenance)
-                                <x-badge :value="ucfirst($maintenance->status)" class="badge-sm" :class="[
+                                {{-- <x-badge :value="ucfirst($maintenance->status)" class="badge-sm" :class="[
                         'badge-warning' => $maintenance->status === 'scheduled',
                         'badge-info' => $maintenance->status === 'in_progress',
                         'badge-success' => $maintenance->status === 'completed',
                         'badge-error' => $maintenance->status === 'cancelled'
-                    ][$maintenance->status] ?? 'badge-ghost'" />
+                    ][$maintenance->status] ?? 'badge-ghost'" /> --}}
                                 @endscope
                             </x-table>
                 @endif

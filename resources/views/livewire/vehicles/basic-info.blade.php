@@ -16,10 +16,6 @@
             'value' => $vehicle->category->name
         ],
         [
-            'label' => 'Location',
-            'value' => $vehicle->location->name
-        ],
-        [
             'label' => 'Status',
             'value' => ucfirst($vehicle->status->value),
             'badge' => true,
@@ -35,7 +31,7 @@
     :longTextItems="[
         [
             'label' => 'Description',
-            'value' => 'dasdas'
+            'value' => $vehicle->description
         ]
     ]"
     :description="$vehicle->description"
