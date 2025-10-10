@@ -27,7 +27,7 @@
 
     /* Placeholder kotak QR & barcode bila belum ada gambar */
     .qr-box { width: 1cm; height: 1cm; border: 1px solid #000; display: inline-block; }
-    .bar-box { width: 1cm; height: 0.4cm; border: 1px solid #000; display: inline-block; }
+    .bar-box { width: auto; height: 0.4cm; border: 1px solid #000; display: inline-block; overflow:hidden; }
   </style>
 </head>
 <body>

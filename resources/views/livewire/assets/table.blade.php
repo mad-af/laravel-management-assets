@@ -109,11 +109,12 @@
                         </a>
                     </li>
                     <li>
-                        <a
-                            onclick="printQRBarcode('{{ $asset->tag_code }}', '{{ $asset->name }}', '{{ $asset->code }}', '{{ $asset->purchase_date ? $asset->purchase_date->format('Y') : '' }}'); document.getElementById('dropdown-menu-{{ $asset->id }}').hidePopover()">
+                        <button wire:click="printQRBarcode('{{ $asset->id }}')"
+                            class="flex gap-2 items-center p-2 text-sm rounded"
+                            onclick="document.getElementById('dropdown-menu-{{ $asset->id }}').hidePopover()">
                             <x-icon name="o-qr-code" class="w-4 h-4" />
                             Print QR/Barcode
-                        </a>
+                        </button>
                     </li>
                     <li>
                         <button wire:click="openEditDrawer('{{ $asset->id }}')"

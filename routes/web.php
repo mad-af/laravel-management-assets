@@ -136,7 +136,7 @@ Route::prefix('api')->middleware('auth')->group(function () {
 });
 
 // QR Code Gateway Routes (Public Access)
-Route::get('/qr/asset/{assetId}', [\App\Http\Controllers\QrGatewayController::class, 'gateway'])->name('qr.gateway');
+Route::get('/qr/asset/{tag_code}', [\App\Http\Controllers\QrGatewayController::class, 'gateway'])->name('qr.gateway');
 
 // Public Asset Display Routes (Token Protected)
 Route::middleware('token.auth')->group(function () {

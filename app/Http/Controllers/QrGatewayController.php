@@ -12,11 +12,11 @@ class QrGatewayController extends Controller
     /**
      * QR Code Gateway - generates secure token and redirects to public asset view
      */
-    public function gateway(Request $request, $assetId)
+    public function gateway(Request $request, $tag_code)
     {
         try {
             // Validate that asset exists
-            $asset = Asset::with(['category', 'branch', 'company'])->find($assetId);
+            $asset = Asset::with(['category', 'branch', 'company'])->where('tag_code', $tag_code)->first();
 
         if (! $asset) {
             abort(404, 'Asset tidak ditemukan');
@@ -26,7 +26,7 @@ class QrGatewayController extends Controller
         $token = Str::random(64);
 
         // Store token in cache with asset ID for 1 hour
-        Cache::put("asset_token_{$token}", $assetId, now()->addHour());
+        Cache::put("asset_token_{$token}", $asset->id, now()->addHour());
 
         // Redirect to public asset view with token
         return redirect()->route('public.asset.show', ['token' => $token]);

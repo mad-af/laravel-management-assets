@@ -81,6 +81,16 @@ class Table extends Component
         }
     }
 
+    public function printQRBarcode($assetId)
+    {
+        $asset = Asset::findOrFail($assetId);
+
+        $url = route('qr.gateway', ['tag_code' => $asset->tag_code]);
+        $html = view('pdf-template.lebel-asset', compact('asset'))->render();
+
+        $this->dispatch('print-qrbarcode', tagCode: $asset->tag_code, url: $url, html: $html);
+    }
+
     public function render()
     {
         // Get current branch ID from session

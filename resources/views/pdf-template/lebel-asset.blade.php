@@ -11,6 +11,7 @@
     .label {
       width: 5cm;               /* lebar 5 cm */
       height: 3cm;              /* tinggi 3 cm */
+      border: 0.5px solid #888;   /* garis tepi label */
       box-sizing: border-box;
       padding: 0.15cm;          /* ruang dalam label */
       font-family: Arial, Helvetica, sans-serif;
@@ -26,7 +27,7 @@
 
     /* Placeholder kotak QR & barcode bila belum ada gambar */
     .qr-box { width: 1cm; height: 1cm; display: inline-block; }
-    .bar-box { width: 1cm; height: 0.4cm; display: inline-block; }
+    .bar-box { width: auto; height: 0.4cm; display: inline-block; }
   </style>
 </head>
 <body>
@@ -49,23 +50,29 @@
           <table>
             <tr>
               <td class="muted" style="white-space:nowrap;">Model:</td>
-              <td class="muted" style="padding-left:0.08cm;">Thinkpad X13</td>
+              <td class="muted" style="padding-left:0.08cm;">{{ $asset->model ?? '-' }}</td>
             </tr>
             <tr>
               <td class="muted">Merk:</td>
-              <td class="muted" style="padding-left:0.08cm;">Lenovo</td>
+              <td class="muted" style="padding-left:0.08cm;">{{ $asset->brand ?? '-' }}</td>
             </tr>
             <tr>
               <td class="muted">Category:</td>
-              <td class="muted" style="padding-left:0.08cm;">Laptop</td>
+              <td class="muted" style="padding-left:0.08cm;">{{ $asset->category->name ?? '-' }}</td>
             </tr>
             <tr>
               <td class="muted">Purchase Date:</td>
-              <td class="muted" style="padding-left:0.08cm;">08/09/2025</td>
+              <td class="muted" style="padding-left:0.08cm;">
+                @if($asset->purchase_date)
+                  {{ $asset->purchase_date->format('d/m/Y') }}
+                @else
+                  -
+                @endif
+              </td>
             </tr>
             <tr>
               <td class="muted">S/N:</td>
-              <td class="muted" style="padding-left:0.08cm;">12345</td>
+              <td class="muted" style="padding-left:0.08cm;">{{ $asset->serial_number ?? '-' }}</td>
             </tr>
           </table>
         </td>
@@ -77,7 +84,7 @@
           <div class="qr-box"></div>
           <!-- Contoh: <img src="barcode.png" style="width:1.8cm;height:0.65cm;" /> -->
           <div class="bar-box"></div>
-          <div style="font-size: 3pt;">01K747S86C53</div>
+          <div style="font-size: 3pt;">{{ $asset->tag_code }}</div>
         </td>
       </tr>
     </table>
