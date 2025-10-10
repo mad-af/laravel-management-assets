@@ -19,13 +19,13 @@
             'label' => 'Status',
             'value' => ucfirst($vehicle->status->value),
             'badge' => true,
-            'badge_class' => $this->getStatusBadgeClass($vehicle->status->value)
+            'badge_class' =>  'badge-'.$vehicle->status->color(),
         ],
         [
             'label' => 'Condition',
             'value' => ucfirst($vehicle->condition->value ?? 'Unknown'),
             'badge' => true,
-            'badge_class' => $this->getConditionBadgeClass($vehicle->condition->value ?? 'unknown')
+            'badge_class' => 'badge-outline badge-'.$vehicle->condition->color(),
         ]
     ]"
     :longTextItems="[

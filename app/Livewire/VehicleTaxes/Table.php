@@ -20,7 +20,7 @@ class Table extends Component
 
     public array $expanded = [2];
 
-    public $statusFilter = 'due_soon';
+    public $statusFilter = 'overdue';
 
     protected $queryString = [
         'search' => ['except' => ''],

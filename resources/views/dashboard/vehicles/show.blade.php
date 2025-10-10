@@ -6,9 +6,6 @@
 
     <livewire:dashboard-content-header title='Vehicle Details' description='{{ $vehicle->name }}' showBackButton />
 
-
-
-
     <div class="grid grid-cols-1 gap-4 lg:grid-cols-6">
         <!-- Left Column - Vehicle Information -->
         <div class="space-y-4 lg:col-span-4">

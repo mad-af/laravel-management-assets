@@ -101,7 +101,7 @@
                 @scope('cell_actions', $asset)
                 <x-action-dropdown :model="$asset">
                     {{-- Disabled --}}
-                    <li class="opacity-50 cursor-not-allowed pointer-events-none">
+                    <li>
                         <a href="{{ route('assets.show', $asset) }}"
                             onclick="document.getElementById('dropdown-menu-{{ $asset->id }}').hidePopover()">
                             <x-icon name="o-eye" class="w-4 h-4" />
@@ -124,7 +124,7 @@
                             Edit
                         </button>
                     </li>
-                    <li>
+                    {{-- <li>
                         <button wire:click="delete('{{ $asset->id }}')"
                             wire:confirm="Are you sure you want to delete this asset?"
                             class="flex gap-2 items-center p-2 text-sm rounded text-error"
@@ -132,7 +132,7 @@
                             <x-icon name="o-trash" class="w-4 h-4" />
                             Delete
                         </button>
-                    </li>
+                    </li> --}}
                 </x-action-dropdown>
                 @endscope
             </x-table>
