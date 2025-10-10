@@ -20,6 +20,10 @@ class DatabaseSeeder extends Seeder
             UserCompanySeeder::class,
             EmployeeSeeder::class,
             AssetSeeder::class,
+            VehicleProfileSeeder::class,
+            VehicleTaxTypeSeeder::class,
+            VehicleTaxHistorySeeder::class,
+            AssetMaintenanceSeeder::class,
         ]);
     }
 }

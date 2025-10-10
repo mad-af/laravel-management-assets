@@ -110,6 +110,7 @@ class Table extends Component
 
         // Prepare data untuk JavaScript
         $assetsData = $assets->map(function ($asset) {
+        
             return [
                 'id' => $asset->id,
                 'tag_code' => $asset->tag_code,

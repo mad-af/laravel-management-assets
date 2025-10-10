@@ -69,8 +69,8 @@
 
     /* Placeholder kotak QR & barcode bila belum ada gambar */
     .qr-box {
-      width: 1cm;
-      height: 1cm;
+      width: auto;
+      height: auto;
       display: inline-block;
     }
 
