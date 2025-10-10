@@ -78,7 +78,7 @@ class Table extends Component
                 'vehicleProfile',
                 'vehicleTaxTypes',
                 'vehicleTaxHistories' => function ($query) {
-                    $query->orderBy('paid_date', 'desc');
+                    $query->limit(6);
                 },
             ])
             ->where('category_id', $vehicleCategory->id);

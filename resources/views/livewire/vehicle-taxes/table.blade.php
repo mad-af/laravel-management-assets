@@ -143,54 +143,77 @@
 
                 @scope('expansion', $vehicle)
                 <div class="text-sm font-semibold">
-                    Jenis Pajak ({{ $vehicle->vehicleTaxTypes->count() }})
+                    Jenis Pajak ({{ $vehicle->vehicleTaxHistories->count() }})
                 </div>
 
                 @php
-                    $taxTypeHeaders = [
-                        ['key' => 'tax_type', 'label' => 'Jenis Pajak'],
-                        ['key' => 'due_date', 'label' => 'Jatuh Tempo'],
-                        ['key' => 'status', 'label' => 'Status'],
-                        ['key' => 'last_payment', 'label' => 'Pembayaran Terakhir'],
-                    ];
+                // Sort vehicleTaxHistories: unpaid first, then paid, both ordered by due_date ascending
+                $sortedTaxHistories = $vehicle->vehicleTaxHistories->sortBy([
+                    // First sort by paid status (unpaid first)
+                    fn($a, $b) => is_null($a->paid_date) ? -1 : (is_null($b->paid_date) ? 1 : 0),
+                    // Then sort by due_date ascending
+                    fn($a, $b) => $a->due_date <=> $b->due_date
+                ]);
+                
+                $taxTypeHeaders = [
+                    ['key' => 'tax_type', 'label' => 'Jenis Pajak'],
+                    ['key' => 'year', 'label' => 'Tahun'],
+                    ['key' => 'due_date', 'label' => 'Jatuh Tempo'],
+                    ['key' => 'status', 'label' => 'Status'],
+                    ['key' => 'last_payment', 'label' => 'Pembayaran Terakhir'],
+                ];
                 @endphp
 
-                <x-table :headers="$taxTypeHeaders" :rows="$vehicle->vehicleTaxTypes" no-headers no-hover
+                <x-table :headers="$taxTypeHeaders" :rows="$sortedTaxHistories" no-headers no-hover
                     show-empty-text>
-                    @scope('cell_tax_type', $taxType)
+                    @scope('cell_tax_type', $taxHistory)
                     <div class="flex flex-col">
-                        <span class="font-medium">{{ $taxType->tax_type->label() }}</span>
-                        <span class="text-xs text-base-content/60">{{ $taxType->tax_type->description() }}</span>
+                        <span class="font-medium">{{ $taxHistory->vehicleTaxType->tax_type->label() }}</span>
+                        <span class="text-xs text-base-content/60">{{ $taxHistory->vehicleTaxType->tax_type->description() }}</span>
                     </div>
                     @endscope
 
-                    @scope('cell_due_date', $taxType)
+                    @scope('cell_due_date', $taxHistory)
                     <span class="text-sm">
-                        {{ \Carbon\Carbon::parse($taxType->due_date)->format('d M Y') }}
+                        {{ \Carbon\Carbon::parse($taxHistory->due_date)->format('d M Y') }}
                     </span>
                     @endscope
 
-                    @scope('cell_status', $taxType)
+                    @scope('cell_status', $taxHistory)
                     @php
-                        $taxStatus = $this->getTaxStatus($taxType);
+                        $dueDate = \Carbon\Carbon::parse($taxHistory->due_date);
+                        if ($taxHistory->paid_date) {
+                            $taxStatus = [
+                                'statusClass' => 'badge-success',
+                                'statusText' => 'Dibayar'
+                            ];
+                        } elseif ($dueDate->isPast()) {
+                            $taxStatus = [
+                                'statusClass' => 'badge-error',
+                                'statusText' => 'Terlambat'
+                            ];
+                        } elseif ($dueDate->isFuture()) {
+                            $taxStatus = [
+                                'statusClass' => 'badge-warning',
+                                'statusText' => 'Jatuh Tempo'
+                            ];
+                        } else {
+                            $taxStatus = [
+                                'statusClass' => 'badge-info',
+                                'statusText' => 'Akan Datang'
+                            ];
+                        }
                     @endphp
                     <x-badge class="badge-xs {{ $taxStatus['statusClass'] }}" value="{{ $taxStatus['statusText'] }}" />
                     @endscope
 
-                    @scope('cell_last_payment', $taxType)
-                    @php
-                        $lastPayment = $taxType->asset->vehicleTaxHistories
-                            ->where('vehicle_tax_type_id', $taxType->id)
-                            ->sortByDesc('paid_date')
-                            ->first();
-                    @endphp
-                    @if($lastPayment && $lastPayment->paid_date)
+                    @scope('cell_last_payment', $taxHistory)
+                    @if($taxHistory->paid_date)
                         <div class="flex flex-col">
-                            <span
-                                class="text-sm">{{ \Carbon\Carbon::parse($lastPayment->paid_date)->format('d M Y') }}</span>
-                            @if($lastPayment->amount)
+                            <span class="text-sm">{{ \Carbon\Carbon::parse($taxHistory->paid_date)->format('d M Y') }}</span>
+                            @if($taxHistory->amount)
                                 <span class="font-mono text-xs text-base-content/60">
-                                    Rp {{ number_format($lastPayment->amount, 0, ',', '.') }}
+                                    Rp {{ number_format($taxHistory->amount, 0, ',', '.') }}
                                 </span>
                             @endif
                         </div>
