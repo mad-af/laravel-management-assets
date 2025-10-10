@@ -61,6 +61,14 @@ class Asset extends Model
     }
 
     /**
+     * Get the company that owns the asset.
+     */
+    public function company(): BelongsTo
+    {
+        return $this->belongsTo(Company::class);
+    }
+
+    /**
      * Get the asset logs for the asset.
      */
     public function logs(): HasMany

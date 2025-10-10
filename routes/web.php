@@ -128,3 +128,11 @@ Route::prefix('api')->middleware('auth')->group(function () {
     Route::post('assets/checkin', [AssetController::class, 'checkin'])->name('api.assets.checkin');
     Route::get('users', [UserController::class, 'apiIndex'])->name('api.users.index');
 });
+
+// QR Code Gateway Routes (Public Access)
+Route::get('/qr/asset/{assetId}', [\App\Http\Controllers\QrGatewayController::class, 'gateway'])->name('qr.gateway');
+
+// Public Asset Display Routes (Token Protected)
+Route::middleware('token.auth')->group(function () {
+    Route::get('/public/asset/{token}', [\App\Http\Controllers\QrGatewayController::class, 'showPublicAsset'])->name('public.asset.show');
+});
