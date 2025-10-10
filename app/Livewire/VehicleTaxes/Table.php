@@ -290,6 +290,40 @@ class Table extends Component
     }
 
     /**
+     * Calculate tax status for a given vehicle tax history
+     */
+    public function getTaxHistoryStatus($taxHistory)
+    {
+        $dueDate = \Carbon\Carbon::parse($taxHistory->due_date);
+
+        if ($taxHistory->paid_date) {
+            return [
+                'status' => 'paid',
+                'statusClass' => 'badge-success',
+                'statusText' => 'Dibayar',
+            ];
+        } elseif ($dueDate->isPast()) {
+            return [
+                'status' => 'overdue',
+                'statusClass' => 'badge-error',
+                'statusText' => 'Terlambat',
+            ];
+        } elseif ($dueDate->isFuture()) {
+            return [
+                'status' => 'due_soon',
+                'statusClass' => 'badge-warning',
+                'statusText' => 'Jatuh Tempo',
+            ];
+        } else {
+            return [
+                'status' => 'upcoming',
+                'statusClass' => 'badge-info',
+                'statusText' => 'Akan Datang',
+            ];
+        }
+    }
+
+    /**
      * Sort vehicle tax histories based on status filter
      */
     public function getSortedTaxHistories($vehicle)

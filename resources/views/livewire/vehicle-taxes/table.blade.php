@@ -61,23 +61,27 @@
                 @endscope
 
                 @scope('cell_last_tax_types', $vehicle)
-                @if($vehicle->vehicleTaxTypes->count() > 0)
+                @php
+                    // Ambil koleksi tax histories yang sudah diurutkan
+                    $taxHistories = $this->getSortedTaxHistories($vehicle);
+                @endphp
+                @if($taxHistories->count() > 0)
                     <div class="flex flex-col gap-1">
-                        @foreach($vehicle->vehicleTaxTypes->take(3) as $taxType)
+                        @foreach($taxHistories->take(3) as $taxHistory)
                             @php
-                                $taxStatus = $this->getTaxStatus($taxType);
+                                $taxStatus = $this->getTaxHistoryStatus($taxHistory);
                             @endphp
                             <div class="flex gap-2 justify-between items-center bg-base-300/60">
                                 <div class="flex-1 min-w-0">
-                                    <div class="text-sm font-medium truncate">{{$taxType->tax_type->label() }}</div>
+                                    <div class="text-sm font-medium truncate">{{$taxHistory->vehicleTaxType->tax_type->label() }} ({{ $taxHistory->year }})</div>
                                 </div>
                                 <x-badge class="badge-xs {{ $taxStatus['statusClass'] }}"
                                     value="{{ $taxStatus['statusText'] }}" />
                             </div>
                         @endforeach
-                        @if($vehicle->vehicleTaxTypes->count() > 3)
+                        @if($taxHistories->count() > 3)
                             <div class="mt-1 text-xs text-base-content/50">
-                                +{{ $vehicle->vehicleTaxTypes->count() - 3 }} lainnya
+                                +{{ $taxHistories->count() - 3 }} lainnya
                             </div>
                         @endif
                     </div>
