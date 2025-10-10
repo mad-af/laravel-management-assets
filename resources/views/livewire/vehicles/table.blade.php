@@ -67,11 +67,19 @@
                 @endscope
 
                 @scope('cell_current_odometer_km', $vehicle)
-                <span class="text-sm">{{ $vehicle->vehicleProfile?->current_odometer_km ?? '-' }}</span>
+                <span class="text-sm">{{ 
+                    $vehicle->vehicleProfile?->current_odometer_km ? 
+                        number_format($vehicle->vehicleProfile?->current_odometer_km, 0, ',', '.') 
+                        : '-' 
+                }}</span>
                 @endscope
 
                 @scope('cell_odometer_target', $vehicle)
-                <span class="text-sm">{{ $vehicle->vehicleProfile?->service_target_odometer_km ?? '-' }}</span>
+                <span class="text-sm">{{ 
+                    $vehicle->vehicleProfile?->service_target_odometer_km ? 
+                        number_format($vehicle->vehicleProfile?->service_target_odometer_km, 0, ',', '.') 
+                        : '-' 
+                }}</span>
                 @endscope
 
                 @scope('cell_next_service', $vehicle)
@@ -91,7 +99,7 @@
                 @endscope
 
                 @scope('cell_license_plate', $vehicle)
-                <span class="font-mono font-medium">{{ $vehicle->vehicleProfile?->plate_no ?? '-' }}</span>
+                <span class="font-mono font-medium whitespace-nowrap">{{ $vehicle->vehicleProfile?->plate_no ?? '-' }}</span>
                 @endscope
 
                 @scope('cell_brand_model', $vehicle)

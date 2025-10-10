@@ -78,8 +78,8 @@ class Table extends Component
             $serviceDate = Carbon::parse($nextServiceDate)->locale('id');
             $now = Carbon::now($serviceDate->timezone);
 
-            // Format tanggal dengan nama bulan Indonesia
-            $formattedDate = $serviceDate->translatedFormat('d MMM Y');
+            // Format tanggal dengan nama bulan Indonesia - gunakan 'j M Y' untuk menghindari duplikasi
+            $formattedDate = $serviceDate->translatedFormat('j M Y');
 
             // Same-day
             if ($serviceDate->isSameDay($now)) {
@@ -106,7 +106,7 @@ class Table extends Component
             $daysLeft = $now->startOfDay()->diffInDays($serviceDate->startOfDay(), false);
 
             return [
-                'formatted_date' => $formattedDate, // contoh: "10 Okt 2025"
+                'formatted_date' => $formattedDate, // contoh: "15 Des 2024"
                 'time_info' => $timeInfo,      // contoh: "7 hari lagi" / "2 bulan 3 hari yang lalu"
                 'is_overdue' => $isOverdue,
                 'days_left' => $daysLeft,      // contoh: 7 atau -3
