@@ -12,6 +12,7 @@ class ActivityLog extends Component
     use WithPagination;
 
     public Asset $asset;
+
     public $showAll = false;
 
     public function mount(Asset $asset)
@@ -21,7 +22,7 @@ class ActivityLog extends Component
 
     public function toggleShowAll()
     {
-        $this->showAll = !$this->showAll;
+        $this->showAll = ! $this->showAll;
         $this->resetPage();
     }
 
@@ -36,7 +37,7 @@ class ActivityLog extends Component
             'loan' => 'badge-info',
             'return' => 'badge-success',
         ];
-        
+
         return $actionColors[$action] ?? 'badge-neutral';
     }
 
@@ -51,7 +52,7 @@ class ActivityLog extends Component
             'loan' => 'Dipinjam',
             'return' => 'Dikembalikan',
         ];
-        
+
         return $actionLabels[$action] ?? ucfirst($action);
     }
 
@@ -61,14 +62,10 @@ class ActivityLog extends Component
             ->with(['user'])
             ->orderBy('created_at', 'desc');
 
-        if (!$this->showAll) {
-            $logs = $logs->limit(10);
+        if (! $this->showAll) {
+            $logs = $logs->limit(10)->get();
         } else {
             $logs = $logs->paginate(20);
-        }
-
-        if (!$this->showAll) {
-            $logs = $logs->get();
         }
 
         return view('livewire.assets.activity-log', compact('logs'));
