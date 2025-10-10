@@ -20,18 +20,32 @@ class StatsCard extends Component
 
     public function getAssetAge()
     {
-        if (!$this->asset->purchase_date) {
-            return 'N/A';
+        if (! $this->asset->purchase_date) {
+            return 'Belum diketahui';
         }
 
         $purchaseDate = Carbon::parse($this->asset->purchase_date);
         $now = Carbon::now();
-        
-        return $purchaseDate->diffForHumans($now, [
-            'parts' => 2,
-            'join' => true,
-            'short' => false,
-        ]);
+
+        $diffInDays = $purchaseDate->diffInDays($now);
+        $diffInMonths = $purchaseDate->diffInMonths($now);
+        $diffInYears = intval($purchaseDate->diffInYears($now));
+
+        // Format ringkas dalam bahasa Indonesia
+        if ($diffInYears > 0) {
+            $remainingMonths = $diffInMonths % 12;
+            if ($remainingMonths > 0) {
+                return "{$diffInYears} thn {$remainingMonths} bln";
+            }
+
+            return "{$diffInYears} tahun";
+        } elseif ($diffInMonths > 0) {
+            return "{$diffInMonths} bulan";
+        } elseif ($diffInDays > 0) {
+            return "{$diffInDays} hari";
+        } else {
+            return 'Baru dibeli';
+        }
     }
 
     public function getTotalMaintenances()
@@ -57,7 +71,7 @@ class StatsCard extends Component
             ->orderBy('created_at', 'desc')
             ->first();
 
-        if (!$lastMaintenance) {
+        if (! $lastMaintenance) {
             return 'Belum ada maintenance';
         }
 
