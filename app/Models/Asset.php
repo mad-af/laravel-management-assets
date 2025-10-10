@@ -163,24 +163,7 @@ class Asset extends Model
     {
         return $query->whereHas('vehicleTaxHistories', function ($q) {
             $q->whereNull('paid_date')
-                ->where('due_date', '<', now())
-                ->whereNotNull('due_date')
-                ->whereRaw('vehicle_tax_histories.id IN (
-                    SELECT vth_inner.id 
-                    FROM vehicle_tax_histories as vth_inner 
-                    WHERE vth_inner.asset_id = vehicle_tax_histories.asset_id 
-                    AND vth_inner.vehicle_tax_type_id = vehicle_tax_histories.vehicle_tax_type_id
-                    AND vth_inner.due_date < ?
-                    AND vth_inner.paid_date IS NULL
-                    AND vth_inner.due_date = (
-                        SELECT MIN(vth2.due_date) 
-                        FROM vehicle_tax_histories as vth2 
-                        WHERE vth2.asset_id = vehicle_tax_histories.asset_id
-                        AND vth2.vehicle_tax_type_id = vehicle_tax_histories.vehicle_tax_type_id
-                        AND vth2.due_date < ?
-                        AND vth2.paid_date IS NULL
-                    )
-                )', [now(), now()]);
+                ->where('due_date', '<', now());
         });
     }
 
@@ -191,38 +174,26 @@ class Asset extends Model
     {
         return $query->whereHas('vehicleTaxHistories', function ($q) {
             $q->whereNull('paid_date')
-                ->where('due_date', '>', now())
-                ->whereIn('id', function ($subQuery) {
-                    $subQuery->select('id')
-                        ->from('vehicle_tax_histories as vth1')
-                        ->whereRaw('vth1.due_date = (
-                            SELECT MAX(vth2.due_date) 
-                            FROM vehicle_tax_histories as vth2 
-                            WHERE vth2.asset_id = vth1.asset_id
-                            AND vth2.vehicle_tax_type_id = vth1.vehicle_tax_type_id
-                        )');
-                });
+                ->where('due_date', '>', now());
         });
     }
 
     /**
-     * Scope untuk kendaraan yang sudah membayar pajak
+     * Scope untuk kendaraan yang sudah membayar pajak (tidak masuk kategori due_soon atau overdue)
      */
     public function scopePaid(Builder $query): Builder
     {
-        return $query->whereHas('vehicleTaxHistories', function ($q) {
-            $q->whereNotNull('paid_date')
-                ->whereIn('id', function ($subQuery) {
-                    $subQuery->select('id')
-                        ->from('vehicle_tax_histories as vth1')
-                        ->whereRaw('vth1.due_date = (
-                            SELECT MAX(vth2.due_date) 
-                            FROM vehicle_tax_histories as vth2 
-                            WHERE vth2.asset_id = vth1.asset_id
-                            AND vth2.vehicle_tax_type_id = vth1.vehicle_tax_type_id
-                        )');
-                });
-        });
+        return $query->whereHas('vehicleTaxTypes')
+            ->whereDoesntHave('vehicleTaxHistories', function ($q) {
+                // Tidak memiliki pajak yang overdue
+                $q->whereNull('paid_date')
+                    ->where('due_date', '<', now());
+            })
+            ->whereDoesntHave('vehicleTaxHistories', function ($q) {
+                // Tidak memiliki pajak yang due soon
+                $q->whereNull('paid_date')
+                    ->where('due_date', '>', now());
+            });
     }
 
     /**
