@@ -6,6 +6,12 @@
     <livewire:dashboard-content-header title='Assets Management' description='Kelola data aset dalam sistem.'
         buttonText='Tambah Asset' buttonIcon='o-plus' buttonAction='openAssetDrawer' :additional-buttons="[
                 [
+                    'text' => 'Unduh Data Asset',
+                    'icon' => 'o-document',
+                    'class' => ' btn-sm',
+                    'action' => 'downloadAsset'
+                ],
+                [
                     'text' => 'Print QR/Barcode',
                     'icon' => 'o-qr-code',
                     'class' => ' btn-sm',

@@ -1,5 +1,5 @@
 <!-- Dashboard Content Header Livewire Component -->
-<div class="flex justify-between items-center">
+<div class="flex flex-col gap-3 justify-between md:items-center md:flex-row">
     <div class="flex gap-3 items-center">
         <!-- Back Button -->
         @if($showBackButton)
@@ -16,7 +16,7 @@
         </div>
     </div>
 
-    <div class="flex gap-2 items-center">
+    <div class="flex flex-col gap-2 items-center md:flex-row">
         <!-- Additional Buttons (Livewire v3 workaround) -->
         @if(!empty($additionalButtons))
             @foreach($additionalButtons as $button)

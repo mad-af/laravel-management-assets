@@ -3,6 +3,7 @@
 namespace App\Livewire\Assets;
 
 use App\Enums\AssetStatus;
+use App\Exports\AssetsExport;
 use App\Models\Asset;
 use App\Models\Branch;
 use App\Models\Category;
@@ -11,6 +12,7 @@ use App\Traits\WithAlert;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Maatwebsite\Excel\Facades\Excel;
 
 class Table extends Component
 {
@@ -110,7 +112,7 @@ class Table extends Component
 
         // Prepare data untuk JavaScript
         $assetsData = $assets->map(function ($asset) {
-        
+
             return [
                 'id' => $asset->id,
                 'tag_code' => $asset->tag_code,
@@ -119,6 +121,37 @@ class Table extends Component
         })->toArray();
 
         $this->dispatch('print-qrbarcode', assets: $assetsData, html: $html);
+    }
+
+    #[On('download-asset')]
+    public function downloadAsset()
+    {
+        // Get current branch ID from session
+        $currentBranchId = session_get(SessionKey::BranchId);
+
+        if (! $currentBranchId) {
+            $this->showErrorAlert(
+                'Branch ID tidak ditemukan dalam session.',
+                'Error'
+            );
+
+            return;
+        }
+
+        // Get branch name for filename
+        $branch = Branch::find($currentBranchId);
+        $branchName = $branch ? str_replace(' ', '_', $branch->name) : 'Unknown_Branch';
+
+        $filename = 'Assets_'.$branchName.'_'.now()->format('Y-m-d_H-i-s').'.xlsx';
+
+        try {
+            return Excel::download(new AssetsExport($currentBranchId), $filename);
+        } catch (\Exception $e) {
+            $this->showErrorAlert(
+                'Terjadi kesalahan saat mengunduh file Excel: '.$e->getMessage(),
+                'Error'
+            );
+        }
     }
 
     public function render()

@@ -97,6 +97,9 @@ class DashboardContentHeader extends Component
             case 'printQrBarcode':
                 $this->dispatch('print-qr-barcode');
                 break;
+            case 'downloadAsset':
+                $this->dispatch('download-asset');
+                break;
             default:
                 $this->dispatch($action);
                 break;

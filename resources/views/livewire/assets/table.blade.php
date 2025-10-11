@@ -103,7 +103,8 @@
                     {{-- Disabled --}}
                     <li>
                         <a href="{{ route('assets.show', $asset) }}"
-                            onclick="document.getElementById('dropdown-menu-{{ $asset->id }}').hidePopover()">
+                            class="flex gap-2 items-center p-2 text-sm rounded"
+                            onclick="document.getElementById('dropdown-menu-{{ $asset->id }}').hidePopover()" >
                             <x-icon name="o-eye" class="w-4 h-4" />
                             View
                         </a>
