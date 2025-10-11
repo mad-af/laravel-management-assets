@@ -1,5 +1,5 @@
 <x-info-card title="Informasi Statistik" icon="o-presentation-chart-bar">
-    <div class="w-full shadow stats stats-vertical">
+    <div class="w-full shadow stats {{ !$this->isHorizontal && 'stats-vertical' }}">
         <!-- Asset Age -->
         <x-stat-card 
             title="Umur Asset"

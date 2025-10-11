@@ -13,6 +13,8 @@ class StatsCard extends Component
 {
     public Asset $asset;
 
+    public bool $isHorizontal = false;
+
     public function mount(Asset $asset)
     {
         $this->asset = $asset;
