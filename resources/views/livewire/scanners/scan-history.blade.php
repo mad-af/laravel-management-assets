@@ -5,7 +5,8 @@
             ['key' => 'tag', 'label' => 'Tag'],
             ['key' => 'asset_name', 'label' => 'Nama Asset'],
             ['key' => 'category', 'label' => 'Kategori'],
-            ['key' => 'location', 'label' => 'Lokasi'],
+            ['key' => 'company', 'label' => 'Perusahaan'],
+            ['key' => 'branch', 'label' => 'Cabang'],
             ['key' => 'status', 'label' => 'Status'],
             ['key' => 'action', 'label' => 'Aksi'],
         ];
@@ -20,7 +21,7 @@
         @if (empty($scan['id']))
         <a href="" class="btn btn-xs btn-ghost" disabled>
         @else
-        <a href="" class="btn btn-xs btn-ghost">
+        <a href="{{ route('assets.show', $this->getAssetAttribute($scan['id'])) }}" class="btn btn-xs btn-ghost">
         @endif
             <x-icon name="o-eye" class="!w-5 !h-5" />
         </a>

@@ -194,6 +194,7 @@ class QRBarcodeScanner {
     }
 
     async handleScanResult(text) {
+        console.log("INIBRO", text)
         this.dispatchUpdateResultAttributes({
             scanStatus: "loading",
         });
@@ -226,6 +227,7 @@ class QRBarcodeScanner {
         } catch (error) {
             console.error("Error searching asset:", error);
         }
+        
     }
 
     addToScanHistory(tag, payload) {
@@ -242,7 +244,8 @@ class QRBarcodeScanner {
             id: payload?.id ?? null,
             asset_name: payload?.name ?? "-",
             category: payload?.category.name ?? "-",
-            location: payload?.location.name ?? "-",
+            branch: payload?.branch.name ?? "-",
+            company: payload?.company.name ?? "-",
             status: payload?.status ?? "-",
         };
         this.scanHistory = JSON.parse(
@@ -298,3 +301,4 @@ class QRBarcodeScanner {
 }
 
 window.QRBarcodeScanner = QRBarcodeScanner;
+window.QRBarcodeScannerInstance = new QRBarcodeScanner();

@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Scanners;
 
+use App\Models\Asset;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -17,8 +18,12 @@ class ScanHistory extends Component
     #[On('scanHistory:updateAttributes')]
     public function updateAttributes($payload)
     {
-        // dd('abc', $payload['rows']);
         $this->rows = $payload['rows'] ?? $this->rows;
+    }
+
+    public function getAssetAttribute($id)
+    {
+        return Asset::find($id);
     }
 
     public function render()

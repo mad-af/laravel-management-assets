@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Scanners;
 
+use App\Models\Asset;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -50,7 +51,7 @@ class ScanResult extends Component
             ['key' => 'Tag Scanned', 'value' => $this->tagScanned ?? '-'],
             ['key' => 'Nama Aset', 'value' => $this->assetScanned['name'] ?? '-'],
             ['key' => 'Kategori', 'value' => $this->assetScanned['category']['name'] ?? '-'],
-            ['key' => 'Lokasi', 'value' => $this->assetScanned['location']['name'] ?? '-'],
+            ['key' => 'Cabang', 'value' => $this->assetScanned['branch']['name'] ?? '-'],
             ['key' => 'Status', 'value' => $this->assetScanned['status'] ?? '-'],
         ];
 
@@ -67,6 +68,11 @@ class ScanResult extends Component
                 'message' => 'Kode yang dipindai tidak terdaftar dalam sistem.',
             ];
         }
+    }
+
+    public function getAssetAttribute($id)
+    {
+        return Asset::find($id);
     }
 
     public function openDrawerMaintenance()

@@ -350,7 +350,7 @@ class AssetController extends Controller
         }
 
         // Search by tag_code first, then by code
-        $asset = Asset::with(['category', 'branch'])
+        $asset = Asset::with(['category', 'branch', 'company'])
             ->where('tag_code', $code)
             ->orWhere('code', $code)
             ->first();
@@ -394,6 +394,11 @@ class AssetController extends Controller
                     'branch' => $asset->branch ? [
                         'id' => $asset->branch->id,
                         'name' => $asset->branch->name,
+                    ] : null,
+                    'company' => $asset->company ? [
+                        'id' => $asset->company->id,
+                        'name' => $asset->company->name,
+                        'code' => $asset->company->code,
                     ] : null,
                     'last_seen_at' => $asset->last_seen_at?->format('Y-m-d H:i:s'),
                 ],
