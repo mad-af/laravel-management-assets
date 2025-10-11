@@ -7,7 +7,7 @@
         buttonText='Tambah Asset' buttonIcon='o-plus' buttonAction='openAssetDrawer' :additional-buttons="[
                 [
                     'text' => 'Unduh Data Asset',
-                    'icon' => 'o-document',
+                    'icon' => 'o-document-arrow-down',
                     'class' => ' btn-sm',
                     'action' => 'downloadAsset'
                 ],

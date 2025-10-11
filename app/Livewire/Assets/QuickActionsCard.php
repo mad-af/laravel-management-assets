@@ -2,9 +2,12 @@
 
 namespace App\Livewire\Assets;
 
+use App\Exports\AssetActivityLogExport;
 use App\Models\Asset;
 use App\Traits\WithAlert;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
+use Maatwebsite\Excel\Facades\Excel;
 
 class QuickActionsCard extends Component
 {
@@ -72,6 +75,28 @@ class QuickActionsCard extends Component
         })->toArray();
 
         $this->dispatch('print-qrbarcode', assets: $assetsData, html: $html);
+    }
+
+    public function downloadActivityLog()
+    {
+        try {
+            // Generate filename with asset name and timestamp
+            $assetName = str_replace([' ', '/', '\\', ':', '*', '?', '"', '<', '>', '|'], '_', $this->asset->name);
+            $timestamp = now()->format('Y-m-d_H-i-s');
+            $filename = "Activity_Log_{$assetName}_{$timestamp}.xlsx";
+
+            // Download the Excel file using the AssetActivityLogExport class
+            return Excel::download(new AssetActivityLogExport($this->asset), $filename);
+
+        } catch (\Exception $e) {
+            // Log the error for debugging
+            Log::error('Error downloading activity log: '.$e->getMessage());
+
+            // Show error message to user
+            $this->alert('error', 'Gagal mengunduh activity log. Silakan coba lagi.');
+
+            return null;
+        }
     }
 
     public function render()

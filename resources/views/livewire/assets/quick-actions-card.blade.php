@@ -24,6 +24,12 @@
             Perawatan Asset
         </a>
 
+        <!-- Download Activity Log -->
+        <button wire:click="downloadActivityLog" class="w-full btn btn-sm">
+            <x-icon name="o-document-arrow-down" class="w-4 h-4" />
+            Unduh Aktivitas Asset
+        </button>
+
         <!-- Create Transfer -->
         {{-- <a href="{{ route('asset-transfers.index', ['asset_id' => $asset->id]) }}" class="w-full btn btn-sm">
             <x-icon name="o-arrows-right-left" class="w-4 h-4" />
