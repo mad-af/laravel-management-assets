@@ -12,10 +12,10 @@
     @else
         @php
             $headers = [
-                ['key' => 'action', 'label' => 'Aksi', 'class' => 'w-24'],
+                ['key' => 'action', 'label' => 'Aksi'],
                 ['key' => 'notes', 'label' => 'Catatan'],
-                ['key' => 'user', 'label' => 'User', 'class' => 'w-32'],
-                ['key' => 'created_at', 'label' => 'Waktu', 'class' => 'w-40'],
+                ['key' => 'user', 'label' => 'User'],
+                ['key' => 'created_at', 'label' => 'Waktu'],
             ];
         @endphp
 
