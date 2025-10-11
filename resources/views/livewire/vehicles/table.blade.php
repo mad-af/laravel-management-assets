@@ -4,7 +4,7 @@
         <div class="flex flex-col gap-4 mb-4 sm:flex-row">
             {{-- Search Input --}}
             <div class="flex-1">
-                <x-input wire:model.live="search" placeholder="Search vehicles (name, license plate, brand)..."
+                <x-input wire:model.live="search" placeholder="Cari kendaraan (nama, plat nomor, merek)..."
                     icon="o-magnifying-glass" class="input-sm" />
             </div>
 
@@ -17,7 +17,7 @@
                         </x-button>
                     </x-slot:trigger>
 
-                    <x-menu-item title="All Status" wire:click="$set('statusFilter', '')" />
+                    <x-menu-item title="Semua Status" wire:click="$set('statusFilter', '')" />
                     @foreach(\App\Enums\AssetStatus::cases() as $status)
                         <x-menu-item title="{{ $status->label() }}"
                             wire:click="$set('statusFilter', '{{ $status->value }}')" />
@@ -35,10 +35,10 @@
                     ['key' => 'odometer_target', 'label' => 'Target Odometer', 'class' => 'text-right'],
                     ['key' => 'next_service', 'label' => 'Perawatan Selanjutnya'],
                     ['key' => 'license_plate', 'label' => 'Plat Nomor'],
-                    ['key' => 'brand_model', 'label' => 'Brand & Model'],
+                    ['key' => 'brand_model', 'label' => 'Merek & Model'],
                     ['key' => 'status', 'label' => 'Status'],
                     ['key' => 'condition', 'label' => 'Kondisi'],
-                    ['key' => 'actions', 'label' => 'Actions', 'class' => 'w-20'],
+                    ['key' => 'actions', 'label' => 'Aksi', 'class' => 'w-20'],
                 ];
             @endphp
             <x-table :headers="$headers" :rows="$vehicles" striped show-empty-text>
@@ -155,8 +155,8 @@
         @if($vehicles->count() > 0)
             <div class="flex flex-col gap-4 mt-4 lg:flex-row lg:items-center lg:justify-between">
                 <div class="text-sm text-base-content/70">
-                    Showing {{ $vehicles->firstItem() }}-{{ $vehicles->lastItem() }} of {{ $vehicles->total() }}
-                    vehicles
+                    Menampilkan {{ $vehicles->firstItem() }}-{{ $vehicles->lastItem() }} dari {{ $vehicles->total() }}
+                    kendaraan
                 </div>
 
                 {{-- Livewire Pagination --}}

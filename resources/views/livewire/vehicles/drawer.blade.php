@@ -12,9 +12,9 @@
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-lg font-semibold">
                     @if($this->isActionSaveProfile())
-                        {{ 'Save Vehicle Profile' }}
+                        {{ 'Simpan Profil Kendaraan' }}
                     @elseif($this->isActionSaveOdometer())
-                        {{ 'Add Odometer Log' }}
+                        {{ 'Tambah Log Odometer' }}
                     @endif
                 </h2>
                 <button wire:click="closeDrawer" class="btn btn-sm btn-circle btn-ghost">

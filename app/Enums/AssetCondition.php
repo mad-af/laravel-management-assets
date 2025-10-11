@@ -22,9 +22,9 @@ enum AssetCondition: string
     public function label(): string
     {
         return match($this) {
-            self::GOOD => 'Good',
-            self::FAIR => 'Fair',
-            self::POOR => 'Poor',
+            self::GOOD => 'Baik',
+            self::FAIR => 'Cukup',
+            self::POOR => 'Buruk',
         };
     }
 

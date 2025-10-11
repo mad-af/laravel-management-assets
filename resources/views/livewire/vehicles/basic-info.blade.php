@@ -1,36 +1,36 @@
 <x-info-grid 
-    title="Basic Information"
+    title="Informasi Dasar"
     :items="[
         [
-            'label' => 'Vehicle Name',
+            'label' => 'Nama Kendaraan',
             'value' => $vehicle->name,
             'class' => 'font-medium'
         ],
         [
-            'label' => 'Asset Code',
+            'label' => 'Kode Aset',
             'value' => $vehicle->code,
             'mono' => true
         ],
         [
-            'label' => 'Category',
+            'label' => 'Kategori',
             'value' => $vehicle->category->name
         ],
         [
             'label' => 'Status',
-            'value' => ucfirst($vehicle->status->value),
+            'value' => ucfirst($vehicle->status->label()),
             'badge' => true,
             'badge_class' =>  'badge-'.$vehicle->status->color(),
         ],
         [
-            'label' => 'Condition',
-            'value' => ucfirst($vehicle->condition->value ?? 'Unknown'),
+            'label' => 'Kondisi',
+            'value' => ucfirst($vehicle->condition->label() ?? 'Tidak Diketahui'),
             'badge' => true,
             'badge_class' => 'badge-outline badge-'.$vehicle->condition->color(),
         ]
     ]"
     :longTextItems="[
         [
-            'label' => 'Description',
+            'label' => 'Deskripsi',
             'value' => $vehicle->description
         ]
     ]"

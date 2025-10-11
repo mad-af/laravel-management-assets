@@ -1,13 +1,13 @@
-<x-info-card title="Quick Actions" icon="o-bolt">
+<x-info-card title="Aksi Cepat" icon="o-bolt">
     <div class="space-y-2">
         <button wire:click="addOdometerLog" class="w-full btn  btn-sm btn-primary">
             <x-icon name="o-calculator" class="w-4 h-4" />
-            Add Odometer
+            Tambah Odometer
         </button>
 
         <button wire:click="editProfile" class="w-full btn  btn-sm">
             <x-icon name="o-truck" class="w-4 h-4" />
-            Save Vehicle Profile
+            Simpan Profil Kendaraan
         </button>
     </div>
 </x-info-card>

@@ -1,6 +1,6 @@
-<x-info-grid title="Vehicle Profile Information" icon="o-truck" :items="[
+<x-info-grid title="Informasi Profil Kendaraan" icon="o-truck" :items="[
         [
-            'label' => 'Brand',
+            'label' => 'Merek',
             'value' => $vehicle->vehicleProfile?->brand ?? '-'
         ],
         [
@@ -8,7 +8,7 @@
             'value' => $vehicle->vehicleProfile?->model ?? '-'
         ],
         [
-            'label' => 'Plate Number',
+            'label' => 'Nomor Plat',
             'value' => $vehicle->vehicleProfile?->plate_no ?? '-',
             'mono' => true
         ],
@@ -18,32 +18,32 @@
             'mono' => true
         ],
         [
-            'label' => 'Year Purchase',
+            'label' => 'Tahun Pembelian',
             'value' => $vehicle->vehicleProfile?->year_purchase ?? '-'
         ],
         [
-            'label' => 'Year Manufacture',
+            'label' => 'Tahun Produksi',
             'value' => $vehicle->vehicleProfile?->year_manufacture ?? '-'
         ],
         [
-            'label' => 'Current Odometer (KM)',
+            'label' => 'Odometer Saat Ini (KM)',
             'value' => $vehicle->vehicleProfile?->current_odometer_km ? number_format($vehicle->vehicleProfile->current_odometer_km) . ' km' : '-',
             'class' => 'font-medium'
         ],
         [
-            'label' => 'Service Target Odometer (KM)',
+            'label' => 'Target Odometer Servis (KM)',
             'value' => $vehicle->vehicleProfile?->service_target_odometer_km ? number_format($vehicle->vehicleProfile->service_target_odometer_km) . ' km' : '-'
         ],
         [
-            'label' => 'Last Service Date',
+            'label' => 'Tanggal Servis Terakhir',
             'value' => $vehicle->vehicleProfile?->last_service_date?->format('d M Y') ?? '-'
         ],
         [
-            'label' => 'Next Service Date',
+            'label' => 'Tanggal Servis Berikutnya',
             'value' => $vehicle->vehicleProfile?->next_service_date?->format('d M Y') ?? '-'
         ],
         [
-            'label' => 'Annual Tax Due Date',
+            'label' => 'Tanggal Jatuh Tempo Pajak Tahunan',
             'value' => $vehicle->vehicleProfile?->annual_tax_due_date?->format('d M Y') ?? '-'
         ],
     ]" />
