@@ -32,14 +32,7 @@ class AssetActivityLogExport implements FromCollection, WithHeadings, WithMappin
     {
         $data = collect();
 
-        // Header title
-        $data->push((object)[
-            'type' => 'title',
-            'label' => strtoupper($this->asset->name ?? 'Asset'),
-            'value' => '',
-        ]);
-
-        // Detail section
+        // === Asset details block ===
         $details = [
             'Kode Asset' => $this->asset->code ?? '-',
             'Tag Code' => $this->asset->tag_code ?? '-',
@@ -57,20 +50,23 @@ class AssetActivityLogExport implements FromCollection, WithHeadings, WithMappin
         ];
 
         foreach ($details as $label => $value) {
-            $data->push((object)[
-                'type' => 'asset_detail',
+            $data->push((object) [
+                'type'  => 'asset_detail',
                 'label' => $label,
                 'value' => $value,
             ]);
         }
 
         // Separator
-        $data->push((object)['type' => 'separator']);
+        $data->push((object) ['type' => 'separator']);
 
-        // Activity log header
-        $data->push((object)['type' => 'log_header', 'label' => 'ACTIVITY LOG']);
+        // Activity Log title row
+        $data->push((object) ['type' => 'log_header', 'label' => 'ACTIVITY LOG']);
 
-        // Logs
+        // Column headers for the log table (explicit row)
+        $data->push((object) ['type' => 'log_columns']);
+
+        // Activity log rows
         foreach ($this->logs as $log) {
             $data->push($log);
         }
@@ -80,39 +76,42 @@ class AssetActivityLogExport implements FromCollection, WithHeadings, WithMappin
 
     public function headings(): array
     {
-        return ['Tanggal/Waktu', 'Aksi', 'User', 'Catatan', 'Perubahan Data'];
+        // Single top heading row: put asset name in A1 only; others blank
+        return [
+            strtoupper($this->asset->name ?? 'ASSET'),
+            '', '', '', ''
+        ];
     }
 
     public function map($row): array
     {
         if (isset($row->type)) {
-            if ($row->type === 'title') {
-                return [$row->label, '', '', '', ''];
-            }
-
             if ($row->type === 'asset_detail') {
                 return [$row->label, $row->value, '', '', ''];
             }
-
             if ($row->type === 'separator') {
                 return ['', '', '', '', ''];
             }
-
             if ($row->type === 'log_header') {
                 return ['ACTIVITY LOG', '', '', '', ''];
             }
+            if ($row->type === 'log_columns') {
+                return ['Tanggal/Waktu', 'Aksi', 'User', 'Catatan', 'Perubahan Data'];
+            }
         }
 
-        // Log rows
-        $changed = '';
-        if (is_array($row->changed_fields)) {
+        // Map real log row
+        $changedFields = '';
+        if ($row->changed_fields && is_array($row->changed_fields)) {
             $pairs = [];
-            foreach ($row->changed_fields as $f => $c) {
-                if (isset($c['old'], $c['new'])) {
-                    $pairs[] = "{$f}: {$c['old']} → {$c['new']}";
+            foreach ($row->changed_fields as $field => $change) {
+                if (is_array($change) && isset($change['old'], $change['new'])) {
+                    $pairs[] = "{$field}: {$change['old']} → {$change['new']}";
+                } else {
+                    $pairs[] = "{$field}: ".(is_string($change) ? $change : json_encode($change));
                 }
             }
-            $changed = implode('; ', $pairs);
+            $changedFields = implode('; ', $pairs);
         }
 
         return [
@@ -120,7 +119,7 @@ class AssetActivityLogExport implements FromCollection, WithHeadings, WithMappin
             $row->action?->label() ?? $row->action ?? '-',
             $row->user->name ?? '-',
             $row->notes ?? '-',
-            $changed,
+            $changedFields,
         ];
     }
 
@@ -128,24 +127,26 @@ class AssetActivityLogExport implements FromCollection, WithHeadings, WithMappin
     {
         $highestRow = $sheet->getHighestRow();
 
-        // General style
-        $sheet->getDefaultRowDimension()->setRowHeight(20);
-        $sheet->getStyle("A1:E{$highestRow}")
-            ->getAlignment()
-            ->setVertical(Alignment::VERTICAL_CENTER)
-            ->setWrapText(true);
-
-        // Title row (row 1)
+        // Title row A1:E1 (asset name)
         $sheet->mergeCells('A1:E1');
         $sheet->getStyle('A1')->applyFromArray([
             'font' => ['bold' => true, 'size' => 16],
             'alignment' => [
                 'horizontal' => Alignment::HORIZONTAL_CENTER,
-                'vertical' => Alignment::VERTICAL_CENTER,
+                'vertical'   => Alignment::VERTICAL_CENTER,
             ],
         ]);
 
-        // Asset detail block (2–14)
+        // Find key rows dynamically
+        $logHeaderRow = null; // row containing "ACTIVITY LOG"
+        for ($r = 1; $r <= $highestRow; $r++) {
+            if ($sheet->getCell("A{$r}")->getValue() === 'ACTIVITY LOG') {
+                $logHeaderRow = $r;
+                break;
+            }
+        }
+
+        // Detail block (A2:B15) shaded — includes Deskripsi row
         $sheet->getStyle('A2:B14')->applyFromArray([
             'font' => ['bold' => true],
             'fill' => [
@@ -154,58 +155,51 @@ class AssetActivityLogExport implements FromCollection, WithHeadings, WithMappin
             ],
         ]);
 
-        // ACTIVITY LOG header (find dynamically)
-        $logHeaderRow = null;
-        for ($r = 1; $r <= $highestRow; $r++) {
-            if ($sheet->getCell("A{$r}")->getValue() === 'ACTIVITY LOG') {
-                $logHeaderRow = $r;
-                break;
-            }
-        }
-
         if ($logHeaderRow) {
+            // Style ACTIVITY LOG title (merged A..E)
             $sheet->mergeCells("A{$logHeaderRow}:E{$logHeaderRow}");
             $sheet->getStyle("A{$logHeaderRow}:E{$logHeaderRow}")->applyFromArray([
                 'font' => ['bold' => true, 'size' => 13, 'color' => ['rgb' => '0D47A1']],
                 'fill' => [
-                    'fillType' => Fill::FILL_SOLID,
+                    'fillType'   => Fill::FILL_SOLID,
                     'startColor' => ['rgb' => 'BBDEFB'],
                 ],
                 'alignment' => [
                     'horizontal' => Alignment::HORIZONTAL_CENTER,
-                    'vertical' => Alignment::VERTICAL_CENTER,
+                    'vertical'   => Alignment::VERTICAL_CENTER,
                 ],
             ]);
+
+            // Actual table header row (next row)
+            $headerRow = $logHeaderRow + 1; // this is A18:E18 in your screenshot
+            $sheet->getStyle("A{$headerRow}:E{$headerRow}")->applyFromArray([
+                'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
+                'fill' => [
+                    'fillType'   => Fill::FILL_SOLID,
+                    'startColor' => ['rgb' => '1976D2'],
+                ],
+                'alignment' => [
+                    'horizontal' => Alignment::HORIZONTAL_CENTER,
+                    'vertical'   => Alignment::VERTICAL_CENTER,
+                ],
+            ]);
+
+            // Borders for the log table (from header row downwards)
+            $sheet->getStyle("A{$headerRow}:E{$highestRow}")
+                  ->getBorders()->getAllBorders()
+                  ->setBorderStyle(Border::BORDER_THIN);
         }
 
-        // Header columns (log table)
-        $headerRow = $logHeaderRow + 1;
-        $sheet->getStyle("A{$headerRow}:E{$headerRow}")->applyFromArray([
-            'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
-            'fill' => [
-                'fillType' => Fill::FILL_SOLID,
-                'startColor' => ['rgb' => '1976D2'],
-            ],
-            'alignment' => [
-                'horizontal' => Alignment::HORIZONTAL_CENTER,
-                'vertical' => Alignment::VERTICAL_CENTER,
-            ],
-        ]);
-
-        // Borders for the entire log table
-        $sheet->getStyle("A{$headerRow}:E{$highestRow}")
-            ->getBorders()
-            ->getAllBorders()
-            ->setBorderStyle(Border::BORDER_THIN);
-            // ->setColor(['rgb' => 'B0BEC5']);
-
-        // Column sizing
+        // Column widths
         foreach (range('A', 'E') as $col) {
             $sheet->getColumnDimension($col)->setAutoSize(true);
         }
-
         $sheet->getColumnDimension('D')->setWidth(35);
         $sheet->getColumnDimension('E')->setWidth(45);
+
+        // Row height & wrap
+        $sheet->getDefaultRowDimension()->setRowHeight(20);
+        $sheet->getStyle("A1:E{$highestRow}")->getAlignment()->setWrapText(true);
 
         return [];
     }
