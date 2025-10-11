@@ -35,49 +35,58 @@ enum AssetLogAction: string
     public function label(): string
     {
         return match($this) {
-            self::CREATED => 'Asset Created',
-            self::UPDATED => 'Asset Updated',
-            self::DELETED => 'Asset Deleted',
-            self::CHECKED_OUT => 'Checked Out',
-            self::CHECKED_IN => 'Checked In',
-            self::MAINTENANCE_START => 'Maintenance Started',
-            self::MAINTENANCE_END => 'Maintenance Completed',
-            self::CONDITION_CHANGED => 'Condition Changed',
-            self::STATUS_CHANGED => 'Status Changed',
-            self::LOCATION_CHANGED => 'Location Changed',
-            self::CATEGORY_CHANGED => 'Category Changed',
-            self::DAMAGED => 'Asset Damaged',
-            self::LOST => 'Asset Lost',
-            self::FOUND => 'Asset Found',
-            self::REPAIRED => 'Asset Repaired',
-            self::SCANNED => 'Asset Scanned',
+            self::CREATED => 'Aset Dibuat',
+            self::UPDATED => 'Aset Diperbarui',
+            self::DELETED => 'Aset Dihapus',
+            self::CHECKED_OUT => 'Dipinjamkan',
+            self::CHECKED_IN => 'Dikembalikan',
+            self::MAINTENANCE_START => 'Pemeliharaan Dimulai',
+            self::MAINTENANCE_END => 'Pemeliharaan Selesai',
+            self::CONDITION_CHANGED => 'Kondisi Berubah',
+            self::STATUS_CHANGED => 'Status Berubah',
+            self::LOCATION_CHANGED => 'Lokasi Berubah',
+            self::CATEGORY_CHANGED => 'Kategori Berubah',
+            self::DAMAGED => 'Aset Rusak',
+            self::LOST => 'Aset Hilang',
+            self::FOUND => 'Aset Ditemukan',
+            self::REPAIRED => 'Aset Diperbaiki',
+            self::SCANNED => 'Aset Dipindai',
         };
     }
 
     /**
-     * Get enum color for UI display
-     */
-    public function color(): string
-    {
-        return match($this) {
-            self::CREATED => 'green',
-            self::UPDATED => 'blue',
-            self::DELETED => 'red',
-            self::CHECKED_OUT => 'orange',
-            self::CHECKED_IN => 'green',
-            self::MAINTENANCE_START => 'yellow',
-            self::MAINTENANCE_END => 'green',
-            self::CONDITION_CHANGED => 'blue',
-            self::STATUS_CHANGED => 'blue',
-            self::LOCATION_CHANGED => 'purple',
-            self::CATEGORY_CHANGED => 'purple',
-            self::DAMAGED => 'red',
-            self::LOST => 'red',
-            self::FOUND => 'green',
-            self::REPAIRED => 'green',
-            self::SCANNED => 'blue',
-        };
-    }
+ * Get enum color for UI display (using DaisyUI/Tailwind CSS semantic colors)
+ */
+public function color(): string
+{
+    return match($this) {
+        // ========== STATUS POSITIF / SUKSES ==========
+        self::CREATED,       // Awal yang baik
+        self::CHECKED_IN,    // Kembali dengan selamat
+        self::MAINTENANCE_END, // Selesai perbaikan
+        self::FOUND,         // Hilang lalu ketemu
+        self::REPAIRED => 'success', // Hijau (Baik/Sukses)
+
+        // ========== STATUS NETRAL / PERUBAHAN / INFO ==========
+        self::UPDATED,       // Perubahan data biasa
+        self::CONDITION_CHANGED, // Perubahan (mungkin baik, mungkin buruk, tapi netral)
+        self::STATUS_CHANGED,    // Perubahan status (netral)
+        self::SCANNED => 'info', // Biru (Informasi/Netral)
+        
+        // ========== PERUBAHAN LOKASI/KATEGORI (Bisa jadi butuh peninjauan, jadi ungu/spesial)
+        self::LOCATION_CHANGED,
+        self::CATEGORY_CHANGED => 'primary', // Ungu (Primary/Spesial untuk fokus pada pergerakan)
+
+        // ========== PERINGATAN / TINDAK LANJUT ==========
+        self::CHECKED_OUT,   // Keluar (perlu dilacak/dikembalikan)
+        self::MAINTENANCE_START => 'warning', // Kuning (Peringatan/Sedang diproses)
+
+        // ========== STATUS NEGATIF / BERMASALAH ==========
+        self::DELETED,       // Hilang permanen
+        self::DAMAGED,       // Rusak
+        self::LOST => 'error', // Merah (Bahaya/Kesalahan/Masalah)
+    };
+}
 
     /**
      * Get badge color class for UI display
