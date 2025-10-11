@@ -1,4 +1,8 @@
 @php
+    $imageItems = [
+        ['label' => 'Gambar Asset', 'path' => $asset->image],
+    ];
+
     $items = [
         ['label' => 'Kode Asset', 'value' => $asset->code],
         ['label' => 'Nama Asset', 'value' => $asset->name],
@@ -60,6 +64,7 @@
     icon="o-information-circle"
     :items="$items"
     :longTextItems="$longTextItems"
+    :imageItems="$imageItems"
 >
     <!-- Asset Image -->
     @if($asset->image)
