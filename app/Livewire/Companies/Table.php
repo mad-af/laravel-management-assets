@@ -78,6 +78,7 @@ class Table extends Component
             }
 
             return $company;
+            
         });
 
         return view('livewire.companies.table', compact('companies'));

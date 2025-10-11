@@ -15,6 +15,8 @@ class ActivityLog extends Component
 
     public $showAll = false;
 
+    public array $expanded = [2];
+
     public function mount(Asset $asset)
     {
         $this->asset = $asset;
