@@ -167,7 +167,27 @@ class QRBarcodeScanner {
                 if (!this.isScanning) return; // guard when stop is pressed mid-callback
 
                 if (result) {
-                    this.handleScanResult(result.getText());
+                    const text = result.getText();
+
+                    try {
+                        const url = new URL(text);
+                        const path = url.pathname; // contoh: "/qr/asset/01K77R6W5NGA"
+
+                        // cek apakah path dimulai dengan /qr/asset/
+                        if (path.startsWith("/qr/asset/")) {
+                            const parts = path.split("/");
+                            const tagCode = parts[3]; // ambil bagian setelah /qr/asset/
+                            if (tagCode) {
+                                this.handleScanResult(tagCode);
+                                return;
+                            }
+                        }
+                    } catch {
+                        // jika bukan URL valid, lanjut kirim teks apa adanya
+                    }
+
+                    // fallback: kirim teks langsung
+                    this.handleScanResult(text);
                 }
             }
         );
