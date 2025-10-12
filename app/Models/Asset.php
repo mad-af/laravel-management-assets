@@ -145,7 +145,7 @@ class Asset extends Model
      */
     public function vehicleTaxHistories(): HasMany
     {
-        return $this->hasMany(VehicleTaxHistory::class)->orderBy('paid_date', 'desc');
+        return $this->hasMany(VehicleTaxHistory::class)->orderBy('due_date', 'desc');
     }
 
     /**

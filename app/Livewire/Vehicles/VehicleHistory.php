@@ -36,7 +36,7 @@ class VehicleHistory extends Component
     {
         return $this->vehicle->vehicleTaxHistories()
             ->with('vehicleTaxType')
-            ->orderByRaw('COALESCE(paid_date, due_date) DESC')
+            ->orderBy('paid_date', 'asc')
             ->limit(10)
             ->get();
     }
