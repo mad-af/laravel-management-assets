@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\VehicleTaxTypeEnum;
+use App\Enums\VehicleTaxStatus;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
@@ -29,6 +30,45 @@ class VehicleTaxHistory extends Model
         'amount' => 'decimal:2',
         'year' => 'integer',
     ];
+
+    /**
+     * Accessor: tax type enum for UI
+     */
+    public function getTaxTypeAttribute(): ?VehicleTaxTypeEnum
+    {
+        return $this->vehicleTaxType?->tax_type;
+    }
+
+    /**
+     * Accessor: tax_date unified for UI (paid_date if exists else due_date)
+     */
+    public function getTaxDateAttribute(): ?Carbon
+    {
+        return $this->paid_date ?: $this->due_date;
+    }
+
+    /**
+     * Accessor: status enum mapping for UI
+     */
+    public function getStatusAttribute(): VehicleTaxStatus
+    {
+        $dueDate = Carbon::parse($this->due_date);
+
+        if ($this->paid_date) {
+            return VehicleTaxStatus::PAID;
+        } elseif ($dueDate->isPast()) {
+            return VehicleTaxStatus::OVERDUE;
+        } elseif ($dueDate->isFuture()) {
+            // Consider due soon if within next 30 days
+            if ($dueDate->diffInDays(now()) <= 30) {
+                return VehicleTaxStatus::DUE_SOON;
+            }
+
+            return VehicleTaxStatus::UPCOMING;
+        }
+
+        return VehicleTaxStatus::UPCOMING;
+    }
 
     /**
      * Get the vehicle tax type that owns the vehicle tax history.

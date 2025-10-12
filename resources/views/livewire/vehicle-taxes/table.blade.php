@@ -147,10 +147,6 @@
                 @endscope
 
                 @scope('expansion', $vehicle)
-                <div class="text-sm font-semibold">
-                    Jenis Pajak ({{ $vehicle->vehicleTaxHistories->count() }})
-                </div>
-
                 @php
                     // Ambil koleksi tax histories yang sudah diurutkan
                     $taxHistories = $this->getSortedTaxHistories($vehicle);
@@ -164,6 +160,10 @@
                         ['key' => 'last_payment', 'label' => 'Pembayaran Terakhir'],
                     ];
                 @endphp
+
+                <div class="text-sm font-semibold">
+                    Pajak ({{ count($taxHistories) }})
+                </div>
 
                 <x-table :headers="$taxTypeHeaders" :rows="$taxHistories" no-headers no-hover show-empty-text>
                     @scope('cell_tax_type', $taxHistory)

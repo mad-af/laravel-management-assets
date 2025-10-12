@@ -15,6 +15,15 @@ enum VehicleTaxTypeEnum: string
         };
     }
 
+    public function color(): string
+    {
+        return match ($this) {
+            // Gunakan warna yang konsisten dengan badge di UI
+            self::PKB_TAHUNAN => 'info',
+            self::KIR => 'warning',
+        };
+    }
+
     public function description(): string
     {
         return match ($this) {

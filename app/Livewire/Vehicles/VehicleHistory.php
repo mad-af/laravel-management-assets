@@ -32,11 +32,22 @@ class VehicleHistory extends Component
             ->get();
     }
 
+    public function getTaxHistories()
+    {
+        return $this->vehicle->vehicleTaxHistories()
+            ->with('vehicleTaxType')
+            ->orderByRaw('COALESCE(paid_date, due_date) DESC')
+            ->limit(10)
+            ->get();
+    }
+
     public function render()
     {
         return view('livewire.vehicles.vehicle-history', [
             'odometerLogs' => $this->getOdometerLogs(),
-            'maintenances' => $this->getMaintenances()
+            'maintenances' => $this->getMaintenances(),
+            'taxHistories' => $this->getTaxHistories(),
+
         ]);
     }
 }
