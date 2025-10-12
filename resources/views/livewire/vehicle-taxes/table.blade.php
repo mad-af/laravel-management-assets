@@ -73,7 +73,8 @@
                             @endphp
                             <div class="flex gap-2 justify-between items-center bg-base-300/60">
                                 <div class="flex-1 min-w-0">
-                                    <div class="text-sm font-medium truncate">{{$taxHistory->vehicleTaxType->tax_type->label() }} ({{ $taxHistory->year }})</div>
+                                    <div class="text-sm font-medium truncate">
+                                        {{$taxHistory->vehicleTaxType->tax_type->label() }} ({{ $taxHistory->year }})</div>
                                 </div>
                                 <x-badge class="badge-xs {{ $taxStatus['statusClass'] }}"
                                     value="{{ $taxStatus['statusText'] }}" />
@@ -126,6 +127,14 @@
                             </button>
                         </li>
                     @else
+                        {{-- <li class="opacity-50 cursor-not-allowed pointer-events-none"> --}}
+                        <li>
+                            <a href="{{ route('vehicles.show', $vehicle->id) }}"
+                                class="flex gap-2 items-center p-2 text-sm rounded">
+                                <x-icon name="o-eye" class="w-4 h-4" />
+                                Lihat Detail
+                            </a>
+                        </li>
                         @if ($this->statusFilter != 'paid')
                             <li>
                                 <button wire:click="$dispatch('open-drawer', { assetId: '{{ $vehicle->id }}' })"
@@ -135,13 +144,6 @@
                                 </button>
                             </li>
                         @endif
-                        <li class="opacity-50 cursor-not-allowed pointer-events-none">
-                            <a href="{{ route('assets.show', $vehicle->id) }}"
-                                class="flex gap-2 items-center p-2 text-sm rounded">
-                                <x-icon name="o-eye" class="w-4 h-4" />
-                                Lihat Detail
-                            </a>
-                        </li>
                     @endif
                 </x-action-dropdown>
                 @endscope

@@ -9,7 +9,7 @@ class VehicleHistory extends Component
 {
     public Asset $vehicle;
 
-    public string $activeTab = 'odometer';
+    public string $activeTab = 'tax';
 
     public function mount(Asset $vehicle)
     {

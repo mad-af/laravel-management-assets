@@ -42,8 +42,4 @@
             'label' => 'Tanggal Servis Berikutnya',
             'value' => $vehicle->vehicleProfile?->next_service_date?->format('d M Y') ?? '-'
         ],
-        [
-            'label' => 'Tanggal Jatuh Tempo Pajak Tahunan',
-            'value' => $vehicle->vehicleProfile?->annual_tax_due_date?->format('d M Y') ?? '-'
-        ],
     ]" />
