@@ -54,7 +54,7 @@ class Form extends Component
 
     public $isEdit = false;
 
-    public string $branchId;
+    public string $branchId = '';
 
     // Cache properties to avoid repeated data fetching
     private $assetsCache = null;
@@ -133,7 +133,7 @@ class Form extends Component
 
     public function mount($maintenanceId = null)
     {
-        $this->branchId = session_get(SessionKey::BranchId);
+        $this->branchId = session_get(SessionKey::BranchId) ?? '';
         $this->maintenanceId = $maintenanceId;
 
         // Initialize with empty employees array - will be loaded on demand
