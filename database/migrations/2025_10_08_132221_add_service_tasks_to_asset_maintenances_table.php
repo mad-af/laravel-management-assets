@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('asset_maintenances', function (Blueprint $table) {
-            $table->json('service_tasks')->default('[]')->nullable();
+            // MySQL tidak mengizinkan default pada kolom JSON
+            $table->json('service_tasks')->nullable();
         });
     }
 
