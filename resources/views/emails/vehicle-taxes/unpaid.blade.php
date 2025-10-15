@@ -44,41 +44,57 @@
                                 style="border-collapse:collapse; margin-top:12px;">
                                 <thead>
                                     <tr style="background-color:#f8f8f8; border-bottom:2px solid #ddd;">
-                                        <th align="left" style="border:1px solid #ddd; font-size:14px;">Kode Aset</th>
-                                        <th align="left" style="border:1px solid #ddd; font-size:14px;">Nama Aset</th>
+                                        <th align="left" style="border:1px solid #ddd; font-size:14px;">Aset</th>
                                         <th align="left" style="border:1px solid #ddd; font-size:14px;">Jenis Pajak</th>
                                         <th align="left" style="border:1px solid #ddd; font-size:14px;">Jatuh Tempo</th>
                                         <th align="left" style="border:1px solid #ddd; font-size:14px;">Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($histories as $history)
-                                        @php $status = $history->status; @endphp
-                                        <tr style="border-bottom:1px solid #eee;">
-                                            <td style="border:1px solid #ddd; font-size:14px;">{{ $history->asset->code }}
-                                            </td>
-                                            <td style="border:1px solid #ddd; font-size:14px;">{{ $history->asset->name }}
-                                            </td>
-                                            <td style="border:1px solid #ddd; font-size:14px;">
-                                                {{ $history->vehicleTaxType->tax_type->label() }}</td>
-                                            <td style="border:1px solid #ddd; font-size:14px;">
-                                                {{ optional($history->due_date)->format('d M Y') }}</td>
-                                            <td style="border:1px solid #ddd; font-size:14px;">
-                                                @if ($status->value === 'overdue')
-                                                    <span
-                                                        style="display:inline-block; background-color:#f8d7da; color:#721c24; padding:4px 8px; border-radius:12px; font-size:12px;">{{ $status->label() }}</span>
-                                                @elseif ($status->value === 'due_soon')
-                                                    <span
-                                                        style="display:inline-block; background-color:#fff3cd; color:#856404; padding:4px 8px; border-radius:12px; font-size:12px;">{{ $status->label() }}</span>
-                                                @elseif ($status->value === 'paid')
-                                                    <span
-                                                        style="display:inline-block; background-color:#d4edda; color:#155724; padding:4px 8px; border-radius:12px; font-size:12px;">{{ $status->label() }}</span>
-                                                @else
-                                                    <span
-                                                        style="display:inline-block; background-color:#e9f7fe; color:#0c5460; padding:4px 8px; border-radius:12px; font-size:12px;">{{ $status->label() }}</span>
+                                    @php $groupedByAsset = $histories->groupBy('asset_id'); @endphp
+                                    @foreach ($groupedByAsset as $assetId => $rows)
+                                        @php
+                                            $rowCount = $rows->count();
+                                            $asset = optional($rows->first()->asset);
+                                            $plate = optional($asset->vehicleProfile)->plate_no;
+                                            $branchName = optional($asset->branch)->name;
+                                        @endphp
+                                        @foreach ($rows as $index => $history)
+                                            @php $status = $history->status; @endphp
+                                            <tr style="border-bottom:1px solid #eee;">
+                                                @if ($index === 0)
+                                                    <td rowspan="{{ $rowCount }}" style="border:1px solid #ddd; font-size:14px;">
+                                                        <div><strong>{{ $asset->code }}</strong></div>
+                                                        <div style="color:#555;">{{ $asset->name }}</div>
+                                                        @if (!empty($plate))
+                                                            <div style="color:#555;">Plat: {{ $plate }}</div>
+                                                        @endif
+                                                        @if (!empty($branchName))
+                                                            <div style="color:#555;">Cabang: {{ $branchName }}</div>
+                                                        @endif
+                                                    </td>
                                                 @endif
-                                            </td>
-                                        </tr>
+                                                <td style="border:1px solid #ddd; font-size:14px;">
+                                                    {{ $history->vehicleTaxType->tax_type->label() }}</td>
+                                                <td style="border:1px solid #ddd; font-size:14px;">
+                                                    {{ optional($history->due_date)->format('d M Y') }}</td>
+                                                <td style="border:1px solid #ddd; font-size:14px;">
+                                                    @if ($status->value === 'overdue')
+                                                        <span
+                                                            style="display:inline-block; background-color:#f8d7da; color:#721c24; padding:4px 8px; border-radius:12px; font-size:12px;">{{ $status->label() }}</span>
+                                                    @elseif ($status->value === 'due_soon')
+                                                        <span
+                                                            style="display:inline-block; background-color:#fff3cd; color:#856404; padding:4px 8px; border-radius:12px; font-size:12px;">{{ $status->label() }}</span>
+                                                    @elseif ($status->value === 'paid')
+                                                        <span
+                                                            style="display:inline-block; background-color:#d4edda; color:#155724; padding:4px 8px; border-radius:12px; font-size:12px;">{{ $status->label() }}</span>
+                                                    @else
+                                                        <span
+                                                            style="display:inline-block; background-color:#e9f7fe; color:#0c5460; padding:4px 8px; border-radius:12px; font-size:12px;">{{ $status->label() }}</span>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @endforeach
                                     @endforeach
                                 </tbody>
                             </table>
