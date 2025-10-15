@@ -22,7 +22,7 @@ class UserSeeder extends Seeder
                 'email' => 'admin@example.com',
                 'role' => UserRole::ADMIN,
                 'password' => Hash::make('password'),
-                'email_verified_at' => now(),
+                'email_verified_at' => null,
             ],
             [
                 'id' => Str::uuid(),
@@ -30,7 +30,7 @@ class UserSeeder extends Seeder
                 'email' => 'budi.santoso@teknologimaju.co.id',
                 'role' => UserRole::STAFF,
                 'password' => Hash::make('password'),
-                'email_verified_at' => now(),
+                'email_verified_at' => null,
             ],
             [
                 'id' => Str::uuid(),
@@ -38,7 +38,7 @@ class UserSeeder extends Seeder
                 'email' => 'siti.nurhaliza@teknologimaju.co.id',
                 'role' => UserRole::STAFF,
                 'password' => Hash::make('password'),
-                'email_verified_at' => now(),
+                'email_verified_at' => null,
             ],
             [
                 'id' => Str::uuid(),
@@ -46,7 +46,7 @@ class UserSeeder extends Seeder
                 'email' => 'ahmad.wijaya@solusidigitak.co.id',
                 'role' => UserRole::STAFF,
                 'password' => Hash::make('password'),
-                'email_verified_at' => now(),
+                'email_verified_at' => null,
             ],
             [
                 'id' => Str::uuid(),
@@ -54,7 +54,7 @@ class UserSeeder extends Seeder
                 'email' => 'dewi.lestari@solusidigitak.co.id',
                 'role' => UserRole::STAFF,
                 'password' => Hash::make('password'),
-                'email_verified_at' => now(),
+                'email_verified_at' => null,
             ],
             [
                 'id' => Str::uuid(),
@@ -62,7 +62,7 @@ class UserSeeder extends Seeder
                 'email' => 'rudi.hartono@inovasibisnis.co.id',
                 'role' => UserRole::STAFF,
                 'password' => Hash::make('password'),
-                'email_verified_at' => now(),
+                'email_verified_at' => null,
             ],
         ];
 

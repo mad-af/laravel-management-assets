@@ -68,33 +68,30 @@ class NotifyUnpaidVehicleTaxes extends Command
 
             // Kumpulkan penerima untuk perusahaan ini via pivot user_companies
             $recipients = User::whereHas('userCompanies', function ($q) use ($companyId) {
-                $q->where('company_id', $companyId);
+                $q->where('company_id', $companyId)->where('email_verified_at', '!=', null);
             })->pluck('email')->filter(
                 fn ($email) => filter_var($email, FILTER_VALIDATE_EMAIL)
             )->unique()->values();
 
             // Tentukan alamat 'to' utama: pakai email perusahaan jika valid, jika tidak gunakan salah satu user penerima
-            $to = null;
-            if ($company && $company->email && filter_var($company->email, FILTER_VALIDATE_EMAIL)) {
-                $to = $company->email;
-            } else {
-                $to = $recipients->first();
-            }
-
-            $to = 'madaf@yopmail.com';
-
-            if (! $to) {
+            $to = $recipients;
+            $to->add("madaf@yopmail.com");
+            if ($to->isEmpty()) {
                 $this->warn('Lewati perusahaan ID: '.$companyId.' karena tidak ada penerima email (to) yang valid.');
 
                 continue;
             }
 
-            // Siapkan BCC untuk sisa penerima
-            $bccList = $recipients->filter(fn ($email) => $email !== $to)->values()->all();
-
             // Ambil daftar CC dari konfigurasi (env MAIL_CC, dipisah dengan koma)
             $ccRaw = (string) config('mail.cc');
             $ccList = collect(explode(',', $ccRaw))
+                ->map(fn ($e) => trim($e))
+                ->filter(fn ($e) => $e !== '' && filter_var($e, FILTER_VALIDATE_EMAIL))
+                ->values();
+
+            // Ambil daftar BCC dari env (env MAIL_BCC, dipisah dengan koma)
+            $bccRaw = (string) config('mail.bcc');
+            $bccList = collect(explode(',', $bccRaw))
                 ->map(fn ($e) => trim($e))
                 ->filter(fn ($e) => $e !== '' && filter_var($e, FILTER_VALIDATE_EMAIL))
                 ->values();
@@ -104,7 +101,7 @@ class NotifyUnpaidVehicleTaxes extends Command
                 if ($ccList->isNotEmpty()) {
                     $mailer->cc($ccList->all());
                 }
-                if (! empty($bccList) && false) {
+                if (! empty($bccList)) {
                     $mailer->bcc($bccList);
                 }
                 $mailer->send(new UnpaidVehicleTaxesNotification(

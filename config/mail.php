@@ -117,5 +117,6 @@ return [
 
     // Optional global CC list (comma-separated)
     'cc' => env('MAIL_CC'),
+    'bcc' => env('MAIL_BCC'),
 
 ];
