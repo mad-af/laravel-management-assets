@@ -10,3 +10,6 @@ Artisan::command('inspire', function () {
 
 // Schedule the vehicle tax due date check to run daily at 00:00
 Schedule::command('vehicle-tax:check-due-dates')->dailyAt('00:00')->timezone('Asia/Jakarta');
+
+// Schedule the unpaid vehicle tax notification email to run daily at 08:00
+Schedule::command('vehicle-tax:notify-unpaid')->dailyAt('08:00')->timezone('Asia/Jakarta');

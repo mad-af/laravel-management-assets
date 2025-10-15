@@ -115,4 +115,7 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
+    // Optional global CC list (comma-separated)
+    'cc' => env('MAIL_CC'),
+
 ];
