@@ -6,7 +6,6 @@ use App\Mail\UnpaidVehicleTaxesNotification;
 use App\Models\User;
 use App\Models\VehicleTaxHistory;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
 class NotifyUnpaidVehicleTaxes extends Command
@@ -66,7 +65,6 @@ class NotifyUnpaidVehicleTaxes extends Command
 
             // Tentukan alamat 'to' utama: pakai email perusahaan jika valid, jika tidak gunakan salah satu user penerima
             $to = $recipients;
-            $to->add("madaf@yopmail.com");
             if ($to->isEmpty()) {
                 $this->warn('Lewati perusahaan ID: '.$companyId.' karena tidak ada penerima email (to) yang valid.');
 
