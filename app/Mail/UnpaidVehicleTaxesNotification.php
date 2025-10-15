@@ -13,6 +13,7 @@ class UnpaidVehicleTaxesNotification extends Mailable
     use Queueable, SerializesModels;
 
     public Company $company;
+
     public Collection $histories;
 
     public function __construct(Company $company, Collection $histories)
@@ -23,8 +24,13 @@ class UnpaidVehicleTaxesNotification extends Mailable
 
     public function build(): self
     {
+        $subject = '[Reminder] Pajak Kendaraan Belum Dibayar';
+        if (! empty($this->company?->name)) {
+            $subject .= ' — '.$this->company->name;
+        }
+
         return $this
-            ->subject('Pemberitahuan Pajak Kendaraan Belum Dibayar')
+            ->subject($subject)
             ->view('emails.vehicle-taxes.unpaid');
     }
 }
