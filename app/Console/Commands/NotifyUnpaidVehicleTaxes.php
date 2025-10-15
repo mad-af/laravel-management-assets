@@ -33,20 +33,11 @@ class NotifyUnpaidVehicleTaxes extends Command
         $this->info('Memulai pengecekan pajak kendaraan yang belum dibayar...');
 
         // Ambil histori pajak terbaru per tipe pajak, lalu filter yang belum dibayar
-        $latestHistoryIds = VehicleTaxHistory::select('id')
-            ->whereIn('id', function ($query) {
-                $query->select(DB::raw('id'))
-                    ->from('vehicle_tax_histories as vth1')
-                    ->whereRaw('vth1.due_date = (
-                        SELECT MAX(vth2.due_date)
-                        FROM vehicle_tax_histories as vth2
-                        WHERE vth2.vehicle_tax_type_id = vth1.vehicle_tax_type_id
-                    )');
-            });
+        $latestHistoryIds = VehicleTaxHistory::select('id')->where('paid_date', null);
 
         $histories = VehicleTaxHistory::with(['asset.company', 'vehicleTaxType'])
             ->whereIn('id', $latestHistoryIds)
-            ->whereNull('paid_date')
+            ->orderBy('due_date', 'asc')
             ->get();
 
         if ($histories->isEmpty()) {
