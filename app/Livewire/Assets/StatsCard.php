@@ -29,25 +29,47 @@ class StatsCard extends Component
         $purchaseDate = Carbon::parse($this->asset->purchase_date);
         $now = Carbon::now();
 
-        $diffInDays = $purchaseDate->diffInDays($now);
-        $diffInMonths = $purchaseDate->diffInMonths($now);
         $diffInYears = intval($purchaseDate->diffInYears($now));
+        $diffInMonths = $purchaseDate->diffInMonths($now);
+        $diffInDays = $purchaseDate->diffInDays($now);
+        $diffInHours = $purchaseDate->diffInHours($now);
 
         // Format ringkas dalam bahasa Indonesia
+        // Format waktu ringkas dalam Bahasa Indonesia tanpa desimal
+        $diffInYears = floor($diffInYears);
+        $diffInMonths = floor($diffInMonths);
+        $diffInDays = floor($diffInDays);
+        $diffInHours = floor($diffInHours);
+
         if ($diffInYears > 0) {
             $remainingMonths = $diffInMonths % 12;
             if ($remainingMonths > 0) {
                 return "{$diffInYears} thn {$remainingMonths} bln";
             }
 
-            return "{$diffInYears} tahun";
-        } elseif ($diffInMonths > 0) {
-            return "{$diffInMonths} bulan";
-        } elseif ($diffInDays > 0) {
-            return "{$diffInDays} hari";
-        } else {
-            return 'Baru dibeli';
+            return "{$diffInYears} thn";
         }
+
+        if ($diffInMonths > 0) {
+            $remainingDays = $diffInDays % 30;
+            if ($remainingDays > 0) {
+                return "{$diffInMonths} bln {$remainingDays} hr";
+            }
+
+            return "{$diffInMonths} bln";
+        }
+
+        if ($diffInDays > 0) {
+            $remainingHours = $diffInHours % 24;
+            if ($remainingHours > 0) {
+                return "{$diffInDays} hr {$remainingHours} jam";
+            }
+
+            return "{$diffInDays} hr";
+        }
+
+        return 'Baru dibeli';
+
     }
 
     public function getTotalMaintenances()
