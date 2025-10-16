@@ -3,6 +3,7 @@
 namespace App\Livewire\Branches;
 
 use App\Models\Branch;
+use App\Models\Company;
 use Livewire\Component;
 use Mary\Traits\Toast;
 
@@ -11,16 +12,29 @@ class Form extends Component
     use Toast;
 
     public $branchId;
+
+    public $company_id = '';
+
     public $name = '';
+
     public $address = '';
+
     public $city = '';
+
     public $state = '';
+
     public $country = '';
+
     public $postal_code = '';
+
     public $is_active = true;
+
     public $isEdit = false;
 
+    public array $companies = [];
+
     protected $rules = [
+        'company_id' => 'required|exists:companies,id',
         'name' => 'required|string|max:255',
         'address' => 'nullable|string|max:500',
         'city' => 'nullable|string|max:255',
@@ -32,13 +46,22 @@ class Form extends Component
 
     protected $listeners = [
         'editLocation' => 'edit',
-        'resetForm' => 'resetForm'
+        'resetForm' => 'resetForm',
     ];
 
     public function mount($branchId = null)
     {
         $this->branchId = $branchId;
-        
+        // Load companies options for select
+        $this->companies = Company::where('is_active', true)
+            ->orderBy('name')
+            ->get()
+            ->map(fn ($company) => [
+                'id' => $company->id,
+                'name' => $company->name,
+            ])
+            ->toArray();
+
         if ($branchId) {
             $this->isEdit = true;
             $this->loadBranch();
@@ -50,6 +73,7 @@ class Form extends Component
         if ($this->branchId) {
             $branch = Branch::find($this->branchId);
             if ($branch) {
+                $this->company_id = $branch->company_id;
                 $this->name = $branch->name;
                 $this->address = $branch->address;
                 $this->city = $branch->city;
@@ -69,6 +93,7 @@ class Form extends Component
             if ($this->isEdit && $this->branchId) {
                 $branch = Branch::find($this->branchId);
                 $branch->update([
+                    'company_id' => $this->company_id,
                     'name' => $this->name,
                     'address' => $this->address,
                     'city' => $this->city,
@@ -80,7 +105,8 @@ class Form extends Component
                 $this->success('Location updated successfully!');
                 $this->dispatch('location-updated');
             } else {
-                Branch::create([    
+                Branch::create([
+                    'company_id' => $this->company_id,
                     'name' => $this->name,
                     'address' => $this->address,
                     'city' => $this->city,
@@ -94,7 +120,7 @@ class Form extends Component
                 $this->resetForm();
             }
         } catch (\Exception $e) {
-            $this->error('An error occurred: ' . $e->getMessage());
+            $this->error('An error occurred: '.$e->getMessage());
         }
     }
 
@@ -106,6 +132,7 @@ class Form extends Component
         $this->state = '';
         $this->country = '';
         $this->postal_code = '';
+        $this->company_id = '';
         $this->is_active = true;
         $this->resetValidation();
     }
