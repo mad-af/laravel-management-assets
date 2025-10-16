@@ -21,11 +21,6 @@ class ScanHistory extends Component
         $this->rows = $payload['rows'] ?? $this->rows;
     }
 
-    public function getAssetAttribute($id)
-    {
-        return Asset::find($id);
-    }
-
     public function render()
     {
         return view('livewire.scanners.scan-history');

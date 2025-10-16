@@ -21,7 +21,7 @@
         @if (empty($scan['id']))
         <a href="" class="btn btn-xs btn-ghost" disabled>
         @else
-        <a href="{{ route('assets.show', $this->getAssetAttribute($scan['id'])) }}" class="btn btn-xs btn-ghost">
+        <a href="{{ route('assets.show', ['asset' => $scan['id']]) }}" class="btn btn-xs btn-ghost">
         @endif
             <x-icon name="o-eye" class="!w-5 !h-5" />
         </a>

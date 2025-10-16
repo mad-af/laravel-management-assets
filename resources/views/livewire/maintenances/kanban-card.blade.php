@@ -32,12 +32,6 @@
 
         <!-- Dates and Cost -->
         <div class="space-y-1 text-xs text-base-content/60">
-            @if($maintenance->scheduled_date)
-                <div class="flex gap-1 items-center">
-                    <x-icon name="o-calendar" class="w-3 h-3" />
-                    <span>{{ $maintenance->scheduled_date->format('d M Y') }}</span>
-                </div>
-            @endif
             @if($maintenance->completed_date)
                 <div class="flex gap-1 items-center">
                     <x-icon name="o-check-circle" class="w-3 h-3" />

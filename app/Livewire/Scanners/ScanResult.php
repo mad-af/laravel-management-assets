@@ -70,11 +70,6 @@ class ScanResult extends Component
         }
     }
 
-    public function getAssetAttribute($id)
-    {
-        return Asset::find($id);
-    }
-
     public function openDrawerMaintenance()
     {
         $this->dispatch('drawer:openDrawerMaintenance', assetId: $this->assetScanned['id']);

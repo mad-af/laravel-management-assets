@@ -44,7 +44,7 @@
           <x-button label="Check In" icon="o-arrow-down-tray" class="flex-1 w-full btn-primary btn-sm" wire:click="openDrawerCheckIn" disabled />
         </div>
 
-        <a href="{{ isset($assetScanned['id']) ? route('assets.show', $this->getAssetAttribute($assetScanned['id'])) : '' }}" class="w-full btn btn-sm">
+        <a href="{{ isset($assetScanned['id']) ? route('assets.show', ['asset' => $assetScanned['id']]) : '' }}" class="w-full btn btn-sm">
           <x-icon name="o-eye" class="!w-5 !h-5" />
           Lihat Detail
         </a>

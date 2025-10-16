@@ -129,7 +129,7 @@ class Asset extends Model
      */
     public function maintenances(): HasMany
     {
-        return $this->hasMany(AssetMaintenance::class)->orderBy('scheduled_date', 'desc');
+        return $this->hasMany(AssetMaintenance::class);
     }
 
     /**

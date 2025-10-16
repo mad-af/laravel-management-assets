@@ -27,7 +27,6 @@ class VehicleHistory extends Component
     public function getMaintenances()
     {
         return $this->vehicle->maintenances()
-            ->orderBy('scheduled_date', 'desc')
             ->limit(10)
             ->get();
     }

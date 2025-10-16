@@ -45,7 +45,6 @@ class KanbanColumn extends Component
             })
             ->where('status', $this->status)
             ->orderBy('priority')
-            ->orderBy('scheduled_date')
             ->get();
     }
 

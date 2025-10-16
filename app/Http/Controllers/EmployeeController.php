@@ -14,7 +14,6 @@ class EmployeeController extends Controller
     public function index()
     {
         $employees = Employee::orderBy('is_active', 'desc')
-            ->orderBy('name')
             ->paginate(10);
         return view('dashboard.employees.index', compact('employees'));
     }
