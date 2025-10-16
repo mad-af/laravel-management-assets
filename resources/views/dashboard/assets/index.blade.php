@@ -16,6 +16,12 @@
                     'icon' => 'o-qr-code',
                     'class' => ' btn-sm',
                     'action' => 'printQrBarcode'
+                ],
+                [
+                    'text' => 'Tambah Batch',
+                    'icon' => 'o-folder-plus',
+                    'class' => ' btn-sm',
+                    'action' => 'openBatchDrawer'
                 ]
             ]"/>
 

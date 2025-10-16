@@ -8,15 +8,15 @@ use App\Models\Asset;
 use App\Models\Branch;
 use App\Models\Category;
 use App\Support\SessionKey;
-use App\Traits\WithAlert;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Maatwebsite\Excel\Facades\Excel;
+use Mary\Traits\Toast;
 
 class Table extends Component
 {
-    use WithAlert, WithPagination;
+    use Toast, WithPagination;
 
     public $search = '';
 
@@ -72,17 +72,11 @@ class Table extends Component
             $assetName = $asset->name;
             $asset->delete();
 
-            $this->showSuccessAlert(
-                "Asset '{$assetName}' berhasil dihapus.",
-                'Asset Dihapus'
-            );
+            $this->success("Asset '{$assetName}' berhasil dihapus.");
 
             $this->dispatch('asset-deleted');
         } catch (\Exception $e) {
-            $this->showErrorAlert(
-                'Terjadi kesalahan saat menghapus asset.',
-                'Error'
-            );
+            $this->error('Terjadi kesalahan saat menghapus asset.');
         }
     }
 
@@ -99,9 +93,8 @@ class Table extends Component
         }
         // Jika tidak ada yang dipilih
         else {
-            $this->showInfoAlert(
+            $this->info(
                 'Pilih aset yang akan dicetak dulu.',
-                'Info'
             );
 
             return;
@@ -130,10 +123,7 @@ class Table extends Component
         $currentBranchId = session_get(SessionKey::BranchId);
 
         if (! $currentBranchId) {
-            $this->showErrorAlert(
-                'Branch ID tidak ditemukan dalam session.',
-                'Error'
-            );
+            $this->error('Branch ID tidak ditemukan dalam session.');
 
             return;
         }
@@ -147,10 +137,7 @@ class Table extends Component
         try {
             return Excel::download(new AssetsExport($currentBranchId), $filename);
         } catch (\Exception $e) {
-            $this->showErrorAlert(
-                'Terjadi kesalahan saat mengunduh file Excel: '.$e->getMessage(),
-                'Error'
-            );
+            $this->error('Terjadi kesalahan saat mengunduh file Excel: '.$e->getMessage());
         }
     }
 

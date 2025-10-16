@@ -20,6 +20,7 @@ class Drawer extends Component
         'close-drawer' => 'closeDrawer',
         'open-drawer' => 'openDrawer',
         'open-edit-drawer' => 'openEditDrawer',
+        'open-batch-drawer' => 'openBatchDrawer',
         'asset-saved' => 'handleAssetSaved',
     ];
 
@@ -47,6 +48,9 @@ class Drawer extends Component
         } elseif ($this->action === 'edit' && $this->asset_id) {
             $this->showDrawer   = true;
             $this->editingAssetId = $this->asset_id;
+        } elseif ($this->action === 'batch') {
+            $this->showDrawer = true;
+            $this->editingAssetId = null;
         } // else: biarkan state tetap (jangan auto-tutup tiap update)
     }
 
@@ -60,6 +64,12 @@ class Drawer extends Component
     public function openDrawer()
     {
         $this->action = 'create';
+        $this->applyActionFromUrl();
+    }
+
+    public function openBatchDrawer()
+    {
+        $this->action = 'batch';
         $this->applyActionFromUrl();
     }
 

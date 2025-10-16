@@ -100,6 +100,9 @@ class DashboardContentHeader extends Component
             case 'downloadAsset':
                 $this->dispatch('download-asset');
                 break;
+            case 'openBatchDrawer':
+                $this->dispatch('open-batch-drawer');
+                break;
             default:
                 $this->dispatch($action);
                 break;

@@ -11,15 +11,24 @@
             <!-- Drawer Header -->
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-lg font-semibold">
-                    {{ $editingAssetId ? 'Edit Asset' : 'Tambah Asset Baru' }}
+                    @if ($action === 'batch')
+                        Tambah Batch Asset
+                    @else
+                        {{ $editingAssetId ? 'Edit Asset' : 'Tambah Asset Baru' }}
+                    @endif
                 </h2>
                 <button wire:click="closeDrawer" class="btn btn-sm btn-circle btn-ghost">
                     <x-icon name="o-x-mark" class="w-5 h-5" />
                 </button>
             </div>
 
-            <!-- Asset Form -->
-            <livewire:assets.form :assetId="$editingAssetId" :key="'asset-form-' . ($editingAssetId ?? 'new')" />
+            @if ($action === 'batch')
+                <!-- Batch Form -->
+                <livewire:assets.batch-form />
+            @else
+                <!-- Asset Form -->
+                <livewire:assets.form :assetId="$editingAssetId" :key="'asset-form-' . ($editingAssetId ?? 'new')" />
+            @endif
         </div>
     </div>
 </div>

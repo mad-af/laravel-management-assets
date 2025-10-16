@@ -68,6 +68,18 @@ class ToastListener extends Component
 
     private function triggerToast(string $type, string $title, ?string $description = null, ?string $position = null, ?string $icon = null, ?string $css = null, ?int $timeout = null, ?string $redirectTo = null): void
     {
+        // Normalisasi ikon agar tidak pernah null (Mary Toast mengharuskan string)
+        $iconDefaults = [
+            'success' => 'o-check',
+            'error' => 'o-exclamation-triangle',
+            'warning' => 'o-exclamation-triangle',
+            'info' => 'o-information-circle',
+        ];
+        $normalizedType = strtolower($type);
+        $icon = is_string($icon) && $icon !== ''
+            ? $icon
+            : ($iconDefaults[$normalizedType] ?? 'o-information-circle');
+
         switch (strtolower($type)) {
             case 'success':
                 $this->success($title, $description, $position, $icon, $css, $timeout, $redirectTo);
