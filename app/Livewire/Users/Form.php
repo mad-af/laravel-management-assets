@@ -211,7 +211,7 @@ class Form extends Component
             $this->password_confirmation = '';
 
             $this->success('Berhasil Diperbarui', 'Data user telah diperbarui.');
-            $this->dispatch('userSaved', id: $user->id);
+            $this->dispatch('user-updated', id: $user->id);
         } else {
             // Create user baru
             $user = new User;
@@ -227,7 +227,7 @@ class Form extends Component
             $this->isEdit = true;
 
             $this->success('Berhasil Ditambahkan', 'User baru telah dibuat.');
-            $this->dispatch('userSaved', id: $user->id);
+            $this->dispatch('user-saved', id: $user->id);
         }
     }
 

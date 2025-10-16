@@ -103,7 +103,7 @@ class Form extends Component
                     'is_active' => $this->is_active,
                 ]);
                 $this->success('Location updated successfully!');
-                $this->dispatch('location-updated');
+                $this->dispatch('branch-updated');
             } else {
                 Branch::create([
                     'company_id' => $this->company_id,
@@ -116,7 +116,7 @@ class Form extends Component
                     'is_active' => $this->is_active,
                 ]);
                 $this->success('Location created successfully!');
-                $this->dispatch('location-saved');
+                $this->dispatch('branch-saved');
                 $this->resetForm();
             }
         } catch (\Exception $e) {

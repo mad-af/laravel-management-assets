@@ -196,7 +196,7 @@ class Form extends Component
             $company->save();
 
             $this->success('Berhasil Diperbarui', 'Data perusahaan telah diperbarui.');
-            $this->dispatch('companySaved', id: $company->id);
+            $this->dispatch('company-saved', id: $company->id);
             $this->isEdit = true;
             $this->loadBranches();
         } else {
@@ -219,7 +219,7 @@ class Form extends Component
             $this->companyId = $company->id;
             $this->isEdit = true;
             $this->success('Berhasil Ditambahkan', 'Perusahaan baru telah dibuat.');
-            $this->dispatch('companySaved', id: $company->id);
+            $this->dispatch('company-saved', id: $company->id);
             $this->loadBranches();
         }
     }
