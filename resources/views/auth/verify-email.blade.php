@@ -1,33 +1,24 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Verifikasi Email</title>
-    <style>
-        body { font-family: Arial, sans-serif; color: #111; background: #f8fafc; }
-        .container { max-width: 480px; margin: 60px auto; background: #fff; padding: 24px; border-radius: 10px; box-shadow: 0 1px 8px rgba(0,0,0,0.06); }
-        h1 { font-size: 20px; margin-bottom: 12px; }
-        .desc { color: #555; margin-bottom: 18px; }
-        .status { margin-bottom: 12px; color: #0f766e; }
-        .btn { display: inline-block; padding: 10px 14px; background: #2563eb; color: #fff; text-decoration: none; border-radius: 8px; }
-        .btn:disabled { opacity: .6; cursor: not-allowed; }
-        form { display: inline; }
-        .muted { color: #777; font-size: 12px; margin-top: 8px; }
-    </style>
-    </head>
-    <body>
-        <div class="container">
-            <h1>Verifikasi Email Diperlukan</h1>
-            <p class="desc">Akun Anda belum diverifikasi. Silakan kirim email verifikasi dan klik link di email untuk mengaktifkan akun.</p>
-            @if (session('status'))
-                <div class="status">{{ session('status') }}</div>
-            @endif
-            <form method="POST" action="{{ route('verification.send') }}">
+@extends('layouts.auth')
+
+@section('title', 'Verifikasi Email')
+
+@section('content')
+    <div class="shadow-xl card bg-base-100">
+        <div class="card-body">
+            <h2 class="card-title">Verifikasi Email Diperlukan</h2>
+            <p class="text-base-content/70">Akun Anda belum diverifikasi. Silakan kirim email verifikasi dan klik link di email untuk mengaktifkan akun.</p>
+            
+            <form method="POST" action="{{ route('verification.send') }}" class="mt-4">
                 @csrf
-                <button class="btn" type="submit">Kirim Ulang Email Verifikasi</button>
+                <x-button type="submit" icon="o-envelope" class="w-full btn btn-primary btn-sm">Kirim Ulang Email Verifikasi</x-button>
             </form>
-            <p class="muted">Pastikan Anda mengecek folder inbox dan spam.</p>
+
+            <p class="mt-4 text-sm text-base-content/70">Pastikan Anda mengecek folder inbox dan spam.</p>
+            
+            <form method="POST" action="{{ route('logout') }}" class="flex justify-end mt-2">
+                @csrf
+                <x-button type="submit" icon="o-power" class="btn btn-sm btn-ghost text-error">Keluar</x-button>
+            </form>
         </div>
-    </body>
-</html>
+    </div>
+@endsection

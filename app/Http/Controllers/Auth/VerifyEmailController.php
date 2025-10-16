@@ -43,10 +43,16 @@ class VerifyEmailController extends Controller
             ]
         );
 
-        $mailer = Mail::to($user->email);
-        $mailer->send(new VerifyEmailNotification($user, $verificationUrl));
+        try {
+            $mailer = Mail::to($user->email);
+            $mailer->send(new VerifyEmailNotification($user, $verificationUrl));
+        } catch (\Exception $e) {
+            report($e);
 
-        return back()->with('status', 'Verification email sent. Please check your inbox.');
+            return back()->with('error', 'Gagal mengirim email verifikasi.');
+        }
+
+        return back()->with('success', 'Email verifikasi telah dikirim.');
     }
 
     /**

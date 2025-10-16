@@ -39,9 +39,8 @@
 
     {{-- Toast --}}
     <x-toast />
-
-    {{-- Alert Component --}}
-    <livewire:alert />
+    {{-- Global Toast Listener --}}
+    <livewire:toast-listener />
 
     {{-- Vehicle Profile Alert Component --}}
     <livewire:vehicle-profile-alert />
