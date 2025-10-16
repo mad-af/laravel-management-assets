@@ -6,7 +6,7 @@
 
     <!-- Email -->
     <div>
-        <x-input label="Email" wire:model="email" placeholder="Masukkan email" type="email" class="input-sm" required />
+        <x-input label="Email" wire:model="email" placeholder="Masukkan email" type="email" class="input-sm" required :disabled="$this->isEdit" />
     </div>
 
     <!-- Company Selection -->

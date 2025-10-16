@@ -5,6 +5,7 @@ namespace App\Livewire\Users;
 use App\Enums\UserRole;
 use App\Models\Company;
 use App\Models\User;
+use App\Models\UserCompany;
 use Livewire\Component;
 use Mary\Traits\Toast;
 
@@ -46,15 +47,14 @@ class Form extends Component
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email'.($this->isEdit ? ','.$this->userId : ''),
             'phone' => 'nullable|string|max:20',
-            'company_id' => 'nullable|exists:companies,id',
+            'company_ids' => 'nullable|array',
+            'company_ids.*' => 'nullable|exists:companies,id',
             'role' => 'required|in:'.implode(',', UserRole::values()),
-            'is_active' => 'boolean',
+            'is_active' => 'nullable|boolean',
         ];
 
-        if (! $this->isEdit) {
+        if ($this->isEdit) {
             $rules['password'] = 'required|string|min:8|confirmed';
-        } else {
-            $rules['password'] = 'nullable|string|min:8|confirmed';
         }
 
         return $rules;
@@ -176,6 +176,62 @@ class Form extends Component
                 })->toArray();
         }
     }
+
+    public function save()
+    {
+
+        $this->validate($this->rules());
+
+        if ($this->isEdit && $this->userId) {
+            // Update user
+
+            $user = User::find($this->userId);
+            if (! $user) {
+                $this->error('Data Tidak Ditemukan', 'User tidak ditemukan.');
+
+                return;
+            }
+
+            $user->name = $this->name;
+            $user->email = $this->email;
+            $user->role = $this->role; // cast ke enum oleh model
+
+            // Password opsional saat edit
+            if (! empty($this->password)) {
+                $user->password = $this->password; // otomatis di-hash oleh cast
+            }
+
+            $user->save();
+
+            // Sinkronisasi perusahaan via model UserCompany (mengisi kolom pivot 'id')
+            UserCompany::syncForUser($user, $this->company_ids ?? []);
+
+            // Bersihkan field password agar tidak tersisa di form
+            $this->password = '';
+            $this->password_confirmation = '';
+
+            $this->success('Berhasil Diperbarui', 'Data user telah diperbarui.');
+            $this->dispatch('userSaved', id: $user->id);
+        } else {
+            // Create user baru
+            $user = new User;
+            $user->name = $this->name;
+            $user->email = $this->email;
+            $user->role = $this->role; // cast ke enum oleh model
+            $user->save();
+
+            // Sinkronisasi perusahaan setelah user dibuat via model UserCompany
+            UserCompany::syncForUser($user, $this->company_ids ?? []);
+
+            $this->userId = $user->id;
+            $this->isEdit = true;
+
+            $this->success('Berhasil Ditambahkan', 'User baru telah dibuat.');
+            $this->dispatch('userSaved', id: $user->id);
+        }
+    }
+
+    // Metode sinkronisasi dipindahkan ke App\Models\UserCompany::syncForUser()
 
     public function render()
     {

@@ -84,4 +84,20 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Company::class, 'user_companies', 'user_id', 'company_id');
     }
+
+    /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Isi password default saat pembuatan jika belum di-set
+        static::creating(function ($user) {
+            if (empty($user->password)) {
+                // Cast 'password' => 'hashed' akan otomatis meng-hash nilai ini saat save
+                $user->password = 'password';
+            }
+        });
+    }
 }
