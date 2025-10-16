@@ -12,19 +12,22 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // Run seeders in proper order to maintain referential integrity
-        $this->call([
-            CompanySeeder::class,
-            CategorySeeder::class,
-            UserSeeder::class,
-            BranchSeeder::class,
-            UserCompanySeeder::class,
-            EmployeeSeeder::class,
-            AssetSeeder::class,
-            AssetLogSeeder::class,
-            VehicleProfileSeeder::class,
-            VehicleTaxTypeSeeder::class,
-            VehicleTaxHistorySeeder::class,
-            AssetMaintenanceSeeder::class,
-        ]);
+        // Production
+        $seeder = [StarterUserSeeder::class];
+        // Development
+        if (!app()->environment('production')) {
+            $seeder = array_merge($seeder, [
+                CompanySeeder::class,
+                CategorySeeder::class,
+                UserSeeder::class,
+                BranchSeeder::class,
+                UserCompanySeeder::class,
+                EmployeeSeeder::class,
+                AssetSeeder::class,
+                AssetLogSeeder::class,
+                VehicleProfileSeeder::class,
+            ]);
+        }
+        $this->call($seeder);
     }
 }

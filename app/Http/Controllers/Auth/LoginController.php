@@ -21,6 +21,10 @@ class LoginController extends Controller
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
+            // Redirect ke halaman verifikasi jika email belum diverifikasi
+            if (is_null(Auth::user()->email_verified_at)) {
+                return redirect()->route('verification.notice');
+            }
 
             return redirect()->intended('admin/companies');
         }

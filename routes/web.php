@@ -7,6 +7,7 @@ use App\Http\Controllers\AssetTransferController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CompanyController;
@@ -29,6 +30,11 @@ Route::prefix('pdf-template')->group(function () {
     Route::get('/lebel-asset', function () {
         return view('pdf-template.lebel-asset-example');
     })->name('pdf-template.lebel-asset');
+});
+
+// Preview route for verify email page (non-auth)
+Route::get('/email-preview/verify', function () {
+    return view('auth.verify-email');
 });
 
 // Authentication Routes (only for guests)
@@ -56,8 +62,17 @@ Route::middleware('guest')->group(function () {
 // Logout route (for authenticated users)
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
 
+// Email Verification Routes
+Route::middleware('auth')->group(function () {
+    Route::get('/verify-email', [VerifyEmailController::class, 'notice'])->name('verification.notice');
+    Route::post('/verify-email/send', [VerifyEmailController::class, 'send'])->name('verification.send');
+});
+Route::get('/verify-email/verify/{id}/{hash}', [VerifyEmailController::class, 'verify'])
+    ->middleware('signed')
+    ->name('verification.verify');
+
 // Dashboard Routes
-Route::prefix('admin')->middleware('auth')->group(function () {
+Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
         return view('dashboard.index');
     })->name('dashboard');
