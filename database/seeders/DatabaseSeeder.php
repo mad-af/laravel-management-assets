@@ -13,7 +13,7 @@ class DatabaseSeeder extends Seeder
     {
         // Run seeders in proper order to maintain referential integrity
         // Production
-        $seeder = [StarterUserSeeder::class];
+        $seeder = [StarterUserSeeder::class, CategorySeeder::class];
         // Development
         if (!app()->environment('production')) {
             $seeder = array_merge($seeder, [

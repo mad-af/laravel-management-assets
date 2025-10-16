@@ -4,6 +4,9 @@ namespace App\Livewire\Companies;
 
 use App\Models\Branch;
 use App\Models\Company;
+use App\Services\ImageUploadService;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Livewire\Component;
 use Mary\Traits\Toast;
@@ -45,7 +48,6 @@ class Form extends Component
         'website' => 'nullable|url|max:255',
         'image' => 'nullable|image|max:2048',
         'is_active' => 'boolean',
-        'location_id' => 'nullable|exists:locations,id',
     ];
 
     protected $listeners = [
@@ -55,10 +57,40 @@ class Form extends Component
 
     public function mount($companyId = null)
     {
-        $this->loadBranches();
-        if ($companyId) {
-            $this->edit($companyId);
+        // Set companyId lebih dulu agar loadBranches terfilter dengan benar
+        $this->companyId = $companyId;
+
+        if ($this->companyId) {
+            $this->loadCompany($this->companyId);
         }
+
+        // Muat daftar cabang setelah companyId di-set
+        $this->loadBranches();
+    }
+
+    public function loadCompany(string $companyId)
+    {
+        $company = Company::find($companyId);
+        if (! $company) {
+            $this->error('Data Tidak Ditemukan', 'Perusahaan tidak ditemukan.');
+
+            return;
+        }
+
+        $this->companyId = $company->id;
+        $this->name = $company->name;
+        $this->code = $company->code;
+        $this->hq_branch_id = $company->hq_branch_id ?? '';
+        $this->tax_id = $company->tax_id ?? '';
+        $this->phone = $company->phone ?? '';
+        $this->email = $company->email ?? '';
+        $this->website = $company->website ?? '';
+        $this->is_active = (bool) $company->is_active;
+
+        // Saat edit, abaikan record saat ini untuk validasi unik code
+        $this->rules['code'] = 'required|string|max:10|unique:companies,code,'.$company->id.',id';
+
+        $this->isEdit = true;
     }
 
     public function loadBranches()
@@ -76,39 +108,16 @@ class Form extends Component
             ->toArray();
     }
 
-    public function edit($companyId)
-    {
-        $company = Company::with('hqBranch')->findOrFail($companyId);
-        $this->companyId = $company->id;
-        $this->name = $company->name;
-        $this->code = $company->code;
-        $this->tax_id = $company->tax_id;
-        $this->phone = $company->phone;
-        $this->email = $company->email;
-        $this->website = $company->website;
-        $this->is_active = $company->is_active;
-        $this->hq_branch_id = $company->hq_branch_id;
-        $this->isEdit = true;
-
-        // Update validation rules for edit
-        $this->rules['code'] = 'required|string|max:10|unique:companies,code,'.$this->companyId;
-    }
-
     public function resetForm()
     {
         $this->reset([
-            'companyId', 'name', 'code', 'hq_branch_id', 'tax_id', 
+            'companyId', 'name', 'code', 'hq_branch_id', 'tax_id',
             'phone', 'email', 'website', 'image', 'is_active', 'isEdit',
         ]);
         $this->is_active = true;
         $this->hq_branch_id = '';
         $this->rules['code'] = 'required|string|max:10|unique:companies,code';
         $this->loadBranches();
-    }
-
-    public function render()
-    {
-        return view('livewire.companies.form');
     }
 
     public function generateCode()
@@ -137,5 +146,86 @@ class Form extends Component
         }
 
         $this->code = $code;
+    }
+
+    public function save()
+    {
+        // Adjust validation rules for update (unique code should ignore current record)
+        $rules = $this->rules;
+        if ($this->companyId) {
+            $rules['code'] = 'required|string|max:10|unique:companies,code,'.$this->companyId.',id';
+        }
+
+        $this->validate($rules);
+
+        // Optional image upload handling
+        $imagePath = null;
+        if ($this->image instanceof UploadedFile) {
+            try {
+                $uploader = app(ImageUploadService::class);
+                $imagePath = $uploader->upload($this->image, 'images/companies');
+            } catch (\Exception $e) {
+                $this->error('Upload Gagal', $e->getMessage());
+
+                return;
+            }
+        }
+
+        // Create or update in one method
+        if ($this->companyId) {
+            $company = Company::find($this->companyId);
+            if (! $company) {
+                $this->error('Data Tidak Ditemukan', 'Perusahaan tidak ditemukan.');
+
+                return;
+            }
+
+            $company->name = $this->name;
+            $company->code = $this->code;
+            $company->hq_branch_id = $this->hq_branch_id ?: null;
+            $company->tax_id = $this->tax_id ?: null;
+            $company->phone = $this->phone ?: null;
+            $company->email = $this->email ?: null;
+            $company->website = $this->website ?: null;
+            $company->is_active = (bool) $this->is_active;
+
+            if ($imagePath && Schema::hasColumn('companies', 'image')) {
+                $company->image = $imagePath;
+            }
+
+            $company->save();
+
+            $this->success('Berhasil Diperbarui', 'Data perusahaan telah diperbarui.');
+            $this->dispatch('companySaved', id: $company->id);
+            $this->isEdit = true;
+            $this->loadBranches();
+        } else {
+            $company = Company::create([
+                'name' => $this->name,
+                'code' => $this->code,
+                'hq_branch_id' => $this->hq_branch_id ?: null,
+                'tax_id' => $this->tax_id ?: null,
+                'phone' => $this->phone ?: null,
+                'email' => $this->email ?: null,
+                'website' => $this->website ?: null,
+                'is_active' => (bool) $this->is_active,
+            ]);
+
+            if ($imagePath && Schema::hasColumn('companies', 'image')) {
+                $company->image = $imagePath;
+                $company->save();
+            }
+
+            $this->companyId = $company->id;
+            $this->isEdit = true;
+            $this->success('Berhasil Ditambahkan', 'Perusahaan baru telah dibuat.');
+            $this->dispatch('companySaved', id: $company->id);
+            $this->loadBranches();
+        }
+    }
+
+    public function render()
+    {
+        return view('livewire.companies.form');
     }
 }

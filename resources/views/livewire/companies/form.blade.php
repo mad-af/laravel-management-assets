@@ -52,15 +52,10 @@
     <x-checkbox label="Aktif" wire:model="is_active" class="text-sm checkbox-sm" />
 
     <!-- Tombol Aksi -->
-    <div class="flex gap-2 pt-4">
-        <x-button type="button" class="flex-1 btn-sm"
-            wire:click="{{ $isEdit ? '$dispatch(\'closeEditDrawer\')' : '$dispatch(\'closeDrawer\')' }}">
-            Batal
-        </x-button>
+    <div class="flex gap-2 justify-end pt-4">
+        <x-button type="button" class="btn-sm" label="Batal"
+            wire:click="{{ $isEdit ? '$dispatch(\'closeEditDrawer\')' : '$dispatch(\'closeDrawer\')' }}"/>
 
-        <x-button type="submit" class="flex-1 btn-primary btn-sm" spinner="save">
-            <x-icon name="o-check" class="mr-2 w-4 h-4" />
-            {{ $isEdit ? 'Update' : 'Simpan ' }}
-        </x-button>
+        <x-button type="submit" label="{{ $isEdit ? 'Update' : 'Simpan ' }}" class="btn-primary btn-sm" spinner="save"/>
     </div>
 </form>
