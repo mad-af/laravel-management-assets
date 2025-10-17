@@ -21,4 +21,17 @@
             </form>
         </div>
     </div>
+
+    <script>
+        // Auto-refresh halaman setiap 10 detik untuk mengecek status verifikasi
+        (function() {
+            const REFRESH_MS = 10000;
+            setInterval(function() {
+                // Hanya refresh jika tab sedang aktif/terlihat
+                if (!document.hidden) {
+                    window.location.reload();
+                }
+            }, REFRESH_MS);
+        })();
+    </script>
 @endsection

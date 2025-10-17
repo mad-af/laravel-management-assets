@@ -16,6 +16,14 @@ class VerifyEmailController extends Controller
      */
     public function notice(Request $request)
     {
+        $user = $request->user();
+
+        // Jika sudah terverifikasi, arahkan ke dashboard
+        if ($user && $user->email_verified_at) {
+            return redirect()->route('dashboard');
+        }
+
+        // Jika belum, tampilkan halaman instruksi verifikasi
         return view('auth.verify-email');
     }
 
