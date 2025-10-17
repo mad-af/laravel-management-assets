@@ -6,6 +6,7 @@ use App\Enums\AssetStatus;
 use App\Enums\MaintenancePriority;
 use App\Enums\MaintenanceStatus;
 use App\Enums\MaintenanceType;
+use App\Casts\ServiceTasksCast;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -46,7 +47,7 @@ class AssetMaintenance extends Model
         'next_service_date' => 'date',
         'odometer_km_at_service' => 'integer',
         'next_service_target_odometer_km' => 'integer',
-        'service_tasks' => 'array',
+        'service_tasks' => ServiceTasksCast::class,
     ];
 
     public function asset(): BelongsTo
