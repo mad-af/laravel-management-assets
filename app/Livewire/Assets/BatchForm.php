@@ -89,6 +89,7 @@ class BatchForm extends Component
 
             // Simpan baris valid untuk proses simpan di save()
             $this->validRows = $import->getValidRows();
+            $this->success('File diunggah');
         } catch (\Exception $e) {
             $this->error('Gagal memproses file: '.$e->getMessage());
         }
@@ -146,7 +147,8 @@ class BatchForm extends Component
                 }
             });
 
-            $this->success('File diunggah: '.$originalName.' — disimpan: '.$this->summaryValid.' baris valid, dilewati: '.$this->summaryInvalid.' baris tidak valid.');
+            $this->dispatch('asset-saved');
+            $this->success('Disimpan: '.$this->summaryValid.' baris valid, dilewati: '.$this->summaryInvalid.' baris tidak valid.');
         } catch (\Exception $e) {
             $this->error('Gagal menyimpan data: '.$e->getMessage());
         }
