@@ -15,7 +15,7 @@
             Mengunggah & memeriksa file...
         </div>
         <div class="mt-3">
-            <x-button label="Unggah" icon="o-arrow-up-tray" class="btn-secondary btn-sm" wire:click="uploadBatch" />
+            <x-button label="Unggah" icon="o-arrow-up-tray" class="btn-secondary btn-sm" wire:click="save" />
         </div>
         @error('file')
             <div class="mt-2 text-sm text-error">{{ $message }}</div>

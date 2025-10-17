@@ -4,7 +4,10 @@ namespace App\Livewire\Assets;
 
 use App\Exports\AssetsBatchTemplateExport;
 use App\Imports\AssetsBatchImport;
+use App\Models\Asset;
 use App\Services\FileUploadService;
+use App\Support\SessionKey;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Maatwebsite\Excel\Facades\Excel;
@@ -23,6 +26,9 @@ class BatchForm extends Component
     public int $summaryInvalid = 0;
 
     public array $rowErrors = [];
+
+    /** Baris yang valid & sudah dinormalisasi dari updatedFile() */
+    public array $validRows = [];
 
     protected $rules = [
         'file' => 'required|file|mimes:xlsx,xls,csv',
@@ -71,7 +77,7 @@ class BatchForm extends Component
             $sheets = Excel::toCollection($import, $fullPath);
             $firstSheet = $sheets->first() ?? collect();
 
-            // Jalankan import validasi hanya untuk sheet pertama            
+            // Jalankan import validasi hanya untuk sheet pertama
             $import->collection($firstSheet);
 
             // Ambil ringkasan dari import
@@ -80,37 +86,69 @@ class BatchForm extends Component
             $this->summaryValid = $summary['valid'];
             $this->summaryInvalid = $summary['invalid'];
             $this->rowErrors = $summary['errors'];
+
+            // Simpan baris valid untuk proses simpan di save()
+            $this->validRows = $import->getValidRows();
         } catch (\Exception $e) {
             $this->error('Gagal memproses file: '.$e->getMessage());
         }
     }
 
-    public function uploadBatch()
+    public function save()
     {
         $this->validate();
 
         try {
             $storedPath = $this->file->store('imports/assets');
             $originalName = $this->file->getClientOriginalName();
-            $fullPath = storage_path('app/'.$storedPath);
-            // Ambil hanya sheet pertama
-            $sheets = Excel::toCollection(new AssetsBatchImport, $fullPath);
-            $firstSheet = $sheets->first() ?? collect();
+            // Pastikan konteks company & branch tersedia
+            $companyId = session_get(SessionKey::CompanyId);
+            $branchId = session_get(SessionKey::BranchId);
 
-            // Jalankan import validasi hanya untuk sheet pertama
-            $import = new AssetsBatchImport;
-            $import->collection($firstSheet);
+            if (! $companyId || ! $branchId) {
+                $this->error('Context perusahaan/cabang belum dipilih.');
 
-            // Ambil ringkasan dari import
-            $summary = $import->getSummary();
-            $this->summaryTotal = $summary['total'];
-            $this->summaryValid = $summary['valid'];
-            $this->summaryInvalid = $summary['invalid'];
-            $this->rowErrors = $summary['errors'];
+                return;
+            }
 
-            $this->success('File diunggah: '.$originalName.' — total: '.$this->summaryTotal.', valid: '.$this->summaryValid.', tidak valid: '.$this->summaryInvalid);
+            if (empty($this->validRows)) {
+                $this->error('Tidak ada baris valid untuk disimpan. Periksa file dan pratinjau.');
+
+                return;
+            }
+
+            // Simpan hanya baris valid yang sudah dinormalisasi
+            DB::transaction(function () use ($companyId, $branchId) {
+                foreach ($this->validRows as $row) {
+                    $attributes = [
+                        'code' => generate_asset_code($row['category_id'], $branchId),
+                        'tag_code' => generate_asset_tag_code(),
+                        'name' => $row['name'],
+                        'category_id' => $row['category_id'],
+                        'company_id' => $companyId,
+                        'branch_id' => $branchId,
+                        'brand' => $row['brand'] ?? null,
+                        'model' => $row['model'] ?? null,
+                        'image' => $row['image'] ?? null,
+                        'value' => $row['value'],
+                        'purchase_date' => $row['purchase_date'] ?? null,
+                        'description' => $row['description'] ?? null,
+                    ];
+
+                    if (! empty($row['status'])) {
+                        $attributes['status'] = $row['status'];
+                    }
+                    if (! empty($row['condition'])) {
+                        $attributes['condition'] = $row['condition'];
+                    }
+
+                    Asset::create($attributes);
+                }
+            });
+
+            $this->success('File diunggah: '.$originalName.' — disimpan: '.$this->summaryValid.' baris valid, dilewati: '.$this->summaryInvalid.' baris tidak valid.');
         } catch (\Exception $e) {
-            $this->error('Gagal mengunggah file: '.$e->getMessage());
+            $this->error('Gagal menyimpan data: '.$e->getMessage());
         }
     }
 
