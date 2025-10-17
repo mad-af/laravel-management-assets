@@ -116,8 +116,8 @@ class AssetsBatchTemplateSheet implements FromCollection, ShouldAutoSize, WithCo
                 $sheet->setCellValue('A3', 'Kategori ID (wajib; lihat sheet Referensi)');
                 $sheet->setCellValue('B3', 'Link Gambar (opsional; URL)');
                 $sheet->setCellValue('C3', 'Nama Asset (wajib)');
-                $sheet->setCellValue('D3', 'Status (wajib; gunakan nilai di Referensi)');
-                $sheet->setCellValue('E3', 'Kondisi (wajib; gunakan nilai di Referensi)');
+                $sheet->setCellValue('D3', 'Status (wajib; gunakan `value` di Referensi)');
+                $sheet->setCellValue('E3', 'Kondisi (wajib; gunakan `value` di Referensi)');
                 $sheet->setCellValue('F3', 'Nilai Asset Rp (wajib; angka, contoh 15000000.00)');
                 $sheet->setCellValue('G3', 'Brand/Merek (opsional)');
                 $sheet->setCellValue('H3', 'Model/Tipe (opsional)');
