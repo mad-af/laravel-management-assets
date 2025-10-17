@@ -105,11 +105,13 @@ class Table extends Component
 
         // Prepare data untuk JavaScript
         $assetsData = $assets->map(function ($asset) {
+            $url = route('qr.gateway', ['tag_code' => $asset->tag_code]);
+            $cleanUrl = preg_replace('#^https?://#', '', $url);
 
             return [
                 'id' => $asset->id,
                 'tag_code' => $asset->tag_code,
-                'url' => route('qr.gateway', parameters: ['tag_code' => $asset->tag_code]),
+                'url' => $cleanUrl
             ];
         })->toArray();
 
