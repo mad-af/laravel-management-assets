@@ -1,4 +1,4 @@
-<x-info-card title="Riwayat Perawatan Aset" icon="o-wrench">
+<x-info-card title="Riwayat Perawatan Aset" icon="o-wrench-screwdriver">
     <div class="mb-4">
         <x-button wire:click="toggleShowAll" class="btn-sm">
             {{ $showAll ? 'Tampilkan 10 Terakhir' : 'Tampilkan Semua' }}

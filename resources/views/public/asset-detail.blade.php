@@ -13,6 +13,9 @@
         <!-- Basic Information Card -->
         <livewire:assets.basic-info :asset="$asset" />
 
+        <!-- History Monitor Card -->
+        <livewire:assets.history-monitor :asset="$asset" />
+
         <!-- Activity Log Card -->
         <livewire:assets.activity-log :asset="$asset" />
     </div>
