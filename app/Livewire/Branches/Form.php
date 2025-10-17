@@ -3,7 +3,7 @@
 namespace App\Livewire\Branches;
 
 use App\Models\Branch;
-use App\Models\Company;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Mary\Traits\Toast;
 
@@ -52,10 +52,14 @@ class Form extends Component
     public function mount($branchId = null)
     {
         $this->branchId = $branchId;
-        // Load companies options for select
-        $this->companies = Company::where('is_active', true)
+        // Load companies options for select - only companies assigned to the authenticated user
+        $user = Auth::user();
+        $userCompanies = $user?->companies()
+            ->where('is_active', true)
             ->orderBy('name')
-            ->get()
+            ->get() ?? collect();
+
+        $this->companies = $userCompanies
             ->map(fn ($company) => [
                 'id' => $company->id,
                 'name' => $company->name,

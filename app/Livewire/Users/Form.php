@@ -54,7 +54,7 @@ class Form extends Component
         ];
 
         if ($this->isEdit) {
-            $rules['password'] = 'required|string|min:8|confirmed';
+            $rules['password'] = 'nullable|string|min:8|confirmed';
         }
 
         return $rules;
@@ -179,6 +179,7 @@ class Form extends Component
 
     public function save()
     {
+        try {
 
         $this->validate($this->rules());
 
@@ -229,7 +230,10 @@ class Form extends Component
             $this->success('Berhasil Ditambahkan', 'User baru telah dibuat.');
             $this->dispatch('user-saved', id: $user->id);
         }
-    }
+    } catch (\Exception $e) {
+        $this->error('Gagal Menyimpan', $e->getMessage());
+        dd($e);
+    }}
 
     // Metode sinkronisasi dipindahkan ke App\Models\UserCompany::syncForUser()
 

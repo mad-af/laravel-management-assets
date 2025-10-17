@@ -74,7 +74,7 @@ Route::get('/verify-email/verify/{id}/{hash}', [VerifyEmailController::class, 'v
 // Dashboard Routes
 Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
-        return route('companies.index');
+        return redirect()->route('companies.index');
     })->name('dashboard');
 
     // User Management Routes

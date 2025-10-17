@@ -4,8 +4,10 @@ namespace App\Livewire\Companies;
 
 use App\Models\Branch;
 use App\Models\Company;
+use App\Models\UserCompany;
 use App\Services\ImageUploadService;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Livewire\Component;
@@ -210,6 +212,15 @@ class Form extends Component
                 'website' => $this->website ?: null,
                 'is_active' => (bool) $this->is_active,
             ]);
+
+            // Hubungkan otomatis user pembuat ke perusahaan via pivot UserCompany
+            $userId = Auth::id();
+            if ($userId) {
+                UserCompany::firstOrCreate([
+                    'user_id' => $userId,
+                    'company_id' => $company->id,
+                ]);
+            }
 
             if ($imagePath && Schema::hasColumn('companies', 'image')) {
                 $company->image = $imagePath;
