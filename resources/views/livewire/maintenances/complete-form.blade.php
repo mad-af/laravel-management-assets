@@ -101,7 +101,7 @@
 
         <!-- Submit Button -->
         <div class="flex gap-2 justify-end pt-4">
-            <x-button label="Batal" class="btn-ghost btn-sm" wire:click="$dispatch('close-completed-drawer')" />
+            <x-button label="Batal" class="btn-ghost btn-sm" wire:click="$dispatch('close-drawer')" />
             <x-button label="Selesaikan" class="btn-success btn-sm" type="submit" spinner="save" />
         </div>
 

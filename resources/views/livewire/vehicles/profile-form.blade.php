@@ -28,13 +28,13 @@
         type="date" />
 
     <!-- Service Target Odometer -->
-    {{-- <x-input name="service_target_odometer_km" label="Target Odometer Service (km)" class="input-sm"
+    <x-input name="service_target_odometer_km" label="Target Odometer Service (km)" class="input-sm"
         wire:model="service_target_odometer_km" type="number" min="0"
-        placeholder="Masukkan target odometer untuk service berikutnya" /> --}}
+        placeholder="Masukkan target odometer untuk service berikutnya" :disabled="!empty($this->service_target_odometer_km)"/>
 
     <!-- Next Service Date -->
-    {{-- <x-datetime name="next_service_date" label="Tanggal Service Berikutnya" class="input-sm" wire:model="next_service_date"
-        type="date" /> --}}
+    <x-datetime name="next_service_date" label="Tanggal Service Berikutnya" class="input-sm" wire:model="next_service_date"
+        type="date" :disabled="!empty($this->next_service_date)"/>
 
     <!-- Annual Tax Due Date -->
     {{-- <x-datetime name="annual_tax_due_date" label="Tanggal Jatuh Tempo Pajak Tahunan" class="input-sm" wire:model="annual_tax_due_date"
