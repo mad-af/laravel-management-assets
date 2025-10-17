@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
+use App\Casts\ServiceDetailsCast;
+use App\Casts\ServiceTasksCast;
 use App\Enums\AssetStatus;
 use App\Enums\MaintenancePriority;
 use App\Enums\MaintenanceStatus;
 use App\Enums\MaintenanceType;
-use App\Casts\ServiceTasksCast;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -35,6 +36,7 @@ class AssetMaintenance extends Model
         'next_service_date',
         'invoice_no',
         'service_tasks',
+        'service_details',
     ];
 
     protected $casts = [
@@ -48,6 +50,7 @@ class AssetMaintenance extends Model
         'odometer_km_at_service' => 'integer',
         'next_service_target_odometer_km' => 'integer',
         'service_tasks' => ServiceTasksCast::class,
+        'service_details' => ServiceDetailsCast::class,
     ];
 
     public function asset(): BelongsTo
@@ -80,7 +83,7 @@ class AssetMaintenance extends Model
 
         static::created(function ($maintenance) {
             // Only set asset to maintenance if the maintenance status is not completed or cancelled
-            if (!in_array($maintenance->status, [MaintenanceStatus::COMPLETED, MaintenanceStatus::CANCELLED])) {
+            if (! in_array($maintenance->status, [MaintenanceStatus::COMPLETED, MaintenanceStatus::CANCELLED])) {
                 $maintenance->asset()->update([
                     'status' => AssetStatus::MAINTENANCE,
                 ]);
