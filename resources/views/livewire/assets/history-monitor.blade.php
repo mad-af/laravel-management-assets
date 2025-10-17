@@ -98,24 +98,52 @@
                     @endif
                 </div>
             </div>
-            @if(is_array($m->service_tasks) && count($m->service_tasks) > 0)
+            @if((is_array($m->service_tasks) && count($m->service_tasks) > 0) || (is_array($m->service_details) && count($m->service_details) > 0))
                 <div class="space-y-1 md:col-span-3">
-                    <h3 class="font-bold">Tugas Servis</h3>
-                    <div class="p-2 text-sm rounded border border-base-300/80 bg-base-200/60 text-base-content/80">
-                        <ul class="pl-5 list-disc">
-                            @foreach($m->service_tasks as $task)
-                                @php
-                                    $taskText = is_array($task) ? ($task['task'] ?? json_encode($task)) : $task;
-                                    $isCompleted = is_array($task) ? ($task['completed'] ?? null) : null;
-                                @endphp
-                                <li class="{{ $isCompleted === true ? 'line-through text-base-content/60' : '' }}">
-                                    {{ $taskText }}
-                                    @if($isCompleted === true)
-                                        <x-icon name="o-check" class="inline w-3 h-3 text-success" />
-                                    @endif
-                                </li>
-                            @endforeach
-                        </ul>
+                    <h3 class="font-bold">Ringkasan Servis</h3>
+                    <div class="grid grid-cols-1 gap-2 md:grid-cols-2">
+                        @if(is_array($m->service_tasks) && count($m->service_tasks) > 0)
+                            <div class="p-2 text-sm rounded border border-base-300/80 bg-base-200/60 text-base-content/80">
+                                <h4 class="mb-1 font-semibold">Tugas</h4>
+                                <ul class="pl-5 list-disc">
+                                    @foreach($m->service_tasks as $task)
+                                        @php
+                                            $taskText = is_array($task) ? ($task['task'] ?? json_encode($task)) : $task;
+                                            $isCompleted = is_array($task) ? ($task['completed'] ?? null) : null;
+                                        @endphp
+                                        <li class="{{ $isCompleted === true ? 'line-through text-base-content/60' : '' }}">
+                                            {{ $taskText }}
+                                            @if($isCompleted === true)
+                                                <x-icon name="o-check" class="inline w-3 h-3 text-success" />
+                                            @endif
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
+                        @if(is_array($m->service_details) && count($m->service_details) > 0)
+                            <div class="p-2 text-sm rounded border border-base-300/80 bg-base-200/60 text-base-content/80">
+                                <h4 class="mb-1 font-semibold">Detail</h4>
+                                <ul class="pl-5 list-disc">
+                                    @foreach($m->service_details as $item)
+                                        @php
+                                            $name = is_array($item) ? ($item['name'] ?? null) : null;
+                                            $qty = is_array($item) ? ($item['qty'] ?? null) : null;
+                                        @endphp
+                                        @if($name)
+                                            <li>
+                                                {{ $name }}
+                                                @if(!is_null($qty))
+                                                    <span class="text-xs text-base-content/60">× {{ $qty }}</span>
+                                                @endif
+                                            </li>
+                                        @endif
+                                    @endforeach
+                                </ul>
+                            </div>
+
+                        @endif
                     </div>
                 </div>
             @endif
