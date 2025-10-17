@@ -28,6 +28,10 @@ class CompleteForm extends Component
     // Helper properties
     public $asset;
 
+    public array $service_tasks = [];
+
+    public array $service_details = [];
+
     public string $branchId;
 
     protected function rules()
@@ -37,6 +41,12 @@ class CompleteForm extends Component
             'invoice_no' => 'nullable|string|max:255',
             'notes' => 'nullable|string',
             'next_service_date' => 'nullable|date',
+            'service_tasks' => 'nullable|array',
+            'service_tasks.*.task' => 'nullable|string|max:255',
+            'service_tasks.*.completed' => 'nullable|boolean',
+            'service_details' => 'nullable|array',
+            'service_details.*.name' => 'nullable|string|max:255',
+            'service_details.*.qty' => 'nullable|integer|min:0',
         ];
 
         // Dynamic validation for odometer fields based on current vehicle odometer
@@ -57,6 +67,11 @@ class CompleteForm extends Component
             'invoice_no.max' => 'Nomor invoice maksimal 255 karakter.',
             'next_service_date.date' => 'Tanggal service berikutnya harus berupa tanggal yang valid.',
             'next_service_target_odometer_km.integer' => 'Target odometer service berikutnya harus berupa angka.',
+            'service_tasks.*.task.max' => 'Nama tugas layanan maksimal 255 karakter.',
+            'service_tasks.*.completed.boolean' => 'Centang tugas hanya bernilai ya/tidak.',
+            'service_details.*.qty.integer' => 'Jumlah item layanan harus berupa angka.',
+            'service_details.*.qty.min' => 'Jumlah item layanan tidak boleh negatif.',
+            'service_details.*.name.max' => 'Nama layanan maksimal 255 karakter.',
         ];
 
         // Dynamic messages for odometer validation based on current vehicle odometer
@@ -88,6 +103,8 @@ class CompleteForm extends Component
         $this->next_service_target_odometer_km = $maintenance->next_service_target_odometer_km;
         $this->next_service_date = $maintenance->next_service_date?->format('Y-m-d');
         $this->invoice_no = $maintenance->invoice_no;
+        $this->service_details = $maintenance->service_details ?? [];
+        $this->service_tasks = $maintenance->service_tasks ?? [];
     }
 
     public function save()
@@ -102,6 +119,8 @@ class CompleteForm extends Component
                 'cost' => $this->cost ?: 0,
                 'notes' => $this->notes,
                 'invoice_no' => $this->invoice_no ?: null,
+                'service_tasks' => $this->service_tasks ?: [],
+                'service_details' => $this->service_details ?: [],
             ];
 
             // Add odometer fields for vehicles
@@ -126,7 +145,7 @@ class CompleteForm extends Component
 
     public function getIsVehicleProperty()
     {
-        return $this->asset && $this->asset->category->name === "Kendaraan";
+        return $this->asset && $this->asset->category->name === 'Kendaraan';
     }
 
     public function getCanCompleteProperty()
@@ -138,6 +157,17 @@ class CompleteForm extends Component
         $maintenance = AssetMaintenance::find($this->maintenanceId);
 
         return $maintenance && $maintenance->status === MaintenanceStatus::IN_PROGRESS;
+    }
+
+    public function addServiceDetail()
+    {
+        $this->service_details[] = ['name' => '', 'qty' => 1];
+    }
+
+    public function removeServiceDetail($index)
+    {
+        unset($this->service_details[$index]);
+        $this->service_details = array_values($this->service_details);
     }
 
     public function render()

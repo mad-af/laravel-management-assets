@@ -26,6 +26,79 @@
             <x-input label="Tanggal Service Berikutnya" wire:model="next_service_date" type="date" class="input-sm" />
         </div>
 
+         <!-- Service Tasks -->
+        <div class="pt-2">
+            <fieldset class="p-4 rounded-lg border border-base-300">
+                <legend class="px-2 text-xs font-semibold">Tugas Layanan</legend>
+                
+                <div class="space-y-2 w-full">
+                    @if(count($service_tasks) > 0)
+                        @foreach($service_tasks as $index => $task)
+                            <x-checkbox 
+                                hint="{{ is_array($task) ? ($task['task'] ?? 'Tugas #'.($index+1)) : (string) $task }}" 
+                                wire:model="service_tasks.{{ $index }}.completed" 
+                                
+                                class="checkbox-sm" 
+                                hintClass="text-base-content"
+                            />
+                        @endforeach
+                    @else
+                        <p class="text-xs italic text-center text-base-content/60">Tidak ada tugas layanan pada maintenance ini.</p>
+                    @endif
+                </div>
+            </fieldset>
+        </div>
+
+        <!-- Service Details -->
+        <div class="pt-2">
+            <fieldset class="p-4 rounded-lg border border-base-300">
+                <legend class="px-2 text-xs font-semibold">Detail Layanan</legend>
+                
+                <div class="space-y-2 w-full">
+                    @if(count($service_details) > 0)
+                        @foreach($service_details as $index => $detail)
+                            <div class="flex gap-2 items-center">
+                                <div class="w-full">
+                                    <x-input 
+                                        wire:model="service_details.{{ $index }}.name" 
+                                        placeholder="Nama layanan..." 
+                                        class="input-sm" 
+                                    />
+                                </div>
+                                <div>
+                                    <x-input 
+                                        wire:model="service_details.{{ $index }}.qty" 
+                                        type="number" min="0" 
+                                        placeholder="Qty" 
+                                        class="w-8 input-sm" 
+                                    />
+                                </div>
+                                <div>
+                                    <x-button 
+                                        icon="o-trash" 
+                                        class="btn-sm btn-square text-error" 
+                                        wire:click="removeServiceDetail({{ $index }})"
+                                        title="Hapus detail"
+                                    />
+                                </div>
+                            </div>
+                        @endforeach
+                    @else
+                        <p class="text-xs italic text-center text-base-content/60">Belum ada detail layanan ditambahkan</p>
+                    @endif
+                    
+                    <div class="w-full">
+                        <x-button 
+                            icon="o-plus" 
+                            label="Tambah Detail" 
+                            class="w-full btn-sm" 
+                            wire:click="addServiceDetail"
+                        />
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+
         <!-- Submit Button -->
         <div class="flex gap-2 justify-end pt-4">
             <x-button label="Batal" class="btn-ghost btn-sm" wire:click="$dispatch('close-completed-drawer')" />
