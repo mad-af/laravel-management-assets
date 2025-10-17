@@ -31,7 +31,6 @@
                     'route' => 'asset-loans.index',
                     'icon' => 'o-clipboard-document-list',
                     'label' => 'Peminjaman Aset',
-                    'disabled' => true
                 ],
                 [
                     'route' => 'asset-logs.index',

@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Enums\AssetCondition;
-use App\Enums\LoanCondition;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -48,4 +47,36 @@ class AssetLoan extends Model
         return $this->belongsTo(Employee::class);
     }
 
+    /**
+     * Helper: whether the loan is currently active (not returned).
+     */
+    public function isActive(): bool
+    {
+        return $this->checkin_at === null;
+    }
+
+    /**
+     * Helper: whether the active loan is overdue based on due_at.
+     */
+    public function isOverdue(): bool
+    {
+        return $this->checkin_at === null && $this->due_at !== null && $this->due_at->isPast();
+    }
+
+    /**
+     * Scope: only active loans (not returned).
+     */
+    public function scopeActive($query)
+    {
+        return $query->whereNull('checkin_at');
+    }
+
+    /**
+     * Scope: active loans that are overdue.
+     */
+    public function scopeOverdue($query)
+    {
+        return $query->whereNull('checkin_at')
+            ->where('due_at', '<', now());
+    }
 }

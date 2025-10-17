@@ -44,7 +44,7 @@ class Form extends Component
     public function mount($assetLoanId = null)
     {
         $this->assetLoanId = $assetLoanId;
-        $this->condition_out = LoanCondition::EXCELLENT->value;
+        // $this->condition_out = LoanCondition::EXCELLENT->value;
         $this->checkout_at = now()->format('Y-m-d');
         $this->due_at = now()->addDays(7)->format('Y-m-d');
         
@@ -82,8 +82,8 @@ class Form extends Component
                 'checkout_at' => $this->checkout_at,
                 'due_at' => $this->due_at,
                 'checkin_at' => $this->checkin_at ?: null,
-                'condition_out' => LoanCondition::from($this->condition_out),
-                'condition_in' => $this->condition_in ? LoanCondition::from($this->condition_in) : null,
+                // 'condition_out' => LoanCondition::from($this->condition_out),
+                // 'condition_in' => $this->condition_in ? LoanCondition::from($this->condition_in) : null,
                 'notes' => $this->notes ?: null,
             ];
 
@@ -120,7 +120,7 @@ class Form extends Component
         $this->checkout_at = now()->format('Y-m-d');
         $this->due_at = now()->addDays(7)->format('Y-m-d');
         $this->checkin_at = '';
-        $this->condition_out = LoanCondition::EXCELLENT->value;
+        // $this->condition_out = LoanCondition::EXCELLENT->value;
         $this->condition_in = '';
         $this->notes = '';
         $this->resetValidation();
@@ -130,13 +130,13 @@ class Form extends Component
     {
         $assets = Asset::available()->orderBy('name')->get();
         
-        $conditions = collect(LoanCondition::cases())->map(function ($condition) {
-            return (object) [
-                'value' => $condition->value,
-                'label' => $condition->label()
-            ];
-        });
+        // $conditions = collect(LoanCondition::cases())->map(function ($condition) {
+        //     return (object) [
+        //         'value' => $condition->value,
+        //         'label' => $condition->label()
+        //     ];
+        // });
 
-        return view('livewire.asset-loans.form', compact('assets', 'conditions'));
+        return view('livewire.asset-loans.form', compact('assets', ));
     }
 }

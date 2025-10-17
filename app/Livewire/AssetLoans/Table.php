@@ -2,9 +2,8 @@
 
 namespace App\Livewire\AssetLoans;
 
-use App\Models\AssetLoan;
+use App\Enums\AssetStatus;
 use App\Models\Asset;
-use App\Enums\LoanCondition;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -13,8 +12,12 @@ class Table extends Component
     use WithPagination;
 
     public $search = '';
-    public $statusFilter = '';
+
+    // Default to show active loans to avoid empty list
+    public $statusFilter = 'on_loan';
+
     public $conditionFilter = '';
+
     public $overdueFilter = false;
 
     protected $queryString = ['search', 'statusFilter', 'conditionFilter', 'overdueFilter'];
@@ -56,37 +59,79 @@ class Table extends Component
 
     public function render()
     {
-        $assetLoans = AssetLoan::query()
-            ->with(['asset', 'asset.category', 'asset.location'])
+        // Base query for assets
+        $assetsQuery = Asset::query()
+            ->with([
+                'category',
+                // eager-load active loan and employee to render borrower details
+                'loans' => function ($q) {
+                    $q->whereNull('checkin_at')
+                        ->with('employee')
+                        ->orderBy('checkout_at', 'desc');
+                },
+            ])
             ->when($this->search, function ($query) {
-                $query->where(function ($q) {
-                    $q->where('borrower_name', 'like', '%' . $this->search . '%')
-                      ->orWhereHas('asset', function ($assetQuery) {
-                          $assetQuery->where('name', 'like', '%' . $this->search . '%')
-                                    ->orWhere('code', 'like', '%' . $this->search . '%')
-                                    ->orWhere('tag_code', 'like', '%' . $this->search . '%');
-                      });
+                $term = '%'.$this->search.'%';
+                $query->where(function ($q) use ($term) {
+                    $q->where('name', 'like', $term)
+                        ->orWhere('code', 'like', $term)
+                        ->orWhere('tag_code', 'like', $term)
+                        ->orWhereHas('loans.employee', function ($empQuery) use ($term) {
+                            $empQuery->where('full_name', 'like', $term);
+                        });
                 });
             })
-            ->when($this->statusFilter === 'active', function ($query) {
-                $query->active();
+            // Map statusFilter driven by tabs to Asset status and loan state
+            ->when($this->statusFilter === 'available', function ($query) {
+                $query->available();
             })
+            ->when($this->statusFilter === 'on_loan' || $this->statusFilter === 'active', function ($query) {
+                $query->where('status', AssetStatus::ON_LOAN);
+            })
+            ->when($this->statusFilter === 'overdue', function ($query) {
+                $query->where('status', AssetStatus::ON_LOAN)
+                    ->whereHas('loans', function ($loanQuery) {
+                        $loanQuery->whereNull('checkin_at')
+                            ->where('due_at', '<', now());
+                    });
+            })
+            // Existing dropdown filters still respected
             ->when($this->statusFilter === 'returned', function ($query) {
-                $query->whereNotNull('checkin_at');
+                // Assets that have been loaned and returned at least once
+                $query->available()->whereHas('loans', function ($loanQuery) {
+                    $loanQuery->whereNotNull('checkin_at');
+                });
             })
             ->when($this->conditionFilter, function ($query) {
-                $query->where('condition_out', $this->conditionFilter)
-                      ->orWhere('condition_in', $this->conditionFilter);
+                $query->whereHas('loans', function ($loanQuery) {
+                    $loanQuery->where('condition_out', $this->conditionFilter)
+                        ->orWhere('condition_in', $this->conditionFilter);
+                });
             })
             ->when($this->overdueFilter, function ($query) {
-                $query->overdue();
-            })
+                $query->whereHas('loans', function ($loanQuery) {
+                    $loanQuery->whereNull('checkin_at')
+                        ->where('due_at', '<', now());
+                });
+            });
+
+        $assets = $assetsQuery
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        $assets = Asset::available()->orderBy('name')->get();
-        $conditions = LoanCondition::cases();
+        // Assets available for new loan (for drawer)
+        $availableAssets = Asset::available()->orderBy('name')->get();
 
-        return view('livewire.asset-loans.table', compact('assetLoans', 'assets', 'conditions'));
+        // Counts for tabs
+        $availableCount = Asset::available()->count();
+        $onLoanCount = Asset::query()->where('status', AssetStatus::ON_LOAN)->count();
+        $overdueCount = Asset::query()
+            ->where('status', AssetStatus::ON_LOAN)
+            ->whereHas('loans', function ($q) {
+                $q->whereNull('checkin_at')->where('due_at', '<', now());
+            })
+            ->count();
+
+        return view('livewire.asset-loans.table', compact('assets', 'availableAssets', 'availableCount', 'onLoanCount', 'overdueCount'));
     }
 }

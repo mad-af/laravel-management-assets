@@ -156,6 +156,8 @@ class Asset extends Model
         return $this->vehicleProfile()->exists();
     }
 
+    
+
     /**
      * Scope untuk kendaraan yang pajak tahunannya sudah terlambat (overdue)
      */
@@ -212,6 +214,14 @@ class Asset extends Model
         return $query->whereHas('category', function ($q) {
             $q->where('name', 'Kendaraan');
         });
+    }
+
+    /**
+     * Scope untuk aset yang tersedia untuk dipinjam (status aktif)
+     */
+    public function scopeAvailable(Builder $query): Builder
+    {
+        return $query->where('status', AssetStatus::ACTIVE);
     }
 
     /**

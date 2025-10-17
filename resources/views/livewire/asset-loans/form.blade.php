@@ -34,8 +34,8 @@
 
     <!-- Condition Out -->
     <div>
-        <x-select label="Kondisi Saat Dipinjam" wire:model="condition_out" :options="$conditions" option-value="value"
-            option-label="label" placeholder="Pilih kondisi" required />
+        {{-- <x-select label="Kondisi Saat Dipinjam" wire:model="condition_out" :options="$conditions" option-value="value"
+            option-label="label" placeholder="Pilih kondisi" required /> --}}
     </div>
 
     <!-- Condition In (for edit mode or when returned) -->
