@@ -37,7 +37,7 @@
     @endif
 
     {{-- @if($showDropdown) --}}
-        <ul class="shadow-md list bg-base-100 rounded-box {{ $showDropdown ? '' : 'hidden' }} relative z-50" >
+        <ul class="absolute left-0 right-0 top-full mt-1 shadow-md list bg-base-100 overflow-auto max-h-60 rounded-box {{ $showDropdown ? '' : 'hidden' }} z-50">
             <li class="p-4 pb-2 text-xs tracking-wide opacity-60">Most played songs this week</li>
             @forelse($options as $opt)
                 @php
