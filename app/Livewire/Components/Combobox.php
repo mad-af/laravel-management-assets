@@ -44,7 +44,7 @@ class Combobox extends Component
     public ?string $emptyText = 'Tidak ada hasil';
 
     // Tambahkan properti header yang bisa diubah
-    public string $headerText = 'Pilihan tersedia';
+    public string $headerText = 'Pilihan yang tersedia';
 
     public function mount(
         $value = null,
