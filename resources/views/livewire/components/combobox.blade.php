@@ -12,7 +12,10 @@
         @endif
 
         <label class="relative z-50 w-full input {{ $class }}">
-            <div class="">
+            <div class="tooltip">
+                <div class="text-xs tooltip-content">
+                    {{ collect($selected)->pluck($optionLabel)->join(', ') }}
+                </div>
                 @if (count($selected) == 1)
                     <x-badge class="badge-sm badge-outline" value="{{ $selected->first()[$optionLabel] }}" />
                 @elseif(count($selected) > 1)
