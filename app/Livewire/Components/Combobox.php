@@ -26,15 +26,22 @@ class Combobox extends Component
 
     public string $search = '';
 
+    public string $class = '';
+
     public bool $showDropdown = false;
 
     public bool $clearable = true;
 
     public bool $disabled = false;
 
+    public bool $required = false;
+
     public bool $multiple;
 
     public ?string $emptyText = 'Tidak ada hasil';
+
+    // Tambahkan properti header yang bisa diubah
+    public string $headerText = 'Pilihan yang tersedia';
 
     public function mount(
         $value = null,
@@ -46,6 +53,7 @@ class Combobox extends Component
         $disabled = false,
         $clearable = true,
         $multiple = false,
+        $headerText = null,
     ) {
         $this->id = uniqid('combobox-');
         $this->options = $options;
@@ -58,6 +66,11 @@ class Combobox extends Component
         $this->disabled = (bool) $disabled;
         $this->clearable = (bool) $clearable;
         $this->multiple = (bool) $multiple;
+
+        // Set header jika dikirim dari atribut
+        if ($headerText !== null) {
+            $this->headerText = $headerText;
+        }
 
         if ($this->multiple) {
             $this->value = $value ?? [];

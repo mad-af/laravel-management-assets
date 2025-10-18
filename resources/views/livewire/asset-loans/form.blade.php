@@ -14,6 +14,8 @@
             option-label="full_name"
             label="Peminjam"
             placeholder="Pilih karyawan"
+            required
+            class="input-sm"
         />
     </div>
 

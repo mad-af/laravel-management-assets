@@ -11,23 +11,29 @@
             </legend>
         @endif
 
-        <label class="relative z-50 w-full input">
+        <label class="relative z-50 w-full input {{ $class }}">
+            <div class="">
+                <x-badge class="badge-sm" value="3"/>
+                <x-badge class="badge-sm" value="dsahsdadasdasdasdasdczxcas"/>
+            </div>
             <input
-                type="search"
-                class="grow"
-                placeholder="{{ $placeholder }}"
-                wire:model.live="search"
-                wire:focus="$set('showDropdown', true)"
-                
-                wire:keydown.escape="$set('showDropdown', false)"
-                @if($disabled) disabled @endif
-            />
-            @if($clearable && ($search || $value))
-                <button type="button" class="btn btn-ghost btn-square btn-xs" wire:click.stop="clear">
-                    <x-icon name="o-x-mark" class="!h-4 text-error/80" />
-                </button>
-            @endif
-            <x-icon name="o-chevron-up-down" class="!h-4" />
+                    type="search"
+                    class="grow"
+                    placeholder="{{ $placeholder }}"
+                    wire:model.live="search"
+                    wire:focus="$set('showDropdown', true)"
+                    
+                    wire:keydown.escape="$set('showDropdown', false)"
+                    @if($disabled) disabled @endif
+                />
+            <div>
+                @if($clearable && ($search || $value))
+                    <button type="button" class="btn btn-ghost btn-square btn-xs" wire:click.stop="clear">
+                        <x-icon name="o-x-mark" class="!h-4 text-error/80" />
+                    </button>
+                @endif
+                <x-icon name="o-chevron-up-down" class="!h-4" />
+            </div>
         </label>
     </fieldset>
 
