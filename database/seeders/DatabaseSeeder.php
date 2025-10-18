@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
                 UserCompanySeeder::class,
                 EmployeeSeeder::class,
                 AssetSeeder::class,
+                AssetLoanSeeder::class,
                 AssetLogSeeder::class,
                 VehicleProfileSeeder::class,
             ]);

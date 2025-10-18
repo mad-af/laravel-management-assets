@@ -72,7 +72,7 @@ class Table extends Component
         $assetsQuery = Asset::query()
             ->with([
                 'category',
-                'currentBorrower'
+                'currentLoan.employee',
             ])
             ->when($this->search, function ($query) {
                 $term = '%'.$this->search.'%';

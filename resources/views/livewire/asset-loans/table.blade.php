@@ -49,10 +49,9 @@
                     ['key' => 'checkout_at', 'label' => 'Tgl Pinjam'],
                     ['key' => 'due_at', 'label' => 'Tgl Jatuh Tempo'],
                     ['key' => 'condition', 'label' => 'Kondisi'],
-                    ['key' => 'status', 'label' => 'Status'],
+                    // ['key' => 'status', 'label' => 'Status'],
                     ['key' => 'actions', 'label' => 'Aksi', 'class' => 'w-20'],
                 ];
-                dd($assets);
             @endphp
             <x-table :headers="$headers" :rows="$assets" striped show-empty-text>
                 @scope('cell_asset', $asset)
@@ -76,15 +75,15 @@
                 @endscope
 
                 @scope('cell_borrower_name', $asset)
-                <span class="font-medium">{{ optional(optional($asset->loans->first())->employee)->full_name ?? '-' }}</span>
+                <span class="font-medium">{{ optional(optional($asset->currentLoan)->employee)->full_name ?? '-' }}</span>
                 @endscope
 
                 @scope('cell_checkout_at', $asset)
-                {{ optional($asset->loans->first())->checkout_at?->format('d M Y') ?? '-' }}
+                {{ optional($asset->currentLoan)->checkout_at?->format('d M Y') ?? '-' }}
                 @endscope
 
                 @scope('cell_due_at', $asset)
-                @php $due = optional($asset->loans->first())->due_at; @endphp
+                @php $due = optional($asset->currentLoan)->due_at; @endphp
                 <div class="flex flex-col">
                     <span class="{{ ($asset->asset_loan_status === \App\Enums\AssetLoanStatus::OVERTIME) ? 'text-error font-medium' : '' }}">
                         {{ $due ? $due->format('d M Y') : '-' }}
@@ -99,12 +98,12 @@
                 <x-badge value="{{ $asset->condition->label() }}" class="whitespace-nowrap badge-outline badge-{{ $asset->condition->color() }} badge-sm" />
                 @endscope
 
-                @scope('cell_status', $asset)
+                {{-- @scope('cell_status', $asset)
                 <x-badge value="{{ $asset->asset_loan_status->label() }}" class="whitespace-nowrap badge-{{ $asset->asset_loan_status->color() }} badge-sm" />
-                @endscope
+                @endscope --}}
 
                 @scope('cell_actions', $asset)
-                @php $loan = $asset->loans->first(); @endphp
+                @php $loan = $asset->currentLoan; @endphp
                 <x-action-dropdown :model="$asset">
                     @if($loan)
                         <li>

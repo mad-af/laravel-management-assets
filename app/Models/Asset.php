@@ -13,7 +13,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Support\Facades\Auth;
 
 class Asset extends Model
@@ -87,11 +86,23 @@ class Asset extends Model
     }
 
     /**
-     * Get the current active loan for the asset.
+     * Relasi: pinjaman aktif saat ini (AssetLoan terbaru berdasarkan checkout_at).
      */
-    public function currentLoan(): HasMany
+    public function currentLoan(): HasOne
     {
-        return $this->hasMany(AssetLoan::class)->whereNull('checkin_at');
+        return $this->hasOne(AssetLoan::class)
+            ->whereNull('checkin_at')
+            ->latestOfMany('checkout_at');
+    }
+
+    /**
+     * Relasi: semua pinjaman aktif untuk aset ini.
+     */
+    public function activeLoans(): HasMany
+    {
+        return $this->hasMany(AssetLoan::class)
+            ->whereNull('checkin_at')
+            ->orderByDesc('checkout_at');
     }
 
     /**
@@ -302,21 +313,5 @@ class Asset extends Model
         }
 
         return AssetLoanStatus::AVAILABLE;
-    }
-
-    /**
-     * Relasi: peminjam saat ini (Employee) melalui pinjaman aktif.
-     */
-    public function currentBorrower(): HasOneThrough
-    {
-        return $this->hasOneThrough(
-            Employee::class,
-            AssetLoan::class,
-            'asset_id',   // FK di asset_loans yang merefer ke assets
-            'id',         // PK di employees yang direfer oleh asset_loans.employee_id
-            'id',         // local key di assets
-            'employee_id' // local key di asset_loans yang merefer ke employees
-        )->whereNull('asset_loans.checkin_at')
-            ->orderByDesc('asset_loans.checkout_at');
     }
 }
