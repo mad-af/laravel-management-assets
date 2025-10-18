@@ -9,7 +9,7 @@
     <div>
         <livewire:components.combobox
             wire:model="employee_id"
-            :options="$employees"
+            :options="$employees->toArray()"
             option-value="id"
             option-label="full_name"
             label="Peminjam"

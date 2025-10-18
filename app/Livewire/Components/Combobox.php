@@ -2,11 +2,14 @@
 
 namespace App\Livewire\Components;
 
+use Illuminate\Support\Arr;
 use Livewire\Component;
 
 class Combobox extends Component
 {
     public $value = null;
+
+    public $selected = [];
 
     public string $id = '';
 
@@ -18,7 +21,7 @@ class Combobox extends Component
      * Options can be array of arrays/objects. Each option should have keys specified
      * by $optionValue and $optionLabel (default: id, name)
      */
-    public $options = [];
+    public array $options = [];
 
     public string $optionValue = 'id';
 
@@ -41,11 +44,11 @@ class Combobox extends Component
     public ?string $emptyText = 'Tidak ada hasil';
 
     // Tambahkan properti header yang bisa diubah
-    public string $headerText = 'Pilihan yang tersedia';
+    public string $headerText = 'Pilihan tersedia';
 
     public function mount(
         $value = null,
-        $options = [],
+        array $options = [],
         $label = null,
         $placeholder = null,
         $optionValue = 'id',
@@ -84,27 +87,24 @@ class Combobox extends Component
         $this->showDropdown = true;
     }
 
-    public function updatedValue()
+    public function updatedValue($coba)
     {
         if (! $this->multiple) {
             $this->showDropdown = false;
+            $this->selected = collect([$this->findOptionByValue($this->value)]);
+        } else {
+            $this->selected = collect(Arr::wrap($this->value))
+                ->map(function ($val) {
+                    return $this->findOptionByValue($val);
+                });
         }
-    }
 
-    public function select($id)
-    {
-        $opt = $this->findOptionByValue($id);
-        if ($opt) {
-            $this->value = data_get($opt, $this->optionValue);
-            $this->search = data_get($opt, $this->optionLabel);
-            $this->showDropdown = false;
-            $this->dispatch('combobox-selected', value: $this->value);
-        }
     }
 
     public function clear()
     {
         $this->value = $this->multiple ? [] : null;
+        $this->selected = [];
         $this->search = '';
         $this->showDropdown = false;
         $this->dispatch('combobox-cleared');

@@ -13,20 +13,17 @@
 
         <label class="relative z-50 w-full input {{ $class }}">
             <div class="">
-                <x-badge class="badge-sm" value="3"/>
-                <x-badge class="badge-sm" value="dsahsdadasdasdasdasdczxcas"/>
+                @if (count($selected) == 1)
+                    <x-badge class="badge-sm badge-outline" value="{{ $selected->first()[$optionLabel] }}" />
+                @elseif(count($selected) > 1)
+                    <x-badge class="badge-sm badge-outline" value="{{ count($selected) - 1 }}" />
+                    <x-badge class="badge-sm badge-outline" value="{{ $selected->last()[$optionLabel] }}" />
+                @endif
             </div>
-            <input
-                    type="search"
-                    class="grow"
-                    placeholder="{{ $placeholder }}"
-                    wire:model.live="search"
-                    wire:focus="$set('showDropdown', true)"
-                    
-                    wire:keydown.escape="$set('showDropdown', false)"
-                    @if($disabled) disabled @endif
-                />
-            <div>
+            <input type="search" class="w-full min-w-0" placeholder="{{ count($selected) ? '' : $placeholder }}"
+                wire:model.live="search" wire:focus="$set('showDropdown', true)"
+                wire:keydown.escape="$set('showDropdown', false)" @if($disabled) disabled @endif />
+            <div class="">
                 @if($clearable && ($search || $value))
                     <button type="button" class="btn btn-ghost btn-square btn-xs" wire:click.stop="clear">
                         <x-icon name="o-x-mark" class="!h-4 text-error/80" />
@@ -43,53 +40,47 @@
     @endif
 
     {{-- @if($showDropdown) --}}
-        <ul class="absolute left-0 right-0 top-full mt-1 shadow-md list bg-base-100 overflow-auto max-h-60 rounded-box {{ $showDropdown ? '' : 'hidden' }} z-50">
-            <li class="p-4 pb-2 text-xs tracking-wide opacity-60">Most played songs this week</li>
-            @forelse($options as $opt)
-                @php
-                    $optLabel = data_get($opt, $optionLabel);
-                    $optValue = data_get($opt, $optionValue);
-                @endphp
-                
-                @if(!$multiple)
+    <ul
+        class="absolute left-0 right-0 top-full mt-1 shadow-md list bg-base-100 overflow-auto max-h-60 rounded-box {{ $showDropdown ? '' : 'hidden' }} z-50">
+        <li class="p-4 pb-2 text-xs tracking-wide opacity-60">Most played songs this week</li>
+        @forelse($options as $opt)
+            @php
+                $optLabel = data_get($opt, $optionLabel);
+                $optValue = data_get($opt, $optionValue);
+            @endphp
+
+            @if(!$multiple)
                 <li class="">
                     @php
                         $isSelected = (string) $value !== '' && (string) $value === (string) $optValue;
                     @endphp
                     <label class="list-row cursor-pointer hover:bg-base-300/60 {{ $isSelected ? 'bg-base-300/60' : '' }}">
-                        <input type="radio" name="{{ $id }}"
-                            class="sr-only"
-                            wire:model.live="value"
-                            value="{{ $optValue }}"
-                        />
+                        <input type="radio" name="{{ $id }}" class="sr-only" wire:model.live="value" value="{{ $optValue }}" />
                         <div class="grow">
                             <div class="truncate">{{ $optLabel }}</div>
                         </div>
                     </label>
                 </li>
-                @else
+            @else
                 <li class="">
                     @php
                         $isSelected = is_array($value)
                             ? in_array((string) $optValue, array_map('strval', $value), true)
                             : ((string) $value !== '' && (string) $value === (string) $optValue);
                     @endphp
-                    <label class="list-row cursor-pointer hover:bg-base-300/60 {{ $isSelected ? 'bg-base-300/60' : '' }}" wire:click.stop="$set('showDropdown', true)" wire:mousedown.stop="$set('showDropdown', true)">
-                        <input type="checkbox"
-                            name="{{ $id }}"
-                            class="checkbox checkbox-sm"
-                            wire:model.live="value"
-                            value="{{ $optValue }}"
-                        />
+                    <label class="list-row cursor-pointer hover:bg-base-300/60 {{ $isSelected ? 'bg-base-300/60' : '' }}"
+                        wire:click.stop="$set('showDropdown', true)" wire:mousedown.stop="$set('showDropdown', true)">
+                        <input type="checkbox" name="{{ $id }}" class="checkbox checkbox-sm" wire:model.live="value"
+                            value="{{ $optValue }}" />
                         <div class="grow">
                             <div class="truncate">{{ $optLabel }}</div>
                         </div>
                     </label>
                 </li>
-                @endif
-            @empty
-                <li class="p-4 text-sm opacity-60">{{ $emptyText }}</li>
-            @endforelse
-        </ul>
+            @endif
+        @empty
+            <li class="p-4 text-sm opacity-60">{{ $emptyText }}</li>
+        @endforelse
+    </ul>
     {{-- @endif --}}
 </div>
