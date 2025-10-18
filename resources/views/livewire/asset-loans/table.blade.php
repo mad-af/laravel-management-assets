@@ -45,11 +45,12 @@
             @php
                 $headers = [
                     ['key' => 'asset', 'label' => 'Asset'],
-                    ['key' => 'borrower_name', 'label' => 'Peminjam'],
+                    ['key' => 'category_name', 'label' => 'Kategori'],
+                    // ['key' => 'status', 'label' => 'Status'],
+                    ['key' => 'condition', 'label' => 'Kondisi'],
                     ['key' => 'checkout_at', 'label' => 'Tgl Pinjam'],
                     ['key' => 'due_at', 'label' => 'Tgl Jatuh Tempo'],
-                    ['key' => 'condition', 'label' => 'Kondisi'],
-                    // ['key' => 'status', 'label' => 'Status'],
+                    ['key' => 'borrower_name', 'label' => 'Peminjam'],
                     ['key' => 'actions', 'label' => 'Aksi', 'class' => 'w-20'],
                 ];
             @endphp
@@ -74,8 +75,16 @@
                 </div>
                 @endscope
 
-                @scope('cell_borrower_name', $asset)
-                <span class="font-medium">{{ optional(optional($asset->currentLoan)->employee)->full_name ?? '-' }}</span>
+                @scope('cell_category_name', $asset)
+                <span>{{ optional($asset->category)->name ?? '-' }}</span>
+                @endscope
+
+                {{-- @scope('cell_status', $asset)
+                <x-badge value="{{ $asset->asset_loan_status->label() }}" class="whitespace-nowrap badge-{{ $asset->asset_loan_status->color() }} badge-sm" />
+                @endscope --}}
+
+                @scope('cell_condition', $asset)
+                <x-badge value="{{ $asset->condition->label() }}" class="whitespace-nowrap badge-outline badge-{{ $asset->condition->color() }} badge-sm" />
                 @endscope
 
                 @scope('cell_checkout_at', $asset)
@@ -94,13 +103,20 @@
                 </div>
                 @endscope
 
-                @scope('cell_condition', $asset)
-                <x-badge value="{{ $asset->condition->label() }}" class="whitespace-nowrap badge-outline badge-{{ $asset->condition->color() }} badge-sm" />
+                @scope('cell_borrower_name', $asset)
+                @if (optional($asset->currentLoan)->employee)
+                @php $name = optional(optional($asset->currentLoan)->employee)->full_name ?? '-' @endphp
+                <div class="tooltip">
+                    <div class="text-xs tooltip-content">
+                        <div class="font-medium">{{ $name }}</div>
+                    </div>
+                    <x-avatar placeholder="{{ strtoupper(substr($name, 0, 2)) }}"
+                        class="!w-9 !bg-primary !font-bold border-2 border-base-100" />
+                </div>
+                @else
+                -
+                @endif
                 @endscope
-
-                {{-- @scope('cell_status', $asset)
-                <x-badge value="{{ $asset->asset_loan_status->label() }}" class="whitespace-nowrap badge-{{ $asset->asset_loan_status->color() }} badge-sm" />
-                @endscope --}}
 
                 @scope('cell_actions', $asset)
                 @php $loan = $asset->currentLoan; @endphp
@@ -122,7 +138,7 @@
                                 Kembalikan
                             </button>
                         </li>
-                        <li>
+                        <li class="hidden">
                             <button wire:click="delete('{{ $loan->id }}')"
                                 wire:confirm="Are you sure you want to delete this loan record?"
                                 class="flex gap-2 items-center p-2 text-sm rounded text-error"
