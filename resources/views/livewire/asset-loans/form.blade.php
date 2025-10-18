@@ -5,9 +5,16 @@
             placeholder="Pilih asset" required />
     </div>
 
-    <!-- Borrower Name -->
+    <!-- Borrower (Employee) Combobox -->
     <div>
-        <x-input label="Nama Peminjam" wire:model="borrower_name" placeholder="Masukkan nama peminjam" required />
+        <livewire:components.combobox
+            wire:model="employee_id"
+            :options="$employees"
+            option-value="id"
+            option-label="full_name"
+            label="Peminjam"
+            placeholder="Pilih karyawan"
+        />
     </div>
 
     <!-- Checkout Date -->
@@ -31,12 +38,6 @@
             @endif
         </div>
     @endif
-
-    <!-- Condition Out -->
-    <div>
-        {{-- <x-select label="Kondisi Saat Dipinjam" wire:model="condition_out" :options="$conditions" option-value="value"
-            option-label="label" placeholder="Pilih kondisi" required /> --}}
-    </div>
 
     <!-- Condition In (for edit mode or when returned) -->
     @if($isEdit && $checkin_at)

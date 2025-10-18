@@ -2,35 +2,43 @@
 
 namespace App\Livewire\AssetLoans;
 
-use App\Models\AssetLoan;
 use App\Models\Asset;
-use App\Enums\LoanCondition;
+use App\Models\AssetLoan;
+use App\Models\Employee;
 use Livewire\Component;
 use Mary\Traits\Toast;
-use Carbon\Carbon;
 
 class Form extends Component
 {
     use Toast;
 
     public $assetLoanId;
+
     public $asset_id = '';
-    public $borrower_name = '';
+
+    public $employee_id = '';
+
     public $checkout_at = '';
+
     public $due_at = '';
+
     public $checkin_at = '';
+
     public $condition_out;
+
     public $condition_in;
+
     public $notes = '';
+
     public $isEdit = false;
 
     protected $rules = [
         'asset_id' => 'required|exists:assets,id',
-        'borrower_name' => 'required|string|max:255',
+        'employee_id' => 'required|exists:employees,id',
         'checkout_at' => 'required|date',
         'due_at' => 'required|date|after:checkout_at',
         'checkin_at' => 'nullable|date|after_or_equal:checkout_at',
-        'condition_out' => 'required',
+        'condition_out' => 'nullable',
         'condition_in' => 'nullable',
         'notes' => 'nullable|string',
     ];
@@ -38,16 +46,15 @@ class Form extends Component
     protected $listeners = [
         'editAssetLoan' => 'edit',
         'resetForm' => 'resetForm',
-        'resetEditForm' => 'resetForm'
+        'resetEditForm' => 'resetForm',
     ];
 
     public function mount($assetLoanId = null)
     {
         $this->assetLoanId = $assetLoanId;
-        // $this->condition_out = LoanCondition::EXCELLENT->value;
         $this->checkout_at = now()->format('Y-m-d');
         $this->due_at = now()->addDays(7)->format('Y-m-d');
-        
+
         if ($assetLoanId) {
             $this->isEdit = true;
             $this->loadAssetLoan();
@@ -60,7 +67,7 @@ class Form extends Component
             $assetLoan = AssetLoan::find($this->assetLoanId);
             if ($assetLoan) {
                 $this->asset_id = $assetLoan->asset_id;
-                $this->borrower_name = $assetLoan->borrower_name;
+                $this->employee_id = $assetLoan->employee_id;
                 $this->checkout_at = $assetLoan->checkout_at->format('Y-m-d');
                 $this->due_at = $assetLoan->due_at->format('Y-m-d');
                 $this->checkin_at = $assetLoan->checkin_at?->format('Y-m-d');
@@ -78,12 +85,10 @@ class Form extends Component
         try {
             $data = [
                 'asset_id' => $this->asset_id,
-                'borrower_name' => $this->borrower_name,
+                'employee_id' => $this->employee_id,
                 'checkout_at' => $this->checkout_at,
                 'due_at' => $this->due_at,
                 'checkin_at' => $this->checkin_at ?: null,
-                // 'condition_out' => LoanCondition::from($this->condition_out),
-                // 'condition_in' => $this->condition_in ? LoanCondition::from($this->condition_in) : null,
                 'notes' => $this->notes ?: null,
             ];
 
@@ -99,7 +104,7 @@ class Form extends Component
                 $this->resetForm();
             }
         } catch (\Exception $e) {
-            $this->error('An error occurred: ' . $e->getMessage());
+            $this->error('An error occurred: '.$e->getMessage());
         }
     }
 
@@ -107,7 +112,7 @@ class Form extends Component
     {
         if ($this->isEdit && $this->assetLoanId) {
             $this->checkin_at = now()->format('Y-m-d');
-            if (!$this->condition_in) {
+            if (! $this->condition_in) {
                 $this->condition_in = $this->condition_out;
             }
         }
@@ -116,11 +121,10 @@ class Form extends Component
     public function resetForm()
     {
         $this->asset_id = '';
-        $this->borrower_name = '';
+        $this->employee_id = '';
         $this->checkout_at = now()->format('Y-m-d');
         $this->due_at = now()->addDays(7)->format('Y-m-d');
         $this->checkin_at = '';
-        // $this->condition_out = LoanCondition::EXCELLENT->value;
         $this->condition_in = '';
         $this->notes = '';
         $this->resetValidation();
@@ -128,15 +132,11 @@ class Form extends Component
 
     public function render()
     {
-        $assets = Asset::available()->orderBy('name')->get();
-        
-        // $conditions = collect(LoanCondition::cases())->map(function ($condition) {
-        //     return (object) [
-        //         'value' => $condition->value,
-        //         'label' => $condition->label()
-        //     ];
-        // });
+        $assets = Asset::available()->orderBy('name')->get(['id', 'name']);
+        $employees = Employee::query()
+            ->orderBy('full_name')
+            ->get(['id', 'full_name']);
 
-        return view('livewire.asset-loans.form', compact('assets', ));
+        return view('livewire.asset-loans.form', compact('assets', 'employees'));
     }
 }

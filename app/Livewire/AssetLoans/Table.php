@@ -6,6 +6,7 @@ use App\Enums\AssetLoanStatus;
 use App\Enums\AssetStatus;
 use App\Models\Asset;
 use App\Models\Category;
+use App\Support\SessionKey;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -68,8 +69,10 @@ class Table extends Component
 
     public function render()
     {
+        $currentBranchId = session_get(SessionKey::BranchId);
         // Base query for assets
         $assetsQuery = Asset::query()
+            ->forBranch($currentBranchId)
             ->with([
                 'category',
                 'currentLoan.employee',
@@ -126,13 +129,10 @@ class Table extends Component
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        // Assets available for new loan (for drawer)
-        $availableAssets = Asset::available()->orderBy('name')->get();
-
         // Build dynamic status counts keyed by enum value
-        $availableCount = Asset::available()->count();
-        $onLoanCount = Asset::query()->where('status', AssetStatus::ON_LOAN)->count();
-        $overdueCount = Asset::query()
+        $availableCount = Asset::forBranch($currentBranchId)->available()->count();
+        $onLoanCount = Asset::forBranch($currentBranchId)->where('status', AssetStatus::ON_LOAN)->count();
+        $overdueCount = Asset::forBranch($currentBranchId)
             ->where('status', AssetStatus::ON_LOAN)
             ->whereHas('loans', function ($q) {
                 $q->whereNull('checkin_at')->where('due_at', '<', now());
@@ -151,6 +151,6 @@ class Table extends Component
         // Provide categories to the view
         $categories = Category::active()->orderBy('name')->get();
 
-        return view('livewire.asset-loans.table', compact('assets', 'availableAssets', 'statusCounts', 'loanStatuses', 'categories'));
+        return view('livewire.asset-loans.table', compact('assets', 'statusCounts', 'loanStatuses', 'categories'));
     }
 }
