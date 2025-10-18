@@ -1,5 +1,5 @@
-<div>
-    <fieldset class="py-0 fieldset">
+<div class="relative">
+    <fieldset class="relative z-50 py-0 fieldset">
         @if($label)
             <legend class="mb-0.5 fieldset-legend">
                 {{ $label }}
@@ -11,12 +11,14 @@
             </legend>
         @endif
 
-        <label class="w-full input" wire:click="$set('showDropdown', true)">
+        <label class="relative z-50 w-full input">
             <input
                 type="search"
                 class="grow"
                 placeholder="{{ $placeholder }}"
                 wire:model.live="search"
+                wire:focus="$set('showDropdown', true)"
+                
                 wire:keydown.escape="$set('showDropdown', false)"
                 @if($disabled) disabled @endif
             />
@@ -29,8 +31,13 @@
         </label>
     </fieldset>
 
-    @if(true || $showDropdown)
-        <ul class="shadow-md list bg-base-100 rounded-box">
+    {{-- Overlay untuk click di luar component --}}
+    @if($showDropdown)
+        <div class="fixed inset-0 z-40" wire:click="$set('showDropdown', false)"></div>
+    @endif
+
+    {{-- @if($showDropdown) --}}
+        <ul class="shadow-md list bg-base-100 rounded-box {{ $showDropdown ? '' : 'hidden' }} relative z-50" >
             <li class="p-4 pb-2 text-xs tracking-wide opacity-60">Most played songs this week</li>
             @forelse($options as $opt)
                 @php
@@ -61,7 +68,7 @@
                             ? in_array((string) $optValue, array_map('strval', $value), true)
                             : ((string) $value !== '' && (string) $value === (string) $optValue);
                     @endphp
-                    <label class="list-row cursor-pointer hover:bg-base-300/60 {{ $isSelected ? 'bg-base-300/60' : '' }}">
+                    <label class="list-row cursor-pointer hover:bg-base-300/60 {{ $isSelected ? 'bg-base-300/60' : '' }}" wire:click.stop="$set('showDropdown', true)" wire:mousedown.stop="$set('showDropdown', true)">
                         <input type="checkbox"
                             name="{{ $id }}"
                             class="checkbox checkbox-sm"
@@ -78,5 +85,5 @@
                 <li class="p-4 text-sm opacity-60">{{ $emptyText }}</li>
             @endforelse
         </ul>
-    @endif
+    {{-- @endif --}}
 </div>

@@ -64,26 +64,18 @@ class Combobox extends Component
         } else {
             $this->value = $value ?? null;
         }
-
-        // Normalize value shape according to multiple mode
-        // if ($this->multiple) {
-        //     $this->value = is_array($value) ? $value : ($value === null ? [] : [$value]);
-        // } else {
-        //     $this->value = is_array($value) ? (count($value) ? $value[0] : null) : $value;
-        // }
-
-        // Initialize search with selected label if any (single mode)
-        // if (! $this->multiple && $this->value) {
-        //     $selected = $this->findOptionByValue($this->value);
-        //     if ($selected) {
-        //         $this->search = data_get($selected, $this->optionLabel);
-        //     }
-        // }
     }
 
     public function updatedSearch()
     {
         $this->showDropdown = true;
+    }
+
+    public function updatedValue()
+    {
+        if (! $this->multiple) {
+            $this->showDropdown = false;
+        }
     }
 
     public function select($id)
