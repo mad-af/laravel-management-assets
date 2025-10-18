@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\AssetCondition;
+use App\Enums\AssetLoanStatus;
 use App\Enums\AssetLogAction;
 use App\Enums\AssetStatus;
 use Illuminate\Database\Eloquent\Builder;
@@ -12,6 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Support\Facades\Auth;
 
 class Asset extends Model
@@ -156,8 +158,6 @@ class Asset extends Model
         return $this->vehicleProfile()->exists();
     }
 
-    
-
     /**
      * Scope untuk kendaraan yang pajak tahunannya sudah terlambat (overdue)
      */
@@ -285,5 +285,38 @@ class Asset extends Model
                 ]);
             }
         });
+    }
+
+    /**
+     * Derived attribute: status pinjaman aset (available/on_loan/overtime)
+     */
+    public function getAssetLoanStatusAttribute(): AssetLoanStatus
+    {
+        if ($this->status === AssetStatus::ON_LOAN) {
+            $loan = $this->loans()->whereNull('checkin_at')->orderBy('checkout_at', 'desc')->first();
+            if ($loan && $loan->due_at && $loan->due_at->isPast()) {
+                return AssetLoanStatus::OVERTIME;
+            }
+
+            return AssetLoanStatus::ON_LOAN;
+        }
+
+        return AssetLoanStatus::AVAILABLE;
+    }
+
+    /**
+     * Relasi: peminjam saat ini (Employee) melalui pinjaman aktif.
+     */
+    public function currentBorrower(): HasOneThrough
+    {
+        return $this->hasOneThrough(
+            Employee::class,
+            AssetLoan::class,
+            'asset_id',   // FK di asset_loans yang merefer ke assets
+            'id',         // PK di employees yang direfer oleh asset_loans.employee_id
+            'id',         // local key di assets
+            'employee_id' // local key di asset_loans yang merefer ke employees
+        )->whereNull('asset_loans.checkin_at')
+            ->orderByDesc('asset_loans.checkout_at');
     }
 }

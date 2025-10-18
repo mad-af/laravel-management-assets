@@ -2,8 +2,10 @@
 
 namespace App\Livewire\AssetLoans;
 
+use App\Enums\AssetLoanStatus;
 use App\Enums\AssetStatus;
 use App\Models\Asset;
+use App\Models\Category;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -14,13 +16,15 @@ class Table extends Component
     public $search = '';
 
     // Default to show active loans to avoid empty list
-    public $statusFilter = 'on_loan';
+    public $statusFilter = AssetLoanStatus::ON_LOAN->value;
 
     public $conditionFilter = '';
 
     public $overdueFilter = false;
 
-    protected $queryString = ['search', 'statusFilter', 'conditionFilter', 'overdueFilter'];
+    public $categoryFilter = '';
+
+    protected $queryString = ['search', 'statusFilter', 'conditionFilter', 'overdueFilter', 'categoryFilter'];
 
     protected $listeners = [
         'asset-loan-saved' => '$refresh',
@@ -47,6 +51,11 @@ class Table extends Component
         $this->resetPage();
     }
 
+    public function updatingCategoryFilter()
+    {
+        $this->resetPage();
+    }
+
     public function openDrawer()
     {
         $this->dispatch('open-drawer');
@@ -63,12 +72,7 @@ class Table extends Component
         $assetsQuery = Asset::query()
             ->with([
                 'category',
-                // eager-load active loan and employee to render borrower details
-                'loans' => function ($q) {
-                    $q->whereNull('checkin_at')
-                        ->with('employee')
-                        ->orderBy('checkout_at', 'desc');
-                },
+                'currentBorrower'
             ])
             ->when($this->search, function ($query) {
                 $term = '%'.$this->search.'%';
@@ -82,13 +86,13 @@ class Table extends Component
                 });
             })
             // Map statusFilter driven by tabs to Asset status and loan state
-            ->when($this->statusFilter === 'available', function ($query) {
+            ->when($this->statusFilter === AssetLoanStatus::AVAILABLE->value, function ($query) {
                 $query->available();
             })
-            ->when($this->statusFilter === 'on_loan' || $this->statusFilter === 'active', function ($query) {
+            ->when($this->statusFilter === AssetLoanStatus::ON_LOAN->value || $this->statusFilter === 'active', function ($query) {
                 $query->where('status', AssetStatus::ON_LOAN);
             })
-            ->when($this->statusFilter === 'overdue', function ($query) {
+            ->when($this->statusFilter === AssetLoanStatus::OVERTIME->value, function ($query) {
                 $query->where('status', AssetStatus::ON_LOAN)
                     ->whereHas('loans', function ($loanQuery) {
                         $loanQuery->whereNull('checkin_at')
@@ -113,6 +117,9 @@ class Table extends Component
                     $loanQuery->whereNull('checkin_at')
                         ->where('due_at', '<', now());
                 });
+            })
+            ->when($this->categoryFilter, function ($query) {
+                $query->where('category_id', $this->categoryFilter);
             });
 
         $assets = $assetsQuery
@@ -122,7 +129,7 @@ class Table extends Component
         // Assets available for new loan (for drawer)
         $availableAssets = Asset::available()->orderBy('name')->get();
 
-        // Counts for tabs
+        // Build dynamic status counts keyed by enum value
         $availableCount = Asset::available()->count();
         $onLoanCount = Asset::query()->where('status', AssetStatus::ON_LOAN)->count();
         $overdueCount = Asset::query()
@@ -132,6 +139,18 @@ class Table extends Component
             })
             ->count();
 
-        return view('livewire.asset-loans.table', compact('assets', 'availableAssets', 'availableCount', 'onLoanCount', 'overdueCount'));
+        $statusCounts = [
+            AssetLoanStatus::AVAILABLE->value => $availableCount,
+            AssetLoanStatus::ON_LOAN->value => $onLoanCount,
+            AssetLoanStatus::OVERTIME->value => $overdueCount,
+        ];
+
+        // Provide status cases to the view if needed
+        $loanStatuses = AssetLoanStatus::cases();
+
+        // Provide categories to the view
+        $categories = Category::active()->orderBy('name')->get();
+
+        return view('livewire.asset-loans.table', compact('assets', 'availableAssets', 'statusCounts', 'loanStatuses', 'categories'));
     }
 }

@@ -1,26 +1,17 @@
 <div class="shadow card bg-base-100">
     <div class="space-y-4 card-body">
+        
         {{-- Status Taxes Tabs --}}
         <div class="overflow-x-auto">
             <div class="gap-1 items-center min-w-max tabs tabs-box tabs-sm w-fit">
-                <label class="gap-2 tab">
-                    <input type="radio" name="status_tabs" class="checked:bg-base-100 checked:shadow"
-                        wire:model.live="statusFilter" value="available" />
-                    Tersedia
-                    <x-badge class="badge-success" :value="$availableCount" />
-                </label>
-                <label class="gap-2 tab">
-                    <input type="radio" name="status_tabs" class="checked:bg-base-100 checked:shadow"
-                        wire:model.live="statusFilter" value="on_loan" />
-                    Dalam Peminjaman
-                    <x-badge class="badge-warning" :value="$onLoanCount" />
-                </label>
-                <label class="gap-2 tab">
-                    <input type="radio" name="status_tabs" class="checked:bg-base-100 checked:shadow"
-                        wire:model.live="statusFilter" value="overdue" />
-                    Terlambat
-                    <x-badge class="badge-error" :value="$overdueCount" />
-                </label>
+                @foreach($loanStatuses as $status)
+                    <label class="gap-2 tab">
+                        <input type="radio" name="status_tabs" class="checked:bg-base-100 checked:shadow"
+                            wire:model.live="statusFilter" value="{{ $status->value }}" />
+                        {{ $status->label() }}
+                        <x-badge class="badge-{{ $status->color() }}" :value="$statusCounts[$status->value] ?? 0" />
+                    </label>
+                @endforeach
             </div>
         </div>
 
@@ -37,30 +28,15 @@
                 <x-dropdown>
                     <x-slot:trigger>
                         <x-button icon="o-funnel" class="btn-sm">
-                            Filter Status
+                            Filter Kategori
                         </x-button>
                     </x-slot:trigger>
 
-                    <x-menu-item title="Semua Status" wire:click="$set('statusFilter', '')" />
-                    <x-menu-item title="Aktif" wire:click="$set('statusFilter', 'active')" />
-                    <x-menu-item title="Dikembalikan" wire:click="$set('statusFilter', 'returned')" />
+                    <x-menu-item title="Semua Kategori" wire:click="$set('categoryFilter', '')" />
+                    @foreach($categories as $category)
+                        <x-menu-item title="{!! $category->name !!}" wire:click="$set('categoryFilter', '{{ $category->id }}')" />
+                    @endforeach
                 </x-dropdown>
-
-                <x-dropdown>
-                    <x-slot:trigger>
-                        <x-button icon="o-exclamation-triangle" class="btn-sm">
-                            Filter Kondisi
-                        </x-button>
-                    </x-slot:trigger>
-
-                    <x-menu-item title="Semua Kondisi" wire:click="$set('conditionFilter', '')" />
-                    {{-- @foreach($conditions as $condition)
-                        <x-menu-item title="{{ $condition->label() }}"
-                            wire:click="$set('conditionFilter', '{{ $condition->value }}')" />
-                    @endforeach --}}
-                </x-dropdown>
-
-                <x-checkbox wire:model.live="overdueFilter" label="Terlambat" class="checkbox-sm" />
             </div>
         </div>
 
@@ -72,17 +48,30 @@
                     ['key' => 'borrower_name', 'label' => 'Peminjam'],
                     ['key' => 'checkout_at', 'label' => 'Tgl Pinjam'],
                     ['key' => 'due_at', 'label' => 'Tgl Jatuh Tempo'],
-                    ['key' => 'checkin_at', 'label' => 'Tgl Kembali'],
                     ['key' => 'condition', 'label' => 'Kondisi'],
-                    ['key' => 'status', 'label' => 'Status', 'class' => 'w-32'],
+                    ['key' => 'status', 'label' => 'Status'],
                     ['key' => 'actions', 'label' => 'Aksi', 'class' => 'w-20'],
                 ];
+                dd($assets);
             @endphp
             <x-table :headers="$headers" :rows="$assets" striped show-empty-text>
                 @scope('cell_asset', $asset)
-                <div class="flex flex-col">
-                    <span class="font-medium">{{ $asset->name }}</span>
-                    <span class="text-xs text-base-content/60">{{ $asset->code }}</span>
+                <div class="flex gap-2 items-center">
+                    @if (!$asset->image)
+                        <div
+                            class="flex justify-center items-center font-bold rounded-lg border-2 size-13 bg-base-300 border-base-100">
+                            <x-icon name="o-photo" class="w-6 h-6 text-base-content/60" />
+                        </div>
+                    @else
+                        <x-avatar :image="asset('storage/'.$asset->image)"
+                            class="!w-13 !rounded-lg !bg-base-300 !font-bold border-2 border-base-100">
+                        </x-avatar>
+                    @endif
+                    <div>
+                        <div class="font-mono text-xs truncate text-base-content/60">{{ $asset->code }}</div>
+                        <div class="font-medium">{{ $asset->name }}</div>
+                        <div class="text-xs text-base-content/60">Tag: {{ $asset->tag_code }}</div>
+                    </div>
                 </div>
                 @endscope
 
@@ -97,55 +86,21 @@
                 @scope('cell_due_at', $asset)
                 @php $due = optional($asset->loans->first())->due_at; @endphp
                 <div class="flex flex-col">
-                    <span class="{{ ($asset->status === \App\Enums\AssetStatus::ON_LOAN && $due && $due->isPast()) ? 'text-error font-medium' : '' }}">
+                    <span class="{{ ($asset->asset_loan_status === \App\Enums\AssetLoanStatus::OVERTIME) ? 'text-error font-medium' : '' }}">
                         {{ $due ? $due->format('d M Y') : '-' }}
                     </span>
-                    @if($asset->status === \App\Enums\AssetStatus::ON_LOAN && $due && $due->isPast())
+                    @if($asset->asset_loan_status === \App\Enums\AssetLoanStatus::OVERTIME)
                         <span class="text-xs text-error">Terlambat</span>
                     @endif
                 </div>
                 @endscope
 
-                @scope('cell_checkin_at', $asset)
-                @if($asset->status === \App\Enums\AssetStatus::ON_LOAN)
-                    <span class="text-warning">Belum dikembalikan</span>
-                @else
-                    -
-                @endif
-                @endscope
-
                 @scope('cell_condition', $asset)
-                @php $loan = $asset->loans->first(); @endphp
-                <div class="flex flex-col gap-1">
-                    @if(optional($loan)->condition_out)
-                        <div class="flex gap-1 items-center">
-                            <span class="text-xs">Keluar:</span>
-                            <x-badge value="{{ $loan->condition_out->label() }}"
-                                class="{{ $loan->condition_out->badgeColor() }} badge-xs" />
-                        </div>
-                    @endif
-                    @if(optional($loan)->condition_in)
-                        <div class="flex gap-1 items-center">
-                            <span class="text-xs">Masuk:</span>
-                            <x-badge value="{{ $loan->condition_in->label() }}"
-                                class="{{ $loan->condition_in->badgeColor() }} badge-xs" />
-                        </div>
-                    @endif
-                    @if(!optional($loan)->condition_out && !optional($loan)->condition_in)
-                        -
-                    @endif
-                </div>
+                <x-badge value="{{ $asset->condition->label() }}" class="whitespace-nowrap badge-outline badge-{{ $asset->condition->color() }} badge-sm" />
                 @endscope
 
                 @scope('cell_status', $asset)
-                @php $due = optional($asset->loans->first())->due_at; @endphp
-                @if($asset->status === \App\Enums\AssetStatus::ON_LOAN && $due && $due->isPast())
-                    <x-badge value="Terlambat" class="whitespace-nowrap badge-error badge-sm" />
-                @elseif($asset->status === \App\Enums\AssetStatus::ON_LOAN)
-                    <x-badge value="Dalam Peminjaman" class="whitespace-nowrap badge-warning badge-sm" />
-                @else
-                    <x-badge value="Tersedia" class="whitespace-nowrap badge-success badge-sm" />
-                @endif
+                <x-badge value="{{ $asset->asset_loan_status->label() }}" class="whitespace-nowrap badge-{{ $asset->asset_loan_status->color() }} badge-sm" />
                 @endscope
 
                 @scope('cell_actions', $asset)
