@@ -70,8 +70,8 @@ class Form extends Component
     public function loadEmployees($search = '')
     {
         $branchId = session_get(SessionKey::BranchId);
-        $query = Employee::query()
-            ->where('branch_id', $branchId);
+        $query = Employee::query();
+            // ->where('branch_id', $branchId);
 
         if (! empty($search)) {
             $query->where('full_name', 'like', "%$search%");

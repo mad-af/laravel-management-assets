@@ -3,12 +3,14 @@
 namespace App\Livewire\Components;
 
 use Illuminate\Support\Arr;
+use Livewire\Attributes\Modelable;
 use Livewire\Component;
 
 class Combobox extends Component
 {
     public string $name;
 
+    #[Modelable]
     public $value = null;
 
     public $selected = [];
@@ -135,6 +137,9 @@ class Combobox extends Component
 
     public function updatedValue()
     {
+        if (empty($this->value)) {
+            return;
+        }
         if (! $this->multiple) {
             $this->showDropdown = false;
             $this->selected = collect([$this->findOptionByValue($this->value)]);
