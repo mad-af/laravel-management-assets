@@ -16,14 +16,17 @@
                 <div class="text-xs tooltip-content">
                     {{ collect($selected)->pluck($optionLabel)->join(', ') }}
                 </div>
-                @if (count($selected) == 1)
-                    <x-badge class="badge-sm badge-outline" value="{{ \Illuminate\Support\Str::limit((string) data_get($selected->first(), $optionLabel), 16) }}" />
-                @elseif(count($selected) > 1)
+                @if ($selected && count($selected) == 1)
+                    <x-badge class="badge-sm badge-outline"
+                        value="{{ \Illuminate\Support\Str::limit((string) data_get($selected->first(), $optionLabel), 16) }}" />
+                @elseif($selected && count($selected) > 1)
                     <x-badge class="badge-sm badge-outline" value="{{ count($selected) - 1 }}" />
-                    <x-badge class="badge-sm badge-outline" value="{{ \Illuminate\Support\Str::limit((string) data_get($selected->last(), $optionLabel), 16) }}" />
+                    <x-badge class="badge-sm badge-outline"
+                        value="{{ \Illuminate\Support\Str::limit((string) data_get($selected->last(), $optionLabel), 16) }}" />
                 @endif
             </div>
-            <input type="search" class="z-50 w-full min-w-0" placeholder="{{ count($selected) ? '' : $placeholder }}"
+            <input type="search" class="z-50 w-full min-w-0"
+                placeholder="{{ $selected && count($selected) ? '' : $placeholder }}"
                 wire:model.live.debounce.600ms="search" wire:focus="$set('showDropdown', true)"
                 wire:keydown.escape="$set('showDropdown', false)" @if($disabled) disabled @endif />
             <div class="z-50">
@@ -106,10 +109,11 @@
                                 ? in_array((string) $optValue, array_map('strval', $value), true)
                                 : ((string) $value !== '' && (string) $value === (string) $optValue);
                         @endphp
-                        <label class="list-row items-center py-2.5 cursor-pointer hover:bg-base-300/60 {{ $isSelected ? 'bg-base-300/60' : '' }}"
+                        <label
+                            class="list-row items-center py-2.5 cursor-pointer hover:bg-base-300/60 {{ $isSelected ? 'bg-base-300/60' : '' }}"
                             wire:click.stop="$set('showDropdown', true)" wire:mousedown.stop="$set('showDropdown', true)">
-                            <input type="checkbox" name="{{ $id }}-{{ $optValue }}" class="mr-2 checkbox checkbox-sm" wire:model.live="value"
-                                value="{{ $optValue }}" />
+                            <input type="checkbox" name="{{ $id }}-{{ $optValue }}" class="mr-2 checkbox checkbox-sm"
+                                wire:model.live="value" value="{{ $optValue }}" />
                             <div class="grow">
                                 <div class="flex gap-2 items-center">
                                     @if($avatarUrl)
@@ -122,12 +126,12 @@
                                         </div>
                                     @endif
                                     <div class="min-w-0">
+                                        @if($optMeta)
+                                            <div class="text-xs truncate text-base-content/60">{{ $optMeta }}</div>
+                                        @endif
                                         <div class="font-medium truncate">{{ $optLabel }}</div>
                                         @if($optSubLabel)
                                             <div class="text-xs truncate text-base-content/70">{{ $optSubLabel }}</div>
-                                        @endif
-                                        @if($optMeta)
-                                            <div class="text-xs truncate text-base-content/60">{{ $optMeta }}</div>
                                         @endif
                                     </div>
                                 </div>

@@ -16,7 +16,7 @@ class Form extends Component
 
     public $assetLoanId;
 
-    public $asset_id = [];
+    public $asset_id = '';
 
     public $employee_id = '';
 
@@ -95,9 +95,11 @@ class Form extends Component
         $query = Asset::forBranch($branchId)->available();
 
         if (! empty($search)) {
-            $query->where('name', 'like', "%$search%")
-                ->where('code', 'like', "%$search%")
-                ->where('tag_code', 'like', "%$search%");
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%$search%")
+                  ->orWhere('code', 'like', "%$search%")
+                  ->orWhere('tag_code', 'like', "%$search%");
+            });
         }
 
         $this->assets = $query->orderBy('name')

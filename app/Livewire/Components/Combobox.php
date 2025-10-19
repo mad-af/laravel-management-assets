@@ -137,21 +137,18 @@ class Combobox extends Component
 
     public function updatedValue($param)
     {
-        dd(
-            $param,
-            $this->value,
-        );
         if (empty($this->value)) {
+            $this->selected = $this->multiple ? [] : null;
             return;
         }
-        if (! $this->multiple) {
-            $this->showDropdown = false;
-            $this->selected = collect([$this->findOptionByValue($this->value)]);
-        } else {
+        if ($this->multiple) {
             $this->selected = collect(Arr::wrap($this->value))
                 ->map(function ($val) {
                     return $this->findOptionByValue($val);
                 });
+        } else {
+            $this->showDropdown = false;
+            $this->selected = collect([$this->findOptionByValue($this->value)]);
         }
 
     }
