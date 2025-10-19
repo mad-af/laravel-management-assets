@@ -35,6 +35,9 @@ class Combobox extends Component
 
     public bool $showDropdown = false;
 
+    // Menandai loading saat pencarian berjalan
+    public bool $isLoading = false;
+
     public bool $clearable = true;
 
     public bool $disabled = false;
@@ -110,6 +113,7 @@ class Combobox extends Component
     public function updatedSearch($search)
     {
         $this->showDropdown = true;
+        $this->isLoading = true;
 
         // Emit event ke parent untuk memuat options hasil pencarian (opsional)
         $this->dispatch('combobox-load-'.$this->name, $search);
@@ -121,10 +125,12 @@ class Combobox extends Component
             'combobox-set-'.$this->name => 'onSetOptions',
         ];
     }
+
     public function onSetOptions($options)
     {
         // Terima data options dari parent dan set ke komponen
         $this->options = $options;
+        $this->isLoading = false;
     }
 
     public function updatedValue()
@@ -139,6 +145,12 @@ class Combobox extends Component
                 });
         }
 
+    }
+
+    public function updatedOptions()
+    {
+        // Jika options berubah dari proses lain, matikan indikator loading
+        $this->isLoading = false;
     }
 
     public function clear()

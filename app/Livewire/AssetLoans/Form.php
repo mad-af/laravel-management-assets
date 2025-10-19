@@ -104,6 +104,7 @@ class Form extends Component
 
     public function save()
     {
+        dd($this->employee_id, "sdad");
         $this->validate();
 
         try {
