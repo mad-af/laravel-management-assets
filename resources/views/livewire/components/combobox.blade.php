@@ -50,36 +50,86 @@
             @php
                 $optLabel = data_get($opt, $optionLabel);
                 $optValue = data_get($opt, $optionValue);
+                $optAvatar = $optionAvatar ? data_get($opt, $optionAvatar) : null;
+                $optSubLabel = $optionSubLabel ? data_get($opt, $optionSubLabel) : null;
+                $optMeta = $optionMeta ? data_get($opt, $optionMeta) : null;
+                $avatarUrl = null;
+                if ($optAvatar) {
+                    $avatarUrl = str_starts_with((string) $optAvatar, 'http')
+                        ? (string) $optAvatar
+                        : asset('storage/' . $optAvatar);
+                }
             @endphp
-
+            
             @if(!$multiple)
-                <li class="">
-                    @php
-                        $isSelected = (string) $value !== '' && (string) $value === (string) $optValue;
-                    @endphp
-                    <label class="list-row cursor-pointer hover:bg-base-300/60 {{ $isSelected ? 'bg-base-300/60' : '' }}">
-                        <input type="radio" name="{{ $id }}" class="sr-only" wire:model.live="value" value="{{ $optValue }}" />
-                        <div class="grow">
-                            <div class="truncate">{{ $optLabel }}</div>
+            <li class="">
+                @php
+                    $isSelected = (string) $value !== '' && (string) $value === (string) $optValue;
+                @endphp
+                <label class="list-row py-2.5 cursor-pointer hover:bg-base-300/60 {{ $isSelected ? 'bg-base-300/60' : '' }}">
+                    <input type="radio" name="{{ $id }}"
+                        class="sr-only"
+                        wire:model.live="value"
+                        value="{{ $optValue }}"
+                    />
+                    <div class="grow">
+                        <div class="flex gap-2 items-center">
+                            @if($avatarUrl)
+                                <x-avatar :image="$avatarUrl" class="!w-10 !h-10 !rounded-lg !bg-base-300 !font-bold border-2 border-base-100" />
+                            @elseif($optionAvatar)
+                                <div class="flex justify-center items-center font-bold rounded-lg border-2 size-10 bg-base-300 border-base-100">
+                                    <x-icon name="o-photo" class="w-5 h-5 text-base-content/60" />
+                                </div>
+                            @endif
+                            <div class="min-w-0">
+                                @if($optMeta)
+                                    <div class="text-xs truncate text-base-content/60">{{ $optMeta }}</div>
+                                @endif
+                                <div class="font-medium truncate">{{ $optLabel }}</div>
+                                @if($optSubLabel)
+                                    <div class="text-xs truncate text-base-content/70">{{ $optSubLabel }}</div>
+                                @endif
+                            </div>
                         </div>
-                    </label>
-                </li>
+                    </div>
+                </label>
+            </li>
             @else
-                <li class="">
-                    @php
-                        $isSelected = is_array($value)
-                            ? in_array((string) $optValue, array_map('strval', $value), true)
-                            : ((string) $value !== '' && (string) $value === (string) $optValue);
-                    @endphp
-                    <label class="list-row cursor-pointer hover:bg-base-300/60 {{ $isSelected ? 'bg-base-300/60' : '' }}"
-                        wire:click.stop="$set('showDropdown', true)" wire:mousedown.stop="$set('showDropdown', true)">
-                        <input type="checkbox" name="{{ $id }}" class="checkbox checkbox-sm" wire:model.live="value"
-                            value="{{ $optValue }}" />
-                        <div class="grow">
-                            <div class="truncate">{{ $optLabel }}</div>
+            <li class="">
+                @php
+                    $isSelected = is_array($value)
+                        ? in_array((string) $optValue, array_map('strval', $value), true)
+                        : ((string) $value !== '' && (string) $value === (string) $optValue);
+                @endphp
+                <label class="list-row py-2.5 cursor-pointer hover:bg-base-300/60 {{ $isSelected ? 'bg-base-300/60' : '' }}" wire:click.stop="$set('showDropdown', true)" wire:mousedown.stop="$set('showDropdown', true)">
+                    <input type="checkbox"
+                        name="{{ $id }}"
+                        class="mr-2 checkbox checkbox-sm"
+                        wire:model.live="value"
+                        value="{{ $optValue }}"
+                    />
+                    <div class="grow">
+                        <div class="flex gap-2 items-center">
+                            @if($avatarUrl)
+                                <x-avatar :image="$avatarUrl" class="!w-10 !h-10 !rounded-lg !bg-base-300 !font-bold border-2 border-base-100" />
+                            @elseif($optionAvatar)
+                                <div class="flex justify-center items-center font-bold rounded-lg border-2 size-10 bg-base-300 border-base-100">
+                                    <x-icon name="o-photo" class="w-5 h-5 text-base-content/60" />
+                                </div>
+                            @endif
+                            <div class="min-w-0">
+                                <div class="font-medium truncate">{{ $optLabel }}</div>
+                                @if($optSubLabel)
+                                    <div class="text-xs truncate text-base-content/70">{{ $optSubLabel }}</div>
+                                @endif
+                                @if($optMeta)
+                                    <div class="text-xs truncate text-base-content/60">{{ $optMeta }}</div>
+                                @endif
+                            </div>
                         </div>
-                    </label>
-                </li>
+                    </div>
+                </label>
+            </li>
             @endif
         @empty
             <li class="p-4 text-sm opacity-60">{{ $emptyText }}</li>

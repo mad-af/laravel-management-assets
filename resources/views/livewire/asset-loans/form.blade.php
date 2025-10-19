@@ -7,16 +7,9 @@
 
     <!-- Borrower (Employee) Combobox -->
     <div>
-        <livewire:components.combobox
-            wire:model="employee_id"
-            :options="$employees->toArray()"
-            option-value="id"
-            option-label="full_name"
-            label="Peminjam"
-            placeholder="Pilih karyawan"
-            required
-            class="input-sm"
-        />
+        <livewire:components.combobox wire:model="employee_id" :options="$employees" option-value="id"
+            option-label="full_name" option-sub-label="email" label="Peminjam" placeholder="Pilih karyawan" required
+            class="input-sm" />
     </div>
 
     <!-- Checkout Date -->

@@ -5,6 +5,7 @@ namespace App\Livewire\AssetLoans;
 use App\Models\Asset;
 use App\Models\AssetLoan;
 use App\Models\Employee;
+use App\Support\SessionKey;
 use Livewire\Component;
 use Mary\Traits\Toast;
 
@@ -132,10 +133,12 @@ class Form extends Component
 
     public function render()
     {
+        $branchId = session_get(SessionKey::BranchId);
         $assets = Asset::available()->orderBy('name')->get(['id', 'name']);
         $employees = Employee::query()
+            ->where('branch_id', $branchId)
             ->orderBy('full_name')
-            ->get(['id', 'full_name']);
+            ->get(['id', 'full_name', 'email'])->toArray();
 
         return view('livewire.asset-loans.form', compact('assets', 'employees'));
     }

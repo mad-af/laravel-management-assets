@@ -21,7 +21,7 @@ class Combobox extends Component
      * Options can be array of arrays/objects. Each option should have keys specified
      * by $optionValue and $optionLabel (default: id, name)
      */
-    public array $options = [];
+    public $options = [];
 
     public string $optionValue = 'id';
 
@@ -46,9 +46,16 @@ class Combobox extends Component
     // Tambahkan properti header yang bisa diubah
     public string $headerText = 'Pilihan yang tersedia';
 
+    // Kunci opsional untuk avatar, sublabel, dan meta pada opsi
+    public ?string $optionAvatar = null;
+
+    public ?string $optionSubLabel = null;
+
+    public ?string $optionMeta = null;
+
     public function mount(
         $value = null,
-        array $options = [],
+        $options = [],
         $label = null,
         $placeholder = null,
         $optionValue = 'id',
@@ -57,6 +64,9 @@ class Combobox extends Component
         $clearable = true,
         $multiple = false,
         $headerText = null,
+        $optionAvatar = null,
+        $optionSubLabel = null,
+        $optionMeta = null,
     ) {
         $this->id = uniqid('combobox-');
         $this->options = $options;
@@ -73,6 +83,17 @@ class Combobox extends Component
         // Set header jika dikirim dari atribut
         if ($headerText !== null) {
             $this->headerText = $headerText;
+        }
+
+        // Set kunci optional untuk avatar, sublabel, dan meta jika dikirim
+        if ($optionAvatar !== null) {
+            $this->optionAvatar = $optionAvatar;
+        }
+        if ($optionSubLabel !== null) {
+            $this->optionSubLabel = $optionSubLabel;
+        }
+        if ($optionMeta !== null) {
+            $this->optionMeta = $optionMeta;
         }
 
         if ($this->multiple) {
@@ -112,6 +133,43 @@ class Combobox extends Component
 
     protected function normalizedOptions()
     {
+        // Jika options adalah query builder, lakukan pencarian di server
+        if ($this->options instanceof \Illuminate\Database\Eloquent\Builder
+            || $this->options instanceof \Illuminate\Database\Query\Builder) {
+            $builder = clone $this->options;
+
+            // Tentukan kolom yang perlu diambil
+            $columns = array_values(array_unique(array_filter([
+                $this->optionValue,
+                $this->optionLabel,
+                $this->optionAvatar,
+                $this->optionSubLabel,
+                $this->optionMeta,
+            ])));
+
+            if (! empty($columns)) {
+                $builder->select($columns);
+            }
+
+            if ($this->search !== '') {
+                $builder->where($this->optionLabel, 'like', '%'.$this->search.'%');
+            }
+
+            $result = $builder->limit(20)->get();
+
+            return collect($result)->map(function ($row) {
+                if ($row instanceof \Illuminate\Database\Eloquent\Model) {
+                    return $row->getAttributes();
+                }
+                if (is_array($row)) {
+                    return $row;
+                }
+
+                return (array) $row;
+            });
+        }
+
+        // Default: options berupa array/objek/scalar
         return collect($this->options)->map(function ($o) {
             if (is_array($o)) {
                 return $o;
@@ -120,7 +178,24 @@ class Combobox extends Component
                 return (array) $o;
             }
 
-            return ['id' => $o, 'name' => (string) $o];
+            // Untuk opsi skalar, gunakan kunci dinamis sesuai konfigurasi
+            $option = [
+                $this->optionValue => $o,
+                $this->optionLabel => (string) $o,
+            ];
+
+            // Tambahkan kunci opsional jika dikonfigurasi
+            if ($this->optionAvatar) {
+                $option[$this->optionAvatar] = null;
+            }
+            if ($this->optionSubLabel) {
+                $option[$this->optionSubLabel] = null;
+            }
+            if ($this->optionMeta) {
+                $option[$this->optionMeta] = null;
+            }
+
+            return $option;
         });
     }
 
@@ -130,6 +205,40 @@ class Combobox extends Component
             return null;
         }
 
+        // Jika options adalah query builder, ambil langsung dari DB
+        if ($this->options instanceof \Illuminate\Database\Eloquent\Builder
+            || $this->options instanceof \Illuminate\Database\Query\Builder) {
+            $builder = clone $this->options;
+
+            $columns = array_values(array_unique(array_filter([
+                $this->optionValue,
+                $this->optionLabel,
+                $this->optionAvatar,
+                $this->optionSubLabel,
+                $this->optionMeta,
+            ])));
+
+            if (! empty($columns)) {
+                $builder->select($columns);
+            }
+
+            $row = $builder->where($this->optionValue, $val)->first();
+
+            if (! $row) {
+                return null;
+            }
+
+            if ($row instanceof \Illuminate\Database\Eloquent\Model) {
+                return $row->getAttributes();
+            }
+            if (is_array($row)) {
+                return $row;
+            }
+
+            return (array) $row;
+        }
+
+        // Default: cari di koleksi opsi yang sudah dinormalisasi
         return $this->normalizedOptions()->first(function ($o) use ($val) {
             return (string) data_get($o, $this->optionValue) === (string) $val;
         });
