@@ -16,7 +16,7 @@ class Form extends Component
 
     public $assetLoanId;
 
-    public $asset_id = '';
+    public $asset_id = [];
 
     public $employee_id = '';
 
@@ -101,7 +101,7 @@ class Form extends Component
         }
 
         $this->assets = $query->orderBy('name')
-            ->get(['id', 'name'])
+            ->get(['id', 'name', 'code', 'tag_code', 'image'])
             ->toArray();
 
         // Kirim hasil pencarian ke combobox 'assets'

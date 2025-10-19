@@ -135,8 +135,12 @@ class Combobox extends Component
         $this->isLoading = false;
     }
 
-    public function updatedValue()
+    public function updatedValue($param)
     {
+        dd(
+            $param,
+            $this->value,
+        );
         if (empty($this->value)) {
             return;
         }
