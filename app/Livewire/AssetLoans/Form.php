@@ -36,6 +36,8 @@ class Form extends Component
 
     public $employees = [];
 
+    public $assets = [];
+
     protected $rules = [
         'asset_id' => 'required|exists:assets,id',
         'employee_id' => 'required|exists:employees,id',
@@ -59,6 +61,7 @@ class Form extends Component
         $this->checkout_at = now()->format('Y-m-d');
         $this->due_at = now()->addDays(7)->format('Y-m-d');
         $this->loadEmployees();
+        $this->loadAssets();
 
         if ($assetLoanId) {
             $this->isEdit = true;
@@ -70,8 +73,8 @@ class Form extends Component
     public function loadEmployees($search = '')
     {
         $branchId = session_get(SessionKey::BranchId);
-        $query = Employee::query();
-            // ->where('branch_id', $branchId);
+        $query = Employee::query()
+            ->where('branch_id', $branchId);
 
         if (! empty($search)) {
             $query->where('full_name', 'like', "%$search%");
@@ -83,6 +86,26 @@ class Form extends Component
 
         // Kirim data options terbaru ke combobox instance bernama 'employees'
         $this->dispatch('combobox-set-employees', $this->employees);
+    }
+
+    #[On('combobox-load-assets')]
+    public function loadAssets($search = '')
+    {
+        $branchId = session_get(SessionKey::BranchId);
+        $query = Asset::forBranch($branchId)->available();
+
+        if (! empty($search)) {
+            $query->where('name', 'like', "%$search%")
+                ->where('code', 'like', "%$search%")
+                ->where('tag_code', 'like', "%$search%");
+        }
+
+        $this->assets = $query->orderBy('name')
+            ->get(['id', 'name'])
+            ->toArray();
+
+        // Kirim hasil pencarian ke combobox 'assets'
+        $this->dispatch('combobox-set-assets', $this->assets);
     }
 
     public function loadAssetLoan()
@@ -157,9 +180,9 @@ class Form extends Component
 
     public function render()
     {
-        $branchId = session_get(SessionKey::BranchId);
-        $assets = Asset::available()->orderBy('name')->get(['id', 'name']);
+        // $branchId = session_get(SessionKey::BranchId);
+        // $assets = Asset::forBranch($branchId)->available()->orderBy('name')->get(['id', 'name']);
 
-        return view('livewire.asset-loans.form', compact('assets'));
+        return view('livewire.asset-loans.form');
     }
 }

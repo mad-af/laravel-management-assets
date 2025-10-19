@@ -1,8 +1,8 @@
 <form wire:submit="save" class="space-y-4">
     <!-- Asset Selection -->
     <div>
-        <x-select label="Asset" wire:model="asset_id" :options="$assets" option-value="id" option-label="name"
-            placeholder="Pilih asset" required />
+        <livewire:components.combobox name="assets" wire:model="asset_id" :options="$assets" option-value="id" option-label="name"
+            label="Asset" placeholder="Pilih asset" required class="input-sm" />
     </div>
 
     <!-- Borrower (Employee) Combobox -->
