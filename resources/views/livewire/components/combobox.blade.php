@@ -24,7 +24,7 @@
                 @endif
             </div>
             <input type="search" class="w-full min-w-0" placeholder="{{ count($selected) ? '' : $placeholder }}"
-                wire:model.live="search" wire:focus="$set('showDropdown', true)"
+                wire:model.live.debounce.800ms="search" wire:focus="$set('showDropdown', true)"
                 wire:keydown.escape="$set('showDropdown', false)" @if($disabled) disabled @endif />
             <div class="">
                 @if($clearable && ($search || $value))

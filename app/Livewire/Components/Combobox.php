@@ -7,6 +7,8 @@ use Livewire\Component;
 
 class Combobox extends Component
 {
+    public string $name;
+
     public $value = null;
 
     public $selected = [];
@@ -21,7 +23,7 @@ class Combobox extends Component
      * Options can be array of arrays/objects. Each option should have keys specified
      * by $optionValue and $optionLabel (default: id, name)
      */
-    public $options = [];
+    public array $options = [];
 
     public string $optionValue = 'id';
 
@@ -54,8 +56,9 @@ class Combobox extends Component
     public ?string $optionMeta = null;
 
     public function mount(
+        string $name,
         $value = null,
-        $options = [],
+        array $options = [],
         $label = null,
         $placeholder = null,
         $optionValue = 'id',
@@ -69,6 +72,7 @@ class Combobox extends Component
         $optionMeta = null,
     ) {
         $this->id = uniqid('combobox-');
+        $this->name = $name;
         $this->options = $options;
         $this->label = $label;
         if ($placeholder) {
@@ -103,12 +107,27 @@ class Combobox extends Component
         }
     }
 
-    public function updatedSearch()
+    public function updatedSearch($search)
     {
         $this->showDropdown = true;
+
+        // Emit event ke parent untuk memuat options hasil pencarian (opsional)
+        $this->dispatch('combobox-load-'.$this->name, $search);
     }
 
-    public function updatedValue($coba)
+    protected function getListeners()
+    {
+        return [
+            'combobox-set-'.$this->name => 'onSetOptions',
+        ];
+    }
+    public function onSetOptions($options)
+    {
+        // Terima data options dari parent dan set ke komponen
+        $this->options = $options;
+    }
+
+    public function updatedValue()
     {
         if (! $this->multiple) {
             $this->showDropdown = false;
@@ -133,43 +152,6 @@ class Combobox extends Component
 
     protected function normalizedOptions()
     {
-        // Jika options adalah query builder, lakukan pencarian di server
-        if ($this->options instanceof \Illuminate\Database\Eloquent\Builder
-            || $this->options instanceof \Illuminate\Database\Query\Builder) {
-            $builder = clone $this->options;
-
-            // Tentukan kolom yang perlu diambil
-            $columns = array_values(array_unique(array_filter([
-                $this->optionValue,
-                $this->optionLabel,
-                $this->optionAvatar,
-                $this->optionSubLabel,
-                $this->optionMeta,
-            ])));
-
-            if (! empty($columns)) {
-                $builder->select($columns);
-            }
-
-            if ($this->search !== '') {
-                $builder->where($this->optionLabel, 'like', '%'.$this->search.'%');
-            }
-
-            $result = $builder->limit(20)->get();
-
-            return collect($result)->map(function ($row) {
-                if ($row instanceof \Illuminate\Database\Eloquent\Model) {
-                    return $row->getAttributes();
-                }
-                if (is_array($row)) {
-                    return $row;
-                }
-
-                return (array) $row;
-            });
-        }
-
-        // Default: options berupa array/objek/scalar
         return collect($this->options)->map(function ($o) {
             if (is_array($o)) {
                 return $o;
@@ -205,40 +187,6 @@ class Combobox extends Component
             return null;
         }
 
-        // Jika options adalah query builder, ambil langsung dari DB
-        if ($this->options instanceof \Illuminate\Database\Eloquent\Builder
-            || $this->options instanceof \Illuminate\Database\Query\Builder) {
-            $builder = clone $this->options;
-
-            $columns = array_values(array_unique(array_filter([
-                $this->optionValue,
-                $this->optionLabel,
-                $this->optionAvatar,
-                $this->optionSubLabel,
-                $this->optionMeta,
-            ])));
-
-            if (! empty($columns)) {
-                $builder->select($columns);
-            }
-
-            $row = $builder->where($this->optionValue, $val)->first();
-
-            if (! $row) {
-                return null;
-            }
-
-            if ($row instanceof \Illuminate\Database\Eloquent\Model) {
-                return $row->getAttributes();
-            }
-            if (is_array($row)) {
-                return $row;
-            }
-
-            return (array) $row;
-        }
-
-        // Default: cari di koleksi opsi yang sudah dinormalisasi
         return $this->normalizedOptions()->first(function ($o) use ($val) {
             return (string) data_get($o, $this->optionValue) === (string) $val;
         });

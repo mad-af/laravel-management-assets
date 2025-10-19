@@ -6,6 +6,7 @@ use App\Models\Asset;
 use App\Models\AssetLoan;
 use App\Models\Employee;
 use App\Support\SessionKey;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Mary\Traits\Toast;
 
@@ -33,6 +34,8 @@ class Form extends Component
 
     public $isEdit = false;
 
+    public $employees = [];
+
     protected $rules = [
         'asset_id' => 'required|exists:assets,id',
         'employee_id' => 'required|exists:employees,id',
@@ -55,11 +58,31 @@ class Form extends Component
         $this->assetLoanId = $assetLoanId;
         $this->checkout_at = now()->format('Y-m-d');
         $this->due_at = now()->addDays(7)->format('Y-m-d');
+        $this->loadEmployees();
 
         if ($assetLoanId) {
             $this->isEdit = true;
             $this->loadAssetLoan();
         }
+    }
+
+    #[On('combobox-load-employees')]
+    public function loadEmployees($search = '')
+    {
+        $branchId = session_get(SessionKey::BranchId);
+        $query = Employee::query()
+            ->where('branch_id', $branchId);
+
+        if (! empty($search)) {
+            $query->where('full_name', 'like', "%$search%");
+        }
+
+        $this->employees = $query->orderBy('full_name')
+            ->get(['id', 'full_name', 'email'])
+            ->toArray();
+
+        // Kirim data options terbaru ke combobox instance bernama 'employees'
+        $this->dispatch('combobox-set-employees', $this->employees);
     }
 
     public function loadAssetLoan()
@@ -135,11 +158,7 @@ class Form extends Component
     {
         $branchId = session_get(SessionKey::BranchId);
         $assets = Asset::available()->orderBy('name')->get(['id', 'name']);
-        $employees = Employee::query()
-            ->where('branch_id', $branchId)
-            ->orderBy('full_name')
-            ->get(['id', 'full_name', 'email'])->toArray();
 
-        return view('livewire.asset-loans.form', compact('assets', 'employees'));
+        return view('livewire.asset-loans.form', compact('assets'));
     }
 }
