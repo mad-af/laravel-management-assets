@@ -149,6 +149,58 @@ class Table extends Component
         }
     }
 
+    public function formatLastOdometerUpdate($lastOdometerLog)
+    {
+        if (! $lastOdometerLog || ! $lastOdometerLog->read_at) {
+            return null;
+        }
+
+        try {
+            // Pakai locale per instance (tanpa setLocale global)
+            $updateDate = Carbon::parse($lastOdometerLog->read_at)->locale('id');
+            $now = Carbon::now($updateDate->timezone);
+
+            // Format tanggal dengan nama bulan Indonesia
+            $formattedDate = $updateDate->translatedFormat('j M Y');
+
+            // Same-day
+            if ($updateDate->isSameDay($now)) {
+                return [
+                    'formatted_date' => $formattedDate,
+                    'time_info' => 'Hari ini',
+                    'is_overdue' => false,
+                    'days_since' => 0,
+                ];
+            }
+
+            // Buat frasa human-friendly tanpa awalan/akhiran ("2 bulan 3 hari")
+            $span = $updateDate->diffForHumans($now, [
+                'parts' => 2,              // ambil 2 unit terbesar (mis: "2 bulan 3 hari")
+                'join' => true,           // gabung dengan spasi
+                'short' => false,          // pakai bentuk lengkap
+                'syntax' => CarbonInterface::DIFF_ABSOLUTE, // tanpa "dalam"/"yang lalu"
+            ]);
+
+            $isOverdue = $updateDate->lessThan($now);
+            $timeInfo = $isOverdue ? "{$span} yang lalu" : "{$span} lagi";
+
+            // Selisih hari integer (tanpa pecahan), dinormalisasi ke awal hari
+            $daysSince = $now->startOfDay()->diffInDays($updateDate->startOfDay(), false);
+
+            // Overdue jika lebih dari 14 hari
+            $isOverdue = $daysSince < -14;
+
+            return [
+                'formatted_date' => $formattedDate, // contoh: "15 Des 2024"
+                'time_info' => $timeInfo,      // contoh: "7 hari yang lalu"
+                'is_overdue' => $isOverdue,    // true jika > 14 hari
+                'days_since' => $daysSince,    // contoh: 15
+            ];
+        } catch (\Throwable $e) {
+            return null; // atau lempar exception sesuai kebutuhanmu
+        }
+    }
+
     public function render()
     {
         $currentBranchId = session_get(SessionKey::BranchId);
@@ -156,7 +208,9 @@ class Table extends Component
         $vehicleCategory = Category::where('name', 'Kendaraan')->first();
 
         $vehicles = Asset::query()
-            ->with(['category', 'branch', 'vehicleProfile'])
+            ->with(['category', 'branch', 'vehicleProfile', 'vehicleOdometerLogs' => function ($query) {
+                $query->orderBy('read_at', 'desc')->limit(1);
+            }])
             ->when($currentBranchId, function ($query) use ($currentBranchId) {
                 $query->where('branch_id', $currentBranchId);
             })

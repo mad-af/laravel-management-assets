@@ -68,11 +68,26 @@
                 @endscope
 
                 @scope('cell_current_odometer_km', $vehicle)
-                <span class="text-sm">{{ 
-                    $vehicle->vehicleProfile?->current_odometer_km ?
-    number_format($vehicle->vehicleProfile?->current_odometer_km, 0, ',', '.')
-    : '-' 
-                }}</span>
+                @php
+                    $lastOdometerLog = $vehicle->vehicleOdometerLogs->first();
+                    $odometerUpdateInfo = $lastOdometerLog ? $this->formatLastOdometerUpdate($lastOdometerLog) : null;
+                @endphp
+                <div class="text-sm">
+                    <div class="font-medium">{{ 
+                        $vehicle->vehicleProfile?->current_odometer_km ?
+                            number_format($vehicle->vehicleProfile?->current_odometer_km, 0, ',', '.') . ' km'
+                            : '-' 
+                    }}</div>
+                    @if($odometerUpdateInfo)
+                        <div class="text-xs {{ $odometerUpdateInfo['is_overdue'] ? 'text-error' : 'text-base-content/60' }}">
+                            Terakhir update: {{ $odometerUpdateInfo['time_info'] }}
+                        </div>
+                    @else
+                        <div class="text-xs text-base-content/60">
+                            Belum ada update
+                        </div>
+                    @endif
+                </div>
                 @endscope
 
                 @scope('cell_odometer_target', $vehicle)
