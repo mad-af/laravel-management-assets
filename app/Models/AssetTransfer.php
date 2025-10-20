@@ -57,6 +57,16 @@ class AssetTransfer extends Model
         return $this->hasMany(AssetTransferItem::class);
     }
 
+    public function fromBranch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class, 'from_branch_id');
+    }
+
+    public function toBranch(): BelongsTo
+    {
+        return $this->belongsTo(Branch::class, 'to_branch_id');
+    }
+
     // Determine current user's action (delivery or confirmation) based on session branch
     public function getActionAttribute(): ?AssetTransferAction
     {

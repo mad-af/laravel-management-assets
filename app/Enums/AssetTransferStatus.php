@@ -10,8 +10,8 @@ enum AssetTransferStatus: string
     public function label(): string
     {
         return match ($this) {
-            self::SHIPPED => 'Shipped',
-            self::DELIVERED => 'Delivered',
+            self::SHIPPED => 'Dikirim',
+            self::DELIVERED => 'Terkirim',
         };
     }
 

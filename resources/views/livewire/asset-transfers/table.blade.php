@@ -43,26 +43,36 @@
                 @endscope
 
                 @scope('cell_status', $transfer)
-                @php
-                    $statusColors = [
-                        'shipped' => 'badge-info',
-                        'delivered' => 'badge-success',
-                    ];
-                    $statusColor = $statusColors[$transfer->status->value] ?? 'badge-neutral';
-                @endphp
-                <x-badge value="{{ $transfer->status->label() }}" class="{{ $statusColor }} badge-sm" />
+                <x-badge value="{{ $transfer->status->label() }}" class="badge-{{ $transfer->status->color() }} badge-sm" />
                 @endscope
 
                 @scope('cell_items_count', $transfer)
-                <x-badge value="{{ $transfer->items_count ?? $transfer->items->count() }} item"
-                    class="badge-neutral badge-outline badge-sm" />
+                @php
+                    $items = $transfer->items ?? collect();
+                    $assetNames = $items->map(fn($it) => optional($it->asset)->name)->filter()->values();
+                    $visibleNames = $assetNames->take(3);
+                    $moreCount = max($assetNames->count() - $visibleNames->count(), 0);
+                @endphp
+                <div class="tooltip">
+                    <div class="text-xs tooltip-content">
+                        @forelse($visibleNames as $name)
+                            <div>{{ $name }}</div>
+                        @empty
+                            <div class="text-base-content/60">Tidak ada item</div>
+                        @endforelse
+                        @if($moreCount > 0)
+                            <div class="text-base-content/60">+{{ $moreCount }} lainnya</div>
+                        @endif
+                    </div>
+                    <x-badge value="{{ $transfer->items_count ?? $items->count() }} item" class="badge-outline badge-sm" />
+                </div>
                 @endscope
 
                 @scope('cell_branches_move', $transfer)
                 <div class="text-sm">
-                    <span class="font-medium">{{ $transfer->fromBranch?->name ?? '-' }}</span>
+                    <span class="font-medium badge badge-sm {{ $this->actionFilter === 'delivery' ? 'badge-soft badge-primary' : '' }}">{{ $transfer->fromBranch?->name ?? '-' }}</span>
                     <span class="mx-1 text-base-content/70">→</span>
-                    <span class="font-medium">{{ $transfer->toBranch?->name ?? '-' }}</span>
+                    <span class="font-medium badge badge-sm {{ $this->actionFilter === 'confirmation' ? 'badge-soft badge-primary' : '' }}">{{ $transfer->toBranch?->name ?? '-' }}</span>
                 </div>
                 @endscope
 

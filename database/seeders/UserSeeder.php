@@ -22,7 +22,7 @@ class UserSeeder extends Seeder
                 'email' => 'admin@example.com',
                 'role' => UserRole::ADMIN,
                 'password' => Hash::make('password'),
-                'email_verified_at' => null,
+                'email_verified_at' => now(),
             ],
             [
                 'id' => Str::uuid(),

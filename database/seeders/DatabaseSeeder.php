@@ -15,8 +15,8 @@ class DatabaseSeeder extends Seeder
         // Production
         $seeder = [StarterUserSeeder::class, CategorySeeder::class];
         // Development
-        if (!app()->environment('production')) {
-            $seeder = array_merge($seeder, [
+        if (! app()->environment('production')) {
+            $seeder = [
                 CompanySeeder::class,
                 CategorySeeder::class,
                 UserSeeder::class,
@@ -24,10 +24,11 @@ class DatabaseSeeder extends Seeder
                 UserCompanySeeder::class,
                 EmployeeSeeder::class,
                 AssetSeeder::class,
+                AssetTransferSeeder::class,
                 AssetLoanSeeder::class,
                 AssetLogSeeder::class,
                 VehicleProfileSeeder::class,
-            ]);
+            ];
         }
         $this->call($seeder);
     }

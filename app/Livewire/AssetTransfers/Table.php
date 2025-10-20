@@ -84,7 +84,7 @@ class Table extends Component
         $currentBranchId = session_get(SessionKey::BranchId);
 
         $transfers = AssetTransfer::query()
-            ->with(['fromBranch', 'toBranch', 'requestedBy'])
+            ->with(['fromBranch', 'toBranch', 'requestedBy', 'items.asset'])
             ->withCount('items')
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
