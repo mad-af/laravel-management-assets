@@ -5,6 +5,7 @@ namespace App\Livewire\VehicleTaxes;
 use App\Enums\VehicleTaxTypeEnum;
 use App\Models\Asset;
 use App\Models\VehicleTaxType;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Url;
 use Livewire\Component;
 use Mary\Traits\Toast;
@@ -68,21 +69,24 @@ class TaxTypeForm extends Component
     /**
      * Load assets for dropdown
      */
-    protected function loadAssets(): void
+    #[On('combobox-load-assets')]
+    public function loadAssets($search = '')
     {
-        $branchId = session('selected_branch_id');
+        $query = Asset::forBranch()->vehicles();
 
-        $this->assets = Asset::vehicles()
-            ->forBranch($branchId)
-            ->orderBy('name')
-            ->get(['id', 'name', 'code'])
-            ->map(function ($asset) {
-                return [
-                    'id' => $asset->id,
-                    'name' => $asset->name.' ('.$asset->code.')',
-                ];
-            })
+        if (! empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%$search%")
+                    ->orWhere('code', 'like', "%$search%")
+                    ->orWhere('tag_code', 'like', "%$search%");
+            });
+        }
+
+        $this->assets = $query->orderBy('name')
+            ->get(['id', 'name', 'code', 'tag_code', 'image'])
             ->toArray();
+
+        $this->dispatch('combobox-set-assets', $this->assets);
     }
 
     /**

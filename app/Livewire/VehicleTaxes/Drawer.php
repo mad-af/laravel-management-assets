@@ -74,7 +74,7 @@ class Drawer extends Component
     public function closeDrawer()
     {
         $this->showDrawer = false;
-        $this->dispatch('resetForm');
+        // $this->dispatch('resetForm');
 
         // hapus query di URL (Url-bound akan pushState)
         $this->action = null;
