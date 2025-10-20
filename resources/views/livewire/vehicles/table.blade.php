@@ -58,7 +58,7 @@
                     <div>
                         <div class="font-mono text-xs truncate text-base-content/60">{{ $asset->code }}</div>
                         <div class="font-medium">{{ $asset->name }}</div>
-                        <div class="text-xs text-base-content/60">Tag: {{ $asset->tag_code }}</div>
+                        <div class="text-xs text-base-content/60 whitespace-nowrap">Tag: {{ $asset->tag_code }}</div>
                     </div>
                 </div>
                 @endscope
@@ -70,8 +70,8 @@
                 @scope('cell_current_odometer_km', $vehicle)
                 <span class="text-sm">{{ 
                     $vehicle->vehicleProfile?->current_odometer_km ?
-                        number_format($vehicle->vehicleProfile?->current_odometer_km, 0, ',', '.')
-                        : '-' 
+    number_format($vehicle->vehicleProfile?->current_odometer_km, 0, ',', '.')
+    : '-' 
                 }}</span>
                 @endscope
 

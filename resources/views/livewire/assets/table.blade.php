@@ -63,14 +63,14 @@
                             <x-icon name="o-photo" class="w-6 h-6 text-base-content/60" />
                         </div>
                     @else
-                        <x-avatar :image="asset('storage/'.$asset->image)"
+                        <x-avatar :image="asset('storage/' . $asset->image)"
                             class="!w-13 !rounded-lg !bg-base-300 !font-bold border-2 border-base-100">
                         </x-avatar>
                     @endif
                     <div>
                         <div class="font-mono text-xs truncate text-base-content/60">{{ $asset->code }}</div>
                         <div class="font-medium">{{ $asset->name }}</div>
-                        <div class="text-xs text-base-content/60">Tag: {{ $asset->tag_code }}</div>
+                        <div class="text-xs whitespace-nowrap text-base-content/60">Tag: {{ $asset->tag_code }}</div>
                     </div>
                 </div>
                 @endscope
@@ -80,7 +80,8 @@
                 @endscope
 
                 @scope('cell_status', $asset)
-                <x-badge value="{{ $asset->status->label() }}" class="badge-{{ $asset->status->color() }} badge-sm whitespace-nowrap" />
+                <x-badge value="{{ $asset->status->label() }}"
+                    class="badge-{{ $asset->status->color() }} badge-sm whitespace-nowrap" />
                 @endscope
 
                 @scope('cell_condition', $asset)
@@ -102,9 +103,8 @@
                 <x-action-dropdown :model="$asset">
                     {{-- Disabled --}}
                     <li>
-                        <a href="{{ route('assets.show', $asset) }}"
-                            class="flex gap-2 items-center p-2 text-sm rounded"
-                            onclick="document.getElementById('dropdown-menu-{{ $asset->id }}').hidePopover()" >
+                        <a href="{{ route('assets.show', $asset) }}" class="flex gap-2 items-center p-2 text-sm rounded"
+                            onclick="document.getElementById('dropdown-menu-{{ $asset->id }}').hidePopover()">
                             <x-icon name="o-eye" class="w-4 h-4" />
                             View
                         </a>

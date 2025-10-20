@@ -1,6 +1,6 @@
 <div class="shadow card bg-base-100">
     <div class="space-y-4 card-body">
-        
+
         {{-- Status Taxes Tabs --}}
         <div class="overflow-x-auto">
             <div class="gap-1 items-center min-w-max tabs tabs-box tabs-sm w-fit">
@@ -34,7 +34,8 @@
 
                     <x-menu-item title="Semua Kategori" wire:click="$set('categoryFilter', '')" />
                     @foreach($categories as $category)
-                        <x-menu-item title="{!! $category->name !!}" wire:click="$set('categoryFilter', '{{ $category->id }}')" />
+                        <x-menu-item title="{!! $category->name !!}"
+                            wire:click="$set('categoryFilter', '{{ $category->id }}')" />
                     @endforeach
                 </x-dropdown>
             </div>
@@ -63,14 +64,14 @@
                             <x-icon name="o-photo" class="w-6 h-6 text-base-content/60" />
                         </div>
                     @else
-                        <x-avatar :image="asset('storage/'.$asset->image)"
+                        <x-avatar :image="asset('storage/' . $asset->image)"
                             class="!w-13 !rounded-lg !bg-base-300 !font-bold border-2 border-base-100">
                         </x-avatar>
                     @endif
                     <div>
                         <div class="font-mono text-xs truncate text-base-content/60">{{ $asset->code }}</div>
                         <div class="font-medium">{{ $asset->name }}</div>
-                        <div class="text-xs text-base-content/60">Tag: {{ $asset->tag_code }}</div>
+                        <div class="text-xs text-base-content/60 whitespace-nowrap">Tag: {{ $asset->tag_code }}</div>
                     </div>
                 </div>
                 @endscope
@@ -80,11 +81,13 @@
                 @endscope
 
                 {{-- @scope('cell_status', $asset)
-                <x-badge value="{{ $asset->asset_loan_status->label() }}" class="whitespace-nowrap badge-{{ $asset->asset_loan_status->color() }} badge-sm" />
+                <x-badge value="{{ $asset->asset_loan_status->label() }}"
+                    class="whitespace-nowrap badge-{{ $asset->asset_loan_status->color() }} badge-sm" />
                 @endscope --}}
 
                 @scope('cell_condition', $asset)
-                <x-badge value="{{ $asset->condition->label() }}" class="whitespace-nowrap badge-outline badge-{{ $asset->condition->color() }} badge-sm" />
+                <x-badge value="{{ $asset->condition->label() }}"
+                    class="whitespace-nowrap badge-outline badge-{{ $asset->condition->color() }} badge-sm" />
                 @endscope
 
                 @scope('cell_checkout_at', $asset)
@@ -94,7 +97,8 @@
                 @scope('cell_due_at', $asset)
                 @php $due = optional($asset->currentLoan)->due_at; @endphp
                 <div class="flex flex-col">
-                    <span class="{{ ($asset->asset_loan_status === \App\Enums\AssetLoanStatus::OVERTIME) ? 'text-error font-medium' : '' }}">
+                    <span
+                        class="{{ ($asset->asset_loan_status === \App\Enums\AssetLoanStatus::OVERTIME) ? 'text-error font-medium' : '' }}">
                         {{ $due ? $due->format('d M Y') : '-' }}
                     </span>
                     @if($asset->asset_loan_status === \App\Enums\AssetLoanStatus::OVERTIME)
@@ -105,16 +109,16 @@
 
                 @scope('cell_borrower_name', $asset)
                 @if (optional($asset->currentLoan)->employee)
-                @php $name = optional(optional($asset->currentLoan)->employee)->full_name ?? '-' @endphp
-                <div class="tooltip">
-                    <div class="text-xs tooltip-content">
-                        <div class="font-medium">{{ $name }}</div>
+                    @php $name = optional(optional($asset->currentLoan)->employee)->full_name ?? '-' @endphp
+                    <div class="tooltip">
+                        <div class="text-xs tooltip-content">
+                            <div class="font-medium">{{ $name }}</div>
+                        </div>
+                        <x-avatar placeholder="{{ strtoupper(substr($name, 0, 2)) }}"
+                            class="!w-9 !bg-primary !font-bold border-2 border-base-100" />
                     </div>
-                    <x-avatar placeholder="{{ strtoupper(substr($name, 0, 2)) }}"
-                        class="!w-9 !bg-primary !font-bold border-2 border-base-100" />
-                </div>
                 @else
-                -
+                    -
                 @endif
                 @endscope
 
