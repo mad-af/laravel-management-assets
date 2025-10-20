@@ -26,6 +26,7 @@ class Drawer extends Component
         'close-drawer' => 'closeDrawer',
         'open-drawer' => 'openDrawer',
         'open-edit-drawer' => 'openEditDrawer',
+        'open-return-drawer' => 'openReturnDrawer',
     ];
 
     public function mount()
@@ -54,12 +55,24 @@ class Drawer extends Component
             $this->showDrawer = true;
             $this->editingAssetLoanId = $this->asset_loan_id;
             $this->editingAssetId = $this->asset_id;
+        } elseif ($this->action === 'return' && $this->asset_loan_id) {
+            $this->showDrawer = true;
+            $this->editingAssetLoanId = $this->asset_loan_id;
+            $this->editingAssetId = $this->asset_id;
         } // else: biarkan state tetap (jangan auto-tutup tiap update)
     }
 
     public function openEditDrawer($assetId, $assetLoanId)
     {
         $this->action = 'edit';
+        $this->asset_loan_id = $assetLoanId;
+        $this->asset_id = $assetId;
+        $this->applyActionFromUrl();
+    }
+
+    public function openReturnDrawer($assetId, $assetLoanId)
+    {
+        $this->action = 'return';
         $this->asset_loan_id = $assetLoanId;
         $this->asset_id = $assetId;
         $this->applyActionFromUrl();

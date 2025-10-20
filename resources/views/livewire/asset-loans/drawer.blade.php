@@ -11,15 +11,23 @@
             <!-- Drawer Header -->
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-lg font-semibold">
-                    {{ $editingAssetLoanId ? 'Edit Asset Loan' : 'Pinjamkan Asset' }}
+                    @if ($action === 'return')
+                        Pengembalian Asset
+                    @else
+                        {{ $editingAssetLoanId ? 'Edit Asset Loan' : 'Pinjamkan Asset' }}
+                    @endif
                 </h2>
                 <button wire:click="closeDrawer" class="btn btn-sm btn-circle btn-ghost">
                     <x-icon name="o-x-mark" class="w-5 h-5" />
                 </button>
             </div>
 
-            <!-- Asset Loan Form -->
-            <livewire:asset-loans.form :assetLoanId="$editingAssetLoanId" :assetId="$editingAssetId" :key="'asset-loan-form-' . ($editingAssetLoanId ?? $editingAssetId ?? 'new')" />
+            @if ($action === 'return')
+                <livewire:asset-loans.return-form :assetLoanId="$editingAssetLoanId" :key="'asset-loan-return-form-' . ($editingAssetLoanId ?? 'new')" />
+            @else
+                <!-- Asset Loan Form -->
+                <livewire:asset-loans.form :assetLoanId="$editingAssetLoanId" :assetId="$editingAssetId" :key="'asset-loan-form-' . ($editingAssetLoanId ?? $editingAssetId ?? 'new')" />
+            @endif
         </div>
     </div>
 </div>

@@ -155,6 +155,6 @@ class Table extends Component
 
     public function returnAsset($assetId, $assetLoanId)
     {
-        $this->dispatch('open-edit-drawer', assetId: $assetId, assetLoanId: $assetLoanId);
+        $this->dispatch('open-return-drawer', assetId: $assetId, assetLoanId: $assetLoanId);
     }
 }
