@@ -4,6 +4,7 @@ namespace App\Livewire\Components;
 
 use Illuminate\Support\Arr;
 use Livewire\Attributes\Modelable;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class Combobox extends Component
@@ -105,10 +106,8 @@ class Combobox extends Component
             $this->optionMeta = $optionMeta;
         }
 
-        if ($this->multiple) {
-            $this->value = $value ?? [];
-        } else {
-            $this->value = $value ?? null;
+        if (! empty($this->value)) {
+            $this->syncSelected();
         }
     }
 
@@ -139,8 +138,24 @@ class Combobox extends Component
     {
         if (empty($this->value)) {
             $this->selected = $this->multiple ? [] : null;
+
             return;
         }
+
+        $this->syncSelected();
+        // if ($this->multiple) {
+        //     $this->selected = collect(Arr::wrap($this->value))
+        //         ->map(function ($val) {
+        //             return $this->findOptionByValue($val);
+        //         });
+        // } else {
+        //     $this->showDropdown = false;
+        //     $this->selected = collect([$this->findOptionByValue($this->value)]);
+        // }
+    }
+
+    protected function syncSelected()
+    {
         if ($this->multiple) {
             $this->selected = collect(Arr::wrap($this->value))
                 ->map(function ($val) {
@@ -150,7 +165,6 @@ class Combobox extends Component
             $this->showDropdown = false;
             $this->selected = collect([$this->findOptionByValue($this->value)]);
         }
-
     }
 
     public function updatedOptions()
@@ -158,14 +172,14 @@ class Combobox extends Component
         // Jika options berubah dari proses lain, matikan indikator loading
         $this->isLoading = false;
     }
-
+    
+    #[On('combobox-clear')]
     public function clear()
     {
         $this->value = $this->multiple ? [] : null;
         $this->selected = [];
         $this->search = '';
         $this->showDropdown = false;
-        $this->dispatch('combobox-cleared');
     }
 
     protected function normalizedOptions()

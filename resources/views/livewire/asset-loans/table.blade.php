@@ -149,7 +149,7 @@
                         </li>
                     @else
                         <li>
-                            <button wire:click="openDrawer"
+                            <button wire:click="openDrawer('{{ $asset->id }}')"
                                 class="flex gap-2 items-center p-2 text-sm rounded">
                                 <x-icon name="o-plus" class="w-4 h-4" />
                                 Pinjamkan Asset

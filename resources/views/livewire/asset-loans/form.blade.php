@@ -1,7 +1,7 @@
 <form wire:submit="save" class="space-y-4">
     <!-- Asset Selection -->
     <div>
-        <livewire:components.combobox name="assets" wire:model="asset_id" :options="$assets" option-value="id" option-label="name"
+        <livewire:components.combobox name="assets" wire:model.live="asset_id" :options="$assets" option-value="id" option-label="name"
             option-sub-label="tag_code" option-meta="code" option-avatar="image" label="Asset" placeholder="Pilih asset" required class="input-sm" />
     </div>
 

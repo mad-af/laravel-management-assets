@@ -55,8 +55,12 @@ class Form extends Component
         'resetEditForm' => 'resetForm',
     ];
 
-    public function mount($assetLoanId = null)
+    public function mount($assetLoanId = null, $assetId = null)
     {
+        if (! empty($assetId)) {
+            $this->asset_id = $assetId;
+        }
+
         $this->assetLoanId = $assetLoanId;
         $this->checkout_at = now()->format('Y-m-d');
         $this->due_at = now()->addDays(7)->format('Y-m-d');
@@ -97,8 +101,8 @@ class Form extends Component
         if (! empty($search)) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%$search%")
-                  ->orWhere('code', 'like', "%$search%")
-                  ->orWhere('tag_code', 'like', "%$search%");
+                    ->orWhere('code', 'like', "%$search%")
+                    ->orWhere('tag_code', 'like', "%$search%");
             });
         }
 
@@ -129,7 +133,7 @@ class Form extends Component
 
     public function save()
     {
-        dd($this->employee_id, "sdad");
+        dd($this->employee_id, 'sdad');
         $this->validate();
 
         try {
@@ -178,6 +182,7 @@ class Form extends Component
         $this->condition_in = '';
         $this->notes = '';
         $this->resetValidation();
+        $this->dispatch('combobox-clear');
     }
 
     public function render()

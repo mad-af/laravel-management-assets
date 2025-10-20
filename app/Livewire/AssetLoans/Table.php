@@ -57,9 +57,9 @@ class Table extends Component
         $this->resetPage();
     }
 
-    public function openDrawer()
+    public function openDrawer($assetId)
     {
-        $this->dispatch('open-drawer');
+        $this->dispatch('open-drawer', assetId: $assetId);
     }
 
     public function openEditDrawer($assetLoanId)

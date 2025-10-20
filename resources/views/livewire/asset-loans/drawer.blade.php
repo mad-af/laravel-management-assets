@@ -19,7 +19,7 @@
             </div>
 
             <!-- Asset Loan Form -->
-            <livewire:asset-loans.form :assetLoanId="$editingAssetLoanId" :key="'asset-loan-form-' . ($editingAssetLoanId ?? 'new')" />
+            <livewire:asset-loans.form :assetLoanId="$editingAssetLoanId" :assetId="$editingAssetId" :key="'asset-loan-form-' . ($editingAssetLoanId ?? 'new')" />
         </div>
     </div>
 </div>
