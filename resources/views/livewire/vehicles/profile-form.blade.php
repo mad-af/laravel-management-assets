@@ -1,10 +1,11 @@
 <form wire:submit="save" class="space-y-2">
 
     <!-- Asset Selection -->
-    <livewire:components.combobox name="assets" wire:model="asset_id" placeholder="Pilih aset" :options="$assets"
+    <livewire:components.combobox name="assets" wire:model.live="asset_id" placeholder="Pilih aset" :options="$assets"
         option-value="id" option-label="name" option-sub-label="tag_code" option-meta="code" option-avatar="image"
         class="input-sm" label="Kendaraan" required />
 
+    @if (! empty($asset_id))
     <!-- VIN -->
     <x-input name="vin" label="Nomor Rangka" class="input-sm" wire:model="vin" placeholder="Masukkan nomor rangka" />
 
@@ -56,4 +57,5 @@
             {{ $assetId ? 'Perbarui' : 'Simpan' }}
         </button>
     </div>
+    @endif
 </form>
