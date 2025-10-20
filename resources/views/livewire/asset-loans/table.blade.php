@@ -71,7 +71,7 @@
                     <div>
                         <div class="font-mono text-xs truncate text-base-content/60">{{ $asset->code }}</div>
                         <div class="font-medium">{{ $asset->name }}</div>
-                        <div class="text-xs text-base-content/60 whitespace-nowrap">Tag: {{ $asset->tag_code }}</div>
+                        <div class="text-xs whitespace-nowrap text-base-content/60">Tag: {{ $asset->tag_code }}</div>
                     </div>
                 </div>
                 @endscope

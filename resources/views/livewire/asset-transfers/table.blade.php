@@ -1,29 +1,28 @@
 <div class="shadow card bg-base-100">
-    <div class="card-body">
-        {{-- Header with Search and Action Buttons --}}
-        <div class="flex flex-col gap-4 mb-4 sm:flex-row">
+    <div class="space-y-4 card-body">
+        
+        {{-- Action Tabs (Delivery / Confirmation) --}}
+        <div class="overflow-x-auto">
+            <div class="gap-1 items-center min-w-max tabs tabs-box tabs-sm w-fit">
+                @foreach($transferActions ?? \App\Enums\AssetTransferAction::cases() as $action)
+                    <label class="gap-2 tab">
+                        <input type="radio" name="status_tabs" class="checked:bg-base-100 checked:shadow"
+                            wire:model.live="actionFilter" value="{{ $action->value }}" />
+                        {{ $action->label() }}
+                        <x-badge class="badge-{{ $action->color() }}" :value="$actionCounts[$action->value] ?? 0" />
+                    </label>
+                @endforeach
+            </div>
+        </div>
+
+        {{-- Header with Search and Action Tabs --}}
+        <div class="flex flex-col gap-4 mb-4">
             {{-- Search Input --}}
             <div class="flex-1">
                 <x-input wire:model.live="search" placeholder="Cari transfer (nomor, alasan, cabang)..."
                     icon="o-magnifying-glass" class="input-sm" />
             </div>
 
-            {{-- Filter Dropdown --}}
-            <div class="flex gap-2">
-                <x-dropdown>
-                    <x-slot:trigger>
-                        <x-button icon="o-funnel" class="btn-sm ">
-                            Filter Status
-                        </x-button>
-                    </x-slot:trigger>
-
-                    <x-menu-item title="Semua Status" wire:click="$set('statusFilter', '')" />
-                    @foreach(\App\Enums\AssetTransferStatus::cases() as $status)
-                        <x-menu-item title="{{ $status->label() }}"
-                            wire:click="$set('statusFilter', '{{ $status->value }}')" />
-                    @endforeach
-                </x-dropdown>
-            </div>
         </div>
 
         {{-- Table --}}
@@ -31,11 +30,10 @@
             @php
                 $headers = [
                     ['key' => 'transfer_no', 'label' => 'No. Transfer'],
-                    ['key' => 'reason', 'label' => 'Alasan'],
-                    ['key' => 'locations', 'label' => 'Cabang'],
-                    ['key' => 'items_count', 'label' => 'Jumlah Item'],
                     ['key' => 'status', 'label' => 'Status'],
-                    ['key' => 'scheduled_at', 'label' => 'Dijadwalkan'],
+                    ['key' => 'items_count', 'label' => 'Jumlah Item'],
+                    ['key' => 'branches_move', 'label' => 'Perpindahan Cabang'],
+                    ['key' => 'reason', 'label' => 'Alasan'],
                     ['key' => 'actions', 'label' => 'Aksi', 'class' => 'w-20'],
                 ];
             @endphp
@@ -44,23 +42,15 @@
                 <span class="font-medium">{{ $transfer->transfer_no }}</span>
                 @endscope
 
-                @scope('cell_reason', $transfer)
-                <div class="max-w-xs">
-                    <p class="truncate" title="{{ $transfer->reason }}">{{ $transfer->reason }}</p>
-                </div>
-                @endscope
-
-                @scope('cell_locations', $transfer)
-                <div class="text-sm">
-                    <div class="flex gap-1 items-center">
-                        <span class="text-base-content/70">Dari:</span>
-                        <span class="font-medium">{{ $transfer->fromBranch?->name ?? '-' }}</span>
-                    </div>
-                    <div class="flex gap-1 items-center">
-                        <span class="text-base-content/70">Ke:</span>
-                        <span class="font-medium">{{ $transfer->toBranch?->name ?? '-' }}</span>
-                    </div>
-                </div>
+                @scope('cell_status', $transfer)
+                @php
+                    $statusColors = [
+                        'shipped' => 'badge-info',
+                        'delivered' => 'badge-success',
+                    ];
+                    $statusColor = $statusColors[$transfer->status->value] ?? 'badge-neutral';
+                @endphp
+                <x-badge value="{{ $transfer->status->label() }}" class="{{ $statusColor }} badge-sm" />
                 @endscope
 
                 @scope('cell_items_count', $transfer)
@@ -68,30 +58,18 @@
                     class="badge-neutral badge-outline badge-sm" />
                 @endscope
 
-                @scope('cell_status', $transfer)
-                @php
-                    $statusColors = [
-                        'draft' => 'badge-ghost',
-                        'pending' => 'badge-warning',
-                        'approved' => 'badge-info',
-                        'rejected' => 'badge-error',
-                        'executed' => 'badge-success',
-                        'cancelled' => 'badge-neutral',
-                    ];
-                    $statusColor = $statusColors[$transfer->status->value] ?? 'badge-neutral';
-                @endphp
-                <x-badge value="{{ $transfer->status->label() }}" class="{{ $statusColor }} badge-sm" />
+                @scope('cell_branches_move', $transfer)
+                <div class="text-sm">
+                    <span class="font-medium">{{ $transfer->fromBranch?->name ?? '-' }}</span>
+                    <span class="mx-1 text-base-content/70">→</span>
+                    <span class="font-medium">{{ $transfer->toBranch?->name ?? '-' }}</span>
+                </div>
                 @endscope
 
-                @scope('cell_scheduled_at', $transfer)
-                @if($transfer->scheduled_at)
-                    <div class="text-sm">
-                        <div>{{ $transfer->scheduled_at->format('d M Y') }}</div>
-                        <div class="text-base-content/70">{{ $transfer->scheduled_at->format('H:i') }}</div>
-                    </div>
-                @else
-                    <span class="text-base-content/50">-</span>
-                @endif
+                @scope('cell_reason', $transfer)
+                <div class="max-w-xs">
+                    <p class="truncate" title="{{ $transfer->reason }}">{{ $transfer->reason }}</p>
+                </div>
                 @endscope
 
                 @scope('cell_actions', $transfer)

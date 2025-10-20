@@ -7,7 +7,7 @@ use App\Enums\AssetTransferPriority;
 use App\Enums\AssetTransferStatus;
 use App\Models\Asset;
 use App\Models\AssetTransfer;
-use App\Models\Location;
+use App\Models\Branch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -42,15 +42,14 @@ class AssetTransferController extends Controller
      */
     public function create()
     {
-        dd('Hello');
         $assets = Asset::where('company_id', Auth::user()->company_id)
             ->where('status', 'active')
-            ->with('location')
+            ->with('branch')
             ->get();
 
-        $locations = Location::where('is_active', true)->get();
+        $branches = Branch::where('is_active', true)->get();
 
-        return view('dashboard.asset-transfers.create', compact('assets', 'locations'));
+        return view('dashboard.asset-transfers.create', compact('assets', 'branches'));
     }
 
     /**
@@ -61,16 +60,16 @@ class AssetTransferController extends Controller
 
         $request->validate([
             'reason' => 'required|string|max:500',
-            'from_location_id' => 'required|exists:locations,id',
-            'to_location_id' => 'required|exists:locations,id|different:from_location_id',
+            'from_location_id' => 'required|exists:branches,id',
+            'to_location_id' => 'required|exists:branches,id|different:from_location_id',
             'status' => 'required|string',
             'priority' => 'required|string',
-            'scheduled_at' => 'nullable|date',
+            'accepted_at' => 'nullable|date',
             'notes' => 'nullable|string|max:1000',
             'items' => 'required|array|min:1',
             'items.*.asset_id' => 'required|exists:assets,id',
-            'items.*.from_location_id' => 'nullable|exists:locations,id',
-            'items.*.to_location_id' => 'nullable|exists:locations,id',
+            'items.*.from_location_id' => 'nullable|exists:branches,id',
+            'items.*.to_location_id' => 'nullable|exists:branches,id',
         ]);
 
         try {
@@ -91,11 +90,10 @@ class AssetTransferController extends Controller
                     'transfer_no' => $this->generateTransferNo(),
                     'reason' => $request->reason,
                     'status' => AssetTransferStatus::from($request->status),
-                    'priority' => AssetTransferPriority::from($request->priority),
-                    'requested_by' => Auth::id(),
+                    'delivery_by' => Auth::id(),
                     'from_location_id' => $request->from_location_id,
                     'to_location_id' => $request->to_location_id,
-                    'scheduled_at' => $request->scheduled_at,
+                    'accepted_at' => $request->accepted_at,
                     'notes' => $request->notes,
                 ]);
 
@@ -132,7 +130,7 @@ class AssetTransferController extends Controller
      */
     public function show(AssetTransfer $assetTransfer)
     {
-        $assetTransfer->load(['company', 'requestedBy', 'approvedBy', 'fromLocation', 'toLocation', 'items.asset.location', 'items.fromLocation', 'items.toLocation']);
+        $assetTransfer->load(['company', 'requestedBy', 'approvedBy', 'items.asset.branch']);
 
         // Prepare data for detail-info component
         $transferData = [
@@ -140,11 +138,11 @@ class AssetTransferController extends Controller
             'status' => $assetTransfer->status,
             'priority' => $assetTransfer->priority,
             'type' => $assetTransfer->type,
-            'from_location' => $assetTransfer->fromLocation->name ?? null,
-            'to_location' => $assetTransfer->toLocation->name ?? null,
+            'from_location' => \App\Models\Branch::find($assetTransfer->from_location_id)?->name ?? null,
+            'to_location' => \App\Models\Branch::find($assetTransfer->to_location_id)?->name ?? null,
             'requested_by' => $assetTransfer->requestedBy->name ?? null,
             'company' => $assetTransfer->company->name ?? null,
-            'scheduled_at' => $assetTransfer->scheduled_at,
+            'accepted_at' => $assetTransfer->accepted_at,
             'requested_at' => $assetTransfer->requested_at,
             'description' => $assetTransfer->description,
             'reason' => $assetTransfer->reason,
@@ -158,8 +156,8 @@ class AssetTransferController extends Controller
                 'asset_name' => $item->asset->name ?? 'N/A',
                 'asset_brand' => $item->asset->brand ?? '',
                 'asset_model' => $item->asset->model ?? '',
-                'from_location' => $item->fromLocation->name ?? 'N/A',
-                'to_location' => $item->toLocation->name ?? 'N/A',
+                'from_location' => \App\Models\Branch::find($item->from_location_id)?->name ?? 'N/A',
+                'to_location' => \App\Models\Branch::find($item->to_location_id)?->name ?? 'N/A',
                 'current_location' => $item->asset->branch->name ?? 'Unknown',
                 'status' => $item->status?->value ?? 'pending',
                 'quantity' => $item->quantity,
@@ -177,10 +175,10 @@ class AssetTransferController extends Controller
         $timelineData = [
             'created_at' => $assetTransfer->created_at,
             'requested_by' => $assetTransfer->requestedBy->name ?? null,
-            'scheduled_at' => $assetTransfer->scheduled_at,
+            'accepted_at' => $assetTransfer->accepted_at,
             'approved_at' => $assetTransfer->approved_at,
             'approved_by' => $assetTransfer->approvedBy->name ?? null,
-            'executed_at' => $assetTransfer->executed_at,
+            'delivery_at' => $assetTransfer->delivery_at,
         ];
 
         return view('dashboard.asset-transfers.show', compact('assetTransfer', 'transferData', 'itemsData', 'quickActionsData', 'timelineData'));
@@ -191,20 +189,15 @@ class AssetTransferController extends Controller
      */
     public function edit(AssetTransfer $assetTransfer)
     {
-        if ($assetTransfer->status !== AssetTransferStatus::DRAFT) {
-            return redirect()->route('asset-transfers.show', $assetTransfer)
-                ->with('error', 'Hanya transfer dengan status draft yang dapat diedit.');
-        }
-
         $assets = Asset::where('company_id', Auth::user()->company_id)
             ->where('status', 'active')
-            ->with('location')
+            ->with('branch')
             ->get();
 
-        $locations = Location::where('is_active', true)->get();
-        $assetTransfer->load(['items', 'fromLocation', 'toLocation']);
+        $branches = Branch::where('is_active', true)->get();
+        $assetTransfer->load(['items']);
 
-        return view('dashboard.asset-transfers.edit', compact('assetTransfer', 'assets', 'locations'));
+        return view('dashboard.asset-transfers.edit', compact('assetTransfer', 'assets', 'branches'));
     }
 
     /**
@@ -214,16 +207,16 @@ class AssetTransferController extends Controller
     {
         $request->validate([
             'reason' => 'required|string|max:500',
-            'from_location_id' => 'required|exists:locations,id',
-            'to_location_id' => 'required|exists:locations,id|different:from_location_id',
+            'from_location_id' => 'required|exists:branches,id',
+            'to_location_id' => 'required|exists:branches,id|different:from_location_id',
             'status' => 'required|string',
             'priority' => 'required|string',
-            'scheduled_at' => 'nullable|date',
+            'accepted_at' => 'nullable|date',
             'notes' => 'nullable|string|max:1000',
             'items' => 'required|array|min:1',
             'items.*.asset_id' => 'required|exists:assets,id',
-            'items.*.from_location_id' => 'nullable|exists:locations,id',
-            'items.*.to_location_id' => 'nullable|exists:locations,id',
+            'items.*.from_location_id' => 'nullable|exists:branches,id',
+            'items.*.to_location_id' => 'nullable|exists:branches,id',
         ]);
 
         try {
@@ -233,8 +226,7 @@ class AssetTransferController extends Controller
                     'from_location_id' => $request->from_location_id,
                     'to_location_id' => $request->to_location_id,
                     'status' => AssetTransferStatus::from($request->status),
-                    'priority' => AssetTransferPriority::from($request->priority),
-                    'scheduled_at' => $request->scheduled_at,
+                    'accepted_at' => $request->accepted_at,
                     'notes' => $request->notes,
                 ]);
 
@@ -276,10 +268,6 @@ class AssetTransferController extends Controller
      */
     public function destroy(AssetTransfer $assetTransfer)
     {
-        if ($assetTransfer->status !== AssetTransferStatus::DRAFT) {
-            return redirect()->route('asset-transfers.index')
-                ->with('error', 'Hanya transfer dengan status draft yang dapat dihapus.');
-        }
 
         $assetTransfer->delete();
 
@@ -292,16 +280,12 @@ class AssetTransferController extends Controller
      */
     public function execute(AssetTransfer $assetTransfer)
     {
-        if ($assetTransfer->status !== AssetTransferStatus::DRAFT) {
-            return redirect()->route('asset-transfers.show', $assetTransfer)
-                ->with('error', 'Hanya transfer dengan status draft yang dapat dieksekusi.');
-        }
 
         DB::transaction(function () use ($assetTransfer) {
             foreach ($assetTransfer->items as $item) {
-                // Update asset location
+                // Update asset branch
                 $item->asset->update([
-                    'location_id' => $item->to_location_id,
+                    'branch_id' => $item->to_location_id,
                 ]);
 
                 // Update item status
@@ -316,15 +300,13 @@ class AssetTransferController extends Controller
                     'changed_at' => now(),
                     'changed_by' => Auth::id(),
                     'transfer_id' => $assetTransfer->id,
-                    'change_type' => AssetLocationChangeType::TRANSFER,
                     'remark' => 'Transfer: '.$assetTransfer->transfer_no,
                 ]);
             }
 
             // Update transfer status
             $assetTransfer->update([
-                'status' => AssetTransferStatus::EXECUTED,
-                'executed_at' => now(),
+                'delivery_at' => now(),
             ]);
         });
 
