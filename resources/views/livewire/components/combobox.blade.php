@@ -10,7 +10,7 @@
                 @endisset
             </legend>
         @endif
-
+            
         <label class="relative w-full input {{ $class }}">
             <div class="z-50 tooltip">
                 <div class="text-xs tooltip-content">

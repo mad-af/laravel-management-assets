@@ -17,7 +17,7 @@ class Table extends Component
     public $search = '';
 
     // Default to show active loans to avoid empty list
-    public $statusFilter = AssetLoanStatus::ON_LOAN->value;
+    public $statusFilter = AssetLoanStatus::AVAILABLE->value;
 
     public $conditionFilter = '';
 

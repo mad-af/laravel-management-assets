@@ -79,7 +79,7 @@ class Drawer extends Component
         $this->showDrawer = false;
         $this->editingAssetLoanId = null;
         $this->editingAssetId = null;
-        $this->dispatch('resetForm');
+        // $this->dispatch('reset-form');
 
         // hapus query di URL (Url-bound akan pushState)
         $this->action = null;
@@ -91,11 +91,6 @@ class Drawer extends Component
     {
         $this->editingAssetLoanId = $assetLoanId;
         $this->showDrawer = true;
-    }
-
-    public function handleAssetLoanSaved()
-    {
-        $this->closeDrawer();
     }
 
     public function render()

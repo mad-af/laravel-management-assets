@@ -51,7 +51,6 @@ class Form extends Component
 
     protected $listeners = [
         'editAssetLoan' => 'edit',
-        'resetForm' => 'resetForm',
         'resetEditForm' => 'resetForm',
     ];
 
@@ -172,8 +171,10 @@ class Form extends Component
         }
     }
 
+    #[On('reset-form')]
     public function resetForm()
     {
+        dd("testing");
         $this->asset_id = '';
         $this->employee_id = '';
         $this->checkout_at = now()->format('Y-m-d');

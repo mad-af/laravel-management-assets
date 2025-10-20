@@ -143,15 +143,6 @@ class Combobox extends Component
         }
 
         $this->syncSelected();
-        // if ($this->multiple) {
-        //     $this->selected = collect(Arr::wrap($this->value))
-        //         ->map(function ($val) {
-        //             return $this->findOptionByValue($val);
-        //         });
-        // } else {
-        //     $this->showDropdown = false;
-        //     $this->selected = collect([$this->findOptionByValue($this->value)]);
-        // }
     }
 
     protected function syncSelected()
@@ -172,7 +163,7 @@ class Combobox extends Component
         // Jika options berubah dari proses lain, matikan indikator loading
         $this->isLoading = false;
     }
-    
+
     #[On('combobox-clear')]
     public function clear()
     {
