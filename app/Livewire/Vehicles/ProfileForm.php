@@ -7,6 +7,7 @@ use App\Models\Asset;
 use App\Models\Category;
 use App\Models\VehicleProfile;
 use App\Support\SessionKey;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Mary\Traits\Toast;
 
@@ -17,6 +18,8 @@ class ProfileForm extends Component
     public $assetId;
 
     public $asset_id = '';
+
+    public $assets = [];
 
     public $year_purchase = '';
 
@@ -83,6 +86,26 @@ class ProfileForm extends Component
         $this->loadVehicle($value);
     }
 
+    #[On('combobox-load-assets')]
+    public function loadAssets($search = '')
+    {
+        $query = Asset::forBranch()->vehicles();
+
+        if (! empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%$search%")
+                    ->orWhere('code', 'like', "%$search%")
+                    ->orWhere('tag_code', 'like', "%$search%");
+            });
+        }
+
+        $this->assets = $query->orderBy('name')
+            ->get(['id', 'name', 'code', 'tag_code', 'image'])
+            ->toArray();
+
+        $this->dispatch('combobox-set-assets', $this->assets);
+    }
+
     public function mount($assetId = null)
     {
         $this->asset_id = $assetId;
@@ -90,6 +113,8 @@ class ProfileForm extends Component
         if ($assetId) {
             $this->loadVehicle();
         }
+
+        $this->loadAssets();
     }
 
     public function loadVehicle($param = null)
@@ -121,7 +146,7 @@ class ProfileForm extends Component
         } else {
             $this->resetForm();
         }
-    }   
+    }
 
     public function resetForm()
     {
@@ -200,7 +225,7 @@ class ProfileForm extends Component
             return ['value' => $case->value, 'label' => $case->label()];
         })->values()->toArray();
 
-        return view('livewire.vehicles.profile-form', compact('assets', 'types'))
+        return view('livewire.vehicles.profile-form', compact('types'))
             ->with('assetId', $this->assetId);
     }
 }
