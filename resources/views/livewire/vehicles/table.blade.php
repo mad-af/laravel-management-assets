@@ -35,7 +35,8 @@
                     ['key' => 'odometer_target', 'label' => 'Target Odometer', 'class' => 'text-right'],
                     ['key' => 'next_service', 'label' => 'Perawatan Selanjutnya'],
                     ['key' => 'license_plate', 'label' => 'Plat Nomor'],
-                    ['key' => 'brand_model', 'label' => 'Merek & Model'],
+                    ['key' => 'type', 'label' => 'Tipe'],
+                    // ['key' => 'brand_model', 'label' => 'Merek & Model'],
                     ['key' => 'status', 'label' => 'Status'],
                     ['key' => 'condition', 'label' => 'Kondisi'],
                     ['key' => 'actions', 'label' => 'Aksi', 'class' => 'w-20'],
@@ -69,17 +70,32 @@
                 @scope('cell_current_odometer_km', $vehicle)
                 <span class="text-sm">{{ 
                     $vehicle->vehicleProfile?->current_odometer_km ?
-    number_format($vehicle->vehicleProfile?->current_odometer_km, 0, ',', '.')
-    : '-' 
+                        number_format($vehicle->vehicleProfile?->current_odometer_km, 0, ',', '.')
+                        : '-' 
                 }}</span>
                 @endscope
 
                 @scope('cell_odometer_target', $vehicle)
-                <span class="text-sm">{{ 
-                    $vehicle->vehicleProfile?->service_target_odometer_km ?
-    number_format($vehicle->vehicleProfile?->service_target_odometer_km, 0, ',', '.')
-    : '-' 
-                }}</span>
+                @if($vehicle->vehicleProfile?->service_target_odometer_km)
+                    @php
+                        $odometerInfo = $this->formatOdometerTargetInfo(
+                            $vehicle->vehicleProfile?->current_odometer_km,
+                            $vehicle->vehicleProfile?->service_target_odometer_km
+                        );
+                    @endphp
+                    @if($odometerInfo)
+                        <div class="text-sm text-right">
+                            <div class="font-medium">{{ $odometerInfo['formatted_target'] }}</div>
+                            <div class="text-xs {{ $odometerInfo['is_overdue'] ? 'text-error' : 'text-base-content/60' }}">
+                                {{ $odometerInfo['distance_info'] }}
+                            </div>
+                        </div>
+                    @else
+                        <span class="text-sm">-</span>
+                    @endif
+                @else
+                    <span class="text-sm">-</span>
+                @endif
                 @endscope
 
                 @scope('cell_next_service', $vehicle)
@@ -110,14 +126,19 @@
                 </div>
                 @endscope
 
+                @scope('cell_type', $vehicle)
+                <x-badge value="{{ $vehicle->vehicleProfile->type->label() }}"
+                    class="badge-{{ $vehicle->vehicleProfile->type->color() }} badge-soft badge-sm whitespace-nowrap" />
+                @endscope
+
                 @scope('cell_status', $vehicle)
                 <x-badge value="{{ $vehicle->status->label() }}"
-                    class="badge-{{ $vehicle->status->color() }} badge-sm" />
+                    class="badge-{{ $vehicle->status->color() }} badge-sm whitespace-nowrap" />
                 @endscope
 
                 @scope('cell_condition', $vehicle)
                 <x-badge value="{{ $vehicle->condition->label() }}"
-                    class="badge-{{ $vehicle->condition->color() }} badge-outline badge-sm" />
+                    class="badge-{{ $vehicle->condition->color() }} badge-outline badge-sm whitespace-nowrap" />
                 @endscope
 
                 @scope('cell_actions', $vehicle)

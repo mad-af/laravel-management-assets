@@ -187,6 +187,8 @@ table(vehicle_profiles) {
   service_target_odometer_km : INT [NULL]
   plate_no : VARCHAR(32) [NULL]
   vin : VARCHAR(64) [NULL]
+  owner : VARCHAR(64) [NULL]
+  type : ENUM(passenger, cargo, motorcycle)
   created_at : TIMESTAMP
   updated_at : TIMESTAMP
 }

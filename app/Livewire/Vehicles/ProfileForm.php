@@ -2,17 +2,17 @@
 
 namespace App\Livewire\Vehicles;
 
+use App\Enums\VehicleType;
 use App\Models\Asset;
 use App\Models\Category;
 use App\Models\VehicleProfile;
 use App\Support\SessionKey;
-use App\Traits\WithAlert;
 use Livewire\Component;
 use Mary\Traits\Toast;
 
 class ProfileForm extends Component
 {
-    use Toast, WithAlert;
+    use Toast;
 
     public $assetId;
 
@@ -34,6 +34,10 @@ class ProfileForm extends Component
 
     public $vin = '';
 
+    public $owner = '';
+
+    public $type = VehicleType::PASSENGER->value;
+
     public $isEdit = false;
 
     protected function rules()
@@ -50,6 +54,8 @@ class ProfileForm extends Component
             'next_service_date' => 'nullable|date',
             'plate_no' => 'nullable|string|max:20',
             'vin' => 'nullable|string|max:50',
+            'owner' => 'nullable|string|max:64',
+            'type' => 'required|in:passenger,cargo,motorcycle',
         ];
     }
 
@@ -110,10 +116,12 @@ class ProfileForm extends Component
             $this->next_service_date = optional($vehicle->next_service_date)->format('Y-m-d');
             $this->plate_no = $vehicle->plate_no;
             $this->vin = $vehicle->vin;
+            $this->owner = $vehicle->owner;
+            $this->type = $vehicle->type?->value ?? VehicleType::PASSENGER->value;
         } else {
             $this->resetForm();
         }
-    }
+    }   
 
     public function resetForm()
     {
@@ -125,6 +133,8 @@ class ProfileForm extends Component
         $this->next_service_date = '';
         $this->plate_no = '';
         $this->vin = '';
+        $this->owner = '';
+        $this->type = VehicleType::PASSENGER->value;
         $this->resetValidation();
     }
 
@@ -143,16 +153,18 @@ class ProfileForm extends Component
                 'next_service_date' => $this->next_service_date ?: null,
                 'plate_no' => $this->plate_no,
                 'vin' => $this->vin,
+                'owner' => $this->owner ?: null,
+                'type' => $this->type,
             ];
 
             if ($this->isEdit) {
                 $vehicleProfile = VehicleProfile::where('asset_id', $this->assetId)->first();
                 $vehicleProfile->update($data);
-                $this->showSuccessAlert('Profil kendaraan berhasil diperbarui.', 'Berhasil');
+                $this->success('Profil kendaraan berhasil diperbarui.');
                 $this->dispatch('vehicle-updated');
             } else {
                 VehicleProfile::create(array_merge($data, ['asset_id' => $this->assetId]));
-                $this->showSuccessAlert('Profil kendaraan berhasil dibuat.', 'Berhasil');
+                $this->success('Profil kendaraan berhasil dibuat.');
                 $this->dispatch('vehicle-saved');
             }
 
@@ -160,7 +172,7 @@ class ProfileForm extends Component
             $this->dispatch('close-drawer');
         } catch (\Exception $e) {
             dd($e);
-            $this->showErrorAlert('Gagal menyimpan profil kendaraan: '.$e->getMessage(), 'Error');
+            $this->Error('Gagal menyimpan profil kendaraan: '.$e->getMessage(), 'Error');
         }
     }
 
@@ -184,7 +196,11 @@ class ProfileForm extends Component
                 return $asset;
             });
 
-        return view('livewire.vehicles.profile-form', compact('assets'))
+        $types = collect(VehicleType::cases())->map(function ($case) {
+            return ['value' => $case->value, 'label' => $case->label()];
+        })->values()->toArray();
+
+        return view('livewire.vehicles.profile-form', compact('assets', 'types'))
             ->with('assetId', $this->assetId);
     }
 }

@@ -11,6 +11,14 @@
     <x-input name="plate_no" label="Nomor Plat" class="input-sm" wire:model="plate_no"
         placeholder="Masukkan nomor plat kendaraan" />
 
+    <!-- Owner -->
+    <x-input name="owner" label="Pemilik" class="input-sm" wire:model="owner"
+        placeholder="Masukkan nama pemilik kendaraan" />
+
+    <!-- Vehicle Type -->
+    <x-select name="type" label="Tipe Kendaraan" class="select-sm" wire:model="type" :options="$types"
+        option-value="value" option-label="label" placeholder="Pilih tipe kendaraan" required />
+
     <!-- Purchase Year -->
     <x-input name="year_purchase" label="Tahun Pembelian" class="input-sm" wire:model="year_purchase" type="number"
         min="1900" max="{{ date('Y') + 1 }}" placeholder="Masukkan tahun pembelian" />

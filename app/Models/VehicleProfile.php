@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\VehicleType;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -27,6 +28,8 @@ class VehicleProfile extends Model
         'next_service_date',
         'plate_no',
         'vin',
+        'owner',
+        'type',
     ];
 
     protected $casts = [
@@ -37,6 +40,7 @@ class VehicleProfile extends Model
         'service_target_odometer_km' => 'integer',
         'year_purchase' => 'integer',
         'year_manufacture' => 'integer',
+        'type' => VehicleType::class,
     ];
 
     /**

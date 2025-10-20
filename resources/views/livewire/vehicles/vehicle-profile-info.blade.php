@@ -18,6 +18,16 @@
             'mono' => true
         ],
         [
+            'label' => 'Pemilik',
+            'value' => $vehicle->vehicleProfile?->owner ?? '-'
+        ],
+        [
+            'label' => 'Tipe Kendaraan',
+            'value' => $vehicle->vehicleProfile?->type?->label() ?? '-',
+            'badge' => true,
+            'badge_class' =>  'badge-'.$vehicle->status->color().' badge-soft',
+        ],
+        [
             'label' => 'Tahun Pembelian',
             'value' => $vehicle->vehicleProfile?->year_purchase ?? '-'
         ],

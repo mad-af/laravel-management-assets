@@ -80,12 +80,12 @@
                 @endscope
 
                 @scope('cell_status', $asset)
-                <x-badge value="{{ $asset->status->label() }}" class="badge-{{ $asset->status->color() }} badge-sm" />
+                <x-badge value="{{ $asset->status->label() }}" class="badge-{{ $asset->status->color() }} badge-sm whitespace-nowrap" />
                 @endscope
 
                 @scope('cell_condition', $asset)
                 <x-badge value="{{ $asset->condition->label() }}"
-                    class="badge-outline badge-{{ $asset->condition->color() }} badge-sm" />
+                    class="badge-outline badge-{{ $asset->condition->color() }} badge-sm whitespace-nowrap" />
                 @endscope
 
                 @scope('cell_last_seen_at', $asset)

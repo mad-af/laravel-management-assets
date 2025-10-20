@@ -27,7 +27,7 @@ enum AssetLoanStatus: string
     {
         return match ($this) {
             self::AVAILABLE => 'success',
-            self::ON_LOAN => 'warning',
+            self::ON_LOAN => 'info',
             self::OVERTIME => 'error',
         };
     }

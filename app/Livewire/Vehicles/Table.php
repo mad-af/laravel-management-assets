@@ -116,6 +116,38 @@ class Table extends Component
         }
     }
 
+    public function formatOdometerTargetInfo($currentKm, $targetKm)
+    {
+        if ($targetKm === null) {
+            return null;
+        }
+
+        try {
+            $current = $currentKm ?? 0;
+            $target = $targetKm;
+            $diff = $target - $current;
+            $isOverdue = $diff <= 0;
+            $formattedTarget = number_format($target, 0, ',', '.');
+
+            if ($isOverdue) {
+                $distanceInfo = $diff === 0
+                    ? 'Sudah mencapai target'
+                    : 'Terlampaui '.number_format(abs($diff), 0, ',', '.').' km';
+            } else {
+                $distanceInfo = 'Sisa '.number_format($diff, 0, ',', '.').' km';
+            }
+
+            return [
+                'formatted_target' => $formattedTarget,
+                'distance_info' => $distanceInfo,
+                'is_overdue' => $isOverdue,
+                'diff_km' => $diff,
+            ];
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
+
     public function render()
     {
         $currentBranchId = session_get(SessionKey::BranchId);
