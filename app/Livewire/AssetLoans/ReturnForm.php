@@ -42,7 +42,7 @@ class ReturnForm extends Component
             $this->loan = AssetLoan::with(['asset', 'employee'])->find($assetLoanId);
             if ($this->loan) {
                 $this->checkin_at = $this->loan->checkin_at?->format('Y-m-d') ?? now()->format('Y-m-d');
-                $this->condition_in = $this->loan->condition_in?->value ?? $this->loan->condition_out?->value;
+                // $this->condition_in = $this->loan->condition_in?->value ?? $this->loan->condition_out?->value;
                 $this->notes = $this->loan->notes;
             }
         }

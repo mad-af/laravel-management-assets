@@ -111,6 +111,10 @@ class AssetLoan extends Model
             if (! empty($loan->asset_id) && $loan->checkin_at !== null) {
                 $loan->asset()->update(['status' => AssetStatus::ACTIVE]);
             }
+
+            if (! empty($loan->condition_in)) {
+                $loan->asset()->update(['condition' => $loan->condition_in]);
+            }
         });
     }
 }

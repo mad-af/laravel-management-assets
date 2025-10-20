@@ -42,11 +42,6 @@
         </div>
     @endif
 
-    <!-- Notes -->
-    <div>
-        <x-textarea label="Catatan" wire:model="notes" placeholder="Masukkan catatan tambahan" rows="3" />
-    </div>
-
     <!-- Submit Button -->
     <div class="flex gap-2 justify-end pt-4">
         <x-button label="Batal" class="btn-ghost" wire:click="$dispatch('close-drawer')" />

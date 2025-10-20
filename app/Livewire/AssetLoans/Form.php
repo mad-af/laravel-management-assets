@@ -30,8 +30,6 @@ class Form extends Component
 
     public $condition_in;
 
-    public $notes = '';
-
     public $isEdit = false;
 
     public $employees = [];
@@ -48,7 +46,6 @@ class Form extends Component
         'checkin_at' => 'nullable|date|after_or_equal:checkout_at',
         'condition_out' => 'nullable',
         'condition_in' => 'nullable',
-        'notes' => 'nullable|string',
     ];
 
     protected $listeners = [
@@ -132,7 +129,6 @@ class Form extends Component
                 $this->checkin_at = $assetLoan->checkin_at?->format('Y-m-d');
                 $this->condition_out = $assetLoan->condition_out?->value;
                 $this->condition_in = $assetLoan->condition_in?->value;
-                $this->notes = $assetLoan->notes;
             }
         }
     }
@@ -149,7 +145,7 @@ class Form extends Component
                 'due_at' => $this->due_at,
                 'checkin_at' => $this->checkin_at ?: null,
                 'condition_in' => $this->condition_in ?: null,
-                'notes' => $this->notes ?: null,
+                'notes' => null,
             ];
 
             if ($this->isEdit && $this->assetLoanId) {
@@ -188,7 +184,6 @@ class Form extends Component
         $this->due_at = now()->addYear()->format('Y-m-d');
         $this->checkin_at = null;
         $this->condition_in = null;
-        $this->notes = '';
         $this->resetValidation();
         // $this->dispatch('combobox-clear');
     }
