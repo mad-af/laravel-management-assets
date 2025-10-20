@@ -62,7 +62,7 @@ class Form extends Component
 
         $this->assetLoanId = $assetLoanId;
         $this->checkout_at = now()->format('Y-m-d');
-        $this->due_at = now()->addDays(7)->format('Y-m-d');
+        $this->due_at = now()->addYear()->format('Y-m-d');
         $this->loadEmployees();
         $this->loadAssets();
 
@@ -132,7 +132,6 @@ class Form extends Component
 
     public function save()
     {
-        dd($this->employee_id, 'sdad');
         $this->validate();
 
         try {
@@ -149,13 +148,14 @@ class Form extends Component
                 $assetLoan = AssetLoan::find($this->assetLoanId);
                 $assetLoan->update($data);
                 $this->success('Asset loan updated successfully!');
-                $this->dispatch('asset-loan-updated');
+                
             } else {
                 AssetLoan::create($data);
                 $this->success('Asset loan created successfully!');
-                $this->dispatch('asset-loan-saved');
-                $this->resetForm();
             }
+            $this->dispatch('table-refresh');
+            $this->dispatch('close-drawer');
+            $this->resetForm();
         } catch (\Exception $e) {
             $this->error('An error occurred: '.$e->getMessage());
         }
@@ -174,16 +174,15 @@ class Form extends Component
     #[On('reset-form')]
     public function resetForm()
     {
-        dd("testing");
         $this->asset_id = '';
         $this->employee_id = '';
         $this->checkout_at = now()->format('Y-m-d');
         $this->due_at = now()->addDays(7)->format('Y-m-d');
-        $this->checkin_at = '';
-        $this->condition_in = '';
+        $this->checkin_at = null;
+        $this->condition_in = null;
         $this->notes = '';
         $this->resetValidation();
-        $this->dispatch('combobox-clear');
+        // $this->dispatch('combobox-clear');
     }
 
     public function render()

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\AssetCondition;
+use App\Enums\AssetStatus;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -78,5 +79,38 @@ class AssetLoan extends Model
     {
         return $query->whereNull('checkin_at')
             ->where('due_at', '<', now());
+    }
+
+    /**
+     * Auto-fill condition_out from the asset's current condition when creating.
+     * Also mark the asset as on_loan once the loan is created.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function (AssetLoan $loan) {
+            // If not provided, default condition_out to the asset's condition
+            if (empty($loan->condition_out) && ! empty($loan->asset_id)) {
+                $asset = Asset::find($loan->asset_id);
+                if ($asset && $asset->condition) {
+                    $loan->condition_out = $asset->condition;
+                }
+            }
+        });
+
+        static::created(function (AssetLoan $loan) {
+            // Update asset status to ON_LOAN when loan is created and not yet returned
+            if (! empty($loan->asset_id) && $loan->checkin_at === null) {
+                $loan->asset()->update(['status' => AssetStatus::ON_LOAN]);
+            }
+        });
+
+        static::updated(function (AssetLoan $loan) {
+            // Update asset status to AVAILABLE when loan is returned
+            if (! empty($loan->asset_id) && $loan->checkin_at !== null) {
+                $loan->asset()->update(['status' => AssetStatus::ACTIVE]);
+            }
+        });
     }
 }

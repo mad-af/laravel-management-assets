@@ -28,8 +28,7 @@ class Table extends Component
     protected $queryString = ['search', 'statusFilter', 'conditionFilter', 'overdueFilter', 'categoryFilter'];
 
     protected $listeners = [
-        'asset-loan-saved' => '$refresh',
-        'asset-loan-deleted' => '$refresh',
+        'table-refresh' => '$refresh',
     ];
 
     public function updatingSearch()
