@@ -1,9 +1,20 @@
-<form action="{{ route('vehicles.store-odometer') }}" method="POST" class="space-y-2">
+<form wire:submit="save" class="space-y-2">
     @csrf
 
     <!-- Asset Selection -->
-    <x-select name="asset_id" label="Kendaraan" class="select-sm" wire:model.live="asset_id" :options="$assets"
-        option-value="id" option-label="display_name" placeholder="Pilih kendaraan" required />
+    <livewire:components.combobox
+        name="assets"
+        wire:model.live="asset_id"
+        :options="$assets"
+        option-value="id"
+        option-label="name"
+        option-sub-label="tag_code"
+        option-meta="code"
+        option-avatar="image"
+        label="Kendaraan"
+        placeholder="Pilih kendaraan"
+        required
+        class="input-sm" />
 
     <!-- Odometer Reading -->
     <x-input name="odometer_km" label="Pembacaan Odometer (km)" class="input-sm" wire:model="odometer_km" type="number"
@@ -23,8 +34,6 @@
 
     <div class="flex gap-3 justify-end pt-4">
         <x-button label="Batal" class="btn-ghost btn-sm" type="button" wire:click="$dispatch('close-drawer')" />
-        <button class="btn btn-sm btn-primary" type="submit">
-            Simpan
-        </button>
+        <x-button label="Simpan" class="btn btn-sm btn-primary" type="submit" spinner="save" />
     </div>
 </form>

@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\VehicleOdometerLog;
 use App\Support\SessionKey;
 use App\Traits\WithAlert;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Mary\Traits\Toast;
 
@@ -17,13 +18,15 @@ class OdometerForm extends Component
 
     public $odometerLogId;
 
+    public $assets = [];
+
     public $asset_id = '';
 
     public $odometer_km = '';
 
     public $read_at = '';
 
-    public $source = VehicleOdometerSource::MANUAL;
+    public $source = 'manual';
 
     public $notes = '';
 
@@ -47,24 +50,40 @@ class OdometerForm extends Component
 
     public function updatedAssetId($value)
     {
-        // keep event dispatch as-is
         $this->dispatch('asset-id-changed', $value);
 
-        // treat empty/blank as reset
         if (\Illuminate\Support\Str::of((string) $value)->trim()->isEmpty()) {
             $this->resetForm();
 
             return;
         }
+    }
 
-        // For OdometerForm, we don't need to load existing data like ProfileForm
-        // Just keep the asset_id updated
+    #[On('combobox-load-assets')]
+    public function loadAssets($search = '')
+    {
+        $query = Asset::forBranch()->vehicles();
+
+        if (! empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%$search%")
+                    ->orWhere('code', 'like', "%$search%")
+                    ->orWhere('tag_code', 'like', "%$search%");
+            });
+        }
+
+        $this->assets = $query->orderBy('name')
+            ->get(['id', 'name', 'code', 'tag_code', 'image'])
+            ->toArray();
+
+        $this->dispatch('combobox-set-assets', $this->assets);
     }
 
     public function mount($assetId = null)
     {
         $this->asset_id = $assetId;
         $this->read_at = now()->format('Y-m-d H:i');
+        $this->loadAssets();
     }
 
     public function resetForm()
@@ -92,44 +111,27 @@ class OdometerForm extends Component
             if ($this->isEdit) {
                 $log = VehicleOdometerLog::find($this->odometerLogId);
                 $log->update($data);
-                $this->showSuccessAlert('Log odometer berhasil diperbarui.', 'Berhasil');
+                $this->success('Log odometer berhasil diperbarui!');
                 $this->dispatch('odometer-log-updated');
             } else {
                 VehicleOdometerLog::create($data);
-                $this->showSuccessAlert('Log odometer berhasil dibuat.', 'Berhasil');
+                $this->success('Log odometer berhasil dibuat!');
                 $this->dispatch('odometer-log-saved');
             }
 
             $this->resetForm();
         } catch (\Exception $e) {
-            $this->showErrorAlert('Gagal menyimpan log odometer: '.$e->getMessage(), 'Error');
+            $this->error('Gagal menyimpan log odometer: '.$e->getMessage());
         }
     }
 
     public function render()
     {
-        $currentBranchId = session_get(SessionKey::BranchId);
-        $vehicleCategory = Category::where('name', 'Kendaraan')->first();
-
-        $assets = Asset::query()
-            ->with(['branch'])
-            ->when($currentBranchId, function ($query) use ($currentBranchId) {
-                $query->where('branch_id', $currentBranchId);
-            })
-            ->where('category_id', $vehicleCategory?->id)
-            ->orderByDesc('created_at')
-            ->get()
-            ->map(function ($asset) {
-                $asset->display_name = $asset->name.' ('.$asset->code.')';
-
-                return $asset;
-            });
-
         $sources = collect(VehicleOdometerSource::options())->map(function ($label, $value) {
             return ['value' => $value, 'label' => $label];
         })->values()->toArray();
 
-        return view('livewire.vehicles.odometer-form', compact('assets', 'sources'))
+        return view('livewire.vehicles.odometer-form', compact('sources'))
             ->with('odometerLogId', $this->odometerLogId)
             ->with('isEdit', $this->isEdit);
     }

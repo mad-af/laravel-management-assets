@@ -6,6 +6,7 @@ use App\Enums\AssetCondition;
 use App\Enums\AssetLoanStatus;
 use App\Enums\AssetLogAction;
 use App\Enums\AssetStatus;
+use App\Support\SessionKey;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -238,13 +239,15 @@ class Asset extends Model
     /**
      * Scope untuk filter berdasarkan branch tertentu
      */
-    public function scopeForBranch(Builder $query, ?string $branchId): Builder
+    public function scopeForBranch(Builder $query, string $branchId = ''): Builder
     {
-        if ($branchId) {
+        if (! empty($branchId)) {
             return $query->where('branch_id', $branchId);
         }
 
-        return $query;
+        $branchId = session_get(SessionKey::BranchId);
+
+        return $query->where('branch_id', $branchId);
     }
 
     /**

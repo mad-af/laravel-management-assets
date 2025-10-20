@@ -88,8 +88,8 @@ class Drawer extends Component
     {
         $this->showDrawer = false;
         $this->assetId = null;
-        $this->dispatch('resetProfileForm');
-        $this->dispatch('resetOdometerForm');
+        // $this->dispatch('resetProfileForm');
+        // $this->dispatch('resetOdometerForm');
 
         // hapus query di URL (Url-bound akan pushState)
         $this->action = null;
