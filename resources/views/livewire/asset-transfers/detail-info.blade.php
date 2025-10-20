@@ -34,12 +34,12 @@
             </div>
             
             <div>
-                <label class="text-sm font-medium text-base-content/70">From Location</label>
+                <label class="text-sm font-medium text-base-content/70">From Branch</label>
                 <p class="font-semibold">{{ $transferData['from_location'] ?? 'N/A' }}</p>
             </div>
             
             <div>
-                <label class="text-sm font-medium text-base-content/70">To Location</label>
+                <label class="text-sm font-medium text-base-content/70">To Branch</label>
                 <p class="font-semibold">{{ $transferData['to_location'] ?? 'N/A' }}</p>
             </div>
             

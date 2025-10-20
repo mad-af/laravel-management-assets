@@ -5,10 +5,6 @@
         @method('PUT')
     @endif
 
-    <!-- Priority -->
-    <x-select name="priority" label="Priority" class="select-sm" wire:model="priority" :options="$priorityOptions"
-        option-value="value" option-label="label" placeholder="Pilih priority" required />
-
     <!-- Status -->
     <x-select name="status" label="Status" class="select-sm" wire:model="status" :options="$statusOptions"
         option-value="value" option-label="label" placeholder="Pilih status" required />
@@ -19,13 +15,11 @@
 
     <!-- Locations - Side by Side -->
     <div class="grid grid-cols-2 gap-4">
-        <x-select name="from_location_id" label="Dari Lokasi" class="select-sm" wire:model="from_location_id"
-            wire:change="$refresh" :options="$locations" option-value="id" option-label="name"
-            placeholder="Pilih lokasi asal" required />
+        <x-select name="from_location_id" label="Dari Cabang" class="select-sm" wire:model="from_location_id"
+            wire:change="$refresh" :options="$branches" option-value="id" option-label="name" />
 
-        <x-select name="to_location_id" label="Ke Lokasi" class="select-sm" wire:model="to_location_id"
-            wire:change="$refresh" :options="$locations" option-value="id" option-label="name"
-            placeholder="Pilih lokasi tujuan" required />
+        <x-select name="to_location_id" label="Ke Cabang" class="select-sm" wire:model="to_location_id"
+            wire:change="$refresh" :options="$branches" option-value="id" option-label="name" />
     </div>
 
     <!-- Reason -->
@@ -60,13 +54,13 @@
 
                             <div class="grid grid-cols-2 gap-2">
                                 <!-- Select-nya disabled (tidak terkirim) → kirim via hidden -->
-                                <x-select name="items[{{ $index }}][from_location_id]" label="From Location"
-                                    class="select-sm" wire:model="items.{{ $index }}.from_location_id" :options="$locations"
-                                    option-value="id" option-label="name" placeholder="Dari lokasi" disabled />
+                                <x-select name="items[{{ $index }}][from_location_id]" label="From Branch"
+                                    class="select-sm" wire:model="items.{{ $index }}.from_location_id" :options="$branches"
+                                    option-value="id" option-label="name" />
 
-                                <x-select name="items[{{ $index }}][to_location_id]" label="To Location" class="select-sm"
-                                    wire:model="items.{{ $index }}.to_location_id" :options="$locations" option-value="id"
-                                    option-label="name" placeholder="Ke lokasi" disabled />
+                                <x-select name="items[{{ $index }}][to_location_id]" label="To Branch" class="select-sm"
+                                    wire:model="items.{{ $index }}.to_location_id" :options="$branches" option-value="id"
+                                    option-label="name" />
                             </div>
                         </div>
                     </fieldset>
@@ -74,7 +68,7 @@
             @endforeach
         </div>
 
-        <button type="button" wire:click="addItem" class="mt-3 w-full btn btn-sm ">
+        <button type="button" wire:click="addItem" class="mt-3 w-full btn btn-sm">
             Tambah Asset Item
         </button>
     </fieldset>

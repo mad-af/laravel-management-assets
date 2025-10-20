@@ -4,7 +4,7 @@
         <div class="flex flex-col gap-4 mb-4 sm:flex-row">
             {{-- Search Input --}}
             <div class="flex-1">
-                <x-input wire:model.live="search" placeholder="Cari transfer (nomor, alasan, lokasi)..."
+                <x-input wire:model.live="search" placeholder="Cari transfer (nomor, alasan, cabang)..."
                     icon="o-magnifying-glass" class="input-sm" />
             </div>
 
@@ -32,7 +32,7 @@
                 $headers = [
                     ['key' => 'transfer_no', 'label' => 'No. Transfer'],
                     ['key' => 'reason', 'label' => 'Alasan'],
-                    ['key' => 'locations', 'label' => 'Lokasi'],
+                    ['key' => 'locations', 'label' => 'Cabang'],
                     ['key' => 'items_count', 'label' => 'Jumlah Item'],
                     ['key' => 'status', 'label' => 'Status'],
                     ['key' => 'scheduled_at', 'label' => 'Dijadwalkan'],
@@ -54,11 +54,11 @@
                 <div class="text-sm">
                     <div class="flex gap-1 items-center">
                         <span class="text-base-content/70">Dari:</span>
-                        <span class="font-medium">{{ $transfer->fromLocation?->name ?? '-' }}</span>
+                        <span class="font-medium">{{ $transfer->fromBranch?->name ?? '-' }}</span>
                     </div>
                     <div class="flex gap-1 items-center">
                         <span class="text-base-content/70">Ke:</span>
-                        <span class="font-medium">{{ $transfer->toLocation?->name ?? '-' }}</span>
+                        <span class="font-medium">{{ $transfer->toBranch?->name ?? '-' }}</span>
                     </div>
                 </div>
                 @endscope

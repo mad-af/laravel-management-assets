@@ -25,7 +25,6 @@
                     'route' => 'asset-transfers.index',
                     'icon' => 'o-arrow-path',
                     'label' => 'Transfer Aset',
-                    'disabled' => true
                 ],
                 [
                     'route' => 'asset-loans.index',

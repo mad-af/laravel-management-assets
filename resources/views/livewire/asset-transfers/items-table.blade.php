@@ -11,8 +11,8 @@
                 $headers = [
                     ['key' => 'asset_code', 'label' => 'Asset Code', 'class' => 'font-mono font-bold'],
                     ['key' => 'asset_info', 'label' => 'Asset'],
-                    ['key' => 'from_location', 'label' => 'From Location'],
-                    ['key' => 'to_location', 'label' => 'To Location'],
+                    ['key' => 'from_location', 'label' => 'From Branch'],
+                    ['key' => 'to_location', 'label' => 'To Branch'],
                 ];
             @endphp
 

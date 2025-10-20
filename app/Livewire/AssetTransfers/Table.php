@@ -71,17 +71,17 @@ class Table extends Component
     public function render()
     {
         $transfers = AssetTransfer::query()
-            ->with(['fromLocation', 'toLocation', 'requestedBy'])
+            ->with(['fromBranch', 'toBranch', 'requestedBy'])
             ->withCount('items')
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('transfer_no', 'like', '%' . $this->search . '%')
                       ->orWhere('reason', 'like', '%' . $this->search . '%')
-                      ->orWhereHas('fromLocation', function ($location) {
-                          $location->where('name', 'like', '%' . $this->search . '%');
+                      ->orWhereHas('fromBranch', function ($branch) {
+                          $branch->where('name', 'like', '%' . $this->search . '%');
                       })
-                      ->orWhereHas('toLocation', function ($location) {
-                          $location->where('name', 'like', '%' . $this->search . '%');
+                      ->orWhereHas('toBranch', function ($branch) {
+                          $branch->where('name', 'like', '%' . $this->search . '%');
                       });
                 });
             })
