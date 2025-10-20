@@ -25,6 +25,7 @@ class Table extends Component
         'vehicle-saved' => '$refresh',
         'vehicle-updated' => '$refresh',
         'vehicle-deleted' => '$refresh',
+        'odometer-saved' => '$refresh',
     ];
 
     public function updatingSearch()

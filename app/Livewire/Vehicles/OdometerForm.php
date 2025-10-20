@@ -112,14 +112,14 @@ class OdometerForm extends Component
                 $log = VehicleOdometerLog::find($this->odometerLogId);
                 $log->update($data);
                 $this->success('Log odometer berhasil diperbarui!');
-                $this->dispatch('odometer-log-updated');
             } else {
                 VehicleOdometerLog::create($data);
                 $this->success('Log odometer berhasil dibuat!');
-                $this->dispatch('odometer-log-saved');
             }
-
+            
             $this->resetForm();
+            $this->dispatch('odometer-saved');
+            $this->dispatch('close-drawer');
         } catch (\Exception $e) {
             $this->error('Gagal menyimpan log odometer: '.$e->getMessage());
         }
