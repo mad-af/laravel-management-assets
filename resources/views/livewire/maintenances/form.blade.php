@@ -2,18 +2,30 @@
 
     <!-- Asset Selection -->
     <div>
-        <x-select label="Aset" wire:model.live="asset_id" :options="$assets" option-value="value" option-label="label"
-            placeholder="Pilih aset..." searchable required class="select-sm" />
+        <livewire:components.combobox
+            name="assets"
+            wire:model.live="asset_id"
+            :options="$assets"
+            option-value="id"
+            option-label="name"
+            option-sub-label="tag_code"
+            option-meta="code"
+            option-avatar="image"
+            label="Aset"
+            placeholder="Pilih aset..."
+            required
+            class="input-sm"
+        />
     </div>
 
     <!-- Vehicle Profile Confirmation Dialog -->
     @if ($showVehicleProfileConfirmation)
         <div class="p-4 rounded-lg border border-warning bg-warning/10">
-            <div class="flex items-start gap-3">
-                <x-icon name="o-exclamation-triangle" class="w-5 h-5 text-warning flex-shrink-0 mt-0.5" />
+            <div class="flex gap-3 items-start">
+                <x-icon name="o-exclamation-triangle" class="flex-shrink-0 mt-0.5 w-5 h-5 text-warning" />
                 <div class="flex-1">
-                    <h4 class="font-semibold text-sm text-warning">Profil Kendaraan Diperlukan</h4>
-                    <p class="text-sm text-base-content/80 mt-1">
+                    <h4 class="text-sm font-semibold text-warning">Profil Kendaraan Diperlukan</h4>
+                    <p class="mt-1 text-sm text-base-content/80">
                         Kendaraan yang dipilih belum memiliki profil kendaraan. Profil kendaraan diperlukan untuk membuat maintenance record. 
                         Apakah Anda ingin mengisi profil kendaraan sekarang?
                     </p>
@@ -72,26 +84,9 @@
         
         <!-- Employee Selection -->
         <div>
-            <x-choices label="PIC (Karyawan)" wire:model="employee_id" :options="$employees" option-value="id"
-                placeholder="Cari karyawan..." search-function="searchEmployees" debounce="500ms"
-                no-result-text="Tidak ada karyawan ditemukan" class="input-sm" searchable clearable single>
-                {{-- Item slot --}}
-                @scope('item', $employee)
-                <x-list-item :item="$employee" value="employee_number" sub-value="full_name">
-                    <x-slot:value>
-                        <span class="text-xs">{{ $employee['full_name'] }}</span>
-                    </x-slot:value>
-                    <x-slot:sub-value>
-                        <span class="text-sm">{{ $employee['employee_number'] }}</span>
-                    </x-slot:sub-value>
-                </x-list-item>
-                @endscope
-
-                {{-- Selection slot--}}
-                @scope('selection', $employee)
-                {{ $employee['full_name'] }} ({{ $employee['employee_number'] }})
-                @endscope
-            </x-choices>
+            <livewire:components.combobox name="employees" wire:model="employee_id" :options="$employees" option-value="id"
+                option-label="full_name" option-sub-label="email" label="PIC (Karyawan)" placeholder="Pilih karyawan" required
+                class="input-sm" />
         </div>
 
         <!-- Vendor Name -->

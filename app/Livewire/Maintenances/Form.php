@@ -11,6 +11,7 @@ use App\Models\AssetMaintenance;
 use App\Models\Employee;
 use App\Models\User;
 use App\Support\SessionKey;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Mary\Traits\Toast;
 
@@ -27,6 +28,8 @@ class Form extends Component
     public $employeeSearchTerm = '';
 
     public array $employees = [];
+
+    public array $assets = [];
 
     public $title = '';
 
@@ -149,7 +152,10 @@ class Form extends Component
             $this->started_at = now()->format('Y-m-d');
             // Load initial employees for new form
             $this->loadInitialEmployees();
+            // Prefill combobox options with default employees list
+            $this->dispatch('combobox-set-employees', $this->employees);
         }
+        $this->loadAssets();
     }
 
     private function loadInitialEmployees()
@@ -158,12 +164,12 @@ class Form extends Component
             ->where('branch_id', $this->branchId)
             ->limit(10)
             ->orderBy('full_name')
-            ->get()
+            ->get(['id', 'full_name', 'email'])
             ->map(function ($employee) {
                 return [
                     'id' => $employee->id,
                     'full_name' => $employee->full_name,
-                    'employee_number' => $employee->employee_number,
+                    'email' => $employee->email,
                 ];
             })->toArray();
     }
@@ -206,7 +212,7 @@ class Form extends Component
             $selectedEmployeeData = [
                 'id' => $selectedEmployee->id,
                 'full_name' => $selectedEmployee->full_name,
-                'employee_number' => $selectedEmployee->employee_number,
+                'email' => $selectedEmployee->email,
             ];
 
             // Check if selected employee is already in search results
@@ -291,43 +297,46 @@ class Form extends Component
         $this->maintenancePrioritiesCache = null;
     }
 
-    public function searchEmployees($value = '')
+    #[On('combobox-load-assets')]
+    public function loadAssets($search = '')
     {
-        $this->employeeSearchTerm = $value;
+        $currentBranchId = session_get(SessionKey::BranchId);
 
-        if (empty($value)) {
-            // Return first 10 employees when no search term
-            $this->employees = Employee::where('is_active', true)
-                ->where('branch_id', $this->branchId)
-                ->limit(10)
-                ->orderBy('full_name')
-                ->get()
-                ->map(function ($employee) {
-                    return [
-                        'id' => $employee->id,
-                        'full_name' => $employee->full_name,
-                        'employee_number' => $employee->employee_number,
-                    ];
-                })->toArray();
-        } else {
-            // Search employees by name or employee number
-            $this->employees = Employee::where('is_active', true)
-                ->where('branch_id', $this->branchId)
-                ->where(function ($query) use ($value) {
-                    $query->where('full_name', 'like', '%'.$value.'%')
-                        ->orWhere('employee_number', 'like', '%'.$value.'%');
-                })
-                ->limit(20)
-                ->orderBy('full_name')
-                ->get()
-                ->map(function ($employee) {
-                    return [
-                        'id' => $employee->id,
-                        'full_name' => $employee->full_name,
-                        'employee_number' => $employee->employee_number,
-                    ];
-                })->toArray();
+        $query = Asset::select(['id', 'name', 'code', 'tag_code', 'image'])
+            ->when($currentBranchId, fn ($q) => $q->where('branch_id', $currentBranchId))
+            ->orderBy('name');
+
+        if (! empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('code', 'like', "%{$search}%")
+                    ->orWhere('tag_code', 'like', "%{$search}%");
+            });
         }
+
+        $this->assets = $query->take(20)->get(['id', 'name', 'code', 'tag_code', 'image'])->toArray();
+
+        $this->dispatch('combobox-set-assets', $this->assets);
+    }
+
+    #[On('combobox-load-employees')]
+    public function loadEmployees($search = '')
+    {
+        $branchId = session_get(SessionKey::BranchId);
+        $query = Employee::query()
+            ->where('branch_id', $branchId)
+            ->where('is_active', true);
+
+        if (! empty($search)) {
+            $query->where('full_name', 'like', "%$search%");
+        }
+
+        $this->employees = $query->orderBy('full_name')
+            ->get(['id', 'full_name', 'email'])
+            ->toArray();
+
+        // Kirim data options terbaru ke combobox instance bernama 'employees'
+        $this->dispatch('combobox-set-employees', $this->employees);
     }
 
     // Computed properties to cache data and avoid repeated queries
