@@ -57,10 +57,11 @@ class Drawer extends Component
         } // else: biarkan state tetap (jangan auto-tutup tiap update)
     }
 
-    public function openEditDrawer($assetLoanId)
+    public function openEditDrawer($assetId, $assetLoanId)
     {
         $this->action = 'edit';
         $this->asset_loan_id = $assetLoanId;
+        $this->asset_id = $assetId;
         $this->applyActionFromUrl();
     }
 
@@ -87,9 +88,10 @@ class Drawer extends Component
         $this->asset_id = null;
     }
 
-    public function editAssetLoan($assetLoanId)
+    public function editAssetLoan($assetId, $assetLoanId)
     {
         $this->editingAssetLoanId = $assetLoanId;
+        $this->editingAssetId = $assetId;
         $this->showDrawer = true;
     }
 

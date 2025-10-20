@@ -5,7 +5,7 @@
 @section('content')
     <!-- Page Header -->
     <livewire:dashboard-content-header title="Asset Loan Management" description="Kelola data pinjaman aset sistem."
-        buttonText="Tambah Pinjaman" buttonAction="openAssetLoanDrawer" />
+        buttonIcon="o-tag" buttonText="Pinjamkan Asset" buttonAction="openAssetLoanDrawer" />
 
     <!-- Asset Loans Table -->
     <livewire:asset-loans.table />

@@ -109,6 +109,7 @@ class Combobox extends Component
         if (! empty($this->value)) {
             $this->syncSelected();
         }
+        // dd($this->value, $this->selected);
     }
 
     public function updatedSearch($search)
@@ -149,10 +150,11 @@ class Combobox extends Component
     {
         if ($this->multiple) {
             $this->selected = collect(Arr::wrap($this->value))
-                ->map(function ($val) {
-                    return $this->findOptionByValue($val);
-                });
+            ->map(function ($val) {
+                return $this->findOptionByValue($val);
+            });
         } else {
+            dd($this->findOptionByValue($this->value));
             $this->showDropdown = false;
             $this->selected = collect([$this->findOptionByValue($this->value)]);
         }

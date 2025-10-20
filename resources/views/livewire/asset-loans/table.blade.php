@@ -122,7 +122,7 @@
                 @php $loan = $asset->currentLoan; @endphp
                 <x-action-dropdown :model="$asset">
                     @if($loan)
-                        <li>
+                        <li class="hidden">
                             <button wire:click="openEditDrawer('{{ $loan->id }}')"
                                 class="flex gap-2 items-center p-2 text-sm rounded"
                                 onclick="document.getElementById('dropdown-menu-{{ $asset->id }}').hidePopover()">
@@ -131,11 +131,11 @@
                             </button>
                         </li>
                         <li>
-                            <button wire:click="returnAsset('{{ $loan->id }}')"
-                                class="flex gap-2 items-center p-2 text-sm rounded text-success"
+                            <button wire:click="returnAsset('{{ $asset->id }}', '{{ $loan->id }}')"
+                                class="flex gap-2 items-center p-2 text-sm rounded"
                                 onclick="document.getElementById('dropdown-menu-{{ $asset->id }}').hidePopover()">
-                                <x-icon name="o-arrow-uturn-left" class="w-4 h-4" />
-                                Kembalikan
+                                <x-icon name="o-archive-box-arrow-down" class="w-4 h-4" />
+                                Pengembalian Asset
                             </button>
                         </li>
                         <li class="hidden">
@@ -151,7 +151,7 @@
                         <li>
                             <button wire:click="openDrawer('{{ $asset->id }}')"
                                 class="flex gap-2 items-center p-2 text-sm rounded">
-                                <x-icon name="o-plus" class="w-4 h-4" />
+                                <x-icon name="o-tag" class="w-4 h-4" />
                                 Pinjamkan Asset
                             </button>
                         </li>

@@ -11,7 +11,7 @@
             <!-- Drawer Header -->
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-lg font-semibold">
-                    {{ $editingAssetLoanId ? 'Edit Asset Loan' : 'Add New Asset Loan' }}
+                    {{ $editingAssetLoanId ? 'Edit Asset Loan' : 'Pinjamkan Asset' }}
                 </h2>
                 <button wire:click="closeDrawer" class="btn btn-sm btn-circle btn-ghost">
                     <x-icon name="o-x-mark" class="w-5 h-5" />

@@ -152,4 +152,9 @@ class Table extends Component
 
         return view('livewire.asset-loans.table', compact('assets', 'statusCounts', 'loanStatuses', 'categories'));
     }
+
+    public function returnAsset($assetId, $assetLoanId)
+    {
+        $this->dispatch('open-edit-drawer', assetId: $assetId, assetLoanId: $assetLoanId);
+    }
 }

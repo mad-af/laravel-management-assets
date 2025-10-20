@@ -38,6 +38,8 @@ class Form extends Component
 
     public $assets = [];
 
+    public array $conditions = [];
+
     protected $rules = [
         'asset_id' => 'required|exists:assets,id',
         'employee_id' => 'required|exists:employees,id',
@@ -65,6 +67,11 @@ class Form extends Component
         $this->due_at = now()->addYear()->format('Y-m-d');
         $this->loadEmployees();
         $this->loadAssets();
+
+        // Opsi kondisi untuk select
+        $this->conditions = collect(\App\Enums\AssetCondition::cases())
+            ->map(fn ($c) => ['value' => $c->value, 'label' => $c->label()])
+            ->toArray();
 
         if ($assetLoanId) {
             $this->isEdit = true;
@@ -141,6 +148,7 @@ class Form extends Component
                 'checkout_at' => $this->checkout_at,
                 'due_at' => $this->due_at,
                 'checkin_at' => $this->checkin_at ?: null,
+                'condition_in' => $this->condition_in ?: null,
                 'notes' => $this->notes ?: null,
             ];
 
@@ -148,7 +156,7 @@ class Form extends Component
                 $assetLoan = AssetLoan::find($this->assetLoanId);
                 $assetLoan->update($data);
                 $this->success('Asset loan updated successfully!');
-                
+
             } else {
                 AssetLoan::create($data);
                 $this->success('Asset loan created successfully!');
@@ -177,7 +185,7 @@ class Form extends Component
         $this->asset_id = '';
         $this->employee_id = '';
         $this->checkout_at = now()->format('Y-m-d');
-        $this->due_at = now()->addDays(7)->format('Y-m-d');
+        $this->due_at = now()->addYear()->format('Y-m-d');
         $this->checkin_at = null;
         $this->condition_in = null;
         $this->notes = '';
@@ -187,6 +195,7 @@ class Form extends Component
 
     public function render()
     {
+        
         // $branchId = session_get(SessionKey::BranchId);
         // $assets = Asset::forBranch($branchId)->available()->orderBy('name')->get(['id', 'name']);
 
