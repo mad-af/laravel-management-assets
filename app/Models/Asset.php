@@ -239,7 +239,7 @@ class Asset extends Model
     /**
      * Scope untuk filter berdasarkan branch tertentu
      */
-    public function scopeForBranch(Builder $query, string $branchId = ''): Builder
+    public function scopeForBranch(Builder $query, ?string $branchId = ''): Builder
     {
         if (! empty($branchId)) {
             return $query->where('branch_id', $branchId);

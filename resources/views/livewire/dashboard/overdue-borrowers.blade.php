@@ -1,4 +1,5 @@
-<x-info-card title="Peminjam Aset Terlambat" icon="o-clock">
+<x-info-card title="Peminjam Aset Terlambat" icon="o-clock" class="overflow-auto h-72 max-h-72"
+    link="{{ route('asset-loans.index', ['statusFilter' => 'overtime']) }}">
     @if($count === 0)
         <div class="alert alert-success">
             <x-icon name="o-check-circle" class="w-5 h-5" />
@@ -6,14 +7,13 @@
         </div>
     @else
         <div class="overflow-x-auto">
-            <table class="table table-zebra">
+            <table class="table table-sm">
                 <thead>
                     <tr>
                         <th>#</th>
                         <th>Asset</th>
                         <th>Peminjam</th>
-                        <th>Jatuh Tempo</th>
-                        <th>Telat</th>
+                        <th>Status</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -21,11 +21,14 @@
                         <tr>
                             <td>{{ $i + 1 }}</td>
                             <td class="font-medium">{{ $loan->asset?->name ?? '-' }}</td>
-                            <td>{{ $loan->employee?->full_name ?? '-' }}</td>
-                            <td>{{ $loan->due_at?->format('d M Y') }}</td>
                             <td>
-                                @php $days = $loan->due_at ? now()->diffInDays($loan->due_at, false) * -1 : 0; @endphp
-                                <span class="badge badge-error">{{ $days }} hari</span>
+                                <div class="tooltip" data-tip="{{ $loan->employee?->full_name ?? '-' }}">
+                                    <x-avatar placeholder="{{ substr($loan->employee?->full_name, 0, 2) }}"
+                                        class="bg-primary" />
+                                </div>
+                            </td>
+                            <td>
+                                <span class="{{ $loan->color }}">{{ $loan->due_status_text }}</span>
                             </td>
                         </tr>
                     @endforeach

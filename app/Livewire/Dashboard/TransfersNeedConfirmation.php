@@ -14,6 +14,7 @@ class TransfersNeedConfirmation extends Component
         $currentBranchId = session_get(SessionKey::BranchId);
 
         return AssetTransfer::query()
+            ->with('fromBranch') 
             ->confirmationAction($currentBranchId)
             ->where('status', AssetTransferStatus::SHIPPED)
             ->orderByDesc('created_at')
