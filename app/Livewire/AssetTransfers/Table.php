@@ -65,6 +65,19 @@ class Table extends Component
         $this->dispatch('open-transfer-detail', transferId: (string) $transferId, mode: (string) $mode);
     }
 
+    public function getTransferButtonType($transfer)
+    {
+        if ($this->actionFilter === AssetTransferAction::DELIVERY->value) {
+            return 'detail';
+        }
+
+        if ($this->actionFilter === AssetTransferAction::CONFIRMATION->value) {
+            return $transfer->status === AssetTransferStatus::DELIVERED ? 'detail' : 'confirm';
+        }
+
+        return null;
+    }
+
     public function render()
     {
         $currentBranchId = session_get(SessionKey::BranchId);

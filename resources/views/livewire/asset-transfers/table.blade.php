@@ -1,6 +1,6 @@
 <div class="shadow card bg-base-100">
     <div class="space-y-4 card-body">
-        
+
         {{-- Action Tabs (Delivery / Confirmation) --}}
         <div class="overflow-x-auto">
             <div class="gap-1 items-center min-w-max tabs tabs-box tabs-sm w-fit">
@@ -43,7 +43,8 @@
                 @endscope
 
                 @scope('cell_status', $transfer)
-                <x-badge value="{{ $transfer->status->label() }}" class="badge-{{ $transfer->status->color() }} badge-sm" />
+                <x-badge value="{{ $transfer->status->label() }}"
+                    class="badge-{{ $transfer->status->color() }} badge-sm" />
                 @endscope
 
                 @scope('cell_items_count', $transfer)
@@ -64,15 +65,18 @@
                             <div class="text-base-content/60">+{{ $moreCount }} lainnya</div>
                         @endif
                     </div>
-                    <x-badge value="{{ $transfer->items_count ?? $items->count() }} item" class="badge-outline badge-sm" />
+                    <x-badge value="{{ $transfer->items_count ?? $items->count() }} item"
+                        class="badge-outline badge-sm" />
                 </div>
                 @endscope
 
                 @scope('cell_branches_move', $transfer)
                 <div class="text-sm">
-                    <span class="font-medium badge badge-sm {{ $this->actionFilter === 'delivery' ? 'badge-soft badge-primary' : '' }}">{{ $transfer->fromBranch?->name ?? '-' }}</span>
+                    <span
+                        class="font-medium badge badge-sm {{ $this->actionFilter === 'delivery' ? 'badge-soft badge-primary' : '' }}">{{ $transfer->fromBranch?->name ?? '-' }}</span>
                     <span class="mx-1 text-base-content/70">→</span>
-                    <span class="font-medium badge badge-sm {{ $this->actionFilter === 'confirmation' ? 'badge-soft badge-primary' : '' }}">{{ $transfer->toBranch?->name ?? '-' }}</span>
+                    <span
+                        class="font-medium badge badge-sm {{ $this->actionFilter === 'confirmation' ? 'badge-soft badge-primary' : '' }}">{{ $transfer->toBranch?->name ?? '-' }}</span>
                 </div>
                 @endscope
 
@@ -84,41 +88,47 @@
 
                 @scope('cell_actions', $transfer)
                 <x-action-dropdown :model="$transfer">
-                    @if ($transfer->status === \App\Enums\AssetTransferStatus::SHIPPED)
-                    <li>
-                        <button class="justify-start btn btn-sm btn-success"
-                            wire:click="openTransferDetail('{{ $transfer->id }}', 'confirm')">
-                            <x-icon name="o-check-circle" class="w-4 h-4" />
-                            Konfirmasi
-                        </button>
-                    </li>
-                    @elseif ($transfer->status === \App\Enums\AssetTransferStatus::DELIVERED)
-                    <li>
-                        <button class="justify-start btn btn-sm btn-ghost"
-                            wire:click="openTransferDetail('{{ $transfer->id }}', 'detail')">
-                            <x-icon name="o-eye" class="w-4 h-4" />
-                            Detail
-                        </button>
-                    </li>
+                    @php
+                        $buttonType = $this->getTransferButtonType($transfer);
+                    @endphp
+
+                    @if ($buttonType === 'detail')
+                        <li>
+                            <button class="justify-start btn btn-sm btn-ghost"
+                                wire:click="openTransferDetail('{{ $transfer->id }}', 'detail')">
+                                <x-icon name="o-eye" class="w-4 h-4" />
+                                Detail
+                            </button>
+                        </li>
+
+                    @elseif ($buttonType === 'confirm')
+                        <li>
+                            <button class="justify-start btn btn-sm btn-success"
+                                wire:click="openTransferDetail('{{ $transfer->id }}', 'confirm')">
+                                <x-icon name="o-check-circle" class="w-4 h-4" />
+                                Konfirmasi
+                            </button>
+                        </li>
                     @endif
+                    
                     @if (false)
-                    <li>
-                        <button wire:click="openEditDrawer('{{ $transfer->id }}')"
-                            class="flex gap-2 items-center p-2 text-sm rounded"
-                            onclick="document.getElementById('dropdown-menu-{{ $transfer->id }}').hidePopover()">
-                            <x-icon name="o-pencil" class="w-4 h-4" />
-                            Edit
-                        </button>
-                    </li>
-                    <li>
-                        <button wire:click="delete('{{ $transfer->id }}')"
-                            wire:confirm="Are you sure you want to delete this transfer?"
-                            class="flex gap-2 items-center p-2 text-sm rounded text-error"
-                            onclick="document.getElementById('dropdown-menu-{{ $transfer->id }}').hidePopover()">
-                            <x-icon name="o-trash" class="w-4 h-4" />
-                            Delete
-                        </button>
-                    </li>
+                        <li>
+                            <button wire:click="openEditDrawer('{{ $transfer->id }}')"
+                                class="flex gap-2 items-center p-2 text-sm rounded"
+                                onclick="document.getElementById('dropdown-menu-{{ $transfer->id }}').hidePopover()">
+                                <x-icon name="o-pencil" class="w-4 h-4" />
+                                Edit
+                            </button>
+                        </li>
+                        <li>
+                            <button wire:click="delete('{{ $transfer->id }}')"
+                                wire:confirm="Are you sure you want to delete this transfer?"
+                                class="flex gap-2 items-center p-2 text-sm rounded text-error"
+                                onclick="document.getElementById('dropdown-menu-{{ $transfer->id }}').hidePopover()">
+                                <x-icon name="o-trash" class="w-4 h-4" />
+                                Delete
+                            </button>
+                        </li>
                     @endif
                 </x-action-dropdown>
                 @endscope
