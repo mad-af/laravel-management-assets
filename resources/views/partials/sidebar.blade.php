@@ -4,7 +4,6 @@
             'route' => 'dashboard',
             'icon' => 'o-home',
             'label' => 'Beranda',
-            'disabled' => true
         ],
         [
             'route' => 'scanners.index',
@@ -23,7 +22,7 @@
                 ],
                 [
                     'route' => 'asset-transfers.index',
-                    'icon' => 'o-arrow-path',
+                    'icon' => 'o-arrows-right-left',
                     'label' => 'Transfer Aset',
                 ],
                 [
