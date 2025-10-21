@@ -27,7 +27,7 @@
 
         <div class="space-y-2">
             @foreach($items as $index => $item)
-                <div wire:key="item-{{ $index }}">
+                <div wire:key="item-{{ $item['id'] ?? $item['uid'] }}">
                     <fieldset class="p-2 border fieldset bg-base-100 border-base-300 rounded-box">
                         <legend class="flex justify-between items-center w-full fieldset-legend">
                             <span>Asset Item {{ $index + 1 }}</span>
@@ -40,9 +40,21 @@
                         </legend>
 
                         <div class="space-y-2">
-                            <x-select name="items[{{ $index }}][asset_id]" label="Asset" class="select-sm"
-                                wire:model="items.{{ $index }}.asset_id" :options="$assets" option-value="id"
-                                option-label="name" placeholder="Pilih asset" required />
+                            <livewire:components.combobox
+                                name="assets"
+                                label="Asset"
+                                class="input-sm"
+                                wire:key="combobox-{{ $item['id'] ?? $item['uid'] }}"
+                                wire:model.live="items.{{ $index }}.asset_id"
+                                :options="$assets"
+                                option-value="id"
+                                option-label="name"
+                                option-sub-label="tag_code"
+                                option-meta="code"
+                                option-avatar="image"
+                                placeholder="Pilih asset"
+                                :required="true"
+                            />
 
                             @if(false)
                             <div class="grid grid-cols-2 gap-2">

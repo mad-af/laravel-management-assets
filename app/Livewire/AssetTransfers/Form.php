@@ -8,7 +8,7 @@ use App\Models\AssetTransfer;
 use App\Models\Branch;
 use App\Support\SessionKey;
 use App\Traits\WithAlert;
-use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Mary\Traits\Toast;
 
@@ -39,6 +39,8 @@ class Form extends Component
     // Asset items
     public $items = [];
 
+    public $assets = [];
+
     protected $rules = [
         'reason' => 'required|string|max:500',
         'from_location_id' => 'required|exists:branches,id',
@@ -64,6 +66,7 @@ class Form extends Component
             foreach ($this->items as $index => $item) {
                 $this->items[$index]['from_location_id'] = $this->from_location_id;
             }
+            $this->loadAssets();
         }
 
         if ($propertyName === 'to_location_id') {
@@ -88,6 +91,7 @@ class Form extends Component
             }
             // Add default item
             $this->addItem();
+            $this->loadAssets();
         }
     }
 
@@ -108,6 +112,7 @@ class Form extends Component
                 $this->items = $transfer->items->map(function ($item) {
                     return [
                         'id' => $item->id,
+                        'uid' => (string) \Illuminate\Support\Str::uuid(),
                         'asset_id' => $item->asset_id,
                         'notes' => $item->notes,
                         'from_location_id' => $this->from_location_id,
@@ -121,6 +126,7 @@ class Form extends Component
     public function addItem()
     {
         $this->items[] = [
+            'uid' => (string) \Illuminate\Support\Str::uuid(),
             'asset_id' => '',
             'from_location_id' => $this->from_location_id,
             'to_location_id' => $this->to_location_id,
@@ -133,6 +139,28 @@ class Form extends Component
             unset($this->items[$index]);
             $this->items = array_values($this->items);
         }
+    }
+
+    #[On('combobox-load-assets')]
+    public function loadAssets($search = '')
+    {
+        $branchId = $this->from_location_id ?: session_get(SessionKey::BranchId);
+
+        $query = Asset::forBranch($branchId)->available();
+
+        if (! empty($search)) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%$search%")
+                    ->orWhere('asset_tag', 'like', "%$search%");
+            });
+        }
+
+        $this->assets = $query->orderBy('name')
+            ->get(['id', 'name', 'code', 'tag_code', 'image'])
+            ->toArray();
+
+        // Kirim hasil pencarian ke semua instance combobox bernama 'assets'
+        $this->dispatch('combobox-set-assets', $this->assets);
     }
 
     public function resetForm()
@@ -180,12 +208,6 @@ class Form extends Component
             ];
         }
 
-        $assets = Asset::where('company_id', Auth::user()?->company_id)->get()->map(function ($asset) {
-            $asset->display_name = $asset->name.' ('.$asset->asset_tag.')';
-
-            return $asset;
-        });
-
         $statusOptions = collect(AssetTransferStatus::cases())->map(function ($status) {
             return [
                 'value' => $status->value,
@@ -193,7 +215,7 @@ class Form extends Component
             ];
         });
 
-        return view('livewire.asset-transfers.form', compact('fromBranches', 'toGroupedBranches', 'assets', 'statusOptions'))
+        return view('livewire.asset-transfers.form', compact('fromBranches', 'toGroupedBranches', 'statusOptions'))
             ->with('transferId', $this->transferId)
             ->with('isEdit', $this->isEdit);
     }
