@@ -35,7 +35,6 @@ class AssetTransfer extends Model
         'accepted_at' => 'datetime',
         'delivery_at' => 'datetime',
         'status' => AssetTransferStatus::class,
-        'type' => AssetTransferType::class,
     ];
 
     public function company(): BelongsTo

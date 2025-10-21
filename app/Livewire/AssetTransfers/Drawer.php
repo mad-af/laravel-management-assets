@@ -47,21 +47,15 @@ class Drawer extends Component
         $this->applyActionFromUrl();
     }
 
-    protected function applyActionFromUrl(): void
+    private function applyActionFromUrl(): void
     {
         if ($this->action === 'create') {
             $this->showDrawer = true;
             $this->editingTransferId = null;
-            $this->detailTransfer = null;
-            $this->detailMode = null;
-            $this->detailInfoData = [];
         } elseif ($this->action === 'edit' && $this->transfer_id) {
             $this->showDrawer = true;
             $this->editingTransferId = $this->transfer_id;
-            $this->detailTransfer = null;
-            $this->detailMode = null;
-            $this->detailInfoData = [];
-        } // else: biarkan state tetap (jangan auto-tutup tiap update)
+        }
     }
 
     public function openEditDrawer($transferId)
@@ -84,6 +78,19 @@ class Drawer extends Component
             ->with(['company', 'requestedBy', 'approvedBy', 'items.asset.branch', 'fromBranch', 'toBranch'])
             ->find($transferId);
 
+        $assets = [];
+        if ($this->detailTransfer) {
+            $assets = $this->detailTransfer->items->map(function ($item) {
+                $asset = $item->asset;
+
+                return [
+                    'name' => $asset?->name,
+                    'tag_code' => $asset?->tag_code ?? $asset?->code,
+                    'condition' => $asset?->condition,
+                ];
+            })->filter(fn ($x) => ! empty($x['name']))->values()->toArray();
+        }
+
         $this->detailInfoData = [
             'transfer_no' => $this->detailTransfer?->transfer_no,
             'status' => $this->detailTransfer?->status,
@@ -96,6 +103,7 @@ class Drawer extends Component
             'description' => $this->detailTransfer?->description,
             'reason' => $this->detailTransfer?->reason,
             'notes' => $this->detailTransfer?->notes,
+            'assets' => $assets,
         ];
 
         // pastikan drawer terbuka dengan konten detail, bukan form
