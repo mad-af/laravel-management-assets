@@ -144,9 +144,7 @@ class Form extends Component
     #[On('combobox-load-assets')]
     public function loadAssets($search = '')
     {
-        $branchId = $this->from_location_id ?: session_get(SessionKey::BranchId);
-
-        $query = Asset::forBranch($branchId)->available();
+        $query = Asset::forBranch()->available();
 
         if (! empty($search)) {
             $query->where(function ($q) use ($search) {

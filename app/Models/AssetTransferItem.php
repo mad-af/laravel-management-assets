@@ -2,9 +2,8 @@
 
 namespace App\Models;
 
-use App\Enums\AssetTransferItemStatus;
+use App\Enums\AssetStatus;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -33,4 +32,14 @@ class AssetTransferItem extends Model
         return $this->belongsTo(Asset::class);
     }
 
+    // Add event so when item is created, set asset status to IN_TRANSFER
+    protected static function booted()
+    {
+        static::created(function (self $item) {
+            if ($item->asset_id) {
+                \App\Models\Asset::whereKey($item->asset_id)
+                    ->update(['status' => AssetStatus::IN_TRANSFER]);
+            }
+        });
+    }
 }

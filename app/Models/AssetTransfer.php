@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\AssetStatus;
 use App\Enums\AssetTransferAction;
 use App\Enums\AssetTransferStatus;
 use App\Enums\AssetTransferType;
@@ -116,5 +117,53 @@ class AssetTransfer extends Model
             $q->where('to_branch_id', $branchId)
                 ->orWhere('to_location_id', $branchId);
         });
+    }
+
+    /**
+     * Boot the model to handle asset status updates during transfer lifecycle.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // When transfer is created, set all assets in transfer items to IN_TRANSFER status
+        static::created(function ($transfer) {
+            $transfer->updateAssetStatusesToInTransfer();
+        });
+
+        // When transfer status is updated to DELIVERED, set assets back to ACTIVE
+        static::updated(function ($transfer) {
+            if ($transfer->wasChanged('status') && $transfer->status === AssetTransferStatus::DELIVERED) {
+                $transfer->updateAssetStatusesToActive();
+            }
+        });
+    }
+
+    /**
+     * Update all assets in this transfer to IN_TRANSFER status.
+     */
+    protected function updateAssetStatusesToInTransfer()
+    {
+        $assetIds = $this->items()->pluck('asset_id');
+
+        if ($assetIds->isNotEmpty()) {
+            Asset::whereIn('id', $assetIds)->update([
+                'status' => AssetStatus::IN_TRANSFER,
+            ]);
+        }
+    }
+
+    /**
+     * Update all assets in this transfer back to ACTIVE status.
+     */
+    protected function updateAssetStatusesToActive()
+    {
+        $assetIds = $this->items()->pluck('asset_id');
+
+        if ($assetIds->isNotEmpty()) {
+            Asset::whereIn('id', $assetIds)->update([
+                'status' => AssetStatus::ACTIVE,
+            ]);
+        }
     }
 }

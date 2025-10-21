@@ -9,6 +9,7 @@ enum AssetStatus: string
     case LOST = 'lost';
     case MAINTENANCE = 'maintenance';
     case ON_LOAN = 'on_loan';
+    case IN_TRANSFER = 'in_transfer';
 
     /**
      * Get all enum values as array
@@ -29,6 +30,7 @@ enum AssetStatus: string
             self::LOST => 'Hilang',
             self::MAINTENANCE => 'Perawatan',
             self::ON_LOAN => 'Di Pinjamkan',
+            self::IN_TRANSFER => 'Di Pindahkan',
         };
     }
 
@@ -43,6 +45,7 @@ enum AssetStatus: string
             self::LOST => 'neutral',
             self::MAINTENANCE => 'warning',
             self::ON_LOAN => 'info',
+            self::IN_TRANSFER => 'primary',
         };
     }
 
