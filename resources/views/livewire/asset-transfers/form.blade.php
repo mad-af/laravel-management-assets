@@ -1,9 +1,4 @@
-<form action="{{ $isEdit ? route('asset-transfers.update', $transferId) : route('asset-transfers.store') }}"
-    method="POST" class="space-y-2">
-    @csrf
-    @if($isEdit)
-        @method('PUT')
-    @endif
+<form wire:submit="save" class="mb-24 space-y-2">
 
     <!-- Reason -->
     <x-textarea name="reason" class="textarea-sm" label="Alasan Transfer" wire:model="reason" rows="3"
@@ -54,6 +49,7 @@
                                 option-avatar="image"
                                 placeholder="Pilih asset"
                                 :required="true"
+                                onfocusload
                             />
 
                             @if(false)

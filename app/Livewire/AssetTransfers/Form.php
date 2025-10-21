@@ -8,6 +8,10 @@ use App\Models\AssetTransfer;
 use App\Models\Branch;
 use App\Support\SessionKey;
 use App\Traits\WithAlert;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Mary\Traits\Toast;
@@ -105,7 +109,7 @@ class Form extends Component
                 $this->from_location_id = $transfer->from_location_id;
                 $this->to_location_id = $transfer->to_location_id;
                 $this->status = $transfer->status->value;
-                $this->priority = $transfer->priority->value;
+                $this->priority = $transfer->priority->value ?? $this->priority;
                 $this->scheduled_at = $transfer->scheduled_at?->format('Y-m-d\\TH:i');
                 $this->notes = $transfer->notes;
 
@@ -146,6 +150,17 @@ class Form extends Component
     {
         $query = Asset::forBranch()->available();
 
+        // Ambil asset_id yang sudah dipilih untuk dikecualikan dari opsi
+        $selectedAssetIds = collect($this->items)
+            ->pluck('asset_id')
+            ->filter()
+            ->values()
+            ->all();
+
+        if (! empty($selectedAssetIds)) {
+            $query->whereNotIn('id', $selectedAssetIds);
+        }
+
         if (! empty($search)) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%$search%")
@@ -176,6 +191,93 @@ class Form extends Component
 
         if (! $this->isEdit) {
             $this->addItem();
+        }
+    }
+
+    private function generateTransferNo(): string
+    {
+        return 'TRF-'.date('Ymd').'-'.strtoupper(Str::random(4));
+    }
+
+    public function save()
+    {
+        $this->validate();
+
+        try {
+            DB::transaction(function () {
+                $user = Auth::user();
+
+                if (! $user || ! $user->company_id) {
+                    throw new \Exception('User account is not properly configured. Please contact administrator.');
+                }
+
+                if ($this->isEdit && $this->transferId) {
+                    $transfer = AssetTransfer::with('items')->findOrFail($this->transferId);
+
+                    $transfer->update([
+                        'reason' => $this->reason,
+                        'from_location_id' => $this->from_location_id,
+                        'to_location_id' => $this->to_location_id,
+                        'status' => AssetTransferStatus::from($this->status),
+                        'accepted_at' => null,
+                        'notes' => $this->notes,
+                    ]);
+
+                    // Reset items
+                    $transfer->items()->delete();
+
+                    foreach ($this->items as $item) {
+                        $transfer->items()->create([
+                            'asset_id' => $item['asset_id'],
+                            'from_location_id' => $this->from_location_id,
+                            'to_location_id' => $this->to_location_id,
+                            'notes' => $item['notes'] ?? '',
+                        ]);
+                    }
+
+                    $this->dispatch('transfer-updated');
+                } else {
+                    $transfer = AssetTransfer::create([
+                        'company_id' => $user->company_id,
+                        'transfer_no' => $this->generateTransferNo(),
+                        'reason' => $this->reason,
+                        'status' => AssetTransferStatus::from($this->status),
+                        'delivery_by' => Auth::id(),
+                        'from_location_id' => $this->from_location_id,
+                        'to_location_id' => $this->to_location_id,
+                        'accepted_at' => null,
+                        'notes' => $this->notes,
+                    ]);
+
+                    foreach ($this->items as $item) {
+                        $transfer->items()->create([
+                            'asset_id' => $item['asset_id'],
+                            'from_location_id' => $this->from_location_id,
+                            'to_location_id' => $this->to_location_id,
+                            'notes' => $item['notes'] ?? '',
+                        ]);
+                    }
+
+                    $this->dispatch('transfer-saved');
+                }
+            });
+
+            $this->success($this->isEdit ? 'Transfer aset berhasil diupdate!' : 'Transfer aset berhasil dibuat!');
+            $this->dispatch('close-drawer');
+        } catch (\Exception $e) {
+            Log::error('Asset transfer save failed', [
+                'error' => $e->getMessage(),
+                'user_id' => Auth::id(),
+                'transfer_id' => $this->transferId,
+                'data' => [
+                    'reason' => $this->reason,
+                    'from_location_id' => $this->from_location_id,
+                    'to_location_id' => $this->to_location_id,
+                    'items' => $this->items,
+                ],
+            ]);
+
+            $this->error('Terjadi kesalahan: '.$e->getMessage());
         }
     }
 

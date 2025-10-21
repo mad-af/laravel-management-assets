@@ -61,6 +61,9 @@ class Combobox extends Component
 
     public ?string $optionMeta = null;
 
+    // NEW: Control dispatch on focus
+    public bool $onfocusload = false;
+
     public function mount(
         string $name,
         $value = null,
@@ -76,6 +79,7 @@ class Combobox extends Component
         $optionAvatar = null,
         $optionSubLabel = null,
         $optionMeta = null,
+        $onfocusload = false,
     ) {
         $this->id = uniqid('combobox-');
         $this->name = $name;
@@ -89,6 +93,7 @@ class Combobox extends Component
         $this->disabled = (bool) $disabled;
         $this->clearable = (bool) $clearable;
         $this->multiple = (bool) $multiple;
+        $this->onfocusload = (bool) $onfocusload;
 
         // Set header jika dikirim dari atribut
         if ($headerText !== null) {
@@ -109,6 +114,8 @@ class Combobox extends Component
         if (! empty($this->value)) {
             $this->syncSelected();
         }
+
+        $this->dispatch('combobox-load-'.$this->name);
     }
 
     public function updatedSearch($search)
@@ -118,6 +125,16 @@ class Combobox extends Component
 
         // Emit event ke parent untuk memuat options hasil pencarian (opsional)
         $this->dispatch('combobox-load-'.$this->name, $search);
+    }
+
+    // NEW: Handle focus from Blade to keep logic in class
+    public function onFocus()
+    {
+        $this->showDropdown = true;
+        if ($this->onfocusload) {
+            $this->isLoading = true;
+            $this->dispatch('combobox-load-'.$this->name, $this->search);
+        }
     }
 
     protected function getListeners()
@@ -149,9 +166,9 @@ class Combobox extends Component
     {
         if ($this->multiple) {
             $this->selected = collect(Arr::wrap($this->value))
-            ->map(function ($val) {
-                return $this->findOptionByValue($val);
-            });
+                ->map(function ($val) {
+                    return $this->findOptionByValue($val);
+                });
         } else {
             $this->showDropdown = false;
             $this->selected = collect([$this->findOptionByValue($this->value)]);
