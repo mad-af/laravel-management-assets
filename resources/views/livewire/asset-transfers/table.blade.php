@@ -84,14 +84,26 @@
 
                 @scope('cell_actions', $transfer)
                 <x-action-dropdown :model="$transfer">
+                    @if ($this->actionFilter === \App\Enums\AssetTransferAction::DELIVERY->value)
                     <li>
                         <button wire:click="viewDetail('{{ $transfer->id }}')"
-                            class="flex gap-2 items-center p-2 text-sm rounded"
+                            class="justify-start btn btn-ghost btn-sm"
                             onclick="document.getElementById('dropdown-menu-{{ $transfer->id }}').hidePopover()">
                             <x-icon name="o-eye" class="w-4 h-4" />
                             Detail
                         </button>
                     </li>
+                    @elseif ($this->actionFilter === \App\Enums\AssetTransferAction::CONFIRMATION->value)    
+                    <li>
+                        <button wire:click="viewDetail('{{ $transfer->id }}')"
+                            class="justify-start btn btn-success btn-sm"
+                            onclick="document.getElementById('dropdown-menu-{{ $transfer->id }}').hidePopover()">
+                            <x-icon name="o-check-circle" class="w-4 h-4" />
+                            Konfirmasi
+                        </button>
+                    </li>
+                    @endif
+                    @if (false)
                     <li>
                         <button wire:click="openEditDrawer('{{ $transfer->id }}')"
                             class="flex gap-2 items-center p-2 text-sm rounded"
@@ -109,6 +121,7 @@
                             Delete
                         </button>
                     </li>
+                    @endif
                 </x-action-dropdown>
                 @endscope
             </x-table>
