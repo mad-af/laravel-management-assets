@@ -1,5 +1,3 @@
-@props(['transfer'])
-
 <!-- Card Detail Informasi AssetTransfer -->
 <div class="shadow-sm card card-compact bg-base-100">
     <div class="card-body">
@@ -17,57 +15,38 @@
             <div>
                 <label class="text-sm font-medium text-base-content/70">Status</label>
                 <div>
-                    <span class="badge {{ $this->getStatusBadgeClass($transferData['status']) }}">{{ ucfirst($transferData['status']->value) }}</span>
-                </div>
-            </div>
-            
-            <div>
-                <label class="text-sm font-medium text-base-content/70">Priority</label>
-                <div>
-                    <span class="badge {{ $this->getPriorityBadgeClass($transferData['priority']) }}">{{ ucfirst($transferData['priority']->value) }}</span>
+                    <span class="badge {{ $this->getStatusBadgeClass($transferData['status']) }}">{{ is_object($transferData['status']) ? ucfirst($transferData['status']->value) : ucfirst($transferData['status']) }}</span>
                 </div>
             </div>
             
             <div>
                 <label class="text-sm font-medium text-base-content/70">Type</label>
-                <p >{{ ucfirst($transferData['type']->value) }}</p>
+                <p>{{ is_object($transferData['type']) ? ucfirst($transferData['type']->value) : ucfirst($transferData['type'] ?? '-') }}</p>
             </div>
             
             <div>
                 <label class="text-sm font-medium text-base-content/70">From Branch</label>
-                <p class="font-semibold">{{ $transferData['from_location'] ?? 'N/A' }}</p>
+                <p class="font-semibold">{{ $transferData['from_branch'] ?? 'N/A' }}</p>
             </div>
             
             <div>
                 <label class="text-sm font-medium text-base-content/70">To Branch</label>
-                <p class="font-semibold">{{ $transferData['to_location'] ?? 'N/A' }}</p>
+                <p class="font-semibold">{{ $transferData['to_branch'] ?? 'N/A' }}</p>
             </div>
             
             <div>
                 <label class="text-sm font-medium text-base-content/70">Requested By</label>
-                <p >{{ $transferData['requested_by'] ?? 'N/A' }}</p>
+                <p>{{ $transferData['requested_by'] ?? 'N/A' }}</p>
             </div>
-            
-            <div>
-                <label class="text-sm font-medium text-base-content/70">Company</label>
-                <p>{{ $transferData['company'] ?? 'N/A' }}</p>
-            </div>
-            
-            @if($transferData['scheduled_at'])
-            <div>
-                <label class="text-sm font-medium text-base-content/70">Scheduled Date</label>
-                <p class="font-semibold">{{ $transferData['scheduled_at']->format('M d, Y H:i') }}</p>
-            </div>
-            @endif
-            
-            @if($transferData['requested_at'])
+    
+            @if(!empty($transferData['requested_at']))
             <div>
                 <label class="text-sm font-medium text-base-content/70">Requested Date</label>
-                <p class="font-semibold">{{ $transferData['requested_at']->format('M d, Y H:i') }}</p>
+                <p class="font-semibold">{{ is_object($transferData['requested_at']) ? $transferData['requested_at']->format('M d, Y H:i') : $transferData['requested_at'] }}</p>
             </div>
             @endif
             
-            @if($transferData['description'])
+            @if(!empty($transferData['description']))
             <div class="md:col-span-2">
                 <label class="text-sm font-medium text-base-content/70">Description</label>
                 <p class="font-semibold">{{ $transferData['description'] }}</p>
@@ -75,14 +54,14 @@
             @endif
         </div>
         
-        @if($transferData['reason'])
+        @if(!empty($transferData['reason']))
         <div class="mt-4">
             <label class="text-sm font-medium text-base-content/70">Reason</label>
             <p class="p-3 mt-1 text-sm rounded-lg bg-base-200 text-base-content">{{ $transferData['reason'] }}</p>
         </div>
         @endif
         
-        @if($transferData['notes'])
+        @if(!empty($transferData['notes']))
         <div class="mt-4">
             <label class="text-sm font-medium text-base-content/70">Notes</label>
             <p class="p-3 mt-1 text-sm whitespace-pre-line rounded-lg bg-base-200 text-base-content">{{ $transferData['notes'] }}</p>

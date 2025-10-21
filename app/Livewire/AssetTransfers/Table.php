@@ -27,26 +27,6 @@ class Table extends Component
         'transfer-deleted' => '$refresh',
     ];
 
-    public function updatingSearch()
-    {
-        $this->resetPage();
-    }
-
-    public function updatingStatusFilter()
-    {
-        $this->resetPage();
-    }
-
-    public function updatingActionFilter()
-    {
-        $this->resetPage();
-    }
-
-    public function openDrawer()
-    {
-        $this->dispatch('open-drawer');
-    }
-
     public function openEditDrawer($transferId)
     {
         $this->dispatch('open-edit-drawer', transferId: $transferId);
@@ -79,33 +59,31 @@ class Table extends Component
         }
     }
 
+    public function openTransferDetail($transferId, $mode = 'detail')
+    {
+        $this->dispatch('open-transfer-detail', transferId: (string) $transferId, mode: (string) $mode);
+    }
+
     public function render()
     {
         $currentBranchId = session_get(SessionKey::BranchId);
 
         $transfers = AssetTransfer::query()
-            ->with(['fromBranch', 'toBranch', 'requestedBy', 'items.asset'])
-            ->withCount('items')
-            ->when($this->search, function ($query) {
-                $query->where(function ($q) {
-                    $q->where('transfer_no', 'like', '%'.$this->search.'%')
-                        ->orWhere('reason', 'like', '%'.$this->search.'%')
-                        ->orWhereHas('fromBranch', function ($branch) {
-                            $branch->where('name', 'like', '%'.$this->search.'%');
-                        })
-                        ->orWhereHas('toBranch', function ($branch) {
-                            $branch->where('name', 'like', '%'.$this->search.'%');
-                        });
-                });
-            })
+            ->with(['fromBranch', 'toBranch', 'items.asset'])
             ->when($this->statusFilter, function ($query) {
-                $query->whereRaw('LOWER(status) = ?', [strtolower($this->statusFilter)]);
+                $query->where('status', $this->statusFilter);
             })
             ->when($this->actionFilter === AssetTransferAction::DELIVERY->value, function ($query) use ($currentBranchId) {
                 $query->deliveryAction($currentBranchId);
             })
             ->when($this->actionFilter === AssetTransferAction::CONFIRMATION->value, function ($query) use ($currentBranchId) {
                 $query->confirmationAction($currentBranchId);
+            })
+            ->when($this->search, function ($query) {
+                $query->where(function ($q) {
+                    $q->where('transfer_no', 'like', "%{$this->search}%")
+                        ->orWhere('reason', 'like', "%{$this->search}%");
+                });
             })
             ->orderBy('created_at', 'desc')
             ->paginate(10);

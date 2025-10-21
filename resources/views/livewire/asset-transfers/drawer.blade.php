@@ -11,15 +11,27 @@
             <!-- Drawer Header -->
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-lg font-semibold">
-                    {{ $editingTransferId ? 'Edit Asset Transfer' : 'Add New Asset Transfer' }}
+                    @if($detailTransfer)
+                        {{ $detailMode === 'confirm' ? 'Konfirmasi Penerimaan Asset' : 'Detail Asset Transfer' }}
+                    @else
+                        {{ $editingTransferId ? 'Edit Asset Transfer' : 'Add New Asset Transfer' }}
+                    @endif
                 </h2>
                 <button wire:click="closeDrawer" class="btn btn-sm btn-circle btn-ghost">
                     <x-icon name="o-x-mark" class="w-5 h-5" />
                 </button>
             </div>
 
-            <!-- Asset Transfer Form -->
-            <livewire:asset-transfers.form :transferId="$editingTransferId" :key="'transfer-form-' . ($editingTransferId ?? 'new')" />
+            @if($detailTransfer)
+                <livewire:asset-transfers.detail-info :transferData="$detailInfoData" />
+
+                @if($detailMode === 'confirm')
+                    <livewire:asset-transfers.confirm-receipt :transferId="$detailTransfer->id" />
+                @endif
+            @else
+                <!-- Asset Transfer Form -->
+                <livewire:asset-transfers.form :transferId="$editingTransferId" :key="'transfer-form-' . ($editingTransferId ?? 'new')" />
+            @endif
         </div>
     </div>
 </div>
