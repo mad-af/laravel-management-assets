@@ -6,6 +6,7 @@ use App\Enums\AssetTransferStatus;
 use App\Models\Asset;
 use App\Models\AssetTransfer;
 use App\Models\Branch;
+use App\Support\SessionKey;
 use App\Traits\WithAlert;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -80,6 +81,11 @@ class Form extends Component
             $this->isEdit = true;
             $this->loadTransfer();
         } else {
+            // Default from branch dari session
+            $currentBranchId = session_get(SessionKey::BranchId);
+            if ($currentBranchId) {
+                $this->from_location_id = $currentBranchId;
+            }
             // Add default item
             $this->addItem();
         }
@@ -149,7 +155,31 @@ class Form extends Component
 
     public function render()
     {
-        $branches = Branch::all();
+        $currentBranchId = session_get(SessionKey::BranchId);
+
+        // From branch: hanya cabang di session, disabled di view
+        $fromBranches = Branch::query()
+            ->where('is_active', true)
+            ->when($currentBranchId, fn ($q) => $q->where('id', $currentBranchId))
+            ->get(['id', 'name']);
+
+        // To branch: semua cabang aktif kecuali cabang di session, dikelompokkan per perusahaan
+        $toBranches = Branch::query()
+            ->with('company')
+            ->where('is_active', true)
+            ->when($currentBranchId, fn ($q) => $q->where('id', '!=', $currentBranchId))
+            ->orderBy('name')
+            ->get();
+
+        $toGroupedBranches = [];
+        foreach ($toBranches as $branch) {
+            $groupKey = $branch->company?->name ?? 'Perusahaan';
+            $toGroupedBranches[$groupKey][] = [
+                'id' => $branch->id,
+                'name' => $branch->name,
+            ];
+        }
+
         $assets = Asset::where('company_id', Auth::user()?->company_id)->get()->map(function ($asset) {
             $asset->display_name = $asset->name.' ('.$asset->asset_tag.')';
 
@@ -163,9 +193,7 @@ class Form extends Component
             ];
         });
 
-      
-
-        return view('livewire.asset-transfers.form', compact('branches', 'assets', 'statusOptions'))
+        return view('livewire.asset-transfers.form', compact('fromBranches', 'toGroupedBranches', 'assets', 'statusOptions'))
             ->with('transferId', $this->transferId)
             ->with('isEdit', $this->isEdit);
     }

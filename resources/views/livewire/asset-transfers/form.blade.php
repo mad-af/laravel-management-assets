@@ -5,26 +5,18 @@
         @method('PUT')
     @endif
 
-    <!-- Status -->
-    <x-select name="status" label="Status" class="select-sm" wire:model="status" :options="$statusOptions"
-        option-value="value" option-label="label" placeholder="Pilih status" required />
-
-    <!-- Scheduled Date -->
-    <x-datetime name="scheduled_at" label="Dijadwalkan" class="input-sm" wire:model="scheduled_at"
-        type="datetime-local" />
+    <!-- Reason -->
+    <x-textarea name="reason" class="textarea-sm" label="Alasan Transfer" wire:model="reason" rows="3"
+        placeholder="Masukkan alasan transfer asset" required />
 
     <!-- Locations - Side by Side -->
     <div class="grid grid-cols-2 gap-4">
         <x-select name="from_location_id" label="Dari Cabang" class="select-sm" wire:model="from_location_id"
-            wire:change="$refresh" :options="$branches" option-value="id" option-label="name" />
+            :options="$fromBranches" option-value="id" option-label="name" disabled required />
 
-        <x-select name="to_location_id" label="Ke Cabang" class="select-sm" wire:model="to_location_id"
-            wire:change="$refresh" :options="$branches" option-value="id" option-label="name" />
+        <x-select-group label="Ke Cabang" class="select-sm" wire:model="to_location_id"
+            :options="$toGroupedBranches" placeholder="Pilih cabang" required />
     </div>
-
-    <!-- Reason -->
-    <x-textarea name="reason" class="textarea-sm" label="Alasan Transfer" wire:model="reason" rows="3"
-        placeholder="Masukkan alasan transfer asset" required />
 
     <!-- Notes -->
     <x-textarea name="notes" class="textarea-sm" label="Catatan" wire:model="notes" rows="3"
@@ -52,6 +44,7 @@
                                 wire:model="items.{{ $index }}.asset_id" :options="$assets" option-value="id"
                                 option-label="name" placeholder="Pilih asset" required />
 
+                            @if(false)
                             <div class="grid grid-cols-2 gap-2">
                                 <!-- Select-nya disabled (tidak terkirim) → kirim via hidden -->
                                 <x-select name="items[{{ $index }}][from_location_id]" label="From Branch"
@@ -62,6 +55,7 @@
                                     wire:model="items.{{ $index }}.to_location_id" :options="$branches" option-value="id"
                                     option-label="name" />
                             </div>
+                            @endif
                         </div>
                     </fieldset>
                 </div>
@@ -69,6 +63,7 @@
         </div>
 
         <button type="button" wire:click="addItem" class="mt-3 w-full btn btn-sm">
+            <x-icon name="o-plus" class="w-3 h-3" />
             Tambah Asset Item
         </button>
     </fieldset>
