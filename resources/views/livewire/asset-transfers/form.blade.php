@@ -6,10 +6,10 @@
 
     <!-- Locations - Side by Side -->
     <div class="grid grid-cols-2 gap-4">
-        <x-select name="from_location_id" label="Dari Cabang" class="select-sm" wire:model="from_location_id"
+        <x-select name="from_branch_id" label="Dari Cabang" class="select-sm" wire:model="from_branch_id"
             :options="$fromBranches" option-value="id" option-label="name" disabled required />
 
-        <x-select-group label="Ke Cabang" class="select-sm" wire:model="to_location_id"
+        <x-select-group label="Ke Cabang" class="select-sm" wire:model="to_branch_id"
             :options="$toGroupedBranches" placeholder="Pilih cabang" required />
     </div>
 
@@ -49,18 +49,18 @@
                                 option-avatar="image"
                                 placeholder="Pilih asset"
                                 :required="true"
-                                onfocusload
+                                :onfocusload="true"
                             />
 
                             @if(false)
                             <div class="grid grid-cols-2 gap-2">
                                 <!-- Select-nya disabled (tidak terkirim) → kirim via hidden -->
-                                <x-select name="items[{{ $index }}][from_location_id]" label="From Branch"
-                                    class="select-sm" wire:model="items.{{ $index }}.from_location_id" :options="$branches"
+                                <x-select name="items[{{ $index }}][from_branch_id]" label="From Branch"
+                                    class="select-sm" wire:model="items.{{ $index }}.from_branch_id" :options="$branches"
                                     option-value="id" option-label="name" />
 
-                                <x-select name="items[{{ $index }}][to_location_id]" label="To Branch" class="select-sm"
-                                    wire:model="items.{{ $index }}.to_location_id" :options="$branches" option-value="id"
+                                <x-select name="items[{{ $index }}][to_branch_id]" label="To Branch" class="select-sm"
+                                    wire:model="items.{{ $index }}.to_branch_id" :options="$branches" option-value="id"
                                     option-label="name" />
                             </div>
                             @endif

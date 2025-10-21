@@ -14,8 +14,8 @@ class AssetTransferItem extends Model
     protected $fillable = [
         'asset_transfer_id',
         'asset_id',
-        'from_location_id',
-        'to_location_id',
+        'from_branch_id',
+        'to_branch_id',
     ];
 
     protected $casts = [

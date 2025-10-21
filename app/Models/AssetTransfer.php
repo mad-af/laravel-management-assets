@@ -19,8 +19,8 @@ class AssetTransfer extends Model
 
     protected $fillable = [
         'company_id',
-        'from_location_id',
-        'to_location_id',
+        'from_branch_id',
+        'to_branch_id',
         'transfer_no',
         'reason',
         'status',
@@ -76,9 +76,8 @@ class AssetTransfer extends Model
             return null;
         }
 
-        // Support either location or branch field names
-        $fromId = $this->from_location_id ?? $this->from_branch_id ?? null;
-        $toId = $this->to_location_id ?? $this->to_branch_id ?? null;
+        $fromId = $this->from_branch_id;
+        $toId = $this->to_branch_id;
 
         if ($fromId && (string) $fromId === (string) $currentBranchId) {
             return AssetTransferAction::DELIVERY;
@@ -100,8 +99,7 @@ class AssetTransfer extends Model
         }
 
         return $query->where(function ($q) use ($branchId) {
-            $q->where('from_branch_id', $branchId)
-                ->orWhere('from_location_id', $branchId);
+            $q->where('from_branch_id', $branchId);
         });
     }
 
@@ -114,8 +112,7 @@ class AssetTransfer extends Model
         }
 
         return $query->where(function ($q) use ($branchId) {
-            $q->where('to_branch_id', $branchId)
-                ->orWhere('to_location_id', $branchId);
+            $q->where('to_branch_id', $branchId);
         });
     }
 
@@ -161,9 +158,23 @@ class AssetTransfer extends Model
         $assetIds = $this->items()->pluck('asset_id');
 
         if ($assetIds->isNotEmpty()) {
-            Asset::whereIn('id', $assetIds)->update([
+            $destinationBranchId = $this->to_branch_id;
+            $destinationCompanyId = null;
+            if ($destinationBranchId) {
+                $destinationCompanyId = Branch::query()->where('id', $destinationBranchId)->value('company_id');
+            }
+
+            $payload = [
                 'status' => AssetStatus::ACTIVE,
-            ]);
+            ];
+            if ($destinationBranchId) {
+                $payload['branch_id'] = $destinationBranchId;
+            }
+            if ($destinationCompanyId) {
+                $payload['company_id'] = $destinationCompanyId;
+            }
+
+            Asset::whereIn('id', $assetIds)->update($payload);
         }
     }
 }

@@ -60,16 +60,16 @@ class AssetTransferController extends Controller
 
         $request->validate([
             'reason' => 'required|string|max:500',
-            'from_location_id' => 'required|exists:branches,id',
-            'to_location_id' => 'required|exists:branches,id|different:from_location_id',
+            'from_branch_id' => 'required|exists:branches,id',
+            'to_branch_id' => 'required|exists:branches,id|different:from_branch_id',
             'status' => 'required|string',
             'priority' => 'required|string',
             'accepted_at' => 'nullable|date',
             'notes' => 'nullable|string|max:1000',
             'items' => 'required|array|min:1',
             'items.*.asset_id' => 'required|exists:assets,id',
-            'items.*.from_location_id' => 'nullable|exists:branches,id',
-            'items.*.to_location_id' => 'nullable|exists:branches,id',
+            'items.*.from_branch_id' => 'nullable|exists:branches,id',
+            'items.*.to_branch_id' => 'nullable|exists:branches,id',
         ]);
 
         try {
@@ -91,8 +91,8 @@ class AssetTransferController extends Controller
                     'reason' => $request->reason,
                     'status' => AssetTransferStatus::from($request->status),
                     'delivery_by' => Auth::id(),
-                    'from_location_id' => $request->from_location_id,
-                    'to_location_id' => $request->to_location_id,
+                    'from_branch_id' => $request->from_branch_id,
+                    'to_branch_id' => $request->to_branch_id,
                     'accepted_at' => $request->accepted_at,
                     'notes' => $request->notes,
                 ]);
@@ -100,8 +100,8 @@ class AssetTransferController extends Controller
                 foreach ($request->items as $item) {
                     $transfer->items()->create([
                         'asset_id' => $item['asset_id'],
-                        'from_location_id' => $request->from_location_id,
-                        'to_location_id' => $request->to_location_id,
+                        'from_branch_id' => $request->from_branch_id,
+                        'to_branch_id' => $request->to_branch_id,
                         'notes' => $item['notes'] ?? '',
                     ]);
                 }
@@ -138,8 +138,8 @@ class AssetTransferController extends Controller
             'status' => $assetTransfer->status,
             'priority' => $assetTransfer->priority,
             'type' => $assetTransfer->type,
-            'from_location' => \App\Models\Branch::find($assetTransfer->from_location_id)?->name ?? null,
-            'to_location' => \App\Models\Branch::find($assetTransfer->to_location_id)?->name ?? null,
+            'from_location' => \App\Models\Branch::find($assetTransfer->from_branch_id)?->name ?? null,
+            'to_location' => \App\Models\Branch::find($assetTransfer->to_branch_id)?->name ?? null,
             'requested_by' => $assetTransfer->requestedBy->name ?? null,
             'company' => $assetTransfer->company->name ?? null,
             'accepted_at' => $assetTransfer->accepted_at,
@@ -156,8 +156,8 @@ class AssetTransferController extends Controller
                 'asset_name' => $item->asset->name ?? 'N/A',
                 'asset_brand' => $item->asset->brand ?? '',
                 'asset_model' => $item->asset->model ?? '',
-                'from_location' => \App\Models\Branch::find($item->from_location_id)?->name ?? 'N/A',
-                'to_location' => \App\Models\Branch::find($item->to_location_id)?->name ?? 'N/A',
+                'from_location' => \App\Models\Branch::find($item->from_branch_id)?->name ?? 'N/A',
+                'to_location' => \App\Models\Branch::find($item->to_branch_id)?->name ?? 'N/A',
                 'current_location' => $item->asset->branch->name ?? 'Unknown',
                 'status' => $item->status?->value ?? 'pending',
                 'quantity' => $item->quantity,
@@ -207,24 +207,24 @@ class AssetTransferController extends Controller
     {
         $request->validate([
             'reason' => 'required|string|max:500',
-            'from_location_id' => 'required|exists:branches,id',
-            'to_location_id' => 'required|exists:branches,id|different:from_location_id',
+            'from_branch_id' => 'required|exists:branches,id',
+            'to_branch_id' => 'required|exists:branches,id|different:from_branch_id',
             'status' => 'required|string',
             'priority' => 'required|string',
             'accepted_at' => 'nullable|date',
             'notes' => 'nullable|string|max:1000',
             'items' => 'required|array|min:1',
             'items.*.asset_id' => 'required|exists:assets,id',
-            'items.*.from_location_id' => 'nullable|exists:branches,id',
-            'items.*.to_location_id' => 'nullable|exists:branches,id',
+            'items.*.from_branch_id' => 'nullable|exists:branches,id',
+            'items.*.to_branch_id' => 'nullable|exists:branches,id',
         ]);
 
         try {
             DB::transaction(function () use ($request, $assetTransfer) {
                 $assetTransfer->update([
                     'reason' => $request->reason,
-                    'from_location_id' => $request->from_location_id,
-                    'to_location_id' => $request->to_location_id,
+                    'from_branch_id' => $request->from_branch_id,
+                    'to_branch_id' => $request->to_branch_id,
                     'status' => AssetTransferStatus::from($request->status),
                     'accepted_at' => $request->accepted_at,
                     'notes' => $request->notes,
@@ -237,8 +237,8 @@ class AssetTransferController extends Controller
                 foreach ($request->items as $item) {
                     $assetTransfer->items()->create([
                         'asset_id' => $item['asset_id'],
-                        'from_location_id' => $request->from_location_id,
-                        'to_location_id' => $request->to_location_id,
+                        'from_branch_id' => $request->from_branch_id,
+                        'to_branch_id' => $request->to_branch_id,
                         'notes' => $item['notes'] ?? '',
                     ]);
                 }
@@ -285,7 +285,7 @@ class AssetTransferController extends Controller
             foreach ($assetTransfer->items as $item) {
                 // Update asset branch
                 $item->asset->update([
-                    'branch_id' => $item->to_location_id,
+                    'branch_id' => $item->to_branch_id,
                 ]);
 
                 // Update item status
@@ -295,8 +295,8 @@ class AssetTransferController extends Controller
 
                 // Create branch history
                 $item->asset->branchHistories()->create([
-                    'from_branch_id' => $item->from_location_id,
-                    'to_branch_id' => $item->to_location_id,
+                    'from_branch_id' => $item->from_branch_id,
+                    'to_branch_id' => $item->to_branch_id,
                     'changed_at' => now(),
                     'changed_by' => Auth::id(),
                     'transfer_id' => $assetTransfer->id,

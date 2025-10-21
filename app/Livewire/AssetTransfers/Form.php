@@ -26,15 +26,13 @@ class Form extends Component
 
     public $reason = '';
 
-    public $from_location_id = '';
+    public $from_branch_id = '';
 
-    public $to_location_id = '';
+    public $to_branch_id = '';
 
-    public $status = 'draft';
+    public $status = 'shipped';
 
-    public $priority = 'medium';
-
-    public $scheduled_at = '';
+    public $delivery_at = '';
 
     public $notes = '';
 
@@ -47,16 +45,15 @@ class Form extends Component
 
     protected $rules = [
         'reason' => 'required|string|max:500',
-        'from_location_id' => 'required|exists:branches,id',
-        'to_location_id' => 'required|exists:branches,id|different:from_location_id',
+        'from_branch_id' => 'required|exists:branches,id',
+        'to_branch_id' => 'required|exists:branches,id|different:from_branch_id',
         'status' => 'required|string',
-        'priority' => 'required|string',
-        'scheduled_at' => 'nullable|date',
+        'delivery_at' => 'nullable|date',
         'notes' => 'nullable|string|max:1000',
         'items' => 'required|array|min:1',
         'items.*.asset_id' => 'required|exists:assets,id',
-        'items.*.from_location_id' => 'nullable|exists:branches,id',
-        'items.*.to_location_id' => 'nullable|exists:branches,id',
+        'items.*.from_branch_id' => 'nullable|exists:branches,id',
+        'items.*.to_branch_id' => 'nullable|exists:branches,id',
     ];
 
     protected $listeners = [
@@ -66,16 +63,16 @@ class Form extends Component
 
     public function updated($propertyName)
     {
-        if ($propertyName === 'from_location_id') {
+        if ($propertyName === 'from_branch_id') {
             foreach ($this->items as $index => $item) {
-                $this->items[$index]['from_location_id'] = $this->from_location_id;
+                $this->items[$index]['from_branch_id'] = $this->from_branch_id;
             }
             $this->loadAssets();
         }
 
-        if ($propertyName === 'to_location_id') {
+        if ($propertyName === 'to_branch_id') {
             foreach ($this->items as $index => $item) {
-                $this->items[$index]['to_location_id'] = $this->to_location_id;
+                $this->items[$index]['to_branch_id'] = $this->to_branch_id;
             }
         }
     }
@@ -91,7 +88,7 @@ class Form extends Component
             // Default from branch dari session
             $currentBranchId = session_get(SessionKey::BranchId);
             if ($currentBranchId) {
-                $this->from_location_id = $currentBranchId;
+                $this->from_branch_id = $currentBranchId;
             }
             // Add default item
             $this->addItem();
@@ -106,11 +103,10 @@ class Form extends Component
             if ($transfer) {
                 $this->transfer_no = $transfer->transfer_no;
                 $this->reason = $transfer->reason;
-                $this->from_location_id = $transfer->from_location_id;
-                $this->to_location_id = $transfer->to_location_id;
+                $this->from_branch_id = $transfer->from_branch_id;
+                $this->to_branch_id = $transfer->to_branch_id;
                 $this->status = $transfer->status->value;
-                $this->priority = $transfer->priority->value ?? $this->priority;
-                $this->scheduled_at = $transfer->scheduled_at?->format('Y-m-d\\TH:i');
+                $this->delivery_at = $transfer->delivery_at?->format('Y-m-d\\TH:i');
                 $this->notes = $transfer->notes;
 
                 $this->items = $transfer->items->map(function ($item) {
@@ -119,8 +115,8 @@ class Form extends Component
                         'uid' => (string) \Illuminate\Support\Str::uuid(),
                         'asset_id' => $item->asset_id,
                         'notes' => $item->notes,
-                        'from_location_id' => $this->from_location_id,
-                        'to_location_id' => $this->to_location_id,
+                        'from_branch_id' => $this->from_branch_id,
+                        'to_branch_id' => $this->to_branch_id,
                     ];
                 })->toArray();
             }
@@ -132,8 +128,8 @@ class Form extends Component
         $this->items[] = [
             'uid' => (string) \Illuminate\Support\Str::uuid(),
             'asset_id' => '',
-            'from_location_id' => $this->from_location_id,
-            'to_location_id' => $this->to_location_id,
+            'from_branch_id' => $this->from_branch_id,
+            'to_branch_id' => $this->to_branch_id,
         ];
     }
 
@@ -180,11 +176,10 @@ class Form extends Component
     {
         $this->transfer_no = '';
         $this->reason = '';
-        $this->from_location_id = '';
-        $this->to_location_id = '';
-        $this->status = 'draft';
-        $this->priority = 'medium';
-        $this->scheduled_at = '';
+        $this->from_branch_id = '';
+        $this->to_branch_id = '';
+        $this->status = 'shipped';
+        $this->delivery_at = '';
         $this->notes = '';
         $this->items = [];
         $this->resetValidation();
@@ -205,21 +200,18 @@ class Form extends Component
 
         try {
             DB::transaction(function () {
-                $user = Auth::user();
-
-                if (! $user || ! $user->company_id) {
-                    throw new \Exception('User account is not properly configured. Please contact administrator.');
-                }
+                $currentCompanyId = session_get(SessionKey::CompanyId);
 
                 if ($this->isEdit && $this->transferId) {
                     $transfer = AssetTransfer::with('items')->findOrFail($this->transferId);
 
                     $transfer->update([
                         'reason' => $this->reason,
-                        'from_location_id' => $this->from_location_id,
-                        'to_location_id' => $this->to_location_id,
+                        'from_branch_id' => $this->from_branch_id,
+                        'to_branch_id' => $this->to_branch_id,
                         'status' => AssetTransferStatus::from($this->status),
                         'accepted_at' => null,
+                        'delivery_at' => $this->delivery_at ?: null,
                         'notes' => $this->notes,
                     ]);
 
@@ -229,8 +221,8 @@ class Form extends Component
                     foreach ($this->items as $item) {
                         $transfer->items()->create([
                             'asset_id' => $item['asset_id'],
-                            'from_location_id' => $this->from_location_id,
-                            'to_location_id' => $this->to_location_id,
+                            'from_branch_id' => $this->from_branch_id,
+                            'to_branch_id' => $this->to_branch_id,
                             'notes' => $item['notes'] ?? '',
                         ]);
                     }
@@ -238,22 +230,23 @@ class Form extends Component
                     $this->dispatch('transfer-updated');
                 } else {
                     $transfer = AssetTransfer::create([
-                        'company_id' => $user->company_id,
+                        'company_id' => $currentCompanyId,
                         'transfer_no' => $this->generateTransferNo(),
                         'reason' => $this->reason,
                         'status' => AssetTransferStatus::from($this->status),
                         'delivery_by' => Auth::id(),
-                        'from_location_id' => $this->from_location_id,
-                        'to_location_id' => $this->to_location_id,
+                        'from_branch_id' => $this->from_branch_id,
+                        'to_branch_id' => $this->to_branch_id,
                         'accepted_at' => null,
+                        'delivery_at' => $this->delivery_at ?: null,
                         'notes' => $this->notes,
                     ]);
 
                     foreach ($this->items as $item) {
                         $transfer->items()->create([
                             'asset_id' => $item['asset_id'],
-                            'from_location_id' => $this->from_location_id,
-                            'to_location_id' => $this->to_location_id,
+                            'from_branch_id' => $this->from_branch_id,
+                            'to_branch_id' => $this->to_branch_id,
                             'notes' => $item['notes'] ?? '',
                         ]);
                     }
@@ -265,14 +258,15 @@ class Form extends Component
             $this->success($this->isEdit ? 'Transfer aset berhasil diupdate!' : 'Transfer aset berhasil dibuat!');
             $this->dispatch('close-drawer');
         } catch (\Exception $e) {
+            dd($e);
             Log::error('Asset transfer save failed', [
                 'error' => $e->getMessage(),
                 'user_id' => Auth::id(),
                 'transfer_id' => $this->transferId,
                 'data' => [
                     'reason' => $this->reason,
-                    'from_location_id' => $this->from_location_id,
-                    'to_location_id' => $this->to_location_id,
+                    'from_branch_id' => $this->from_branch_id,
+                    'to_branch_id' => $this->to_branch_id,
                     'items' => $this->items,
                 ],
             ]);
