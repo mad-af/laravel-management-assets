@@ -84,20 +84,20 @@
 
                 @scope('cell_actions', $transfer)
                 <x-action-dropdown :model="$transfer">
-                    @if ($this->actionFilter === \App\Enums\AssetTransferAction::DELIVERY->value)
-                    <li>
-                        <button class="justify-start btn btn-sm btn-ghost"
-                            wire:click="openTransferDetail('{{ $transfer->id }}', 'detail')">
-                            <x-icon name="o-eye" class="w-4 h-4" />
-                            Detail
-                        </button>
-                    </li>
-                    @elseif ($this->actionFilter === \App\Enums\AssetTransferAction::CONFIRMATION->value)    
+                    @if ($transfer->status === \App\Enums\AssetTransferStatus::SHIPPED)
                     <li>
                         <button class="justify-start btn btn-sm btn-success"
                             wire:click="openTransferDetail('{{ $transfer->id }}', 'confirm')">
                             <x-icon name="o-check-circle" class="w-4 h-4" />
                             Konfirmasi
+                        </button>
+                    </li>
+                    @elseif ($transfer->status === \App\Enums\AssetTransferStatus::DELIVERED)
+                    <li>
+                        <button class="justify-start btn btn-sm btn-ghost"
+                            wire:click="openTransferDetail('{{ $transfer->id }}', 'detail')">
+                            <x-icon name="o-eye" class="w-4 h-4" />
+                            Detail
                         </button>
                     </li>
                     @endif

@@ -3,6 +3,7 @@
 namespace App\Livewire\AssetTransfers;
 
 use App\Enums\AssetTransferAction;
+use App\Enums\AssetTransferStatus;
 use App\Models\AssetTransfer;
 use App\Support\SessionKey;
 use App\Traits\WithAlert;
@@ -88,8 +89,15 @@ class Table extends Component
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        $deliveryCount = AssetTransfer::query()->deliveryAction($currentBranchId)->count();
-        $confirmationCount = AssetTransfer::query()->confirmationAction($currentBranchId)->count();
+        // Hanya hitung transfer dengan status 'shipped'
+        $deliveryCount = AssetTransfer::query()
+            ->deliveryAction($currentBranchId)
+            ->where('status', AssetTransferStatus::SHIPPED->value)
+            ->count();
+        $confirmationCount = AssetTransfer::query()
+            ->confirmationAction($currentBranchId)
+            ->where('status', AssetTransferStatus::SHIPPED->value)
+            ->count();
 
         $actionCounts = [
             AssetTransferAction::DELIVERY->value => $deliveryCount,
