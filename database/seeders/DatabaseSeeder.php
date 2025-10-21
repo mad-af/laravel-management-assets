@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
                 AssetLoanSeeder::class,
                 AssetLogSeeder::class,
                 VehicleProfileSeeder::class,
+                AssetMaintenanceSeeder::class,
             ];
         }
         $this->call($seeder);

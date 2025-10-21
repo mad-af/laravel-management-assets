@@ -14,9 +14,13 @@ class Table extends Component
     use WithPagination;
 
     public string $search = '';
+
     public string $statusFilter = '';
+
     public string $typeFilter = '';
+
     public string $priorityFilter = '';
+
     public int $perPage = 15;
 
     public array $selectedMaintenances = [];
