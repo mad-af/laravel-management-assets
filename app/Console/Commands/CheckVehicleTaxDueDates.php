@@ -22,7 +22,7 @@ class CheckVehicleTaxDueDates extends Command
      *
      * @var string
      */
-    protected $description = 'Check for vehicle tax histories that are due within 3 months and create new VehicleTaxType records';
+    protected $description = 'Check for vehicle tax histories that are due within 1 month and create new VehicleTaxType records';
 
     /**
      * Execute the console command.
@@ -31,7 +31,7 @@ class CheckVehicleTaxDueDates extends Command
     {
         $this->info('Starting vehicle tax due date check...');
 
-        $threeMonthsFromNow = Carbon::now()->addMonths(3);
+        $oneMonthFromNow = Carbon::now()->addMonth();
         $createdCount = 0;
 
         // Get the latest VehicleTaxHistory for each vehicle_tax_type_id based on created_at
@@ -48,27 +48,22 @@ class CheckVehicleTaxDueDates extends Command
 
         VehicleTaxHistory::with('vehicleTaxType')
             ->whereIn('id', $latestHistoryIds)
-            ->chunk(100, function ($histories) use ($threeMonthsFromNow, &$createdCount) {
-                $filtered = $histories->filter(callback: function ($history) use ($threeMonthsFromNow) {
-
+            ->chunk(100, function ($histories) use ($oneMonthFromNow, &$createdCount) {
+                $filtered = $histories->filter(callback: function ($history) use ($oneMonthFromNow) {
                     // Calculate the next due date based on tax type and latest history
                     $nextDueDate = $history->due_date;
                     $baseDate = $history->due_date;
                     if ($history->vehicleTaxType->tax_type === VehicleTaxTypeEnum::PKB_TAHUNAN) {
-                        // PKB Tahunan: add 1 year
                         $nextDueDate = Carbon::parse($baseDate)->addYear();
                     } elseif ($history->vehicleTaxType->tax_type === VehicleTaxTypeEnum::KIR) {
-                        // KIR: add 6 months
                         $nextDueDate = Carbon::parse($baseDate)->addMonths(6);
                     }
 
-                    return $history->vehicleTaxType && $nextDueDate->lte($threeMonthsFromNow);
+                    return $history->vehicleTaxType && $nextDueDate->lte($oneMonthFromNow);
                 });
-
                 foreach ($filtered as $history) {
                     $createdCount++;
                     VehicleTaxHistory::createFromTaxType($history->vehicleTaxType);
-                    // proses data terbaru
                 }
             });
 
