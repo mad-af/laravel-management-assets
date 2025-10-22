@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Mail\UnpaidVehicleTaxesNotification;
 use App\Models\User;
 use App\Models\VehicleTaxHistory;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
 
@@ -33,9 +34,12 @@ class NotifyUnpaidVehicleTaxes extends Command
 
         // Ambil histori pajak terbaru per tipe pajak, lalu filter yang belum dibayar
         $latestHistoryIds = VehicleTaxHistory::select('id')->where('paid_date', null);
+        $cutoff = Carbon::now()->addMonth();
 
         $histories = VehicleTaxHistory::with(['asset.company', 'vehicleTaxType'])
             ->whereIn('id', $latestHistoryIds)
+            ->whereNotNull('due_date')
+            ->whereDate('due_date', '<=', $cutoff)
             ->orderBy('due_date', 'asc')
             ->get();
 
