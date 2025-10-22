@@ -23,7 +23,7 @@ class BasicInfo extends Component
             'maintenance' => 'badge-warning',
             'checked_out' => 'badge-info',
         ];
-        
+
         return $statusColors[$status] ?? 'badge-neutral';
     }
 
@@ -36,7 +36,7 @@ class BasicInfo extends Component
             'poor' => 'badge-error',
             'damaged' => 'badge-error',
         ];
-        
+
         return $conditionColors[$condition] ?? 'badge-neutral';
     }
 
@@ -44,4 +44,5 @@ class BasicInfo extends Component
     {
         return view('livewire.assets.basic-info');
     }
+
 }

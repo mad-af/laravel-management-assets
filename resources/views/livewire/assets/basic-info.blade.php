@@ -8,6 +8,7 @@
         ['label' => 'Nama Asset', 'value' => $asset->name],
         ['label' => 'Kategori', 'value' => $asset->category->name ?? 'N/A'],
         ['label' => 'Cabang', 'value' => $asset->branch->name ?? 'N/A'],
+        ['label' => 'Serial Number', 'value' => $asset->serial_number ?? 'N/A'],
     ];
 
     // Add tag code if exists

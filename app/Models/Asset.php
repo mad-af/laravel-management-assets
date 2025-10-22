@@ -36,6 +36,7 @@ class Asset extends Model
         'purchase_date',
         'description',
         'last_seen_at',
+        'serial_number'
     ];
 
     protected $casts = [
@@ -188,7 +189,8 @@ class Asset extends Model
     {
         return $query->whereHas('vehicleTaxHistories', function ($q) {
             $q->whereNull('paid_date')
-                ->where('due_date', '>', now());
+                ->where('due_date', '>', now())
+                ->where('due_date', '<=', now()->addMonth());
         });
     }
 

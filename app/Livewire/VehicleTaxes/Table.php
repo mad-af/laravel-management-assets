@@ -131,7 +131,11 @@ class Table extends Component
     {
         return $this->getBaseVehicleQuery()
             ->forBranch($this->currentBranchId)
-            ->dueSoon()->count();
+            ->whereHas('vehicleTaxHistories', function ($q) {
+                $q->whereNull('paid_date')
+                    ->where('due_date', '>', now())
+                    ->where('due_date', '<=', now()->addMonth());
+            })->count();
     }
 
     public function getPaidCountProperty()

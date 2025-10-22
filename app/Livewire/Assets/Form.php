@@ -50,6 +50,8 @@ class Form extends Component
 
     public $description = '';
 
+    public $serial_number = '';
+
     public $isEdit = false;
 
     public $codeIsset = false;
@@ -69,6 +71,7 @@ class Form extends Component
         'value' => 'nullable|numeric|min:0',
         'purchase_date' => 'nullable|date',
         'description' => 'nullable|string',
+        'serial_number' => 'nullable|string|max:128',
     ];
 
     protected $listeners = [
@@ -175,13 +178,14 @@ class Form extends Component
                 $this->value = $asset->value;
                 $this->purchase_date = $asset->purchase_date?->format('Y-m-d');
                 $this->description = $asset->description;
+                $this->serial_number = $asset->serial_number;
             }
         }
     }
 
     public function generateCode()
     {
-        if (!$this->isEdit) {
+        if (! $this->isEdit) {
             try {
                 // Generate asset code using helper function
                 $this->tag_code = generate_asset_tag_code();
@@ -289,6 +293,7 @@ class Form extends Component
                 'value' => $this->value ?: null,
                 'purchase_date' => $this->purchase_date ?: null,
                 'description' => $this->description ?: null,
+                'serial_number' => $this->serial_number ?: null,
             ];
 
             if ($this->isEdit && $this->assetId) {
@@ -342,6 +347,7 @@ class Form extends Component
         $this->value = '';
         $this->purchase_date = '';
         $this->description = '';
+        $this->serial_number = '';
         $this->resetValidation();
 
         if (! $this->isEdit) {
