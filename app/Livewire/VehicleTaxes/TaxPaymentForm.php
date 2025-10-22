@@ -2,6 +2,7 @@
 
 namespace App\Livewire\VehicleTaxes;
 
+use App\Enums\VehicleTaxTypeEnum; // tambahkan import enum
 use App\Models\Asset;
 use App\Models\VehicleTaxHistory;
 use Livewire\Attributes\On;
@@ -92,7 +93,10 @@ class TaxPaymentForm extends Component
     #[On('combobox-load-assets')]
     public function loadAssets($search = '')
     {
-        $query = Asset::forBranch()->vehicles();
+        $query = Asset::forBranch()->vehicles()
+            ->whereHas('vehicleTaxTypes', function ($q) {
+                $q->where('tax_type', '!=', VehicleTaxTypeEnum::TIDAK_BERPAJAK->value);
+            });
 
         if (! empty($search)) {
             $query->where(function ($q) use ($search) {
@@ -228,6 +232,7 @@ class TaxPaymentForm extends Component
             $this->resetForm();
             $this->dispatch('reload-page');
         } catch (\Throwable $e) {
+            dd($e);
             $this->error('Terjadi kesalahan: '.$e->getMessage());
         }
     }

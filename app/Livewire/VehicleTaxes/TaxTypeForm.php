@@ -5,6 +5,7 @@ namespace App\Livewire\VehicleTaxes;
 use App\Enums\VehicleTaxTypeEnum;
 use App\Models\Asset;
 use App\Models\VehicleTaxType;
+use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\On;
 use Livewire\Attributes\Url;
 use Livewire\Component;
@@ -74,7 +75,7 @@ class TaxTypeForm extends Component
     #[On('combobox-load-assets')]
     public function loadAssets($search = '')
     {
-        $query = Asset::forBranch()->vehicles();
+        $query = Asset::forBranch()->vehicles()->notValid();
 
         if (! empty($search)) {
             $query->where(function ($q) use ($search) {
@@ -144,99 +145,91 @@ class TaxTypeForm extends Component
         $this->validate();
 
         try {
-            // Jika kedua pajak tidak diaktifkan, pastikan ada 1 baris TIDAK_BERPAJAK dengan due_date null
-            if (! $this->is_pajak_tahunan && ! $this->is_kir) {
-                // Hapus PKB jika ada
-                if ($this->pkb_tax_type_id) {
-                    VehicleTaxType::where('id', $this->pkb_tax_type_id)->delete();
+
+            DB::transaction(function () {
+                // Jika TIDAK ada pajak aktif → pastikan hanya TIDAK_BERPAJAK yang tersisa
+                if (! $this->is_pajak_tahunan && ! $this->is_kir) {
+                    // Hapus PKB & KIR jika ada
+                    VehicleTaxType::query()
+                        ->where('asset_id', $this->asset_id)
+                        ->whereIn('tax_type', [
+                            VehicleTaxTypeEnum::PKB_TAHUNAN->value,
+                            VehicleTaxTypeEnum::KIR->value,
+                        ])->delete();
+
+                    // Reset id di state
                     $this->pkb_tax_type_id = null;
-                }
-                // Hapus KIR jika ada
-                if ($this->kir_tax_type_id) {
-                    VehicleTaxType::where('id', $this->kir_tax_type_id)->delete();
                     $this->kir_tax_type_id = null;
+
+                    // Upsert TIDAK_BERPAJAK (due_date null)
+                    $noTax = VehicleTaxType::updateOrCreate(
+                        [
+                            'asset_id' => $this->asset_id,
+                            'tax_type' => VehicleTaxTypeEnum::TIDAK_BERPAJAK->value,
+                        ],
+                        ['due_date' => '']
+                    );
+
+                    return; // selesai skenario no-tax
                 }
 
-                // Upsert TIDAK_BERPAJAK
-                $noTax = VehicleTaxType::query()
-                    ->where('asset_id', $this->asset_id)
-                    ->where('tax_type', VehicleTaxTypeEnum::TIDAK_BERPAJAK->value)
-                    ->first();
-
-                if ($noTax) {
-                    $noTax->update([
-                        'due_date' => null,
-                    ]);
-                } else {
-                    VehicleTaxType::create([
-                        'asset_id' => $this->asset_id,
-                        'tax_type' => VehicleTaxTypeEnum::TIDAK_BERPAJAK,
-                        'due_date' => null,
-                    ]);
-                }
-            } else {
-                // Ada pajak aktif: hapus baris TIDAK_BERPAJAK jika ada
+                // Ada pajak aktif → hapus baris TIDAK_BERPAJAK bila ada
                 VehicleTaxType::query()
                     ->where('asset_id', $this->asset_id)
                     ->where('tax_type', VehicleTaxTypeEnum::TIDAK_BERPAJAK->value)
                     ->delete();
 
-                // Handle PKB tax type jika diaktifkan
+                // ===== PKB Tahunan =====
                 if ($this->is_pajak_tahunan) {
-                    if ($this->pkb_tax_type_id) {
-                        // Update existing PKB tax type
-                        VehicleTaxType::where('id', $this->pkb_tax_type_id)->update([
+                    $pkb = VehicleTaxType::updateOrCreate(
+                        [
                             'asset_id' => $this->asset_id,
-                            'tax_type' => VehicleTaxTypeEnum::PKB_TAHUNAN,
+                            'tax_type' => VehicleTaxTypeEnum::PKB_TAHUNAN->value,
+                        ],
+                        [
                             'due_date' => $this->due_date,
-                        ]);
-                    } else {
-                        // Create new PKB tax type
-                        VehicleTaxType::create([
-                            'asset_id' => $this->asset_id,
-                            'tax_type' => VehicleTaxTypeEnum::PKB_TAHUNAN,
-                            'due_date' => $this->due_date,
-                        ]);
-                    }
+                        ]
+                    );
+
+                    // simpan id ke state (berguna untuk UI/validasi berikutnya)
+                    $this->pkb_tax_type_id = $pkb->id;
                 } else {
-                    // Jika tidak diaktifkan, hapus PKB jika ada
-                    if ($this->pkb_tax_type_id) {
-                        VehicleTaxType::where('id', $this->pkb_tax_type_id)->delete();
-                        $this->pkb_tax_type_id = null;
-                    }
+                    // nonaktif → hapus bila ada & reset id
+                    VehicleTaxType::query()
+                        ->where('asset_id', $this->asset_id)
+                        ->where('tax_type', VehicleTaxTypeEnum::PKB_TAHUNAN->value)
+                        ->delete();
+                    $this->pkb_tax_type_id = null;
                 }
 
-                // Handle KIR tax type jika diaktifkan
+                // ===== KIR =====
                 if ($this->is_kir) {
-                    if ($this->kir_tax_type_id) {
-                        // Update existing KIR tax type
-                        VehicleTaxType::where('id', $this->kir_tax_type_id)->update([
+                    $kir = VehicleTaxType::updateOrCreate(
+                        [
                             'asset_id' => $this->asset_id,
-                            'tax_type' => VehicleTaxTypeEnum::KIR,
+                            'tax_type' => VehicleTaxTypeEnum::KIR->value,
+                        ],
+                        [
                             'due_date' => $this->due_date_kir,
-                        ]);
-                    } else {
-                        // Create new KIR tax type
-                        VehicleTaxType::create([
-                            'asset_id' => $this->asset_id,
-                            'tax_type' => VehicleTaxTypeEnum::KIR,
-                            'due_date' => $this->due_date_kir,
-                        ]);
-                    }
+                        ]
+                    );
+
+                    $this->kir_tax_type_id = $kir->id;
                 } else {
-                    // Jika tidak diaktifkan, hapus KIR jika ada
-                    if ($this->kir_tax_type_id) {
-                        VehicleTaxType::where('id', $this->kir_tax_type_id)->delete();
-                        $this->kir_tax_type_id = null;
-                    }
+                    VehicleTaxType::query()
+                        ->where('asset_id', $this->asset_id)
+                        ->where('tax_type', VehicleTaxTypeEnum::KIR->value)
+                        ->delete();
+                    $this->kir_tax_type_id = null;
                 }
-            }
+            });
 
             $this->success('Data pajak kendaraan berhasil disimpan!');
             $this->dispatch('close-drawer');
             $this->resetForm();
             $this->dispatch('reload-page');
         } catch (\Throwable $e) {
+            dd($e);
             $this->error('Terjadi kesalahan: '.$e->getMessage());
         }
     }
