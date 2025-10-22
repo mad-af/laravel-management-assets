@@ -1,4 +1,5 @@
-<x-info-card title="Perawatan Kendaraan Selanjutnya & Target Odometer" icon="o-wrench-screwdriver">
+<x-info-card title="Perawatan Kendaraan" icon="o-wrench-screwdriver" class="overflow-auto h-72 max-h-72"
+    link="{{ route('vehicles.index') }}">
     @if($count === 0)
         <div class="alert alert-info">
             <x-icon name="o-information-circle" class="w-5 h-5" />
@@ -6,13 +7,11 @@
         </div>
     @else
         <div class="overflow-x-auto">
-            <table class="table table-zebra">
+            <table class="table table-sm">
                 <thead>
                     <tr>
                         <th>#</th>
                         <th>Kendaraan</th>
-                        <th>Odometer Saat Ini</th>
-                        <th>Target Odometer</th>
                         <th>Selisih Km</th>
                         <th>Jadwal Berikutnya</th>
                     </tr>
@@ -23,23 +22,29 @@
                         <tr>
                             <td>{{ $i + 1 }}</td>
                             <td class="font-medium">{{ $asset->name }}</td>
-                            <td>{{ number_format($vp->current_odometer_km ?? 0) }} km</td>
-                            <td>{{ $vp->service_target_odometer_km ? number_format($vp->service_target_odometer_km) . ' km' : '-' }}</td>
                             <td>
                                 @php
-                                    $delta = ($vp->service_target_odometer_km && $vp->current_odometer_km)
-                                        ? $vp->service_target_odometer_km - $vp->current_odometer_km
-                                        : null;
+                                    $odometerInfo = $this->formatOdometerTargetInfo(
+                                        $vp?->current_odometer_km,
+                                        $vp?->service_target_odometer_km
+                                    );
                                 @endphp
-                                @if($delta !== null)
-                                    <span class="badge {{ $delta <= 0 ? 'badge-error' : 'badge-warning' }}">{{ number_format(max(0, $delta)) }} km</span>
+                                @if($odometerInfo)
+                                    <div class="{{ $odometerInfo['is_overdue'] ? 'text-error' : 'text-base-content/60' }}">
+                                        {{ $odometerInfo['distance_info'] }}
+                                    </div>
                                 @else
                                     -
                                 @endif
                             </td>
                             <td>
-                                @if($vp->next_service_date)
-                                    <span class="badge badge-info">{{ $vp->next_service_date->format('d M Y') }}</span>
+                                @php
+                                    $serviceInfo = $vp ? $this->formatNextServiceDate($vp->next_service_date) : null;
+                                @endphp
+                                @if($serviceInfo)
+                                    <div class="{{ $serviceInfo['is_overdue'] ? 'text-error' : 'text-base-content/60' }}">
+                                        {{ $serviceInfo['time_info'] }}
+                                    </div>
                                 @else
                                     -
                                 @endif

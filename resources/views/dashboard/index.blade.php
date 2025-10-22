@@ -7,7 +7,16 @@
 
     <livewire:dashboard.asset-stats />
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+    <div class="grid grid-cols-1 gap-4 lg:grid-cols-6">
+        <div class="lg:col-span-3">
+            <livewire:dashboard.vehicle-taxes-due />
+        </div>
+        <div class="lg:col-span-3">
+            <livewire:dashboard.upcoming-vehicle-maintenance />
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <div>
             <livewire:dashboard.transfers-need-confirmation />
         </div>
@@ -16,7 +25,7 @@
         </div>
     </div>
 
-    <livewire:dashboard.upcoming-vehicle-maintenance />
-    <livewire:dashboard.vehicle-taxes-due />
+    
+    
     <livewire:dashboard.vehicle-taxes-invalid />
 @endsection

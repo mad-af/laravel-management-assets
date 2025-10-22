@@ -1,52 +1,45 @@
-<x-info-card title="Pajak Kendaraan: Terlambat & Jatuh Tempo" icon="o-receipt-refund">
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div>
-            <div class="flex items-center justify-between mb-2">
-                <h3 class="font-semibold">Terlambat</h3>
-                <span class="badge badge-error">{{ $overdueCount }}</span>
-            </div>
-            @if($overdueCount === 0)
-                <div class="alert alert-success">
-                    <x-icon name="o-check-circle" class="w-5 h-5" />
-                    <span>Tidak ada pajak terlambat.</span>
-                </div>
-            @else
-                <ul class="menu bg-base-200 rounded-box">
-                    @foreach($overdue as $v)
-                        <li>
-                            <span>
-                                <x-icon name="o-exclamation-triangle" class="w-4 h-4 text-error" />
-                                <span class="font-medium">{{ $v->name }}</span>
-                                <span class="opacity-70">• Due: {{ optional($v->vehicleTaxHistories()->latest('due_date')->first())->due_date?->format('d M Y') }}</span>
-                            </span>
-                        </li>
+<x-info-card title="Pajak Kendaraan" icon="o-receipt-refund" class="overflow-auto h-72 max-h-72"
+    link="{{ route('vehicle-taxes.index') }}">
+    <form class="mb-2 filter">
+        <input class="btn btn-sm btn-soft btn-primary btn-square" type="reset" value="×"
+            wire:click="$set('statusFilter', '')" />
+        <input class="btn btn-sm btn-soft btn-primary" type="radio" name="tax_status" aria-label="Terlambat"
+            value="overdue" wire:model.live="statusFilter" />
+        <input class="btn btn-sm btn-soft btn-primary" type="radio" name="tax_status" aria-label="Jatuh Tempo"
+            value="due_soon" wire:model.live="statusFilter" />
+    </form>
+
+    <div class="overflow-x-auto">
+        <table class="table table-sm">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Kendaraan</th>
+                    <th>Jenis Pajak</th>
+                    <th>Jatuh Tempo</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if($count === 0)
+                    <tr>
+                        <td colspan="4">
+                            <div class="text-center">
+                                {{-- <x-icon name="o-check-circle" class="w-5 h-5" /> --}}
+                                <span class="text-base-content/60">Tidak ada pajak terlambat atau yang akan jatuh tempo.</span>
+                            </div>
+                        </td>
+                    </tr>
+                @else
+                    @foreach($items as $item)
+                        <tr>
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ $item->vehicle_name }}</td>
+                            <td>{{ $item->tax_type_label }}</td>
+                            <td><span class="{{ $item->due_text_class }}">{{ $item->due_date }}</span></td>
+                        </tr>
                     @endforeach
-                </ul>
-            @endif
-        </div>
-        <div>
-            <div class="flex items-center justify-between mb-2">
-                <h3 class="font-semibold">Jatuh Tempo</h3>
-                <span class="badge badge-warning">{{ $dueSoonCount }}</span>
-            </div>
-            @if($dueSoonCount === 0)
-                <div class="alert alert-info">
-                    <x-icon name="o-information-circle" class="w-5 h-5" />
-                    <span>Tidak ada pajak yang akan jatuh tempo.</span>
-                </div>
-            @else
-                <ul class="menu bg-base-200 rounded-box">
-                    @foreach($dueSoon as $v)
-                        <li>
-                            <span>
-                                <x-icon name="o-exclamation-circle" class="w-4 h-4 text-warning" />
-                                <span class="font-medium">{{ $v->name }}</span>
-                                <span class="opacity-70">• Due: {{ optional($v->vehicleTaxHistories()->latest('due_date')->first())->due_date?->format('d M Y') }}</span>
-                            </span>
-                        </li>
-                    @endforeach
-                </ul>
-            @endif
-        </div>
+                @endif
+            </tbody>
+        </table>
     </div>
 </x-info-card>
