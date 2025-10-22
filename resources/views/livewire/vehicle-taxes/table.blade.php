@@ -112,7 +112,7 @@
                 @endphp
                 <div class="flex flex-col">
                     <span class="text-sm font-medium">{{ $paymentData['paid_count'] }}</span>
-                    <span class="text-xs text-base-content/70">dari {{ $paymentData['total_tax_types'] }} pajak</span>
+                    {{-- <span class="text-xs text-base-content/70">dari {{ $paymentData['total_tax_types'] }} pajak</span> --}}
                 </div>
                 @endscope
 

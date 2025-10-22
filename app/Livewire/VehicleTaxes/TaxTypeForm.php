@@ -107,8 +107,10 @@ class TaxTypeForm extends Component
         }
 
         // Load existing PKB tax type
-        $pkbTaxType = VehicleTaxType::where('asset_id', $this->asset_id)
+        $pkbTaxType = VehicleTaxType::query()
+            ->where('asset_id', $this->asset_id)
             ->where('tax_type', VehicleTaxTypeEnum::PKB_TAHUNAN)
+            ->orderBy('due_date', 'desc')
             ->first();
 
         if ($pkbTaxType) {
@@ -117,8 +119,10 @@ class TaxTypeForm extends Component
         }
 
         // Load existing KIR tax type
-        $kirTaxType = VehicleTaxType::where('asset_id', $this->asset_id)
+        $kirTaxType = VehicleTaxType::query()
+            ->where('asset_id', $this->asset_id)
             ->where('tax_type', VehicleTaxTypeEnum::KIR)
+            ->orderBy('due_date', 'desc')
             ->first();
 
         if ($kirTaxType) {
