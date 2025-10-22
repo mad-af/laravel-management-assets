@@ -22,6 +22,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Demo DayMonthPicker (publik, tanpa autentikasi)
+Route::view('/dev/day-month-picker', 'public.day-month-picker-demo')->name('dev.day-month-picker');
+
 Route::prefix('pdf-template')->group(function () {
     Route::get('/maintenance-report', function () {
         return view('pdf-template.maintenance-report-example-2');

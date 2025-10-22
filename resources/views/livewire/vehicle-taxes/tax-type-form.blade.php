@@ -23,7 +23,7 @@
         <div>
             <fieldset class="p-4 rounded-lg border border-base-300 bg-base-200">
                 <legend class="px-2 text-xs font-medium">Pajak Tahunan</legend>
-                <x-datetime label="Tanggal Jatuh Tempo" wire:model="due_date" class="input-sm" inline required />
+                <livewire:components.day-month-picker label="Tanggal Jatuh Tempo" wire:model="due_date" required />
             </fieldset>
         </div>
 
@@ -35,7 +35,7 @@
         <div>
             <fieldset class="p-4 rounded-lg border border-base-300 bg-base-200">
                 <legend class="px-2 text-xs font-medium">Pajak KIR</legend>
-                <x-datetime label="Tanggal Jatuh Tempo" wire:model="due_date_kir" class="input-sm" inline required />
+                <livewire:components.day-month-picker label="Tanggal Jatuh Tempo" wire:model="due_date_kir" required />
             </fieldset>
         </div>
         @endif
