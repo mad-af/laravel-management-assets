@@ -7,6 +7,8 @@
 
     <livewire:dashboard.asset-stats />
 
+    <livewire:dashboard.vehicle-taxes-invalid />
+
     <div class="grid grid-cols-1 gap-4 lg:grid-cols-6">
         <div class="lg:col-span-3">
             <livewire:dashboard.vehicle-taxes-due />
@@ -24,8 +26,4 @@
             <livewire:dashboard.overdue-borrowers />
         </div>
     </div>
-
-    
-    
-    <livewire:dashboard.vehicle-taxes-invalid />
 @endsection
