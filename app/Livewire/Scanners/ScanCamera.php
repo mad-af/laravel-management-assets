@@ -28,6 +28,10 @@ class ScanCamera extends Component
         $this->cameraStatus = $payload['cameraStatus'] ?? $this->cameraStatus;
         $this->isSwitchCamera = $payload['isSwitchCamera'] ?? $this->isSwitchCamera;
         $this->alert = (object) $payload['alert'] ?? $this->alert;
+
+        if ($this->cameraStatus === 'off') {
+            $this->isSwitchCamera = false;
+        }
     }
 
     // Tombol di Blade akan memanggil ini
