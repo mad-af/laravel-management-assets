@@ -73,16 +73,16 @@
                 @scope('cell_branches_move', $transfer)
                 <div class="text-sm">
                     <span
-                        class="font-medium badge badge-sm {{ $this->actionFilter === 'delivery' ? 'badge-soft badge-primary' : '' }}">{{ $transfer->fromBranch?->name ?? '-' }}</span>
-                    <span class="mx-1 text-base-content/70">→</span>
+                        class="block font-medium badge badge-sm whitespace-nowrap {{ $this->actionFilter === 'delivery' ? 'badge-soft badge-primary' : '' }}">{{ $transfer->fromBranch?->name ?? '-' }}</span>
+                    <span class="block mx-1 text-base-content/70">→</span>
                     <span
-                        class="font-medium badge badge-sm {{ $this->actionFilter === 'confirmation' ? 'badge-soft badge-primary' : '' }}">{{ $transfer->toBranch?->name ?? '-' }}</span>
+                        class="block font-medium badge badge-sm whitespace-nowrap {{ $this->actionFilter === 'confirmation' ? 'badge-soft badge-primary' : '' }}">{{ $transfer->toBranch?->name ?? '-' }}</span>
                 </div>
                 @endscope
 
                 @scope('cell_reason', $transfer)
                 <div class="max-w-xs">
-                    <p class="truncate" title="{{ $transfer->reason }}">{{ $transfer->reason }}</p>
+                    <p class="text-sm truncate" title="{{ $transfer->reason }}">{{ $transfer->reason }}</p>
                 </div>
                 @endscope
 

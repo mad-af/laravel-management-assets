@@ -54,10 +54,13 @@
             <x-textarea label="Catatan" wire:model="notes" placeholder="Catatan tambahan..." class="textarea-sm" rows="3" />
         </div>
 
+        {{-- Confirmation Phrase --}}
+        <livewire:components.confirmation-phrase wire:model.live="confirmation_text" phrase="Data telah saya verifikasi" />
+
         {{-- Actions --}}
         <div class="flex gap-2 justify-end pt-4">
-            <x-button label="Batal" class="btn-ghost" wire:click="$dispatch('close-drawer')" />
-            <x-button :label="$isEdit ? 'Update' : 'Simpan'" class="btn-primary" type="submit" spinner="save" />
+            <x-button label="Batal" class="btn-ghost btn-sm" wire:click="$dispatch('close-drawer')" />
+            <x-button :label="$isEdit ? 'Update' : 'Simpan'" class="btn-primary btn-sm" type="submit" spinner="save" :disabled="!$this->isConfirmed" />
         </div>
     @endif
 </form>

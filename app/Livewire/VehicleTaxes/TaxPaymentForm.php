@@ -34,6 +34,9 @@ class TaxPaymentForm extends Component
 
     public bool $isEdit = false;
 
+    // Tambah: Konfirmasi frasa
+    public string $confirmation_text = '';
+
     // Dropdown sources
     public array $assets = [];
 
@@ -259,6 +262,12 @@ class TaxPaymentForm extends Component
         }
     }
 
+    // Computed: apakah frasa konfirmasi cocok
+    public function getIsConfirmedProperty(): bool
+    {
+        return $this->confirmation_text === 'Data telah saya verifikasi';
+    }
+
     public function resetForm(): void
     {
         $this->reset([
@@ -268,6 +277,9 @@ class TaxPaymentForm extends Component
 
         $this->year = date('Y'); // Reset year to current year
         $this->resetValidation();
+
+        // Reset konfirmasi frasa
+        $this->confirmation_text = '';
     }
 
     /**

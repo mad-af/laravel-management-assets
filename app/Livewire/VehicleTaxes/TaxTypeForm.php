@@ -39,6 +39,9 @@ class TaxTypeForm extends Component
 
     public bool $is_kir = false;
 
+    // Konfirmasi frasa agar tombol submit aktif
+    public string $confirmation_text = '';
+
     protected $rules = [
         'asset_id' => 'required|uuid|exists:assets,id',
         'due_date' => 'nullable|date|required_if:is_pajak_tahunan,true',
@@ -49,6 +52,12 @@ class TaxTypeForm extends Component
         'editVehicleTaxType' => 'edit',
         'resetForm' => 'resetForm',
     ];
+
+    // Computed: apakah frasa konfirmasi cocok
+    public function getIsConfirmedProperty(): bool
+    {
+        return $this->confirmation_text === 'Data telah saya verifikasi';
+    }
 
     public function updatedAssetId()
     {
@@ -167,7 +176,7 @@ class TaxTypeForm extends Component
                             'asset_id' => $this->asset_id,
                             'tax_type' => VehicleTaxTypeEnum::TIDAK_BERPAJAK->value,
                         ],
-                        ['due_date' => '']
+                        ['due_date' => null]
                     );
 
                     return; // selesai skenario no-tax
@@ -229,7 +238,6 @@ class TaxTypeForm extends Component
             $this->resetForm();
             $this->dispatch('reload-page');
         } catch (\Throwable $e) {
-            dd($e);
             $this->error('Terjadi kesalahan: '.$e->getMessage());
         }
     }
@@ -250,6 +258,8 @@ class TaxTypeForm extends Component
 
         $this->pkb_tax_type_id = null;
         $this->kir_tax_type_id = null;
+
+        $this->confirmation_text = '';
 
         $this->resetValidation();
     }

@@ -10,7 +10,8 @@ use Livewire\Component;
 class ConfirmReceipt extends Component
 {
     public string $transferId;
-    public string $confirmationInput = '';
+
+    public string $confirmation_text = '';
 
     public function mount(string $transferId)
     {
@@ -19,14 +20,16 @@ class ConfirmReceipt extends Component
 
     public function confirmReceipt(): void
     {
-        if (trim(mb_strtolower($this->confirmationInput)) !== 'saya telah menerima asset') {
-            $this->addError('confirmationInput', 'Ketik tepat: "saya telah menerima asset" untuk konfirmasi.');
+        if ($this->confirmation_text !== 'saya telah menerima asset') {
+            $this->addError('confirmation_text', 'Ketik tepat: "saya telah menerima asset" untuk konfirmasi.');
+
             return;
         }
 
         $transfer = AssetTransfer::find($this->transferId);
         if (! $transfer) {
-            $this->addError('confirmationInput', 'Transfer tidak ditemukan.');
+            $this->addError('confirmation_text', 'Transfer tidak ditemukan.');
+
             return;
         }
 
@@ -38,6 +41,12 @@ class ConfirmReceipt extends Component
         ]);
 
         $this->dispatch('transfer-updated');
+    }
+
+    // Computed: apakah frasa konfirmasi cocok
+    public function getIsConfirmedProperty(): bool
+    {
+        return $this->confirmation_text === 'saya telah menerima asset';
     }
 
     public function render()
