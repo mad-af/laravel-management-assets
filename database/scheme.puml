@@ -261,6 +261,7 @@ table(vehicle_insurance_claims) {
   claim_no : VARCHAR [UNIQUE]
   incident_date : DATE
   incident_type : ENUM(collision, theft, flood, fire, other) [DEFAULT: other]
+  incident_other : VARCHAR [NULL]
   description : TEXT [NULL]
   source : ENUM(manual, maintenance) [DEFAULT: manual]
   fk(asset_maintenance_id) : UUID [NULL]
