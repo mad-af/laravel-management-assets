@@ -6,7 +6,7 @@
     <livewire:dashboard-content-header title='Category Management' description='Kelola data kategori dalam sistem.'
         buttonText='Add Category' buttonIcon='o-plus' buttonAction='openCategoryDrawer' />
 
-    <livewire:categories.table />
+    <livewire:insurance-policies.table />
 
-    <livewire:categories.drawer />
+    <livewire:insurance-policies.drawer />
 @endsection
