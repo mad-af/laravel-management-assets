@@ -3,8 +3,8 @@
 @section('title', 'Category Management')
 
 @section('content')
-    <livewire:dashboard-content-header title='Category Management' description='Kelola data kategori dalam sistem.'
-        buttonText='Add Category' buttonIcon='o-plus' buttonAction='openCategoryDrawer' />
+    <livewire:dashboard-content-header title='Asuransi' description='Kelola data asuransi dalam sistem.'
+        buttonText='Tambah Asuransi' buttonIcon='o-plus' buttonAction='openInsuranceDrawer' />
 
     <livewire:insurances.table />
 

@@ -74,6 +74,9 @@ class DashboardContentHeader extends Component
             case 'openAssetLoanDrawer':
             case 'openMaintenanceDrawer':
             case 'openVehicleTaxDrawer':
+            case 'openInsuranceDrawer':
+            case 'openInsurancePolicyDrawer':
+            case 'openInsuranceClaimDrawer':
                 $this->dispatch('open-drawer');
                 break;
             case 'openVehicleOdometerDrawer':
