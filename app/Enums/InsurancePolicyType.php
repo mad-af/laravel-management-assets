@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum VehicleInsurancePolicyType: string
+enum InsurancePolicyType: string
 {
     case COMPREHENSIVE = 'comprehensive';
     case TLO = 'tlo';

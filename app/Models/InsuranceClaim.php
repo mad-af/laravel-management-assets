@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
-use App\Enums\VehicleInsuranceClaimIncidentType;
-use App\Enums\VehicleInsuranceClaimSource;
-use App\Enums\VehicleInsuranceClaimStatus;
+use App\Enums\InsuranceClaimIncidentType;
+use App\Enums\InsuranceClaimSource;
+use App\Enums\InsuranceClaimStatus;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class VehicleInsuranceClaim extends Model
+class InsuranceClaim extends Model
 {
     use HasUuids;
 
@@ -32,9 +32,9 @@ class VehicleInsuranceClaim extends Model
 
     protected $casts = [
         'incident_date' => 'date',
-        'incident_type' => VehicleInsuranceClaimIncidentType::class,
-        'source' => VehicleInsuranceClaimSource::class,
-        'status' => VehicleInsuranceClaimStatus::class,
+        'incident_type' => InsuranceClaimIncidentType::class,
+        'source' => InsuranceClaimSource::class,
+        'status' => InsuranceClaimStatus::class,
         'claim_documents' => 'array',
         'amount_approved' => 'decimal:2',
         'amount_paid' => 'decimal:2',
@@ -42,7 +42,7 @@ class VehicleInsuranceClaim extends Model
 
     public function policy(): BelongsTo
     {
-        return $this->belongsTo(VehicleInsurancePolicy::class, 'policy_id');
+        return $this->belongsTo(InsurancePolicy::class, 'policy_id');
     }
 
     public function asset(): BelongsTo

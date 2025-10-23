@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('vehicle_insurance_claims', function (Blueprint $table) {
+        Schema::create('insurance_claims', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('policy_id');
             $table->uuid('asset_id');
@@ -29,7 +29,7 @@ return new class extends Migration
             $table->uuid('created_by');
             $table->timestamps();
 
-            $table->foreign('policy_id')->references('id')->on('vehicle_insurance_policies')->onDelete('cascade');
+            $table->foreign('policy_id')->references('id')->on('insurance_policies')->onDelete('cascade');
             $table->foreign('asset_id')->references('id')->on('assets')->onDelete('cascade');
             $table->foreign('asset_maintenance_id')->references('id')->on('asset_maintenances')->onDelete('set null');
             $table->foreign('created_by')->references('id')->on('users')->onDelete('restrict');
@@ -41,6 +41,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('vehicle_insurance_claims');
+        Schema::dropIfExists('insurance_claims');
     }
 };

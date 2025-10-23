@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum VehicleInsuranceClaimIncidentType: string
+enum InsuranceClaimIncidentType: string
 {
     case COLLISION = 'collision';
     case THEFT = 'theft';

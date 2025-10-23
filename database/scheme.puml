@@ -240,7 +240,7 @@ table(insurances) {
   updated_at : TIMESTAMP
 }
 
-table(vehicle_insurance_policies) {
+table(insurance_policies) {
   pk(id) : UUID
   fk(asset_id) : UUID
   fk(insurance_id) : UUID
@@ -254,7 +254,7 @@ table(vehicle_insurance_policies) {
   updated_at : TIMESTAMP
 }
 
-table(vehicle_insurance_claims) {
+table(insurance_claims) {
   pk(id) : UUID
   fk(policy_id) : UUID
   fk(asset_id) : UUID
@@ -279,13 +279,13 @@ table(vehicle_insurance_claims) {
 }
 
 ' Notes & Constraints
-note right of vehicle_insurance_policies
+note right of insurance_policies
   - Only one ACTIVE policy per asset with non-overlapping coverage windows.
   - Enforce via application logic and/or partial unique index on (asset_id) where status='active'.
   - start_date < end_date.
 end note
 
-note right of vehicle_insurance_claims
+note right of insurance_claims
   - Documents simplified as JSON array on the claim record (keep it simple; no join table).
   - Disbursement fields embedded on the claim for straightforward flow.
   - Keep high-level claim.status; use disb_status only for payout state.
@@ -332,11 +332,11 @@ assets ||--o{ vehicle_tax_types : "has many"
 vehicle_tax_types ||--o{ vehicle_tax_histories : "has many"
 
 ' = Insurance Relationships =
-assets ||--o{ vehicle_insurance_policies : "has many"
-insurance_providers ||--o{ vehicle_insurance_policies : "provides"
-vehicle_insurance_policies ||--o{ vehicle_insurance_claims : "claims"
-assets ||--o{ vehicle_insurance_claims : "has many"
-asset_maintenances ||--o{ vehicle_insurance_claims : "source (if maintenance)"
-users ||--o{ vehicle_insurance_claims : "created_by"
+assets ||--o{ insurance_policies : "has many"
+insurance_providers ||--o{ insurance_policies : "provides"
+insurance_policies ||--o{ insurance_claims : "claims"
+assets ||--o{ insurance_claims : "has many"
+asset_maintenances ||--o{ insurance_claims : "source (if maintenance)"
+users ||--o{ insurance_claims : "created_by"
 
 @enduml

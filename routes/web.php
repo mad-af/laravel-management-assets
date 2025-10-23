@@ -12,6 +12,9 @@ use App\Http\Controllers\BranchController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\InsuranceClaimController;
+use App\Http\Controllers\InsuranceController;
+use App\Http\Controllers\InsurancePolicyController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VehicleController;
@@ -141,6 +144,15 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
     Route::get('maintenances/{maintenance}/edit', [MaintenanceController::class, 'edit'])->name('maintenances.edit');
     Route::put('maintenances/{maintenance}', [MaintenanceController::class, 'update'])->name('maintenances.update');
     Route::get('maintenances/{maintenance}/pdf', [MaintenanceController::class, 'generatePDF'])->name('maintenances.pdf');
+
+    // Insurance Routes
+    Route::resource('insurances', InsuranceController::class);
+
+    // Insurance Policy Routes
+    Route::resource('insurance-policies', InsurancePolicyController::class);
+
+    // Insurance Claim Routes
+    Route::resource('insurance-claims', InsuranceClaimController::class);
 
 });
 

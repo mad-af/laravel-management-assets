@@ -3,13 +3,13 @@
 namespace App\Models;
 
 use App\Enums\InsuranceStatus;
-use App\Enums\VehicleInsurancePolicyType;
+use App\Enums\InsurancePolicyType;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class VehicleInsurancePolicy extends Model
+class InsurancePolicy extends Model
 {
     use HasUuids;
 
@@ -25,7 +25,7 @@ class VehicleInsurancePolicy extends Model
 
     protected $casts = [
         'start_date' => 'date',
-        'policy_type' => VehicleInsurancePolicyType::class,
+        'policy_type' => InsurancePolicyType::class,
         'status' => InsuranceStatus::class,
     ];
 
@@ -41,6 +41,6 @@ class VehicleInsurancePolicy extends Model
 
     public function claims(): HasMany
     {
-        return $this->hasMany(VehicleInsuranceClaim::class, 'policy_id');
+        return $this->hasMany(InsuranceClaim::class, 'policy_id');
     }
 }

@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('vehicle_insurance_policies', function (Blueprint $table) {
+        Schema::create('insurance_policies', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('asset_id');
             $table->uuid('insurance_id');
@@ -32,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('vehicle_insurance_policies');
+        Schema::dropIfExists('insurance_policies');
     }
 };

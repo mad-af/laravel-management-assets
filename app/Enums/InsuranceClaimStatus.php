@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum VehicleInsuranceClaimStatus: string
+enum InsuranceClaimStatus: string
 {
     case DRAFT = 'draft';
     case SUBMITTED = 'submitted';

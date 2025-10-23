@@ -61,12 +61,12 @@
             'label' => 'Asuransi',
             'children' => [
                 [
-                    'route' => 'maintenances.index',
+                    'route' => 'insurance-policies.index',
                     'icon' => 'o-briefcase',
-                    'label' => 'Daftar Asuransi',
+                    'label' => 'Daftar Polis Asuransi',
                 ],
                 [
-                    'route' => 'maintenances.index',
+                    'route' => 'insurance-claims.index',
                     'icon' => 'o-wallet',
                     'label' => 'Klaim Asuransi',
                 ],
@@ -106,7 +106,7 @@
             'label' => 'Kategori'
         ],
         [
-            'route' => 'categories.index',
+            'route' => 'insurances.index',
             'icon' => 'o-building-library',
             'label' => 'Asuransi Provider',
         ],

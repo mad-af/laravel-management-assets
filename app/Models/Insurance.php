@@ -20,8 +20,8 @@ class Insurance extends Model
     /**
      * Get the policies provided by this insurance.
      */
-    public function vehicleInsurancePolicies(): HasMany
+    public function InsurancePolicies(): HasMany
     {
-        return $this->hasMany(VehicleInsurancePolicy::class);
+        return $this->hasMany(InsurancePolicy::class);
     }
 }
