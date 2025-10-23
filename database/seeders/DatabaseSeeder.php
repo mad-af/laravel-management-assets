@@ -13,12 +13,13 @@ class DatabaseSeeder extends Seeder
     {
         // Run seeders in proper order to maintain referential integrity
         // Production
-        $seeder = [StarterUserSeeder::class, CategorySeeder::class];
+        $seeder = [StarterUserSeeder::class, CategorySeeder::class, InsuranceSeeder::class];
         // Development
         if (! app()->environment('production')) {
             $seeder = [
                 CompanySeeder::class,
                 CategorySeeder::class,
+                InsuranceSeeder::class,
                 UserSeeder::class,
                 BranchSeeder::class,
                 UserCompanySeeder::class,
