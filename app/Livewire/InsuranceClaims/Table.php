@@ -2,22 +2,24 @@
 
 namespace App\Livewire\InsuranceClaims;
 
-use App\Models\Category;
+use App\Models\InsuranceClaim;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Mary\Traits\Toast;
 
 class Table extends Component
 {
-    use WithPagination;
+    use Toast, WithPagination;
 
     public $search = '';
+
     public $statusFilter = '';
 
     protected $queryString = ['search', 'statusFilter'];
 
     protected $listeners = [
-        'category-saved' => '$refresh',
-        'category-deleted' => '$refresh',
+        'claim-saved' => '$refresh',
+        'claim-deleted' => '$refresh',
     ];
 
     public function updatingSearch()
@@ -35,26 +37,44 @@ class Table extends Component
         $this->dispatch('open-drawer');
     }
 
-    public function openEditDrawer($categoryId)
+    public function openEditDrawer($claimId)
     {
-        $this->dispatch('open-edit-drawer', categoryId: $categoryId);
+        $this->dispatch('open-edit-drawer', claimId: $claimId);
+    }
+
+    public function delete($claimId)
+    {
+        $claim = InsuranceClaim::find($claimId);
+        if ($claim) {
+            $claim->delete();
+            $this->success('Klaim berhasil dihapus');
+            $this->dispatch('claim-deleted');
+        }
     }
 
     public function render()
     {
-        $categories = Category::query()
+        $claims = InsuranceClaim::query()
+            ->with(['policy.insurance', 'asset'])
             ->when($this->search, function ($query) {
-                $query->where('name', 'like', '%' . $this->search . '%');
+                $search = '%'.$this->search.'%';
+                $query->where('claim_no', 'like', $search)
+                    ->orWhereHas('policy', function ($q) use ($search) {
+                        $q->where('policy_no', 'like', $search)
+                            ->orWhereHas('insurance', function ($iq) use ($search) {
+                                $iq->where('name', 'like', $search);
+                            });
+                    })
+                    ->orWhereHas('asset', function ($aq) use ($search) {
+                        $aq->where('name', 'like', $search);
+                    });
             })
-            ->when($this->statusFilter === 'active', function ($query) {
-                $query->where('is_active', true);
-            })
-            ->when($this->statusFilter === 'inactive', function ($query) {
-                $query->where('is_active', false);
+            ->when($this->statusFilter, function ($query) {
+                $query->where('status', $this->statusFilter);
             })
             ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        return view('livewire.categories.table', compact('categories'));
+        return view('livewire.insurance-claims.table', compact('claims'));
     }
 }

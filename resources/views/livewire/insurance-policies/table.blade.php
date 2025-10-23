@@ -4,11 +4,11 @@
         <div class="flex flex-col gap-4 mb-4 sm:flex-row">
             {{-- Search Input --}}
             <div class="flex-1">
-                <x-input wire:model.live="search" placeholder="Cari kategori..." icon="o-magnifying-glass"
+                <x-input wire:model.live="search" placeholder="Cari polis..." icon="o-magnifying-glass"
                     class="input-sm" />
             </div>
 
-            {{-- Filter Dropdown --}}
+            {{-- Filter Dropdown & Add Button --}}
             <div class="flex gap-2">
                 <x-dropdown>
                     <x-slot:trigger>
@@ -21,6 +21,8 @@
                     <x-menu-item title="Aktif" wire:click="$set('statusFilter', 'active')" />
                     <x-menu-item title="Tidak Aktif" wire:click="$set('statusFilter', 'inactive')" />
                 </x-dropdown>
+
+                <x-button icon="o-plus" class="btn-sm" wire:click="openDrawer">Tambah</x-button>
             </div>
         </div>
 
@@ -28,44 +30,61 @@
         <div>
             @php
                 $headers = [
-                    ['key' => 'name', 'label' => 'Kategori'],
-                    ['key' => 'is_active', 'label' => 'Status'],
-                    ['key' => 'created_at', 'label' => 'Dibuat'],
+                    ['key' => 'policy_no', 'label' => 'No Polis'],
+                    ['key' => 'insurance', 'label' => 'Provider'],
+                    ['key' => 'asset', 'label' => 'Aset'],
+                    ['key' => 'policy_type', 'label' => 'Tipe Polis'],
+                    ['key' => 'start_date', 'label' => 'Mulai'],
+                    ['key' => 'status', 'label' => 'Status'],
                     ['key' => 'actions', 'label' => 'Aksi', 'class' => 'w-20'],
                 ];
             @endphp
-            <x-table :headers="$headers" :rows="$categories" striped show-empty-text>
-                @scope('cell_name', $category)
-                <span class="font-medium">{{ $category->name }}</span>
+            <x-table :headers="$headers" :rows="$policies" striped show-empty-text>
+                @scope('cell_policy_no', $policy)
+                <span class="font-medium">{{ $policy->policy_no }}</span>
                 @endscope
 
+                @scope('cell_insurance', $policy)
+                {{ $policy->insurance->name ?? '-' }}
+                @endscope
 
+                @scope('cell_asset', $policy)
+                {{ $policy->asset->name ?? '-' }}
+                @endscope
 
-                @scope('cell_is_active', $category)
-                @if($category->is_active)
-                    <x-badge value="Aktif" class="badge-success badge-sm" />
+                @scope('cell_policy_type', $policy)
+                @if($policy->policy_type)
+                    <x-badge :value="$policy->policy_type->label()" :class="'badge-' . $policy->policy_type->color() . ' badge-sm'" />
                 @else
-                    <x-badge value="Tidak Aktif" class="badge-error badge-sm" />
+                    -
                 @endif
                 @endscope
 
-                @scope('cell_created_at', $category)
-                {{ $category->created_at->format('d M Y') }}
+                @scope('cell_start_date', $policy)
+                {{ optional($policy->start_date)->format('d M Y') }}
                 @endscope
 
-                @scope('cell_actions', $category)
-                <x-action-dropdown :model="$category">
+                @scope('cell_status', $policy)
+                @if($policy->status)
+                    <x-badge :value="$policy->status->label()" :class="'badge-' . $policy->status->color() . ' badge-sm'" />
+                @else
+                    -
+                @endif
+                @endscope
+
+                @scope('cell_actions', $policy)
+                <x-action-dropdown :model="$policy">
                     <li>
-                        <button wire:click="openEditDrawer('{{ $category->id }}')"
+                        <button wire:click="openEditDrawer('{{ $policy->id }}')"
                             class="flex gap-2 items-center p-2 text-sm rounded"
-                            onclick="document.getElementById('dropdown-menu-{{ $category->id }}').hidePopover()">
+                            onclick="document.getElementById('dropdown-menu-{{ $policy->id }}').hidePopover()">
                             <x-icon name="o-pencil" class="w-4 h-4" />
                             Edit
                         </button>
                     </li>
                     <li>
-                        <button wire:click="delete('{{ $category->id }}')"
-                            wire:confirm="Are you sure you want to delete this category?"
+                        <button wire:click="delete('{{ $policy->id }}')"
+                            wire:confirm="Apakah Anda yakin ingin menghapus polis ini?"
                             class="flex gap-2 items-center p-2 text-sm rounded text-error">
                             <x-icon name="o-trash" class="w-4 h-4" />
                             Delete
@@ -77,16 +96,15 @@
         </div>
 
         {{-- Pagination Info --}}
-        @if($categories->count() > 0)
+        @if($policies->count() > 0)
             <div class="flex flex-col gap-4 mt-4 lg:flex-row lg:items-center lg:justify-between">
                 <div class="text-sm text-base-content/70">
-                    Menampilkan {{ $categories->firstItem() }}-{{ $categories->lastItem() }} dari {{ $categories->total() }}
-                    kategori
+                    Menampilkan {{ $policies->firstItem() }}-{{ $policies->lastItem() }} dari {{ $policies->total() }} polis
                 </div>
 
                 {{-- Livewire Pagination --}}
                 <div class="mt-4">
-                    {{ $categories->links() }}
+                    {{ $policies->links() }}
                 </div>
             </div>
         @endif

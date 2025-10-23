@@ -2,25 +2,26 @@
 
 namespace App\Livewire\InsurancePolicies;
 
-use Livewire\Component;
 use Livewire\Attributes\Url;
+use Livewire\Component;
 
 class Drawer extends Component
 {
-    #[Url(as: 'action')]       // ?action=create|edit
+    #[Url(as: 'action')] // ?action=create|edit
     public ?string $action = null;
 
-    #[Url(as: 'category_id')]  // ?category_id=123
-    public ?string $category_id = null;
+    #[Url(as: 'policy_id')] // ?policy_id=123
+    public ?string $policy_id = null;
 
     public bool $showDrawer = false;
-    public ?string $editingCategoryId = null;
+
+    public ?string $editingPolicyId = null;
 
     protected $listeners = [
         'close-drawer' => 'closeDrawer',
         'open-drawer' => 'openDrawer',
         'open-edit-drawer' => 'openEditDrawer',
-        'category-saved' => 'closeDrawer',
+        'policy-saved' => 'closeDrawer',
     ];
 
     public function mount()
@@ -34,7 +35,7 @@ class Drawer extends Component
         $this->applyActionFromUrl();
     }
 
-    public function updatedCategoryId()
+    public function updatedPolicyId()
     {
         $this->applyActionFromUrl();
     }
@@ -43,25 +44,25 @@ class Drawer extends Component
     {
         if ($this->action === 'create') {
             $this->showDrawer = true;
-            $this->editingCategoryId = null;
-        } elseif ($this->action === 'edit' && $this->category_id) {
-            $this->showDrawer   = true;
-            $this->editingCategoryId = $this->category_id;
+            $this->editingPolicyId = null;
+        } elseif ($this->action === 'edit' && $this->policy_id) {
+            $this->showDrawer = true;
+            $this->editingPolicyId = $this->policy_id;
         } // else: biarkan state tetap (jangan auto-tutup tiap update)
     }
 
-    public function openEditDrawer($categoryId)
+    public function openEditDrawer($policyId)
     {
         $this->action = 'edit';
-        $this->category_id = $categoryId;
+        $this->policy_id = $policyId;
         $this->applyActionFromUrl();
     }
 
-    public function openDrawer($categoryId = null)
+    public function openDrawer($policyId = null)
     {
-        if ($categoryId) {
+        if ($policyId) {
             $this->action = 'edit';
-            $this->category_id = $categoryId;
+            $this->policy_id = $policyId;
         } else {
             $this->action = 'create';
         }
@@ -71,27 +72,27 @@ class Drawer extends Component
     public function closeDrawer()
     {
         $this->showDrawer = false;
-        $this->editingCategoryId = null;
+        $this->editingPolicyId = null;
         $this->dispatch('resetForm');
 
         // hapus query di URL (Url-bound akan pushState)
         $this->action = null;
-        $this->category_id = null;
+        $this->policy_id = null;
     }
 
-    public function editCategory($categoryId)
+    public function editPolicy($policyId)
     {
-        $this->openEditDrawer($categoryId);
+        $this->openEditDrawer($policyId);
         $this->showDrawer = true;
     }
 
-    public function handleCategorySaved()
+    public function handlePolicySaved()
     {
         $this->closeDrawer();
     }
 
     public function render()
     {
-        return view('livewire.categories.drawer');
+        return view('livewire.insurance-policies.drawer');
     }
 }

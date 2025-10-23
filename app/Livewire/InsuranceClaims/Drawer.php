@@ -2,25 +2,26 @@
 
 namespace App\Livewire\InsuranceClaims;
 
-use Livewire\Component;
 use Livewire\Attributes\Url;
+use Livewire\Component;
 
 class Drawer extends Component
 {
-    #[Url(as: 'action')]       // ?action=create|edit
+    #[Url(as: 'action')] // ?action=create|edit
     public ?string $action = null;
 
-    #[Url(as: 'category_id')]  // ?category_id=123
-    public ?string $category_id = null;
+    #[Url(as: 'claim_id')] // ?claim_id=123
+    public ?string $claim_id = null;
 
     public bool $showDrawer = false;
-    public ?string $editingCategoryId = null;
+
+    public ?string $editingClaimId = null;
 
     protected $listeners = [
         'close-drawer' => 'closeDrawer',
         'open-drawer' => 'openDrawer',
         'open-edit-drawer' => 'openEditDrawer',
-        'category-saved' => 'closeDrawer',
+        'claim-saved' => 'closeDrawer',
     ];
 
     public function mount()
@@ -34,7 +35,7 @@ class Drawer extends Component
         $this->applyActionFromUrl();
     }
 
-    public function updatedCategoryId()
+    public function updatedClaimId()
     {
         $this->applyActionFromUrl();
     }
@@ -43,25 +44,25 @@ class Drawer extends Component
     {
         if ($this->action === 'create') {
             $this->showDrawer = true;
-            $this->editingCategoryId = null;
-        } elseif ($this->action === 'edit' && $this->category_id) {
-            $this->showDrawer   = true;
-            $this->editingCategoryId = $this->category_id;
+            $this->editingClaimId = null;
+        } elseif ($this->action === 'edit' && $this->claim_id) {
+            $this->showDrawer = true;
+            $this->editingClaimId = $this->claim_id;
         } // else: biarkan state tetap (jangan auto-tutup tiap update)
     }
 
-    public function openEditDrawer($categoryId)
+    public function openEditDrawer($claimId)
     {
         $this->action = 'edit';
-        $this->category_id = $categoryId;
+        $this->claim_id = $claimId;
         $this->applyActionFromUrl();
     }
 
-    public function openDrawer($categoryId = null)
+    public function openDrawer($claimId = null)
     {
-        if ($categoryId) {
+        if ($claimId) {
             $this->action = 'edit';
-            $this->category_id = $categoryId;
+            $this->claim_id = $claimId;
         } else {
             $this->action = 'create';
         }
@@ -71,27 +72,27 @@ class Drawer extends Component
     public function closeDrawer()
     {
         $this->showDrawer = false;
-        $this->editingCategoryId = null;
+        $this->editingClaimId = null;
         $this->dispatch('resetForm');
 
         // hapus query di URL (Url-bound akan pushState)
         $this->action = null;
-        $this->category_id = null;
+        $this->claim_id = null;
     }
 
-    public function editCategory($categoryId)
+    public function editClaim($claimId)
     {
-        $this->openEditDrawer($categoryId);
+        $this->openEditDrawer($claimId);
         $this->showDrawer = true;
     }
 
-    public function handleCategorySaved()
+    public function handleClaimSaved()
     {
         $this->closeDrawer();
     }
 
     public function render()
     {
-        return view('livewire.categories.drawer');
+        return view('livewire.insurance-claims.drawer');
     }
 }

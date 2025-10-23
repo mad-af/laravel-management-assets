@@ -1,17 +1,47 @@
 <form wire:submit="save" class="space-y-4">
-    <!-- Category Name -->
+    <!-- Asset -->
     <div>
-        <x-input label="Nama Kategori" wire:model="name" placeholder="Masukkan nama kategori" class="input-sm" required />
+        <x-select label="Asset" placeholder="Pilih asset" wire:model.live="asset_id" :options="$assets"
+            option-value="id" option-label="name" class="select-sm" required />
+    </div>
+
+    <!-- Provider -->
+    <div>
+        <x-select label="Provider Asuransi" placeholder="Pilih provider" wire:model.live="insurance_id" :options="$insurances"
+            option-value="id" option-label="name" class="select-sm" required />
+    </div>
+
+    <!-- Policy Number -->
+    <div>
+        <x-input label="No Polis" wire:model="policy_no" placeholder="Masukkan nomor polis" class="input-sm" required />
+    </div>
+
+    <!-- Policy Type -->
+    <div>
+        <x-select label="Tipe Polis" wire:model="policy_type" :options="$policyTypes" option-value="value" option-label="label"
+            placeholder="Pilih tipe polis" class="select-sm" required />
+    </div>
+
+    <!-- Start Date -->
+    <div>
+        <x-input label="Tanggal Mulai" wire:model="start_date" type="date" class="input-sm" required />
     </div>
 
     <!-- Status -->
     <div>
-        <x-checkbox label="Aktif" wire:model="is_active" class="text-sm checkbox-sm" />
+        <x-select label="Status" wire:model="status" :options="$statuses" option-value="value" option-label="label"
+            placeholder="Pilih status" class="select-sm" required />
+    </div>
+
+    <!-- Notes -->
+    <div>
+        <x-textarea label="Catatan" wire:model="notes" placeholder="Masukkan catatan (opsional)" rows="3"
+            class="textarea-sm" />
     </div>
 
     <!-- Submit Button -->
     <div class="flex gap-2 justify-end pt-4">
-        <x-button label="Batal" class="btn-ghost" wire:click="$dispatch('close-drawer')" />
-        <x-button label="{{ $isEdit ? 'Update' : 'Simpan' }}" class="btn-primary" type="submit" spinner="save" />
+        <x-button label="Batal" class="btn-ghost btn-sm" wire:click="$dispatch('close-drawer')" />
+        <x-button label="{{ $isEdit ? 'Update' : 'Simpan' }}" class="btn-primary btn-sm" type="submit" spinner="save" />
     </div>
 </form>
