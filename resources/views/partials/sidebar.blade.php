@@ -56,6 +56,23 @@
             ]
         ],
         [
+            'type' => 'submenu',
+            'icon' => 'o-briefcase',
+            'label' => 'Asuransi',
+            'children' => [
+                [
+                    'route' => 'maintenances.index',
+                    'icon' => 'o-briefcase',
+                    'label' => 'Daftar Asuransi',
+                ],
+                [
+                    'route' => 'maintenances.index',
+                    'icon' => 'o-wallet',
+                    'label' => 'Klaim Asuransi',
+                ],
+            ]
+        ],
+        [
             'route' => 'maintenances.index',
             'icon' => 'o-wrench-screwdriver',
             'label' => 'Perawatan',
@@ -87,6 +104,11 @@
             'route' => 'categories.index',
             'icon' => 'o-folder',
             'label' => 'Kategori'
+        ],
+        [
+            'route' => 'categories.index',
+            'icon' => 'o-building-library',
+            'label' => 'Asuransi Provider',
         ],
     ];
 @endphp
