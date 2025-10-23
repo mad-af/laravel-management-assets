@@ -227,6 +227,69 @@ table(vehicle_tax_histories) {
 }
 
 ' ==========================
+' Insurance (Vehicle) module
+' ==========================
+
+table(insurances) {
+  pk(id) : UUID
+  name : VARCHAR
+  phone : VARCHAR [NULL]
+  email : VARCHAR [NULL]
+  address : TEXT [NULL]
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+table(vehicle_insurance_policies) {
+  pk(id) : UUID
+  fk(asset_id) : UUID
+  fk(insurance_id) : UUID
+  policy_no : VARCHAR [UNIQUE]
+  policy_type : ENUM(comprehensive, tlo, tpft, tpo) [DEFAULT: comprehensive]
+  start_date : DATE
+  end_date : DATE
+  status : ENUM(active, inactive) [DEFAULT: active]
+  notes : TEXT [NULL]
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+table(vehicle_insurance_claims) {
+  pk(id) : UUID
+  fk(policy_id) : UUID
+  fk(asset_id) : UUID
+  claim_no : VARCHAR [UNIQUE]
+  incident_date : DATE
+  incident_type : ENUM(collision, theft, flood, fire, other) [DEFAULT: other]
+  description : TEXT [NULL]
+  source : ENUM(manual, maintenance) [DEFAULT: manual]
+  fk(asset_maintenance_id) : UUID [NULL]
+  status : ENUM(draft, submitted, approved, rejected) [DEFAULT: draft]
+  
+  ' ==== Simplified: merge Documents + Disbursement into Claims ====
+  claim_documents : JSON [NULL] [DEFAULT: []] ' array of {doc_type, file_path, description}
+  
+  amount_approved : DECIMAL(15,2) [NULL]
+  amount_paid : DECIMAL(15,2)
+
+  fk(created_by) : UUID
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
+' Notes & Constraints
+note right of vehicle_insurance_policies
+  - Only one ACTIVE policy per asset with non-overlapping coverage windows.
+  - Enforce via application logic and/or partial unique index on (asset_id) where status='active'.
+  - start_date < end_date.
+end note
+
+note right of vehicle_insurance_claims
+  - Documents simplified as JSON array on the claim record (keep it simple; no join table).
+  - Disbursement fields embedded on the claim for straightforward flow.
+  - Keep high-level claim.status; use disb_status only for payout state.
+end note
+
 ' Relationships
 ' ==========================
 companies ||--o{ categories : "has many"
@@ -266,5 +329,13 @@ assets ||--|| vehicle_profiles : "has one"
 assets ||--o{ vehicle_odometer_logs : "has many"
 assets ||--o{ vehicle_tax_types : "has many"
 vehicle_tax_types ||--o{ vehicle_tax_histories : "has many"
+
+' = Insurance Relationships =
+assets ||--o{ vehicle_insurance_policies : "has many"
+insurance_providers ||--o{ vehicle_insurance_policies : "provides"
+vehicle_insurance_policies ||--o{ vehicle_insurance_claims : "claims"
+assets ||--o{ vehicle_insurance_claims : "has many"
+asset_maintenances ||--o{ vehicle_insurance_claims : "source (if maintenance)"
+users ||--o{ vehicle_insurance_claims : "created_by"
 
 @enduml
