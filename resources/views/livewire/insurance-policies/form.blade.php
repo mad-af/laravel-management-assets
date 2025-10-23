@@ -27,6 +27,11 @@
         <x-input label="Tanggal Mulai" wire:model="start_date" type="date" class="input-sm" required />
     </div>
 
+    <!-- End Date -->
+    <div>
+        <x-input label="Tanggal Selesai" wire:model="end_date" type="date" class="input-sm" required />
+    </div>
+
     <!-- Status -->
     <div>
         <x-select label="Status" wire:model="status" :options="$statuses" option-value="value" option-label="label"

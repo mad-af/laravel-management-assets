@@ -36,7 +36,7 @@ class Asset extends Model
         'purchase_date',
         'description',
         'last_seen_at',
-        'serial_number'
+        'serial_number',
     ];
 
     protected $casts = [
@@ -169,6 +169,16 @@ class Asset extends Model
     public function insurancePolicies(): HasMany
     {
         return $this->hasMany(InsurancePolicy::class);
+    }
+
+    /**
+     * Get the latest active insurance policy for the asset.
+     */
+    public function latestActiveInsurancePolicy(): HasOne
+    {
+        return $this->hasOne(InsurancePolicy::class)
+            ->where('status', \App\Enums\InsuranceStatus::ACTIVE)
+            ->latestOfMany('start_date');
     }
 
     /**

@@ -26,6 +26,8 @@ class Form extends Component
 
     public $start_date = '';
 
+    public $end_date = '';
+
     public $status = '';
 
     public $notes = '';
@@ -52,6 +54,7 @@ class Form extends Component
             'policy_no' => 'required|string|max:255',
             'policy_type' => 'required',
             'start_date' => 'required|date',
+            'end_date' => 'required|date',
             'status' => 'required',
             'notes' => 'nullable|string',
         ];
@@ -86,6 +89,7 @@ class Form extends Component
                 $this->policy_no = $policy->policy_no;
                 $this->policy_type = $policy->policy_type->value;
                 $this->start_date = optional($policy->start_date)->format('Y-m-d');
+                $this->end_date = optional($policy->end_date)->format('Y-m-d');
                 $this->status = $policy->status->value;
                 $this->notes = $policy->notes;
             }
@@ -105,6 +109,7 @@ class Form extends Component
                     'policy_no' => $this->policy_no,
                     'policy_type' => $this->policy_type,
                     'start_date' => $this->start_date,
+                    'end_date' => $this->end_date,
                     'status' => $this->status,
                     'notes' => $this->notes,
                 ]);
@@ -117,6 +122,7 @@ class Form extends Component
                     'policy_no' => $this->policy_no,
                     'policy_type' => $this->policy_type,
                     'start_date' => $this->start_date,
+                    'end_date' => $this->end_date,
                     'status' => $this->status,
                     'notes' => $this->notes,
                 ]);
@@ -136,6 +142,7 @@ class Form extends Component
         $this->policy_no = '';
         $this->policy_type = '';
         $this->start_date = '';
+        $this->end_date = '';
         $this->status = '';
         $this->notes = '';
         $this->resetValidation();

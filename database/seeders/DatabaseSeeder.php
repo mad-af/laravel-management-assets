@@ -25,6 +25,8 @@ class DatabaseSeeder extends Seeder
                 UserCompanySeeder::class,
                 EmployeeSeeder::class,
                 AssetSeeder::class,
+                InsurancePolicySeeder::class,
+                InsuranceClaimSeeder::class,
                 AssetTransferSeeder::class,
                 AssetLoanSeeder::class,
                 AssetLogSeeder::class,

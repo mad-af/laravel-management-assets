@@ -30,81 +30,88 @@
         <div>
             @php
                 $headers = [
-                    ['key' => 'policy_no', 'label' => 'No Polis'],
-                    ['key' => 'insurance', 'label' => 'Provider'],
                     ['key' => 'asset', 'label' => 'Aset'],
+                    ['key' => 'insurance', 'label' => 'Provider'],
+                    ['key' => 'policy_no', 'label' => 'No Polis'],
                     ['key' => 'policy_type', 'label' => 'Tipe Polis'],
                     ['key' => 'start_date', 'label' => 'Mulai'],
                     ['key' => 'status', 'label' => 'Status'],
                     ['key' => 'actions', 'label' => 'Aksi', 'class' => 'w-20'],
                 ];
             @endphp
-            <x-table :headers="$headers" :rows="$policies" striped show-empty-text>
-                @scope('cell_policy_no', $policy)
-                <span class="font-medium">{{ $policy->policy_no }}</span>
+            <x-table :headers="$headers" :rows="$assets" striped show-empty-text>
+                @scope('cell_asset', $asset)
+                <span class="font-medium">{{ $asset->name }}</span>
                 @endscope
 
-                @scope('cell_insurance', $policy)
-                {{ $policy->insurance->name ?? '-' }}
+                @scope('cell_insurance', $asset)
+                {{ optional($asset->latestActiveInsurancePolicy)->insurance->name ?? '-' }}
                 @endscope
 
-                @scope('cell_asset', $policy)
-                {{ $policy->asset->name ?? '-' }}
+                @scope('cell_policy_no', $asset)
+                {{ optional($asset->latestActiveInsurancePolicy)->policy_no ?? '-' }}
                 @endscope
 
-                @scope('cell_policy_type', $policy)
-                @if($policy->policy_type)
+                @scope('cell_policy_type', $asset)
+                @php $policy = $asset->latestActiveInsurancePolicy; @endphp
+                @if($policy && $policy->policy_type)
                     <x-badge :value="$policy->policy_type->label()" :class="'badge-' . $policy->policy_type->color() . ' badge-sm'" />
                 @else
                     -
                 @endif
                 @endscope
 
-                @scope('cell_start_date', $policy)
-                {{ optional($policy->start_date)->format('d M Y') }}
+                @scope('cell_start_date', $asset)
+                {{ optional(optional($asset->latestActiveInsurancePolicy)->start_date)->format('d M Y') }}
                 @endscope
 
-                @scope('cell_status', $policy)
-                @if($policy->status)
+                @scope('cell_status', $asset)
+                @php $policy = $asset->latestActiveInsurancePolicy; @endphp
+                @if($policy && $policy->status)
                     <x-badge :value="$policy->status->label()" :class="'badge-' . $policy->status->color() . ' badge-sm'" />
                 @else
                     -
                 @endif
                 @endscope
 
-                @scope('cell_actions', $policy)
-                <x-action-dropdown :model="$policy">
-                    <li>
-                        <button wire:click="openEditDrawer('{{ $policy->id }}')"
-                            class="flex gap-2 items-center p-2 text-sm rounded"
-                            onclick="document.getElementById('dropdown-menu-{{ $policy->id }}').hidePopover()">
-                            <x-icon name="o-pencil" class="w-4 h-4" />
-                            Edit
-                        </button>
-                    </li>
-                    <li>
-                        <button wire:click="delete('{{ $policy->id }}')"
-                            wire:confirm="Apakah Anda yakin ingin menghapus polis ini?"
-                            class="flex gap-2 items-center p-2 text-sm rounded text-error">
-                            <x-icon name="o-trash" class="w-4 h-4" />
-                            Delete
-                        </button>
-                    </li>
-                </x-action-dropdown>
+                @scope('cell_actions', $asset)
+                @php $policy = $asset->latestActiveInsurancePolicy; @endphp
+                @if($policy)
+                    <x-action-dropdown :model="$policy">
+                        <li>
+                            <button wire:click="openEditDrawer('{{ $policy->id }}')"
+                                class="flex gap-2 items-center p-2 text-sm rounded"
+                                onclick="document.getElementById('dropdown-menu-{{ $policy->id }}').hidePopover()">
+                                <x-icon name="o-pencil" class="w-4 h-4" />
+                                Edit
+                            </button>
+                        </li>
+                        <li>
+                            <button wire:click="delete('{{ $policy->id }}')"
+                                wire:confirm="Apakah Anda yakin ingin menghapus polis ini?"
+                                class="flex gap-2 items-center p-2 text-sm rounded text-error">
+                                <x-icon name="o-trash" class="w-4 h-4" />
+                                Delete
+                            </button>
+                        </li>
+                    </x-action-dropdown>
+                @else
+                    <div class="text-sm text-base-content/70">Tidak ada polis aktif</div>
+                @endif
                 @endscope
             </x-table>
         </div>
 
         {{-- Pagination Info --}}
-        @if($policies->count() > 0)
+        @if($assets->count() > 0)
             <div class="flex flex-col gap-4 mt-4 lg:flex-row lg:items-center lg:justify-between">
                 <div class="text-sm text-base-content/70">
-                    Menampilkan {{ $policies->firstItem() }}-{{ $policies->lastItem() }} dari {{ $policies->total() }} polis
+                    Menampilkan {{ $assets->firstItem() }}-{{ $assets->lastItem() }} dari {{ $assets->total() }} aset
                 </div>
 
                 {{-- Livewire Pagination --}}
                 <div class="mt-4">
-                    {{ $policies->links() }}
+                    {{ $assets->links() }}
                 </div>
             </div>
         @endif

@@ -19,6 +19,7 @@ class InsurancePolicy extends Model
         'policy_no',
         'policy_type',
         'start_date',
+        'end_date',
         'status',
         'notes',
     ];

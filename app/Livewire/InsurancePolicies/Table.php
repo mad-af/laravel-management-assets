@@ -3,6 +3,7 @@
 namespace App\Livewire\InsurancePolicies;
 
 use App\Enums\InsuranceStatus;
+use App\Models\Asset;
 use App\Models\InsurancePolicy;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -59,28 +60,32 @@ class Table extends Component
 
     public function render()
     {
-        $policies = InsurancePolicy::query()
-            ->with(['insurance', 'asset'])
+        $assets = Asset::query()
+            ->with(['latestActiveInsurancePolicy.insurance'])
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
-                    $q->where('policy_no', 'like', '%'.$this->search.'%')
-                        ->orWhereHas('insurance', function ($iq) {
-                            $iq->where('name', 'like', '%'.$this->search.'%');
-                        })
-                        ->orWhereHas('asset', function ($aq) {
-                            $aq->where('name', 'like', '%'.$this->search.'%');
+                    $q->where('name', 'like', '%'.$this->search.'%')
+                        ->orWhereHas('insurancePolicies', function ($pq) {
+                            $pq->where('policy_no', 'like', '%'.$this->search.'%')
+                                ->orWhereHas('insurance', function ($iq) {
+                                    $iq->where('name', 'like', '%'.$this->search.'%');
+                                });
                         });
                 });
             })
             ->when($this->statusFilter === InsuranceStatus::ACTIVE->value, function ($query) {
-                $query->where('status', InsuranceStatus::ACTIVE->value);
+                $query->whereHas('insurancePolicies', function ($q) {
+                    $q->where('status', InsuranceStatus::ACTIVE->value);
+                });
             })
             ->when($this->statusFilter === InsuranceStatus::INACTIVE->value, function ($query) {
-                $query->where('status', InsuranceStatus::INACTIVE->value);
+                $query->whereHas('insurancePolicies', function ($q) {
+                    $q->where('status', InsuranceStatus::INACTIVE->value);
+                });
             })
             ->orderBy('created_at', 'desc')
             ->paginate($this->perPage);
 
-        return view('livewire.insurance-policies.table', compact('policies'));
+        return view('livewire.insurance-policies.table', compact('assets'));
     }
 }

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('policy_no')->unique();
             $table->enum('policy_type', ['comprehensive', 'tlo', 'tpft', 'tpo'])->default('comprehensive');
             $table->date('start_date');
+            $table->date('end_date');
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->text('notes')->nullable();
             $table->timestamps();
