@@ -164,6 +164,14 @@ class Asset extends Model
     }
 
     /**
+     * Get the insurance policies for the asset.
+     */
+    public function insurancePolicies(): HasMany
+    {
+        return $this->hasMany(InsurancePolicy::class);
+    }
+
+    /**
      * Get the latest vehicle tax record.
      */
     public function isVehicle(): bool
