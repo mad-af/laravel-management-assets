@@ -177,8 +177,10 @@ class Asset extends Model
     public function latestActiveInsurancePolicy(): HasOne
     {
         return $this->hasOne(InsurancePolicy::class)
-            ->where('status', \App\Enums\InsuranceStatus::ACTIVE)
-            ->latestOfMany('start_date');
+            ->ofMany(
+                ['start_date' => 'max'],
+                
+            );
     }
 
     /**
@@ -268,6 +270,16 @@ class Asset extends Model
         $branchId = session_get(SessionKey::BranchId);
 
         return $query->where('branch_id', $branchId);
+    }
+
+    public function scopeWithInsurancePolicy(Builder $query): Builder
+    {
+        return $query->whereHas('insurancePolicies');
+    }
+
+    public function scopeWithoutInsurancePolicy(Builder $query): Builder
+    {
+        return $query->whereDoesntHave('insurancePolicies');
     }
 
     /**

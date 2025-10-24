@@ -26,6 +26,7 @@ class InsurancePolicy extends Model
 
     protected $casts = [
         'start_date' => 'date',
+        'end_date' => 'date',
         'policy_type' => InsurancePolicyType::class,
         'status' => InsuranceStatus::class,
     ];

@@ -21,8 +21,6 @@
                     <x-menu-item title="Aktif" wire:click="$set('statusFilter', 'active')" />
                     <x-menu-item title="Tidak Aktif" wire:click="$set('statusFilter', 'inactive')" />
                 </x-dropdown>
-
-                <x-button icon="o-plus" class="btn-sm" wire:click="openDrawer">Tambah</x-button>
             </div>
         </div>
 
@@ -34,18 +32,37 @@
                     ['key' => 'insurance', 'label' => 'Provider'],
                     ['key' => 'policy_no', 'label' => 'No Polis'],
                     ['key' => 'policy_type', 'label' => 'Tipe Polis'],
-                    ['key' => 'start_date', 'label' => 'Mulai'],
+                    ['key' => 'end_date', 'label' => 'Selesai'],
                     ['key' => 'status', 'label' => 'Status'],
                     ['key' => 'actions', 'label' => 'Aksi', 'class' => 'w-20'],
                 ];
             @endphp
             <x-table :headers="$headers" :rows="$assets" striped show-empty-text>
                 @scope('cell_asset', $asset)
-                <span class="font-medium">{{ $asset->name }}</span>
+                <div class="flex gap-2 items-center">
+                    @if (!$asset->image)
+                        <div
+                            class="flex justify-center items-center font-bold rounded-lg border-2 size-13 bg-base-300 border-base-100">
+                            <x-icon name="o-photo" class="w-6 h-6 text-base-content/60" />
+                        </div>
+                    @else
+                        <x-avatar :image="asset('storage/' . $asset->image)"
+                            class="!w-13 !rounded-lg !bg-base-300 !font-bold border-2 border-base-100">
+                        </x-avatar>
+                    @endif
+                    <div>
+                        <div class="font-mono text-xs truncate text-base-content/60">{{ $asset->code }}</div>
+                        <div class="font-medium">{{ $asset->name }}</div>
+                        <div class="text-xs whitespace-nowrap text-base-content/60">Tag: {{ $asset->tag_code }}</div>
+                    </div>
+                </div>
                 @endscope
 
                 @scope('cell_insurance', $asset)
-                {{ optional($asset->latestActiveInsurancePolicy)->insurance->name ?? '-' }}
+                <div class="tooltip" data-tip="{{ optional($asset->latestActiveInsurancePolicy)->insurance->name }}">
+                    <x-avatar placeholder="{{ strtoupper(substr(optional($asset->latestActiveInsurancePolicy)->insurance->name, 0, 2)) }}"
+                            class="!w-9 !rounded-lg !bg-primary !font-bold border-2 border-base-100" />
+                </div>
                 @endscope
 
                 @scope('cell_policy_no', $asset)
@@ -55,14 +72,21 @@
                 @scope('cell_policy_type', $asset)
                 @php $policy = $asset->latestActiveInsurancePolicy; @endphp
                 @if($policy && $policy->policy_type)
-                    <x-badge :value="$policy->policy_type->label()" :class="'badge-' . $policy->policy_type->color() . ' badge-sm'" />
+                    <x-badge :value="$policy->policy_type->label()" :class="'badge-' . $policy->policy_type->color() . ' badge-sm whitespace-nowrap badge-soft badge-outline'" />
                 @else
                     -
                 @endif
                 @endscope
 
-                @scope('cell_start_date', $asset)
-                {{ optional(optional($asset->latestActiveInsurancePolicy)->start_date)->format('d M Y') }}
+
+                @scope('cell_end_date', $asset)
+                @if ($asset->latestActiveInsurancePolicy)
+                    <span class="">
+                        {{ optional(value: optional($asset->latestActiveInsurancePolicy)->end_date)->format('d M Y') }}
+                    </span>
+                @else
+                    -
+                @endif
                 @endscope
 
                 @scope('cell_status', $asset)
@@ -78,22 +102,28 @@
                 @php $policy = $asset->latestActiveInsurancePolicy; @endphp
                 @if($policy)
                     <x-action-dropdown :model="$policy">
+                        @if ($asset->latestActiveInsurancePolicy->status->value == 'inactive')
                         <li>
                             <button wire:click="openEditDrawer('{{ $policy->id }}')"
                                 class="flex gap-2 items-center p-2 text-sm rounded"
                                 onclick="document.getElementById('dropdown-menu-{{ $policy->id }}').hidePopover()">
-                                <x-icon name="o-pencil" class="w-4 h-4" />
-                                Edit
+                                <x-icon name="o-plus" class="w-4 h-4" />
+                                Perbarui Polis
                             </button>
                         </li>
+                        @endif
+                        
+                        @if ($asset->latestActiveInsurancePolicy->status->value == 'active')
                         <li>
                             <button wire:click="delete('{{ $policy->id }}')"
                                 wire:confirm="Apakah Anda yakin ingin menghapus polis ini?"
-                                class="flex gap-2 items-center p-2 text-sm rounded text-error">
-                                <x-icon name="o-trash" class="w-4 h-4" />
-                                Delete
+                                class="flex gap-2 items-center p-2 text-sm rounded">
+                                <x-icon name="o-wallet" class="w-4 h-4" />
+                                Klaim Asuransi
                             </button>
                         </li>
+                        @endif
+                        
                     </x-action-dropdown>
                 @else
                     <div class="text-sm text-base-content/70">Tidak ada polis aktif</div>

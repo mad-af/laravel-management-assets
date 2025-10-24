@@ -25,7 +25,7 @@ enum InsurancePolicyType: string
             self::COMPREHENSIVE => 'primary',
             self::TLO => 'info',
             self::TPFT => 'warning',
-            self::TPO => 'neutral',
+            self::TPO => 'secondary',
         };
     }
 }

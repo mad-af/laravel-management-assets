@@ -61,6 +61,7 @@ class Table extends Component
     public function render()
     {
         $assets = Asset::query()
+            ->withInsurancePolicy()
             ->with(['latestActiveInsurancePolicy.insurance'])
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
