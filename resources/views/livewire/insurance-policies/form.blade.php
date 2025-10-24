@@ -1,8 +1,21 @@
 <form wire:submit="save" class="space-y-4">
     <!-- Asset -->
     <div>
-        <x-select label="Asset" placeholder="Pilih asset" wire:model.live="asset_id" :options="$assets"
-            option-value="id" option-label="name" class="select-sm" required />
+        <livewire:components.combobox
+            name="assets"
+            label="Asset"
+            placeholder="Pilih asset"
+            wire:model.live="asset_id"
+            :options="$assets"
+            option-value="id"
+            option-label="name"
+            option-sub-label="tag_code" 
+            option-meta="code" 
+            option-avatar="image"
+            class="select-sm"
+            :required="true"
+            :onfocusload="true"
+        />
     </div>
 
     <!-- Provider -->
@@ -30,12 +43,6 @@
     <!-- End Date -->
     <div>
         <x-input label="Tanggal Selesai" wire:model="end_date" type="date" class="input-sm" required />
-    </div>
-
-    <!-- Status -->
-    <div>
-        <x-select label="Status" wire:model="status" :options="$statuses" option-value="value" option-label="label"
-            placeholder="Pilih status" class="select-sm" required />
     </div>
 
     <!-- Notes -->

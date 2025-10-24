@@ -45,4 +45,14 @@ class InsurancePolicy extends Model
     {
         return $this->hasMany(InsuranceClaim::class, 'policy_id');
     }
+
+    protected static function boot() 
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            $model->status = InsuranceStatus::ACTIVE;
+        });
+
+    }
 }

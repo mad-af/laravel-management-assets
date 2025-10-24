@@ -104,7 +104,7 @@
                     <x-action-dropdown :model="$policy">
                         @if ($asset->latestActiveInsurancePolicy->status->value == 'inactive')
                         <li>
-                            <button wire:click="openEditDrawer('{{ $policy->id }}')"
+                            <button wire:click="openDrawer('{{ $policy->asset_id }}')"
                                 class="flex gap-2 items-center p-2 text-sm rounded"
                                 onclick="document.getElementById('dropdown-menu-{{ $policy->id }}').hidePopover()">
                                 <x-icon name="o-plus" class="w-4 h-4" />

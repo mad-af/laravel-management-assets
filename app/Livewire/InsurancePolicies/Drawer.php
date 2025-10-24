@@ -13,9 +13,14 @@ class Drawer extends Component
     #[Url(as: 'policy_id')] // ?policy_id=123
     public ?string $policy_id = null;
 
+    #[Url(as: 'asset_id')] // ?asset_id=123
+    public ?string $asset_id = null;
+
     public bool $showDrawer = false;
 
     public ?string $editingPolicyId = null;
+
+    public ?string $assetId = null;
 
     protected $listeners = [
         'close-drawer' => 'closeDrawer',
@@ -45,9 +50,11 @@ class Drawer extends Component
         if ($this->action === 'create') {
             $this->showDrawer = true;
             $this->editingPolicyId = null;
+            $this->assetId = $this->asset_id;
         } elseif ($this->action === 'edit' && $this->policy_id) {
             $this->showDrawer = true;
             $this->editingPolicyId = $this->policy_id;
+            $this->assetId = $this->asset_id;
         } // else: biarkan state tetap (jangan auto-tutup tiap update)
     }
 
@@ -58,8 +65,9 @@ class Drawer extends Component
         $this->applyActionFromUrl();
     }
 
-    public function openDrawer($policyId = null)
+    public function openDrawer($assetId = null, $policyId = null)
     {
+        $this->asset_id = $assetId;
         if ($policyId) {
             $this->action = 'edit';
             $this->policy_id = $policyId;

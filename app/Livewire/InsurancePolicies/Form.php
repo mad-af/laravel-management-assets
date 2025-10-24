@@ -3,10 +3,10 @@
 namespace App\Livewire\InsurancePolicies;
 
 use App\Enums\InsurancePolicyType;
-use App\Enums\InsuranceStatus;
 use App\Models\Asset;
 use App\Models\Insurance;
 use App\Models\InsurancePolicy;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Mary\Traits\Toast;
 
@@ -28,8 +28,6 @@ class Form extends Component
 
     public $end_date = '';
 
-    public $status = '';
-
     public $notes = '';
 
     public $isEdit = false;
@@ -40,10 +38,9 @@ class Form extends Component
 
     public array $policyTypes = [];
 
-    public array $statuses = [];
-
     protected $listeners = [
         'resetForm' => 'resetForm',
+        'combobox-load-asset' => 'loadAssetOptions',
     ];
 
     protected function rules()
@@ -55,21 +52,18 @@ class Form extends Component
             'policy_type' => 'required',
             'start_date' => 'required|date',
             'end_date' => 'required|date',
-            'status' => 'required',
             'notes' => 'nullable|string',
         ];
     }
 
-    public function mount($policyId = null)
+    public function mount($assetId = null, $policyId = null)
     {
         $this->policyId = $policyId;
+        $this->asset_id = $assetId;
 
-        $this->assets = Asset::orderBy('name')->get(['id', 'name'])->toArray();
+        $this->assets = Asset::forBranch()->available()->withoutInsurancePolicy()->orderBy('name')->get(['id', 'name'])->toArray();
         $this->insurances = Insurance::orderBy('name')->get(['id', 'name'])->toArray();
         $this->policyTypes = collect(InsurancePolicyType::cases())
-            ->map(fn ($e) => ['value' => $e->value, 'label' => $e->label()])
-            ->toArray();
-        $this->statuses = collect(InsuranceStatus::cases())
             ->map(fn ($e) => ['value' => $e->value, 'label' => $e->label()])
             ->toArray();
 
@@ -90,7 +84,6 @@ class Form extends Component
                 $this->policy_type = $policy->policy_type->value;
                 $this->start_date = optional($policy->start_date)->format('Y-m-d');
                 $this->end_date = optional($policy->end_date)->format('Y-m-d');
-                $this->status = $policy->status->value;
                 $this->notes = $policy->notes;
             }
         }
@@ -98,9 +91,9 @@ class Form extends Component
 
     public function save()
     {
-        $this->validate();
-
+        
         try {
+            $this->validate();
             if ($this->isEdit && $this->policyId) {
                 $policy = InsurancePolicy::findOrFail($this->policyId);
                 $policy->update([
@@ -110,7 +103,6 @@ class Form extends Component
                     'policy_type' => $this->policy_type,
                     'start_date' => $this->start_date,
                     'end_date' => $this->end_date,
-                    'status' => $this->status,
                     'notes' => $this->notes,
                 ]);
                 $this->success('Polis asuransi berhasil diperbarui!');
@@ -123,7 +115,6 @@ class Form extends Component
                     'policy_type' => $this->policy_type,
                     'start_date' => $this->start_date,
                     'end_date' => $this->end_date,
-                    'status' => $this->status,
                     'notes' => $this->notes,
                 ]);
                 $this->success('Polis asuransi berhasil dibuat!');
@@ -131,6 +122,7 @@ class Form extends Component
                 $this->resetForm();
             }
         } catch (\Exception $e) {
+            dd($e);
             $this->error('Terjadi kesalahan: '.$e->getMessage());
         }
     }
@@ -143,9 +135,24 @@ class Form extends Component
         $this->policy_type = '';
         $this->start_date = '';
         $this->end_date = '';
-        $this->status = '';
         $this->notes = '';
         $this->resetValidation();
+    }
+
+    #[On('combobox-load-assets')]    
+    public function loadAssetOptions($search = '')
+    {
+        $query = Asset::forBranch()->available()->withoutInsurancePolicy()->orderBy('name');
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', '%'.$search.'%')
+                    ->orWhere('code', 'like', '%'.$search.'%')
+                    ->orWhere('tag', 'like', '%'.$search.'%');
+            });
+        }
+        $this->assets = $query->limit(20)->get(['id', 'name', 'tag_code', 'code', 'image'])->toArray();
+
+        $this->dispatch('combobox-set-assets', $this->assets);
     }
 
     public function render()

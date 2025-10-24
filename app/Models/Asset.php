@@ -6,6 +6,7 @@ use App\Enums\AssetCondition;
 use App\Enums\AssetLoanStatus;
 use App\Enums\AssetLogAction;
 use App\Enums\AssetStatus;
+use App\Enums\InsuranceStatus;
 use App\Support\SessionKey;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -179,7 +180,7 @@ class Asset extends Model
         return $this->hasOne(InsurancePolicy::class)
             ->ofMany(
                 ['start_date' => 'max'],
-                
+
             );
     }
 
@@ -279,7 +280,10 @@ class Asset extends Model
 
     public function scopeWithoutInsurancePolicy(Builder $query): Builder
     {
-        return $query->whereDoesntHave('insurancePolicies');
+        // Ambil aset yang TIDAK memiliki polis aktif (termasuk tidak punya polis sama sekali)
+        return $query->whereDoesntHave('insurancePolicies', function ($q) {
+            $q->where('status', InsuranceStatus::ACTIVE);
+        });
     }
 
     /**

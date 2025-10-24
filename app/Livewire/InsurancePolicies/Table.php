@@ -37,9 +37,9 @@ class Table extends Component
         $this->resetPage();
     }
 
-    public function openDrawer()
+    public function openDrawer($assetId = null)
     {
-        $this->dispatch('open-drawer');
+        $this->dispatch('open-drawer', assetId: $assetId);
     }
 
     public function openEditDrawer($policyId)

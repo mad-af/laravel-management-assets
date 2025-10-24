@@ -19,7 +19,7 @@
             </div>
 
             <!-- Policy Form -->
-            <livewire:insurance-policies.form :policyId="$editingPolicyId" :key="'policy-form-' . ($editingPolicyId ?? 'new')" />
+            <livewire:insurance-policies.form :asset_id="$assetId" :policyId="$editingPolicyId" :key="'policy-form-' . ($editingPolicyId ?? 'new')" />
         </div>
     </div>
 </div>
