@@ -61,11 +61,12 @@ class Form extends Component
         $this->policyId = $policyId;
         $this->asset_id = $assetId;
 
-        $this->assets = Asset::forBranch()->available()->withoutInsurancePolicy()->orderBy('name')->get(['id', 'name'])->toArray();
         $this->insurances = Insurance::orderBy('name')->get(['id', 'name'])->toArray();
         $this->policyTypes = collect(InsurancePolicyType::cases())
             ->map(fn ($e) => ['value' => $e->value, 'label' => $e->label()])
             ->toArray();
+
+        $this->loadAssetOptions();
 
         if ($policyId) {
             $this->isEdit = true;
@@ -142,7 +143,7 @@ class Form extends Component
     #[On('combobox-load-assets')]    
     public function loadAssetOptions($search = '')
     {
-        $query = Asset::forBranch()->available()->withoutInsurancePolicy()->orderBy('name');
+        $query = Asset::orderBy('name');
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', '%'.$search.'%')

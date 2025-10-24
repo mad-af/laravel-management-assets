@@ -65,7 +65,7 @@ class Drawer extends Component
         $this->applyActionFromUrl();
     }
 
-    public function openDrawer($assetId = null, $policyId = null)
+    public function openDrawer($assetId = '', $policyId = null)
     {
         $this->asset_id = $assetId;
         if ($policyId) {
