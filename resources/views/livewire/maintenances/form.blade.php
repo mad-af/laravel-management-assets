@@ -46,6 +46,65 @@
         </div>
     @endif
 
+    @if ($showInsuranceClaimPrompt)
+        <!-- Insurance Claim Prompt Modal -->
+        <div 
+            x-data="{ show: @entangle('showInsuranceClaimPrompt') }"
+            x-show="show"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 z-50 overflow-y-auto"
+            style="display: none;"
+        >
+            <!-- Background overlay -->
+            <div class="fixed inset-0 bg-black bg-opacity-50" @click="$wire.dismissClaimPrompt()"></div>
+            
+            <!-- Modal container -->
+            <div class="flex items-center justify-center min-h-screen px-4 py-6">
+                <div 
+                    x-show="show"
+                    x-transition:enter="transition ease-out duration-300"
+                    x-transition:enter-start="opacity-0 transform scale-95"
+                    x-transition:enter-end="opacity-100 transform scale-100"
+                    x-transition:leave="transition ease-in duration-200"
+                    x-transition:leave-start="opacity-100 transform scale-100"
+                    x-transition:leave-end="opacity-0 transform scale-95"
+                    class="relative w-full max-w-md mx-auto bg-base-100 rounded-lg shadow-xl"
+                >
+                    <div class="p-6">
+                        <div class="flex gap-3 items-start">
+                            <div class="flex-shrink-0 mt-0.5 w-10 h-10 rounded-full bg-info/20 flex items-center justify-center">
+                                <x-icon name="o-information-circle" class="w-6 h-6 text-info" />
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="text-sm font-semibold">Buka Form Klaim Asuransi?</h4>
+                                <p class="mt-1 text-sm text-base-content/80">
+                                    Klaim asuransi untuk maintenance ini telah dibuat. Ingin mengisi detail klaim sekarang?
+                                </p>
+                                <div class="flex gap-2 mt-4 justify-end">
+                                    <x-button 
+                                        label="Nanti Saja" 
+                                        class="btn-ghost btn-sm" 
+                                        wire:click="dismissClaimPrompt"
+                                    />
+                                    <x-button 
+                                        label="Ya, Isi Sekarang" 
+                                        class="btn-info btn-sm" 
+                                        wire:click="confirmOpenClaim"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
     @if ($asset_id)
         @if ($hasActiveInsurancePolicy)
         <!-- Asurance -->

@@ -69,6 +69,10 @@ class Form extends Component
 
     public bool $hasActiveInsurancePolicy = false;
 
+    public bool $showInsuranceClaimPrompt = false;
+
+    public ?string $pendingClaimId = null;
+
     // Cache properties to avoid repeated data fetching
     private $assetsCache = null;
 
@@ -276,19 +280,26 @@ class Form extends Component
                 $this->success('Perawatan berhasil ditambahkan!');
             }
 
-            // If insurance claim checkbox is active, redirect to Insurance Claims edit for this maintenance-linked claim
+            // If insurance claim checkbox is active, prompt user to open claim now or later
             if ($this->is_asurance_active) {
                 $claimId = InsuranceClaim::query()
                     ->where('asset_maintenance_id', $maintenance->id)
                     ->value('id');
 
                 if ($claimId) {
-                    return $this->redirectRoute('insurance-claims.index', [
-                        'action' => 'edit',
-                        'claim_id' => $claimId,
-                    ]);
+                    $this->pendingClaimId = (string) $claimId;
+                    // Fire browser event to open modal at page level
+                    $this->dispatch('open-insurance-claim-modal', ['claim_id' => $claimId]);
+
+                    // Stop here; wait for user's choice via modal
+                    return;
                 }
             }
+
+            // Default behavior: refresh kanban, close drawer, and reload page
+            $this->dispatch('refresh-kanban');
+            $this->dispatch('close-drawer');
+            $this->dispatch('reload-page');
 
             // Default post-save behavior
             $this->dispatch('refresh-kanban');
@@ -366,6 +377,8 @@ class Form extends Component
         $this->maintenanceId = null;
         $this->is_asurance_active = false;
         $this->hasActiveInsurancePolicy = false;
+        $this->showInsuranceClaimPrompt = false;
+        $this->pendingClaimId = null;
         $this->resetValidation();
 
         // Reset cache
@@ -603,5 +616,32 @@ class Form extends Component
             'users' => $this->users,
             'employees' => $this->employees,
         ]);
+    }
+
+    #[On('confirm-open-claim')]
+    public function confirmOpenClaim()
+    {
+        if ($this->pendingClaimId) {
+            $claimId = $this->pendingClaimId;
+            $this->pendingClaimId = null;
+
+            return $this->redirectRoute('insurance-claims.index', [
+                'action' => 'edit',
+                'claim_id' => $claimId,
+            ]);
+        }
+
+        // If there's no pending claim id, continue with default behavior
+        $this->dismissClaimPrompt();
+    }
+
+    #[On('dismiss-insurance-claim-prompt')]
+    public function dismissClaimPrompt()
+    {
+        $this->pendingClaimId = null;
+        // Continue with default post-save behavior
+        $this->dispatch('refresh-kanban');
+        $this->dispatch('close-drawer');
+        $this->dispatch('reload-page');
     }
 }
