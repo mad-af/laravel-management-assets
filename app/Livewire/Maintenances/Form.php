@@ -167,6 +167,7 @@ class Form extends Component
         }
         $this->loadAssets();
         $this->refreshInsurancePolicyFlag();
+
     }
 
     private function loadInitialEmployees()
@@ -210,6 +211,11 @@ class Form extends Component
 
         // Load employees with selected employee included
         $this->loadEmployeesWithSelected($maintenance->employee);
+
+        // Set checkbox based on existing insurance claim linked to this maintenance
+        $this->is_asurance_active = InsuranceClaim::query()
+            ->where('asset_maintenance_id', $maintenance->id)
+            ->exists();
 
         $this->refreshInsurancePolicyFlag($this->asset_id);
     }
@@ -270,6 +276,21 @@ class Form extends Component
                 $this->success('Perawatan berhasil ditambahkan!');
             }
 
+            // If insurance claim checkbox is active, redirect to Insurance Claims edit for this maintenance-linked claim
+            if ($this->is_asurance_active) {
+                $claimId = InsuranceClaim::query()
+                    ->where('asset_maintenance_id', $maintenance->id)
+                    ->value('id');
+
+                if ($claimId) {
+                    return $this->redirectRoute('insurance-claims.index', [
+                        'action' => 'edit',
+                        'claim_id' => $claimId,
+                    ]);
+                }
+            }
+
+            // Default post-save behavior
             $this->dispatch('refresh-kanban');
             $this->dispatch('close-drawer');
             $this->dispatch('reload-page');

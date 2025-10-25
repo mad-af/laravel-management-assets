@@ -185,7 +185,7 @@ class Form extends Component
             if ($claim) {
                 $this->policy_id = $claim->policy_id;
                 $this->asset_id = $claim->asset_id;
-                $this->claim_no = $claim->claim_no;
+                $this->claim_no = $claim->claim_no ?? '';
                 $this->incident_date = optional($claim->incident_date)->format('Y-m-d');
                 $this->incident_type = $claim->incident_type?->value ?? '';
                 $this->incident_other = $claim->incident_other;

@@ -73,7 +73,7 @@ class Drawer extends Component
     {
         $this->showDrawer = false;
         $this->editingClaimId = null;
-        $this->dispatch('resetForm');
+        // $this->dispatch('resetForm');
 
         // hapus query di URL (Url-bound akan pushState)
         $this->action = null;

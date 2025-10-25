@@ -30,8 +30,10 @@
     </div>
 
     <div>
-        <x-input label="Jumlah Pembayaran" wire:model="amount_paid" placeholder="Masukkan jumlah pembayaran" prefix="RP" type="number"
-        class="input-sm" required :disabled="$isEdit || $source === \App\Enums\InsuranceClaimSource::MAINTENANCE->value" />
+        <x-input label="Jumlah Pembayaran" wire:model="amount_paid" placeholder="Belum ditentukan" prefix="RP" type="number"
+        class="input-sm" required :disabled="$isEdit || $source === \App\Enums\InsuranceClaimSource::MAINTENANCE->value" 
+        hint="{{ $source === \App\Enums\InsuranceClaimSource::MAINTENANCE->value ? 'Catatan: Pengeluaran otomatis mengikuti perawatan' : '' }}"
+        />
     </div>
 
     <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-full border p-4 pt-2">
