@@ -9,6 +9,8 @@
 
     <livewire:dashboard.vehicle-taxes-invalid />
 
+    <livewire:dashboard.insurance-claim-draft />
+
     <div class="grid grid-cols-1 gap-4 lg:grid-cols-6">
         <div class="lg:col-span-3">
             <livewire:dashboard.vehicle-taxes-due />

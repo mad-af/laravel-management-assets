@@ -1,5 +1,5 @@
 <x-info-card title="Pajak Kendaraan Belum Valid" icon="o-shield-exclamation"
-    class="border-dashed max-h-72 border-secondary border-2 {{ empty($count) ? 'hidden' : '' }}"
+    class="overflow-y-auto border-dashed max-h-96 border-secondary border-2 {{ empty($count) ? 'hidden' : '' }}"
     link="{{ route('vehicle-taxes.index', ['statusFilter' => 'not_valid']) }}">
     <div class="overflow-x-auto">
         <table class="table table-zebra">
