@@ -18,6 +18,7 @@ class StarterUserSeeder extends Seeder
         $email = config('starter.admin.email');
         $password = config('starter.admin.password');
 
+        // Ensure idempotent seeding: upsert by unique email
         User::updateOrCreate(
             ['email' => $email],
             [

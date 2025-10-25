@@ -57,7 +57,13 @@ class CategorySeeder extends Seeder
         ];
 
         foreach ($categories as $category) {
-            Category::updateOrCreate($category);
+            // Idempotent seeding: upsert by unique name
+            Category::updateOrCreate(
+                ['name' => $category['name']],
+                [
+                    'is_active' => $category['is_active'],
+                ]
+            );
         }
     }
 }

@@ -46,7 +46,15 @@ class InsuranceSeeder extends Seeder
         ];
 
         foreach ($insurances as $insurance) {
-            Insurance::updateOrCreate($insurance);
+            // Idempotent seeding: upsert by unique name
+            Insurance::updateOrCreate(
+                ['name' => $insurance['name']],
+                [
+                    'phone' => $insurance['phone'],
+                    'email' => $insurance['email'],
+                    'address' => $insurance['address'],
+                ]
+            );
         }
     }
 }
