@@ -42,7 +42,7 @@ class InsuranceClaimSeeder extends Seeder
                     'description' => 'Klaim hasil seeder',
                     'source' => collect(InsuranceClaimSource::cases())->random()->value,
                     'asset_maintenance_id' => null,
-                    'status' => collect(InsuranceClaimStatus::cases())->random()->value,
+                    'status' => collect(InsuranceClaimStatus::cases())->filter(fn ($item) => $item !== InsuranceClaimStatus::DRAFT)->random()->value,
                     'claim_documents' => [],
                     'amount_approved' => rand(1000000, 10000000),
                     'amount_paid' => rand(0, 10000000),

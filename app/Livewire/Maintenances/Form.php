@@ -3,14 +3,20 @@
 namespace App\Livewire\Maintenances;
 
 use App\Enums\AssetStatus;
+use App\Enums\InsuranceClaimSource;
+use App\Enums\InsuranceClaimStatus;
+use App\Enums\InsuranceStatus;
 use App\Enums\MaintenancePriority;
 use App\Enums\MaintenanceStatus;
 use App\Enums\MaintenanceType;
 use App\Models\Asset;
 use App\Models\AssetMaintenance;
 use App\Models\Employee;
+use App\Models\InsuranceClaim;
+use App\Models\InsurancePolicy;
 use App\Models\User;
 use App\Support\SessionKey;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Mary\Traits\Toast;
@@ -58,6 +64,10 @@ class Form extends Component
     public $isEdit = false;
 
     public string $branchId = '';
+
+    public bool $is_asurance_active = false;
+
+    public bool $hasActiveInsurancePolicy = false;
 
     // Cache properties to avoid repeated data fetching
     private $assetsCache = null;
@@ -156,6 +166,7 @@ class Form extends Component
             $this->dispatch('combobox-set-employees', $this->employees);
         }
         $this->loadAssets();
+        $this->refreshInsurancePolicyFlag();
     }
 
     private function loadInitialEmployees()
@@ -200,6 +211,7 @@ class Form extends Component
         // Load employees with selected employee included
         $this->loadEmployeesWithSelected($maintenance->employee);
 
+        $this->refreshInsurancePolicyFlag($this->asset_id);
     }
 
     private function loadEmployeesWithSelected($selectedEmployee = null)
@@ -250,9 +262,11 @@ class Form extends Component
             if ($this->isEdit) {
                 $maintenance = AssetMaintenance::findOrFail($this->maintenanceId);
                 $maintenance->update($data);
+                $this->createInsuranceClaimIfNeeded($maintenance);
                 $this->success('Perawatan berhasil diperbarui!');
             } else {
-                AssetMaintenance::create($data);
+                $maintenance = AssetMaintenance::create($data);
+                $this->createInsuranceClaimIfNeeded($maintenance);
                 $this->success('Perawatan berhasil ditambahkan!');
             }
 
@@ -262,6 +276,56 @@ class Form extends Component
         } catch (\Exception $e) {
             $this->error('Terjadi kesalahan: '.$e->getMessage());
         }
+    }
+
+    private function refreshInsurancePolicyFlag($assetId = null)
+    {
+        $assetId = $assetId ?? $this->asset_id;
+        if (! $assetId) {
+            $this->hasActiveInsurancePolicy = false;
+            $this->is_asurance_active = false;
+
+            return;
+        }
+        $policyId = $this->getLatestActivePolicyIdForAsset($assetId);
+        $this->hasActiveInsurancePolicy = ! empty($policyId);
+        if (! $this->hasActiveInsurancePolicy) {
+            $this->is_asurance_active = false;
+        }
+    }
+
+    private function getLatestActivePolicyIdForAsset($assetId)
+    {
+        if (! $assetId) {
+            return null;
+        }
+
+        return InsurancePolicy::query()
+            ->where('asset_id', $assetId)
+            ->where('status', InsuranceStatus::ACTIVE->value)
+            ->orderByDesc('start_date')
+            ->value('id');
+    }
+
+    private function createInsuranceClaimIfNeeded(AssetMaintenance $maintenance): void
+    {
+        if (! $this->is_asurance_active) {
+            return;
+        }
+
+        $policyId = $this->getLatestActivePolicyIdForAsset($this->asset_id);
+        if (! $policyId) {
+            return;
+        }
+
+        InsuranceClaim::create([
+            'policy_id' => $policyId,
+            'asset_id' => $this->asset_id,
+            'source' => InsuranceClaimSource::MAINTENANCE->value,
+            'asset_maintenance_id' => $maintenance->id,
+            'status' => InsuranceClaimStatus::DRAFT->value,
+            'created_by' => Auth::id(),
+        ]);
     }
 
     public function resetForm()
@@ -279,6 +343,8 @@ class Form extends Component
         $this->service_tasks = [];
         $this->isEdit = false;
         $this->maintenanceId = null;
+        $this->is_asurance_active = false;
+        $this->hasActiveInsurancePolicy = false;
         $this->resetValidation();
 
         // Reset cache
@@ -420,6 +486,7 @@ class Form extends Component
         if ($value && $this->getIsVehicleForAsset($value)) {
             $this->checkVehicleProfile($value);
         }
+        $this->refreshInsurancePolicyFlag($value);
     }
 
     private function getIsVehicleForAsset($assetId)

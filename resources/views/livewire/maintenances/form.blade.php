@@ -47,6 +47,16 @@
     @endif
 
     @if ($asset_id)
+        @if ($hasActiveInsurancePolicy)
+        <!-- Asurance -->
+        <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4 pt-2">
+            <legend class="fieldset-legend">Asuransi</legend>   
+            <div>
+                <x-checkbox label="Klaim Asuransi" wire:model="is_asurance_active" hint="Aktifkan untuk mengajukan klaim Asuransi" />
+            </div>
+        </fieldset>
+        @endif
+
         <!-- Title -->
         <div>
             <x-input label="Judul Perawatan" wire:model="title" placeholder="Masukkan judul perawatan..." class="input-sm"

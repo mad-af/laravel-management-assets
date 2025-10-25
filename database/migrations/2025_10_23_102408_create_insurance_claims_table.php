@@ -15,9 +15,9 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->uuid('policy_id');
             $table->uuid('asset_id');
-            $table->string('claim_no')->unique();
-            $table->date('incident_date');
-            $table->enum('incident_type', ['collision', 'theft', 'flood', 'fire', 'other'])->default('other');
+            $table->string('claim_no')->unique()->nullable();
+            $table->date('incident_date')->nullable();
+            $table->enum('incident_type', ['collision', 'theft', 'flood', 'fire', 'other'])->nullable();
             $table->string('incident_other')->nullable();
             $table->text('description')->nullable();
             $table->enum('source', ['manual', 'maintenance'])->default('manual');
@@ -25,7 +25,7 @@ return new class extends Migration
             $table->enum('status', ['draft', 'submitted', 'approved', 'rejected'])->default('draft');
             $table->json('claim_documents')->nullable();
             $table->decimal('amount_approved', 15, 2)->nullable();
-            $table->decimal('amount_paid', 15, 2);
+            $table->decimal('amount_paid', 15, 2)->nullable();
             $table->uuid('created_by');
             $table->timestamps();
 

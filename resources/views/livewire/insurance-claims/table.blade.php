@@ -41,7 +41,7 @@
             @endphp
             <x-table :headers="$headers" :rows="$claims" striped show-empty-text>
                 @scope('cell_claim_no', $claim)
-                <span class="font-medium">{{ $claim->claim_no }}</span>
+                <span class="font-medium">{{ $claim->claim_no ?? '-' }}</span>
                 @endscope
 
                 @scope('cell_policy', $claim)
@@ -62,7 +62,11 @@
                 @endscope
 
                 @scope('cell_amount_paid', $claim)
-                {{ 'Rp ' . number_format($claim->amount_paid, 0, ',', '.') }}
+                @if ($claim->amount_paid)
+                    {{ 'Rp ' . number_format($claim->amount_paid, 0, ',', '.') }}
+                @else
+                    <span class="text-xs text-base-content/60">Belum ditentukan</span>
+                @endif
                 @endscope
 
 
