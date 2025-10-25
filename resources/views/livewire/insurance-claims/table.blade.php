@@ -32,8 +32,9 @@
                 $headers = [
                     ['key' => 'claim_no', 'label' => 'No. Klaim'],
                     ['key' => 'policy', 'label' => 'Polis / Asuransi'],
-                    ['key' => 'asset', 'label' => 'Asset'],
                     ['key' => 'incident_date', 'label' => 'Tanggal Insiden'],
+                    ['key' => 'incident_type', 'label' => 'Jenis Insiden'],
+                    ['key' => 'amount_paid', 'label' => 'Jumlah Dibayar', 'class' => 'text-right'],
                     ['key' => 'status', 'label' => 'Status'],
                     ['key' => 'actions', 'label' => 'Aksi', 'class' => 'w-20'],
                 ];
@@ -45,41 +46,57 @@
 
                 @scope('cell_policy', $claim)
                 <div class="text-sm">
-                    <div class="font-medium">{{ $claim->policy?->policy_no ?? '-' }}</div>
-                    <div class="text-base-content/70">{{ $claim->policy?->insurance?->name ?? '-' }}</div>
+                    <div class="text-xs truncate text-base-content/60">{{ $claim->policy?->policy_no ?? '-' }}</div>
+                    <div class="font-medium truncate">{{ $claim->asset?->name ?? '-' }}</div>
+                    <div class="text-xs truncate text-base-content/70">{{ $claim->policy?->insurance?->name ?? '-' }}
+                    </div>
                 </div>
-                @endscope
-
-                @scope('cell_asset', $claim)
-                <span class="text-sm">{{ $claim->asset?->name ?? '-' }}</span>
                 @endscope
 
                 @scope('cell_incident_date', $claim)
                 {{ optional($claim->incident_date)->format('d M Y') ?? '-' }}
                 @endscope
 
+                @scope('cell_incident_type', $claim)
+                {{ $claim->incident_type?->label() ?? '-' }}
+                @endscope
+
+                @scope('cell_amount_paid', $claim)
+                {{ 'Rp ' . number_format($claim->amount_paid, 0, ',', '.') }}
+                @endscope
+
+
                 @scope('cell_status', $claim)
                 <x-badge :value="$label = $claim->status?->label()" :class="'badge-' . $claim->status?->color() . ' badge-sm badge-outline badge-soft'" />
                 @endscope
 
                 @scope('cell_actions', $claim)
-                <x-action-dropdown :model="$claim">
-                    <li>
-                        <button wire:click="openEditDrawer('{{ $claim->id }}')"
-                            class="flex gap-2 items-center p-2 text-sm rounded"
-                            onclick="document.getElementById('dropdown-menu-{{ $claim->id }}').hidePopover()">
-                            <x-icon name="o-pencil" class="w-4 h-4" />
-                            Edit
-                        </button>
-                    </li>
-                    <li>
-                        <button wire:click="delete('{{ $claim->id }}')"
-                            wire:confirm="Anda yakin ingin menghapus klaim ini?"
-                            class="flex gap-2 items-center p-2 text-sm rounded text-error">
-                            <x-icon name="o-trash" class="w-4 h-4" />
-                            Delete
-                        </button>
-                    </li>
+                <x-action-dropdown 
+                    :model="$claim" 
+                    :disabled="! in_array($claim->status, [
+                        \App\Enums\InsuranceClaimStatus::DRAFT,
+                        \App\Enums\InsuranceClaimStatus::SUBMITTED
+                    ])"
+                >
+                    @if($claim->status == \App\Enums\InsuranceClaimStatus::DRAFT)
+                        <li>
+                            <button wire:click="openEditDrawer('{{ $claim->id }}')"
+                                class="flex gap-2 items-center p-2 text-sm rounded"
+                                onclick="document.getElementById('dropdown-menu-{{ $claim->id }}').hidePopover()">
+                                <x-icon name="o-arrow-up-tray" class="w-4 h-4" />
+                                Ajukan Klaim
+                            </button>
+                        </li>
+                    @elseif($claim->status == \App\Enums\InsuranceClaimStatus::SUBMITTED)
+                        <li>
+                            <button wire:click="delete('{{ $claim->id }}')"
+                                wire:confirm="Anda yakin ingin menghapus klaim ini?"
+                                class="flex gap-2 items-center p-2 text-sm rounded">
+                                <x-icon name="o-check-circle" class="w-4 h-4" />
+                                Verifikasi Klaim
+                            </button>
+                        </li>
+                    @endif
                 </x-action-dropdown>
                 @endscope
             </x-table>
