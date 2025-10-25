@@ -44,3 +44,15 @@ Schedule::command('storage:cleanup-temp')
     ->onFailure(function () {
         Log::error('Schedule storage:cleanup-temp failed', ['timestamp' => now()->toDateTimeString()]);
     });
+
+// Schedule to deactivate expired insurance policies daily at 00:10
+Schedule::command('insurance-policy:deactivate-expired')
+    ->dailyAt('00:10')
+    ->timezone('Asia/Jakarta')
+    ->appendOutputTo(storage_path('logs/insurance-policy-deactivate-expired.log'))
+    ->onSuccess(function () {
+        Log::info('Schedule insurance-policy:deactivate-expired succeeded', ['timestamp' => now()->toDateTimeString()]);
+    })
+    ->onFailure(function () {
+        Log::error('Schedule insurance-policy:deactivate-expired failed', ['timestamp' => now()->toDateTimeString()]);
+    });
