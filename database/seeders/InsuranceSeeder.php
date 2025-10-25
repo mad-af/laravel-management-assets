@@ -46,7 +46,7 @@ class InsuranceSeeder extends Seeder
         ];
 
         foreach ($insurances as $insurance) {
-            Insurance::create($insurance);
+            Insurance::updateOrCreate($insurance);
         }
     }
 }
