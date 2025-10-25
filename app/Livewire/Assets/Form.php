@@ -79,6 +79,7 @@ class Form extends Component
         'resetForm' => 'resetForm',
         'imageUploaded' => 'handleImageUploaded',
         'imageRemoved' => 'handleImageRemoved',
+        'imageFinalized' => 'handleImageFinalized',
     ];
 
     public function mount($assetId = null)
@@ -257,6 +258,13 @@ class Form extends Component
             return; // Stop if validation fails
         }
 
+        // If there is a temp image, ask child component to finalize it first
+        if ($this->tempImagePath) {
+            $this->dispatch('finalizeImageUpload');
+
+            return;
+        }
+
         try {
             $imageUploadService = new ImageUploadService;
             $finalImagePath = $this->image; // Keep existing image by default
@@ -379,6 +387,15 @@ class Form extends Component
             // For edit mode, we'll clear the image on save
             $this->image = '';
         }
+    }
+
+    public function handleImageFinalized($path)
+    {
+        $this->image = $path;
+        $this->tempImagePath = null;
+
+        // Proceed with save after finalize
+        $this->save();
     }
 
     public function render()

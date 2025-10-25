@@ -23,8 +23,6 @@
                     <x-menu-item title="Disetujui" wire:click="$set('statusFilter', 'approved')" />
                     <x-menu-item title="Ditolak" wire:click="$set('statusFilter', 'rejected')" />
                 </x-dropdown>
-
-                <x-button icon="o-plus" class="btn-sm" wire:click="openDrawer">Tambah</x-button>
             </div>
         </div>
 
@@ -61,8 +59,7 @@
                 @endscope
 
                 @scope('cell_status', $claim)
-                @php $color = $claim->status?->color() ?? 'neutral'; $label = $claim->status?->label() ?? ucfirst($claim->status); @endphp
-                <x-badge :value="$label" :class="'badge-' . $color . ' badge-sm'" />
+                <x-badge :value="$label = $claim->status?->label()" :class="'badge-' . $claim->status?->color() . ' badge-sm badge-outline badge-soft'" />
                 @endscope
 
                 @scope('cell_actions', $claim)

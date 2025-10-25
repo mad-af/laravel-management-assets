@@ -2,59 +2,66 @@
     {{-- Polis --}}
     <div>
         <x-select label="Polis" wire:model.live="policy_id" :options="$policyOptions" option-value="value"
-            option-label="label" placeholder="Pilih polis" class="select-sm" />
+            option-label="label" placeholder="Pilih polis" class="select-sm" required />
     </div>
 
     {{-- Nomor Klaim --}}
     <div>
-        <x-input label="Nomor Klaim" wire:model="claim_no" placeholder="Masukkan nomor klaim" class="input-sm" required />
-    </div>
-
-    {{-- Tanggal Insiden --}}
-    <div>
-        <x-input label="Tanggal Insiden" wire:model="incident_date" type="date" class="input-sm" required />
-    </div>
-
-    {{-- Jenis Insiden --}}
-    <div>
-        <x-select label="Jenis Insiden" wire:model="incident_type" :options="$incidentTypeOptions" option-value="value"
-            option-label="label" placeholder="Pilih jenis insiden" class="select-sm" required />
-    </div>
-
-    {{-- Detail Insiden Lainnya --}}
-    @if($incident_type === 'other')
-        <div>
-            <x-input label="Detail Insiden Lainnya" wire:model="incident_other" placeholder="Sebutkan detail insiden" class="input-sm" />
-        </div>
-    @endif
-
-    {{-- Deskripsi --}}
-    <div>
-        <x-textarea label="Deskripsi" wire:model="description" placeholder="Masukkan deskripsi klaim" rows="3"
-            class="textarea-sm" />
+        <x-input label="Nomor Klaim" wire:model="claim_no" placeholder="Masukkan nomor klaim" class="input-sm"
+            required />
     </div>
 
     {{-- Sumber Klaim --}}
     <div>
         <x-select label="Sumber Klaim" wire:model="source" :options="$sourceOptions" option-value="value"
-            option-label="label" placeholder="Pilih sumber klaim" class="select-sm" required />
+            option-label="label" placeholder="Pilih sumber klaim" class="select-sm" required disabled />
     </div>
 
-    {{-- Status --}}
     <div>
-        <x-select label="Status" wire:model="status" :options="$statusOptions" option-value="value"
-            option-label="label" placeholder="Pilih status" class="select-sm" required />
+        <x-input label="Jumlah Pembayaran" wire:model="amount_paid" placeholder="Masukkan jumlah pembayaran" prefix="RP" type="number"
+        class="input-sm" required :disabled="$isEdit || $source === \App\Enums\InsuranceClaimSource::MAINTENANCE->value" />
     </div>
 
-    {{-- Jumlah Disetujui --}}
-    <div>
-        <x-input label="Jumlah Disetujui (Rp)" prefix="Rp" wire:model="amount_approved" type="number" step="0.01" min="0" class="input-sm" />
-    </div>
+    <fieldset class="fieldset bg-base-200 border-base-300 rounded-box w-full border p-4 pt-2">
+        <legend class="fieldset-legend">Detail Insiden</legend>
 
-    {{-- Jumlah Dibayar --}}
-    <div>
-        <x-input label="Jumlah Dibayar (Rp)" prefix="Rp" wire:model="amount_paid" type="number" step="0.01" min="0" class="input-sm" />
-    </div>
+        {{-- Tanggal Insiden --}}
+        <div>
+            <x-input label="Tanggal Insiden" wire:model="incident_date" type="date" class="input-sm" required />
+        </div>
+
+        {{-- Jenis Insiden --}}
+        <div>
+            <x-select label="Jenis Insiden" wire:model.live="incident_type" :options="$incidentTypeOptions"
+                option-value="value" option-label="label" placeholder="Pilih jenis insiden" class="select-sm"
+                required />
+        </div>
+
+        {{-- Detail Insiden Lainnya --}}
+        @if($incident_type === 'other')
+            <div>
+                <x-input label="Detail Insiden Lainnya" wire:model="incident_other" placeholder="Sebutkan detail insiden"
+                    class="input-sm" required />
+            </div>
+        @endif
+
+        {{-- Deskripsi --}}
+        <div>
+            <x-textarea label="Deskripsi" wire:model="description" placeholder="Masukkan deskripsi klaim" rows="3"
+                class="textarea-sm" />
+        </div>
+
+        <div>
+            <livewire:components.image-upload
+                :current-image="$currentClaimImage"
+                label="Foto Bukti"
+                hint="Format: JPG, PNG, WebP. Maksimal 2MB. Gambar akan dikompresi."
+                directory="claims"
+                wire:key="claim-image-upload-{{ $claimId ?? 'new' }}"
+            />
+        </div>
+
+    </fieldset>
 
     <!-- Submit Button -->
     <div class="flex gap-2 justify-end pt-4">

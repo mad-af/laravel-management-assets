@@ -7,10 +7,10 @@ use App\Enums\InsuranceClaimSource;
 use App\Enums\InsuranceClaimStatus;
 use App\Models\InsuranceClaim;
 use App\Models\InsurancePolicy;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
 use Mary\Traits\Toast;
-use Illuminate\Support\Facades\Auth;
 
 class Form extends Component
 {
@@ -82,6 +82,9 @@ class Form extends Component
     protected $listeners = [
         'editClaim' => 'edit',
         'resetForm' => 'resetForm',
+        'imageUploaded' => 'handleImageUploaded',
+        'imageRemoved' => 'handleImageRemoved',
+        'imageFinalized' => 'handleImageFinalized',
     ];
 
     public function mount($claimId = null)
@@ -133,6 +136,12 @@ class Form extends Component
         }
     }
 
+    public ?string $currentClaimImage = null;
+
+    public ?string $tempImagePath = null;
+
+    public bool $removeCurrentImage = false;
+
     public function loadClaim()
     {
         if ($this->claimId) {
@@ -150,6 +159,20 @@ class Form extends Component
                 $this->status = $claim->status?->value ?? 'draft';
                 $this->amount_approved = $claim->amount_approved;
                 $this->amount_paid = $claim->amount_paid;
+
+                // Prefill currentClaimImage from claim_documents (first 'photo' or first item)
+                $docs = is_array($claim->claim_documents) ? $claim->claim_documents : (json_decode($claim->claim_documents, true) ?? []);
+                $current = null;
+                foreach ($docs as $d) {
+                    if (($d['doc_type'] ?? '') === 'photo' && ! empty($d['file_path'])) {
+                        $current = $d['file_path'];
+                        break;
+                    }
+                }
+                if (! $current && ! empty($docs)) {
+                    $current = $docs[0]['file_path'] ?? null;
+                }
+                $this->currentClaimImage = $current;
             }
         }
     }
@@ -158,9 +181,31 @@ class Form extends Component
     {
         $this->validate();
 
+        // If there is a temp image, ask child component to finalize first
+        if ($this->tempImagePath) {
+            $this->dispatch('finalizeImageUpload');
+
+            return;
+        }
+
         try {
             if ($this->isEdit && $this->claimId) {
                 $claim = InsuranceClaim::findOrFail($this->claimId);
+
+                // Build claim_documents payload
+                $existingDocs = is_array($claim->claim_documents) ? $claim->claim_documents : (json_decode($claim->claim_documents, true) ?? []);
+                // Remove existing 'photo' entries if flagged or to replace
+                $docs = array_values(array_filter($existingDocs, function ($d) {
+                    return ($d['doc_type'] ?? '') !== 'photo';
+                }));
+                if ($this->currentClaimImage && ! $this->removeCurrentImage) {
+                    $docs[] = [
+                        'doc_type' => 'photo',
+                        'file_path' => $this->currentClaimImage,
+                        'description' => 'Bukti klaim',
+                    ];
+                }
+
                 $claim->update([
                     'policy_id' => $this->policy_id,
                     'asset_id' => $this->asset_id ?? InsurancePolicy::find($this->policy_id)?->asset_id,
@@ -174,10 +219,21 @@ class Form extends Component
                     'status' => $this->status,
                     'amount_approved' => $this->amount_approved,
                     'amount_paid' => $this->amount_paid,
+                    'claim_documents' => $docs,
                 ]);
                 $this->success('Klaim diperbarui!');
                 $this->dispatch('claim-updated');
             } else {
+                // Build claim_documents for create
+                $docs = [];
+                if ($this->currentClaimImage && ! $this->removeCurrentImage) {
+                    $docs[] = [
+                        'doc_type' => 'photo',
+                        'file_path' => $this->currentClaimImage,
+                        'description' => 'Bukti klaim',
+                    ];
+                }
+
                 InsuranceClaim::create([
                     'policy_id' => $this->policy_id,
                     'asset_id' => $this->asset_id ?? InsurancePolicy::find($this->policy_id)?->asset_id,
@@ -192,14 +248,38 @@ class Form extends Component
                     'amount_approved' => $this->amount_approved,
                     'amount_paid' => $this->amount_paid,
                     'created_by' => Auth::id(),
+                    'claim_documents' => $docs,
                 ]);
                 $this->success('Klaim dibuat!');
                 $this->dispatch('claim-saved');
                 $this->resetForm();
             }
         } catch (\Exception $e) {
+            dd($e);
             $this->error('Terjadi kesalahan: '.$e->getMessage());
         }
+    }
+
+    public function handleImageUploaded($tempPath)
+    {
+        $this->tempImagePath = $tempPath;
+        $this->removeCurrentImage = false;
+    }
+
+    public function handleImageRemoved()
+    {
+        $this->tempImagePath = null;
+        $this->currentClaimImage = null;
+        $this->removeCurrentImage = true;
+    }
+
+    public function handleImageFinalized($path)
+    {
+        $this->currentClaimImage = $path;
+        $this->tempImagePath = null;
+        $this->removeCurrentImage = false;
+        // Proceed with save after finalize
+        $this->save();
     }
 
     public function resetForm()

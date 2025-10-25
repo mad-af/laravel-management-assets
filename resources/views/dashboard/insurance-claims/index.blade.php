@@ -4,7 +4,7 @@
 
 @section('content')
     <livewire:dashboard-content-header title='Klaim Asuransi' description='Kelola data klaim asuransi dalam sistem.'
-        buttonText='Tambah Klaim Asuransi' buttonIcon='o-plus' buttonAction='openInsuranceClaimDrawer' />
+        buttonText='Klaim Asuransi' buttonIcon='o-plus' buttonAction='openInsuranceClaimDrawer' />
 
     <livewire:insurance-claims.table />
 

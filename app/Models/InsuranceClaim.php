@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\ClaimDocumentsCast;
 use App\Enums\InsuranceClaimIncidentType;
 use App\Enums\InsuranceClaimSource;
 use App\Enums\InsuranceClaimStatus;
@@ -35,7 +36,7 @@ class InsuranceClaim extends Model
         'incident_type' => InsuranceClaimIncidentType::class,
         'source' => InsuranceClaimSource::class,
         'status' => InsuranceClaimStatus::class,
-        'claim_documents' => 'array',
+        'claim_documents' => ClaimDocumentsCast::class,
         'amount_approved' => 'decimal:2',
         'amount_paid' => 'decimal:2',
     ];

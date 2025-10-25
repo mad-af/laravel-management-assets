@@ -1,4 +1,4 @@
-<form wire:submit="save" class="space-y-4">
+<form wire:submit="save" class="space-y-2">
     <!-- Asset -->
     <div>
         <livewire:components.combobox

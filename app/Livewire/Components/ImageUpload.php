@@ -22,8 +22,9 @@ class ImageUpload extends Component
     public $maxWidth = 1200;
     public $maxHeight = 800;
     public $convertToWebp = true;
+    public $directory = 'assets';
 
-    protected $listeners = ['resetImageUpload'];
+    protected $listeners = ['resetImageUpload', 'finalizeImageUpload'];
 
     public function mount($currentImage = null, $label = null, $hint = null)
     {
@@ -87,6 +88,31 @@ class ImageUpload extends Component
     {
         $this->tempImagePath = null;
         $this->imageFile = null;
+    }
+
+    public function finalizeImageUpload()
+    {
+        if ($this->tempImagePath) {
+            try {
+                $imageUploadService = new ImageUploadService;
+                $storedPath = $imageUploadService->moveFromTemporary($this->tempImagePath, $this->directory);
+                $this->tempImagePath = null;
+    
+                if ($storedPath) {
+                    $this->currentImage = $storedPath;
+                    $this->dispatch('imageFinalized', path: $storedPath);
+                    $this->success('Gambar disimpan.');
+                } else {
+                    $this->error('Gagal menyimpan gambar.');
+                }
+            } catch (\Exception $e) {
+                $this->error('Gagal menyimpan gambar: ' . $e->getMessage());
+            }
+        } else {
+            if ($this->currentImage) {
+                $this->dispatch('imageFinalized', path: $this->currentImage);
+            }
+        }
     }
 
     public function getTempImageUrl()

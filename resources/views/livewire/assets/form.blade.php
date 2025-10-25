@@ -26,6 +26,7 @@
         <livewire:components.image-upload 
             :current-image="$image" 
             label="Gambar Asset" 
+            directory="assets"
             wire:key="image-upload-{{ $asset->id ?? 'new' }}" />
     </div>
 
