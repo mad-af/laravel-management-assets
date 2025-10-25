@@ -5,10 +5,13 @@ namespace App\Livewire\InsuranceClaims;
 use App\Enums\InsuranceClaimIncidentType;
 use App\Enums\InsuranceClaimSource;
 use App\Enums\InsuranceClaimStatus;
+use App\Enums\InsuranceStatus;
+use App\Models\Asset;
 use App\Models\InsuranceClaim;
 use App\Models\InsurancePolicy;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use Livewire\Attributes\On;
 use Livewire\Component;
 use Mary\Traits\Toast;
 
@@ -34,11 +37,11 @@ class Form extends Component
 
     public ?string $description = null;
 
-    public string $source = 'manual';
+    public string $source = InsuranceClaimSource::MANUAL->value;
 
     public ?string $asset_maintenance_id = null; // optional, not exposed yet
 
-    public string $status = 'draft';
+    public string $status = InsuranceClaimStatus::SUBMITTED->value;
 
     public ?string $amount_approved = null;
 
@@ -98,22 +101,10 @@ class Form extends Component
         }
     }
 
+    // #[On('combobox-load-policies')]
     protected function loadOptions(): void
     {
-        $this->policyOptions = InsurancePolicy::with(['insurance', 'asset'])
-            ->orderBy('created_at', 'desc')
-            ->get()
-            ->map(function ($p) {
-                $label = $p->policy_no;
-                if ($p->insurance) {
-                    $label .= ' - '.$p->insurance->name;
-                }
-                if ($p->asset) {
-                    $label .= ' - '.$p->asset->name;
-                }
-
-                return ['value' => $p->id, 'label' => $label];
-            })->toArray();
+        $this->loadPolicyOptions();
 
         $this->incidentTypeOptions = array_map(function ($c) {
             return ['value' => $c->value, 'label' => $c->label()];
@@ -126,6 +117,51 @@ class Form extends Component
         $this->sourceOptions = array_map(function ($c) {
             return ['value' => $c->value, 'label' => $c->label()];
         }, InsuranceClaimSource::cases());
+    }
+
+    #[On('combobox-load-policies')]
+    public function loadPolicyOptions($search = ''): void
+    {
+        $assets = Asset::forBranch()
+            ->with([
+                'latestActiveInsurancePolicy' => function ($q) {
+                    $q->where('status', InsuranceStatus::ACTIVE->value);
+                },
+                'latestActiveInsurancePolicy.insurance',
+            ])
+            ->whereHas('insurancePolicies', function ($q) {
+                $q->where('status', InsuranceStatus::ACTIVE->value);
+            })
+            // 🔍 Tambahkan pencarian nama aset & nomor polis
+            ->when($search, function ($query, $search) {
+                $query->where(function ($sub) use ($search) {
+                    $sub->where('name', 'like', "%{$search}%")
+                        ->orWhereHas('insurancePolicies', function ($sub2) use ($search) {
+                            $sub2->where('policy_no', 'like', "%{$search}%");
+                        });
+                });
+            })
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $this->policyOptions = $assets->map(function ($asset) {
+            $policy = $asset->latestActiveInsurancePolicy;
+            if (! $policy) {
+                return null;
+            }
+
+            return [
+                'id' => $policy->id,
+                'policy_no' => (string) $policy->policy_no,
+                'insurance_name' => optional($policy->insurance)->name,
+                'asset_name' => (string) $asset->name,
+            ];
+        })
+            ->filter()
+            ->values()
+            ->toArray();
+
+        $this->dispatch('combobox-set-policies', $this->policyOptions);
     }
 
     public function updatedPolicyId($value)
@@ -154,9 +190,9 @@ class Form extends Component
                 $this->incident_type = $claim->incident_type?->value ?? '';
                 $this->incident_other = $claim->incident_other;
                 $this->description = $claim->description;
-                $this->source = $claim->source?->value ?? 'manual';
+                $this->source = $claim->source?->value ?? InsuranceClaimSource::MANUAL->value;
                 $this->asset_maintenance_id = $claim->asset_maintenance_id;
-                $this->status = $claim->status?->value ?? 'draft';
+                $this->status = $claim->status?->value ?? InsuranceClaimStatus::SUBMITTED->value;
                 $this->amount_approved = $claim->amount_approved;
                 $this->amount_paid = $claim->amount_paid;
 
@@ -291,9 +327,9 @@ class Form extends Component
         $this->incident_type = '';
         $this->incident_other = null;
         $this->description = null;
-        $this->source = 'manual';
+        $this->source = InsuranceClaimSource::MANUAL->value;
         $this->asset_maintenance_id = null;
-        $this->status = 'draft';
+        $this->status = InsuranceClaimStatus::SUBMITTED->value;
         $this->amount_approved = null;
         $this->amount_paid = null;
         $this->resetValidation();

@@ -1,8 +1,20 @@
 <form wire:submit="save" class="space-y-2">
     {{-- Polis --}}
     <div>
-        <x-select label="Polis" wire:model.live="policy_id" :options="$policyOptions" option-value="value"
-            option-label="label" placeholder="Pilih polis" class="select-sm" required />
+        <livewire:components.combobox
+            name="policies"
+            wire:model.live="policy_id"
+            :options="$policyOptions"
+            option-value="id"
+            option-label="asset_name"
+            option-sub-label="insurance_name"
+            option-meta="policy_no"
+            label="Polis"
+            placeholder="Pilih polis"
+            class="input-sm"
+            :required="true"
+            wire:key="combobox-policy-{{ $claimId ?? 'new' }}"
+        />
     </div>
 
     {{-- Nomor Klaim --}}

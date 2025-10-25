@@ -143,7 +143,7 @@ class Form extends Component
     #[On('combobox-load-assets')]    
     public function loadAssetOptions($search = '')
     {
-        $query = Asset::orderBy('name');
+        $query = Asset::forBranch()->withoutInsurancePolicy()->orderBy('name');
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', '%'.$search.'%')
