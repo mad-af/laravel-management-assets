@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Mary\Traits\Toast;
+use App\Enums\UserRole;
 
 class Table extends Component
 {
@@ -83,5 +84,11 @@ class Table extends Component
             ->paginate($this->perPage);
 
         return view('livewire.branches.table', compact('branches'));
+    }
+
+    public function getIsAdminProperty(): bool
+    {
+        $user = Auth::user();
+        return $user && $user->role === UserRole::ADMIN;
     }
 }

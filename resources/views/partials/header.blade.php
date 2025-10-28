@@ -36,7 +36,10 @@
                 <x-avatar placeholder="{{ substr(Auth::user()->name, 0, 2) }}"
                     class="!w-8 !h-8 cursor-pointer bg-primary" />
             </x-slot:trigger>
-            <x-menu-item title="Edit Password" icon="o-key" link="/profile/password" />
+            <x-menu-item title="Edit Password" icon="o-key" onclick="Livewire.dispatch('open-password-modal')" />
         </x-dropdown>
     </x-slot:actions>
+
+    <!-- Password Modal Component -->
+    <livewire:profile.password-modal />
 </x-nav>

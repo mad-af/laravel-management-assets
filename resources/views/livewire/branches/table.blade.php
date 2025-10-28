@@ -72,7 +72,7 @@
         @endscope
 
         @scope('cell_actions', $branch)
-        <x-action-dropdown :model="$branch">
+        <x-action-dropdown :model="$branch" :disabled="!$this->isAdmin">
           <li>
             <button wire:click="openEditDrawer('{{ $branch->id }}')"
               class="flex gap-2 items-center p-2 text-sm rounded"

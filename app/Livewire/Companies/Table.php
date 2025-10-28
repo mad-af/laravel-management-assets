@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Companies;
 
+use Illuminate\Support\Facades\Auth;
+use App\Enums\UserRole;
 use App\Models\Company;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -82,5 +84,11 @@ class Table extends Component
         });
 
         return view('livewire.companies.table', compact('companies'));
+    }
+
+    public function getIsAdminProperty(): bool
+    {
+        $user = Auth::user();
+        return $user && $user->role === UserRole::ADMIN;
     }
 }

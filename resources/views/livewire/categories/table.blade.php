@@ -54,7 +54,7 @@
                 @endscope
 
                 @scope('cell_actions', $category)
-                <x-action-dropdown :model="$category">
+                <x-action-dropdown :model="$category" :disabled="!$this->isAdmin">
                     <li>
                         <button wire:click="openEditDrawer('{{ $category->id }}')"
                             class="flex gap-2 items-center p-2 text-sm rounded"

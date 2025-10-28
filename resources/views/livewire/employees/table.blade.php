@@ -100,7 +100,7 @@
 
                 {{-- Actions --}}
                 @scope('cell_actions', $employee)
-                <x-action-dropdown :model="$employee" id="dropdown-menu-{{ $employee->id }}">
+                <x-action-dropdown :model="$employee" :disabled="!$this->isAdmin" id="dropdown-menu-{{ $employee->id }}">
                     <li>
                         <button wire:click="openEditDrawer('{{ $employee->id }}')"
                             class="flex gap-2 items-center p-2 text-sm rounded"

@@ -88,7 +88,7 @@
                 @endscope
 
                 @scope('cell_actions', $user)
-                <x-action-dropdown :model="$user">
+                <x-action-dropdown :model="$user" :disabled="!$this->isAdmin">
                     <li>
                         <button wire:click="openEditDrawer('{{ $user->id }}')"
                             class="flex gap-2 items-center p-2 text-sm rounded"

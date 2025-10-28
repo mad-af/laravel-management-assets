@@ -2,19 +2,17 @@
 
 namespace App\Livewire\Users;
 
-use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Mary\Traits\Toast;
+use App\Models\User;
+use App\Enums\UserRole;
 
 class Table extends Component
 {
-    use WithPagination, Toast;
+    use WithPagination;
 
     public $search = '';
-    public $statusFilter = '';
-    public $roleFilter = '';
-    public $perPage = 10;
 
     protected $listeners = [
         'user-saved' => '$refresh',
@@ -27,16 +25,6 @@ class Table extends Component
         $this->resetPage();
     }
 
-    public function updatingStatusFilter()
-    {
-        $this->resetPage();
-    }
-
-    public function updatingRoleFilter()
-    {
-        $this->resetPage();
-    }
-
     public function openEditDrawer($userId)
     {
         $this->dispatch('open-edit-drawer', userId: $userId);
@@ -45,46 +33,29 @@ class Table extends Component
     public function delete($userId)
     {
         try {
-            $user = User::findOrFail($userId);
-            $user->delete();
-            $this->success('User deleted successfully!');
+            User::findOrFail($userId)->delete();
             $this->dispatch('user-deleted');
-        } catch (\Exception $e) {
-            $this->error('Failed to delete user: ' . $e->getMessage());
+        } catch (\Throwable $e) {
+            // handle error
         }
     }
 
     public function render()
     {
-        $query = User::query()
-            ->with(['userCompanies.company']);
+        $users = User::query()
+            ->when($this->search, function ($query) {
+                $query->where('name', 'like', '%'.$this->search.'%')
+                      ->orWhere('email', 'like', '%'.$this->search.'%');
+            })
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
 
-        // Apply search filter
-        if ($this->search) {
-            $query->where(function ($q) {
-                $q->where('name', 'like', '%' . $this->search . '%')
-                  ->orWhere('email', 'like', '%' . $this->search . '%')
-                  ->orWhere('phone', 'like', '%' . $this->search . '%');
-            });
-        }
+        return view('livewire.users.table', compact('users'));
+    }
 
-        // Apply status filter
-        if ($this->statusFilter === 'active') {
-            $query->where('is_active', true);
-        } elseif ($this->statusFilter === 'inactive') {
-            $query->where('is_active', false);
-        }
-
-        // Apply role filter
-        if ($this->roleFilter) {
-            $query->where('role', $this->roleFilter);
-        }
-
-        $users = $query->orderBy('created_at', 'desc')
-                      ->paginate($this->perPage);
-
-        return view('livewire.users.table', [
-            'users' => $users,
-        ]);
+    public function getIsAdminProperty(): bool
+    {
+        $user = Auth::user();
+        return $user && $user->role === UserRole::ADMIN;
     }
 }

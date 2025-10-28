@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Employees;
 
+use App\Enums\UserRole;
 use App\Models\Company;
 use App\Models\Employee;
 use Illuminate\Support\Facades\Auth;
@@ -112,5 +113,12 @@ class Table extends Component
             ->paginate(10);
 
         return view('livewire.employees.table', compact('employees'));
+    }
+
+    public function getIsAdminProperty(): bool
+    {
+        $user = Auth::user();
+
+        return $user && $user->role === UserRole::ADMIN;
     }
 }
