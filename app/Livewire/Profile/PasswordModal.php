@@ -4,11 +4,12 @@ namespace App\Livewire\Profile;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class PasswordModal extends Component
 {
-    public bool $show = false;
+    public bool $passwordModal = false;
 
     public string $current_password = '';
 
@@ -16,21 +17,18 @@ class PasswordModal extends Component
 
     public string $password_confirmation = '';
 
-    protected $listeners = [
-        'open-password-modal' => 'openModal',
-        'dismiss-password-modal' => 'closeModal',
-    ];
-
+    #[On('open-password-modal')]
     public function openModal(): void
     {
         $this->resetValidation();
         $this->reset(['current_password', 'password', 'password_confirmation']);
-        $this->show = true;
+        $this->passwordModal = true;
     }
 
+    #[On('dismiss-password-modal')]
     public function closeModal(): void
     {
-        $this->show = false;
+        $this->passwordModal = false;
     }
 
     public function updatePassword(): void
@@ -56,8 +54,16 @@ class PasswordModal extends Component
         $user->password = $this->password; // cast 'hashed' akan meng-hash otomatis
         $user->save();
 
-        $this->show = false;
-        $this->dispatch('password-updated');
+        // Tutup modal, logout, dan redirect ke halaman login
+        $this->passwordModal = false;
+        Auth::logout();
+        session()->invalidate();
+        session()->regenerateToken();
+
+        // Optional: dispatch event sebelum redirect jika perlu
+        // $this->dispatch('password-updated');
+
+        redirect('/login');
     }
 
     public function render()
