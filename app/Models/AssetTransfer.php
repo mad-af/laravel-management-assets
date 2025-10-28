@@ -143,9 +143,11 @@ class AssetTransfer extends Model
         $assetIds = $this->items()->pluck('asset_id');
 
         if ($assetIds->isNotEmpty()) {
-            Asset::whereIn('id', $assetIds)->update([
-                'status' => AssetStatus::IN_TRANSFER,
-            ]);
+            $assets = Asset::whereIn('id', $assetIds)->get();
+            foreach ($assets as $asset) {
+                $asset->status = AssetStatus::IN_TRANSFER;
+                $asset->save();
+            }
         }
     }
 
@@ -163,17 +165,17 @@ class AssetTransfer extends Model
                 $destinationCompanyId = Branch::query()->where('id', $destinationBranchId)->value('company_id');
             }
 
-            $payload = [
-                'status' => AssetStatus::ACTIVE,
-            ];
-            if ($destinationBranchId) {
-                $payload['branch_id'] = $destinationBranchId;
+            $assets = Asset::whereIn('id', $assetIds)->get();
+            foreach ($assets as $asset) {
+                $asset->status = AssetStatus::ACTIVE;
+                if ($destinationBranchId) {
+                    $asset->branch_id = $destinationBranchId;
+                }
+                if ($destinationCompanyId) {
+                    $asset->company_id = $destinationCompanyId;
+                }
+                $asset->save();
             }
-            if ($destinationCompanyId) {
-                $payload['company_id'] = $destinationCompanyId;
-            }
-
-            Asset::whereIn('id', $assetIds)->update($payload);
         }
     }
 }

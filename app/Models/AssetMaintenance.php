@@ -84,9 +84,11 @@ class AssetMaintenance extends Model
         static::created(function ($maintenance) {
             // Only set asset to maintenance if the maintenance status is not completed or cancelled
             if (! in_array($maintenance->status, [MaintenanceStatus::COMPLETED, MaintenanceStatus::CANCELLED])) {
-                $maintenance->asset()->update([
-                    'status' => AssetStatus::MAINTENANCE,
-                ]);
+                $asset = $maintenance->asset;
+                if ($asset) {
+                    $asset->status = AssetStatus::MAINTENANCE;
+                    $asset->save();
+                }
             }
 
             // Create odometer log if maintenance has odometer data and asset is a vehicle
@@ -108,9 +110,11 @@ class AssetMaintenance extends Model
 
                 // If maintenance is completed or cancelled, set asset back to active
                 if (in_array($newStatus, [MaintenanceStatus::COMPLETED, MaintenanceStatus::CANCELLED])) {
-                    $maintenance->asset()->update([
-                        'status' => AssetStatus::ACTIVE,
-                    ]);
+                    $asset = $maintenance->asset;
+                    if ($asset) {
+                        $asset->status = AssetStatus::ACTIVE;
+                        $asset->save();
+                    }
 
                     // If maintenance is completed and has vehicle profile, update next service data
                     if ($newStatus === MaintenanceStatus::COMPLETED && $maintenance->asset->vehicleProfile) {
@@ -131,17 +135,17 @@ class AssetMaintenance extends Model
                 }
                 // If maintenance is reopened (back to open or in_progress), set asset to maintenance
                 elseif (in_array($newStatus, [MaintenanceStatus::OPEN, MaintenanceStatus::IN_PROGRESS])) {
-                    $maintenance->asset()->update([
-                        'status' => AssetStatus::MAINTENANCE,
-                    ]);
-
+                    $asset = $maintenance->asset;
+                    if ($asset) {
+                        $asset->status = AssetStatus::MAINTENANCE;
+                        $asset->save();
+                    }
                 }
             }
 
             if ($maintenance->wasChanged('odometer_km_at_service')) {
                 // Create odometer log if maintenance has odometer data and asset is a vehicle
                 if ($maintenance->odometer_km_at_service && $maintenance->asset->vehicleProfile) {
-                    // dd("dsda", $maintenance->odometer_km_at_service, $maintenance->asset);
                     VehicleOdometerLog::create([
                         'asset_id' => $maintenance->asset_id,
                         'odometer_km' => $maintenance->odometer_km_at_service,
@@ -155,9 +159,11 @@ class AssetMaintenance extends Model
 
         // When maintenance is deleted, set asset back to active
         static::deleted(function ($maintenance) {
-            $maintenance->asset()->update([
-                'status' => AssetStatus::ACTIVE,
-            ]);
+            $asset = $maintenance->asset;
+            if ($asset) {
+                $asset->status = AssetStatus::ACTIVE;
+                $asset->save();
+            }
         });
     }
 }

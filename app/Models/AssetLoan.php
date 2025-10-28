@@ -102,18 +102,29 @@ class AssetLoan extends Model
         static::created(function (AssetLoan $loan) {
             // Update asset status to ON_LOAN when loan is created and not yet returned
             if (! empty($loan->asset_id) && $loan->checkin_at === null) {
-                $loan->asset()->update(['status' => AssetStatus::ON_LOAN]);
+                $asset = $loan->asset;
+                if ($asset) {
+                    $asset->status = AssetStatus::ON_LOAN;
+                    $asset->save();
+                }
             }
         });
 
         static::updated(function (AssetLoan $loan) {
             // Update asset status to AVAILABLE when loan is returned
-            if (! empty($loan->asset_id) && $loan->checkin_at !== null) {
-                $loan->asset()->update(['status' => AssetStatus::ACTIVE]);
-            }
+            if (! empty($loan->asset_id)) {
+                $asset = $loan->asset;
+                if ($asset) {
+                    if ($loan->checkin_at !== null) {
+                        $asset->status = AssetStatus::ACTIVE;
+                    }
 
-            if (! empty($loan->condition_in)) {
-                $loan->asset()->update(['condition' => $loan->condition_in]);
+                    if (! empty($loan->condition_in)) {
+                        $asset->condition = $loan->condition_in;
+                    }
+
+                    $asset->save();
+                }
             }
         });
     }

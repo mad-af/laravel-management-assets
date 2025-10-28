@@ -37,8 +37,11 @@ class AssetTransferItem extends Model
     {
         static::created(function (self $item) {
             if ($item->asset_id) {
-                \App\Models\Asset::whereKey($item->asset_id)
-                    ->update(['status' => AssetStatus::IN_TRANSFER]);
+                $asset = \App\Models\Asset::find($item->asset_id);
+                if ($asset) {
+                    $asset->status = AssetStatus::IN_TRANSFER;
+                    $asset->save();
+                }
             }
         });
     }
