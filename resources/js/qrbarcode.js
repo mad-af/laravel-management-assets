@@ -43,15 +43,15 @@ function generateQRAndBarcode(printWindow, url, tagCode, index = 0) {
     // ---------------------- QR (UNCHANGED) ----------------------
     if (qrPlaceholder && url) {
         const qrCanvas = doc.createElement("canvas");
-        qrCanvas.style.width = "1cm";
-        qrCanvas.style.height = "1cm";
+        qrCanvas.style.width = "1.8cm";
+        qrCanvas.style.height = "1.8cm";
 
         QRCode.toCanvas(
             qrCanvas,
             url,
             {
-                width: 38, // ~1cm @ ~96dpi
-                height: 38,
+                width: 68, // ~1.8cm @ ~96dpi
+                height: 68,
                 margin: 0,
             },
             function (error) {

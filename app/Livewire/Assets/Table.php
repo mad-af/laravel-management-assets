@@ -85,11 +85,11 @@ class Table extends Component
     {
         // Jika ada assetId, print single asset
         if ($assetId) {
-            $assets = collect([Asset::findOrFail($assetId)]);
+            $assets = collect([Asset::with('company')->findOrFail($assetId)]);
         }
         // Jika tidak ada assetId, gunakan selectedAssets untuk batch print
         elseif (! empty($this->selectedAssets)) {
-            $assets = Asset::whereIn('id', $this->selectedAssets)->get();
+            $assets = Asset::with('company')->whereIn('id', $this->selectedAssets)->get();
         }
         // Jika tidak ada yang dipilih
         else {
@@ -106,12 +106,12 @@ class Table extends Component
         // Prepare data untuk JavaScript
         $assetsData = $assets->map(function ($asset) {
             $url = route('qr.gateway', ['tag_code' => $asset->tag_code]);
-            $cleanUrl = preg_replace('#^https?://#', '', $url);
+            // $cleanUrl = preg_replace('#^https?://#', '', $url);
 
             return [
                 'id' => $asset->id,
                 'tag_code' => $asset->tag_code,
-                'url' => $cleanUrl
+                'url' => $url
             ];
         })->toArray();
 

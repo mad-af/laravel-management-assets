@@ -69,19 +69,18 @@
 
     /* Placeholder kotak QR & barcode bila belum ada gambar */
     .qr-box {
-      width: auto;
-      height: auto;
+      width: 1.8cm;
+      height: 1.8cm;
+      /* border: 1px solid #000; */
       display: inline-block;
-    }
-
-    .qr-box canvas {
-      image-rendering: pixelated;
     }
 
     .bar-box {
-      width: auto;
+      width: 1.8cm;
       height: 0.4cm;
+      /* border: 1px solid #000; */
       display: inline-block;
+      overflow: hidden;
     }
   </style>
 </head>
@@ -92,34 +91,31 @@
     <table>
       <!-- HEADER -->
       <tr>
-        <td colspan="2" class="center">
-          <div class="bold" style="font-size:6pt">PT. GAYA SUKSES MANDIRI KASEINDO</div>
-          <div class="muted">Jl. Margomulyo 63A Surabaya</div>
-          <div class="muted">Telp. 08123456789</div>
-          <div class="divider"></div>
+        <td colspan="2">
+          <div class="bold" style="font-size:5pt">{{ $asset->company->name ?? '-' }}</div>
         </td>
       </tr>
 
       <!-- ISI: kolom kiri teks, kolom kanan kode -->
       <tr>
         <!-- KIRI: data aset (pakai tabel supaya rapi) -->
-        <td style="width:62%; vertical-align: top; padding-right:0.1cm;">
+        <td style="width:62%; vertical-align: top; padding-right:0.05cm;">
           <table>
             <tr>
               <td class="muted" style="white-space:nowrap;">Model:</td>
-              <td class="muted" style="padding-left:0.08cm;">{{ $asset->model ?? '-' }}</td>
+              <td class="muted" style="padding-left:0.05cm;">{{ $asset->model ?? '-' }}</td>
             </tr>
             <tr>
               <td class="muted">Merk:</td>
-              <td class="muted" style="padding-left:0.08cm;">{{ $asset->brand ?? '-' }}</td>
+              <td class="muted" style="padding-left:0.05cm;">{{ $asset->brand ?? '-' }}</td>
             </tr>
             <tr>
-              <td class="muted">Category:</td>
-              <td class="muted" style="padding-left:0.08cm;">{{ $asset->category->name ?? '-' }}</td>
+              <td class="muted">Kategori:</td>
+              <td class="muted" style="padding-left:0.05cm;">{{ $asset->category->name ?? '-' }}</td>
             </tr>
             <tr>
-              <td class="muted">Purchase Date:</td>
-              <td class="muted" style="padding-left:0.08cm;">
+              <td class="muted">Tgl. Beli:</td>
+              <td class="muted" style="padding-left:0.05cm;">
                 @if($asset->purchase_date)
                   {{ $asset->purchase_date->format('d/m/Y') }}
                 @else
@@ -129,19 +125,24 @@
             </tr>
             <tr>
               <td class="muted">S/N:</td>
-              <td class="muted" style="padding-left:0.08cm;">{{ $asset->serial_number ?? '-' }}</td>
+              <td class="muted" style="padding-left:0.05cm;">{{ $asset->serial_number ?? '-' }}</td>
             </tr>
           </table>
         </td>
 
-        <!-- KANAN: QR dan barcode -->
+        <!-- KANAN: QR -->
         <td style="width:38%; vertical-align: top; text-align: center;">
           <!-- Ganti DIV di bawah dengan IMG jika sudah ada file QR -->
-          <!-- Contoh: <img src="qr.png" style="width:1.8cm;height:1.8cm;" /> -->
           <div class="qr-box"></div>
-          <!-- Contoh: <img src="barcode.png" style="width:1.8cm;height:0.65cm;" /> -->
+        </td>
+      </tr>
+
+      <tr>
+        <td>
           <div class="bar-box"></div>
-          <div style="font-size: 3pt;">{{ $asset->tag_code }}</div>
+        </td>
+        <td>
+          <div style="font-size: 5pt; text-align: right;">{{ $asset->tag_code ?? '-' }}</div>
         </td>
       </tr>
     </table>
