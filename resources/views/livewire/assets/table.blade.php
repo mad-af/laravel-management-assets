@@ -49,7 +49,7 @@
                     ['key' => 'category', 'label' => 'Kategori'],
                     ['key' => 'status', 'label' => 'Status'],
                     ['key' => 'condition', 'label' => 'Kondisi'],
-                    ['key' => 'last_seen_at', 'label' => 'Terakhir Dilihat'],
+                    // ['key' => 'last_seen_at', 'label' => 'Terakhir Dilihat'],
                     ['key' => 'actions', 'label' => 'Aksi'],
                 ];
             @endphp
