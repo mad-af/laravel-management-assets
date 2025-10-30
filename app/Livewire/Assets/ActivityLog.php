@@ -63,6 +63,7 @@ class ActivityLog extends Component
         $logs = AssetLog::where('asset_id', $this->asset->id)
             ->with(['user'])
             ->orderBy('created_at', 'desc');
+            
 
         if (! $this->showAll) {
             $logs = $logs->limit(10)->get();
