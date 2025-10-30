@@ -72,7 +72,7 @@
                 </div>
 
                 <div class="mt-4">
-                    {{ $insurances->links() }}
+                    {{ $insurances->links(view: 'components.pagination.simple') }}
                 </div>
             </div>
         @endif

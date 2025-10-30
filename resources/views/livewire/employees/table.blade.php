@@ -130,7 +130,7 @@
                     pegawai
                 </div>
                 <div class="mt-4">
-                    {{ $employees->links() }}
+                    {{ $employees->links(view: 'components.pagination.simple') }}
                 </div>
             </div>
         @endif

@@ -238,7 +238,7 @@
                     {{ $vehicleAssets->total() }} kendaraan
                 </div>
                 <div class="mt-4">
-                    {{ $vehicleAssets->links() }}
+                    {{ $vehicleAssets->links(view: 'components.pagination.simple') }}
                 </div>
             </div>
         @endif

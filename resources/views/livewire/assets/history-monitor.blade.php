@@ -153,7 +153,7 @@
 
     @if($showAll && method_exists($maintenances, 'links'))
         <div class="mt-4">
-            {{ $maintenances->links() }}
+            {{ $maintenances->links(view: 'components.pagination.simple') }}
         </div>
     @endif
 </x-info-card>
