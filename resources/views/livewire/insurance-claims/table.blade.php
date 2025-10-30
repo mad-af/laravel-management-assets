@@ -12,7 +12,7 @@
             <div class="flex gap-2">
                 <x-dropdown>
                     <x-slot:trigger>
-                        <x-button icon="o-funnel" class="btn-sm ">
+                        <x-button icon="o-funnel" class="btn-sm">
                             Filter Status
                         </x-button>
                     </x-slot:trigger>
@@ -115,7 +115,7 @@
 
                 {{-- Livewire Pagination --}}
                 <div class="mt-4">
-                    {{ $claims->links() }}
+                    {{ $assets->links(view: 'components.pagination.simple') }}
                 </div>
             </div>
         @endif

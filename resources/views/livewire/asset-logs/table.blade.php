@@ -12,7 +12,7 @@
             <div class="flex gap-2">
                 <x-dropdown>
                     <x-slot:trigger>
-                        <x-button icon="o-cube" class="btn-sm ">
+                        <x-button icon="o-cube" class="btn-sm">
                             Filter Asset
                         </x-button>
                     </x-slot:trigger>
@@ -26,7 +26,7 @@
 
                 <x-dropdown>
                     <x-slot:trigger>
-                        <x-button icon="o-bolt" class="btn-sm ">
+                        <x-button icon="o-bolt" class="btn-sm">
                             Filter Aksi
                         </x-button>
                     </x-slot:trigger>
@@ -40,7 +40,7 @@
 
                 <x-dropdown>
                     <x-slot:trigger>
-                        <x-button icon="o-user" class="btn-sm ">
+                        <x-button icon="o-user" class="btn-sm">
                             Filter User
                         </x-button>
                     </x-slot:trigger>
@@ -51,7 +51,7 @@
                     @endforeach
                 </x-dropdown>
 
-                <x-button wire:click="exportLogs" icon="o-arrow-down-tray" class="btn-sm ">
+                <x-button wire:click="exportLogs" icon="o-arrow-down-tray" class="btn-sm">
                     Export CSV
                 </x-button>
             </div>
@@ -97,7 +97,7 @@
 
                 @scope('cell_user', $log)
                 @if($log->user)
-                    <div class="flex items-center gap-2">
+                    <div class="flex gap-2 items-center">
                         <x-avatar initials="{{ substr($log->user->name, 0, 2) }}" size="xs" placeholder="true" />
                         <span class="text-sm">{{ $log->user->name }}</span>
                     </div>
@@ -154,7 +154,7 @@
 
                 {{-- Livewire Pagination --}}
                 <div class="mt-4">
-                    {{ $logs->links() }}
+                    {{ $assets->links(view: 'components.pagination.simple') }}
                 </div>
             </div>
         @endif

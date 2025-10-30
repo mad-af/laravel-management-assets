@@ -171,8 +171,10 @@
                 <div class="text-sm text-base-content/70">
                     Menampilkan {{ $assets->firstItem() }}-{{ $assets->lastItem() }} dari {{ $assets->total() }} aset
                 </div>
+                
+                {{-- Livewire Pagination --}}
                 <div class="mt-4">
-                    {{ $assets->links() }}
+                    {{ $assets->links(view: 'components.pagination.simple') }}
                 </div>
             </div>
         @endif
