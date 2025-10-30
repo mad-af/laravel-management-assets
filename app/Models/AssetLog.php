@@ -96,12 +96,6 @@ class AssetLog extends Model
                 $newAction = AssetLogAction::STATUS_CHANGED;
             }
 
-            // Fallback umum untuk perubahan status lain
-            if (! $message && $oldVal !== $newVal) {
-                $message = 'Status aset berubah: '.self::labelFor($oldVal).' → '.self::labelFor($newVal);
-                $newAction = AssetLogAction::STATUS_CHANGED;
-            }
-
             if ($message || $newAction) {
                 if ($message) {
                     $log->notes = $message;

@@ -62,12 +62,6 @@ class AssetLogBackfillSeeder extends Seeder
                 $newAction = AssetLogAction::STATUS_CHANGED;
             }
 
-            // Fallback umum untuk perubahan status lain
-            if (! $message) {
-                $message = 'Status aset berubah: ' . $this->labelFor($oldVal) . ' → ' . $this->labelFor($newVal);
-                $newAction = AssetLogAction::STATUS_CHANGED;
-            }
-
             $dirty = false;
             if ($message && $log->notes !== $message) {
                 $log->notes = $message;
