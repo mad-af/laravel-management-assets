@@ -36,9 +36,9 @@
     </div>
 
     <!-- Status -->
-    <div>
+    <div class="hidden"> 
         <x-select label="Status" wire:model="status" :options="$statuses" option-value="value" option-label="label"
-            placeholder="Pilih status" required class="select-sm" :disabled="$isEdit" />
+            placeholder="Pilih status" required class="select-sm" :disabled="$isEdit || true" />
     </div>
 
     <!-- Condition -->
