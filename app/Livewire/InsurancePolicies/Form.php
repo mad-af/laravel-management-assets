@@ -148,7 +148,7 @@ class Form extends Component
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', '%'.$search.'%')
                     ->orWhere('code', 'like', '%'.$search.'%')
-                    ->orWhere('tag', 'like', '%'.$search.'%');
+                    ->orWhere('tag_code', 'like', '%'.$search.'%');
             });
         }
         $this->assets = $query->limit(20)->get(['id', 'name', 'tag_code', 'code', 'image'])->toArray();
