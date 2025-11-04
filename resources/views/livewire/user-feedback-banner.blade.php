@@ -1,6 +1,6 @@
 <div>
     <!-- Banner -->
-    <div x-data="{ open: @entangle('showBanner') }" x-show="open" class="p-4 rounded-lg border border-base-300 bg-base-100">
+    <div x-data="{ open: @entangle('showBanner') }" x-show="open" class="p-4 rounded-lg border-2 border-dashed border-secondary border-base-300 bg-base-100">
         <div class="flex gap-3 justify-between items-center">
             <div class="flex gap-3 items-center">
                 <div class="flex justify-center items-center w-8 h-8 rounded-full bg-secondary/20">

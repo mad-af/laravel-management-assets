@@ -119,4 +119,7 @@ return [
     'cc' => env('MAIL_CC'),
     'bcc' => env('MAIL_BCC'),
 
+    // Feedback receiver email address
+    'feedback_receiver' => env('FEEDBACK_RECEIVER_EMAIL'),
+
 ];

@@ -2,12 +2,17 @@
 
 namespace App\Livewire;
 
+use App\Mail\FeedbackSubmitted;
 use App\Models\Feedback;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
+use Mary\Traits\Toast;
 
 class UserFeedbackBanner extends Component
 {
+    use Toast;
+
     public bool $showBanner = false;
 
     public bool $showModal = false;
@@ -26,7 +31,7 @@ class UserFeedbackBanner extends Component
             $hasFeedback = Feedback::where('user_id', $user->id)
                 ->where('period', $this->period)
                 ->exists();
-            $this->showBanner = ! $hasFeedback;
+            $this->showBanner = true;
         }
     }
 
@@ -42,32 +47,37 @@ class UserFeedbackBanner extends Component
 
     public function submit(): void
     {
-        $this->validate([
-            'rating' => ['required', 'integer', 'min:1', 'max:5'],
-            'message' => ['nullable', 'string', 'max:2000'],
-        ]);
+        try {
+            $this->validate([
+                'rating' => ['required', 'integer', 'min:1', 'max:5'],
+                'message' => ['nullable', 'string', 'max:2000'],
+            ]);
 
         $user = Auth::user();
         if (! $user) {
             return; // no-op if not authenticated
         }
 
-        Feedback::create([
+        $feedback = Feedback::create([
             'user_id' => $user->id,
             'period' => $this->period,
             'rating' => $this->rating,
             'message' => $this->message,
         ]);
 
-        // Hide banner once submitted
-        $this->showBanner = false;
-        $this->showModal = false;
+        // Queue email to admin/owner
+        $receiver = config('mail.feedback_receiver') ?? config('mail.from.address');
+        if ($receiver) {
+            Mail::to($receiver)->queue(new FeedbackSubmitted($feedback));
+        }
 
-        // Show success toast via browser event
-        $this->dispatchBrowserEvent('alert', [
-            'type' => 'success',
-            'message' => 'Terima kasih atas feedback Anda!',
-        ]);
+        $this->success('Terima kasih atas feedback Anda!');
+        } catch (\Exception $e) {
+            $this->error('Gagal mengirim feedback.');
+        } finally {
+            $this->showBanner = false;
+            $this->showModal = false;
+        }
     }
 
     private function currentPeriod(): string
