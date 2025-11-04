@@ -4,7 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -12,7 +13,8 @@ return new class extends Migration {
     {
         Schema::create('feedback', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            // Sesuaikan tipe FK dengan users.id yang bertipe UUID
+            $table->foreignUuid('user_id')->constrained()->onDelete('cascade');
             $table->unsignedTinyInteger('rating'); // 1-5
             $table->text('message')->nullable();
             $table->timestamps();
