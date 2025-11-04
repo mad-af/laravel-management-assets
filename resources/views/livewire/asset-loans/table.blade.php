@@ -6,7 +6,7 @@
             <div class="gap-1 items-center min-w-max tabs tabs-box tabs-sm w-fit">
                 @foreach($loanStatuses as $status)
                     <a href="{{ request()->fullUrlWithQuery(['statusFilter' => $status->value, 'page' => 1]) }}"
-                       class="gap-2 tab {{ ($statusFilter === $status->value) ? 'tab-active' : '' }}">
+                       class="gap-2 tab {{ ($statusFilter === $status->value) ? 'tab-active' : '' }}" wire:navigate>
                         {{ $status->label() }}
                         <x-badge class="badge-{{ $status->color() }}" :value="$statusCounts[$status->value] ?? 0" />
                     </a>

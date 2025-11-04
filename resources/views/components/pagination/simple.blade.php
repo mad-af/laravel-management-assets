@@ -8,7 +8,7 @@
                 </li>
             @else
                 <li>
-                    <a href="{{ request()->fullUrlWithQuery(['page' => $paginator->currentPage() - 1]) }}" rel="prev" class="join-item btn btn-sm" aria-label="Prev">Prev</a>
+                    <a wire:navigate href="{{ request()->fullUrlWithQuery(['page' => $paginator->currentPage() - 1]) }}" rel="prev" class="join-item btn btn-sm" aria-label="Prev">Prev</a>
                 </li>
             @endif
 
@@ -24,7 +24,7 @@
             {{-- First page shortcut --}}
             @if ($start > 1)
                 <li>
-                    <a href="{{ request()->fullUrlWithQuery(['page' => 1]) }}" class="join-item btn btn-sm">1</a>
+                    <a wire:navigate href="{{ request()->fullUrlWithQuery(['page' => 1]) }}" class="join-item btn btn-sm">1</a>
                 </li>
                 @if ($start > 2)
                     <li>
@@ -41,7 +41,7 @@
                     </li>
                 @else
                     <li>
-                        <a href="{{ request()->fullUrlWithQuery(['page' => $page]) }}" class="join-item btn btn-sm">{{ $page }}</a>
+                        <a wire:navigate href="{{ request()->fullUrlWithQuery(['page' => $page]) }}" class="join-item btn btn-sm">{{ $page }}</a>
                     </li>
                 @endif
             @endfor
@@ -54,14 +54,14 @@
                     </li>
                 @endif
                 <li>
-                    <a href="{{ request()->fullUrlWithQuery(['page' => $last]) }}" class="join-item btn btn-sm">{{ $last }}</a>
+                    <a wire:navigate href="{{ request()->fullUrlWithQuery(['page' => $last]) }}" class="join-item btn btn-sm">{{ $last }}</a>
                 </li>
             @endif
 
             {{-- Next Page Link --}}
             @if ($paginator->hasMorePages())
                 <li>
-                    <a href="{{ request()->fullUrlWithQuery(['page' => $paginator->currentPage() + 1]) }}" rel="next" class="join-item btn btn-sm" aria-label="Next">Next</a>
+                    <a wire:navigate href="{{ request()->fullUrlWithQuery(['page' => $paginator->currentPage() + 1]) }}" rel="next" class="join-item btn btn-sm" aria-label="Next">Next</a>
                 </li>
             @else
                 <li>
