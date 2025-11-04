@@ -8,6 +8,7 @@ use App\Models\Asset;
 use App\Models\Branch;
 use App\Models\Category;
 use App\Support\SessionKey;
+use Illuminate\Support\Facades\Cache;
 use Livewire\Attributes\On;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -111,7 +112,7 @@ class Table extends Component
             return [
                 'id' => $asset->id,
                 'tag_code' => $asset->tag_code,
-                'url' => $url
+                'url' => $url,
             ];
         })->toArray();
 
@@ -148,7 +149,7 @@ class Table extends Component
         // Get current branch ID from session
         $currentBranchId = session_get(SessionKey::BranchId);
 
-        $assets = Asset::query()
+        $assetsQuery = Asset::query()
             ->with(['category', 'branch'])
             ->when($currentBranchId, function ($query) use ($currentBranchId) {
                 $query->where('branch_id', $currentBranchId);
@@ -168,11 +169,28 @@ class Table extends Component
             })
             ->when($this->branchFilter, function ($query) {
                 $query->where('branch_id', $this->branchFilter);
-            })
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            });
 
-        $categories = Category::active()->orderBy('name')->get();
+        $page = request()->query('page', 1);
+        $assetsCacheKey = sprintf(
+            'assets:list:b%s:s%s:sf%s:cf%s:bf%s:p%d',
+            (string) ($currentBranchId ?? '-'),
+            md5($this->search ?? ''),
+            $this->statusFilter ?: '-',
+            $this->categoryFilter ?: '-',
+            $this->branchFilter ?: '-',
+            (int) $page
+        );
+
+        $assets = Cache::remember($assetsCacheKey, 30, function () use ($assetsQuery) {
+            return $assetsQuery
+                ->orderBy('created_at', 'desc')
+                ->paginate(10);
+        });
+
+        $categories = Cache::remember('categories:active:list', 300, function () {
+            return Category::active()->orderBy('name')->get();
+        });
         $statuses = AssetStatus::cases();
         // dd($assets);
 

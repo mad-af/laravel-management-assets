@@ -7,6 +7,7 @@ use App\Enums\AssetStatus;
 use App\Models\Asset;
 use App\Models\Category;
 use App\Support\SessionKey;
+use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -124,19 +125,43 @@ class Table extends Component
                 $query->where('category_id', $this->categoryFilter);
             });
 
-        $assets = $assetsQuery
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+        // Cache paginated assets list keyed by filters, branch, and page
+        $page = request()->query('page', 1);
+        $assetsCacheKey = sprintf(
+            'asset_loans:assets:list:b%d:s%s:sf%s:cf%s:of%s:cat%s:p%d',
+            (int) $currentBranchId,
+            md5($this->search ?? ''),
+            $this->statusFilter ?? '-',
+            $this->conditionFilter ?: '-',
+            $this->overdueFilter ? '1' : '0',
+            $this->categoryFilter ?: '-',
+            (int) $page
+        );
+
+        $assets = Cache::remember($assetsCacheKey, 30, function () use ($assetsQuery) {
+            return $assetsQuery
+                ->orderBy('created_at', 'desc')
+                ->paginate(10);
+        });
 
         // Build dynamic status counts keyed by enum value
-        $availableCount = Asset::forBranch($currentBranchId)->available()->count();
-        $onLoanCount = Asset::forBranch($currentBranchId)->where('status', AssetStatus::ON_LOAN)->count();
-        $overdueCount = Asset::forBranch($currentBranchId)
-            ->where('status', AssetStatus::ON_LOAN)
-            ->whereHas('loans', function ($q) {
-                $q->whereNull('checkin_at')->where('due_at', '<', now());
-            })
-            ->count();
+        // Cache status counts per branch for a short TTL
+        $availableCount = Cache::remember("asset_loans:count:available:b{$currentBranchId}", 60, function () use ($currentBranchId) {
+            return Asset::forBranch($currentBranchId)->available()->count();
+        });
+
+        $onLoanCount = Cache::remember("asset_loans:count:onloan:b{$currentBranchId}", 60, function () use ($currentBranchId) {
+            return Asset::forBranch($currentBranchId)->where('status', AssetStatus::ON_LOAN)->count();
+        });
+
+        $overdueCount = Cache::remember("asset_loans:count:overdue:b{$currentBranchId}", 60, function () use ($currentBranchId) {
+            return Asset::forBranch($currentBranchId)
+                ->where('status', AssetStatus::ON_LOAN)
+                ->whereHas('loans', function ($q) {
+                    $q->whereNull('checkin_at')->where('due_at', '<', now());
+                })
+                ->count();
+        });
 
         $statusCounts = [
             AssetLoanStatus::AVAILABLE->value => $availableCount,
@@ -147,8 +172,10 @@ class Table extends Component
         // Provide status cases to the view if needed
         $loanStatuses = AssetLoanStatus::cases();
 
-        // Provide categories to the view
-        $categories = Category::active()->orderBy('name')->get();
+        // Provide categories to the view (cached)
+        $categories = Cache::remember('categories:active:list', 300, function () {
+            return Category::active()->orderBy('name')->get();
+        });
 
         return view('livewire.asset-loans.table', compact('assets', 'statusCounts', 'loanStatuses', 'categories'));
     }
