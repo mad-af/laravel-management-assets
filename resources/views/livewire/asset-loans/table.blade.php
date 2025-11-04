@@ -5,12 +5,11 @@
         <div class="overflow-x-auto">
             <div class="gap-1 items-center min-w-max tabs tabs-box tabs-sm w-fit">
                 @foreach($loanStatuses as $status)
-                    <label class="gap-2 tab">
-                        <input type="radio" name="status_tabs" class="checked:bg-base-100 checked:shadow"
-                            wire:model.live="statusFilter" value="{{ $status->value }}" />
+                    <a href="{{ request()->fullUrlWithQuery(['statusFilter' => $status->value, 'page' => 1]) }}"
+                       class="gap-2 tab {{ ($statusFilter === $status->value) ? 'tab-active' : '' }}">
                         {{ $status->label() }}
                         <x-badge class="badge-{{ $status->color() }}" :value="$statusCounts[$status->value] ?? 0" />
-                    </label>
+                    </a>
                 @endforeach
             </div>
         </div>
