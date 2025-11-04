@@ -1,5 +1,5 @@
 @if ($paginator->hasPages())
-    <nav role="navigation" aria-label="Pagination Navigation" class="flex items-center justify-end">
+    <nav role="navigation" aria-label="Pagination Navigation" class="flex justify-end items-center">
         <ul class="join">
             {{-- Previous Page Link --}}
             @if ($paginator->onFirstPage())
@@ -8,7 +8,7 @@
                 </li>
             @else
                 <li>
-                    <a href="{{ $paginator->previousPageUrl() }}" rel="prev" class="join-item btn btn-sm" aria-label="Prev">Prev</a>
+                    <a href="{{ request()->fullUrlWithQuery(['page' => $paginator->currentPage() - 1]) }}" rel="prev" class="join-item btn btn-sm" aria-label="Prev">Prev</a>
                 </li>
             @endif
 
@@ -24,7 +24,7 @@
             {{-- First page shortcut --}}
             @if ($start > 1)
                 <li>
-                    <a href="{{ $paginator->url(1) }}" class="join-item btn btn-sm">1</a>
+                    <a href="{{ request()->fullUrlWithQuery(['page' => 1]) }}" class="join-item btn btn-sm">1</a>
                 </li>
                 @if ($start > 2)
                     <li>
@@ -41,7 +41,7 @@
                     </li>
                 @else
                     <li>
-                        <a href="{{ $paginator->url($page) }}" class="join-item btn btn-sm">{{ $page }}</a>
+                        <a href="{{ request()->fullUrlWithQuery(['page' => $page]) }}" class="join-item btn btn-sm">{{ $page }}</a>
                     </li>
                 @endif
             @endfor
@@ -54,14 +54,14 @@
                     </li>
                 @endif
                 <li>
-                    <a href="{{ $paginator->url($last) }}" class="join-item btn btn-sm">{{ $last }}</a>
+                    <a href="{{ request()->fullUrlWithQuery(['page' => $last]) }}" class="join-item btn btn-sm">{{ $last }}</a>
                 </li>
             @endif
 
             {{-- Next Page Link --}}
             @if ($paginator->hasMorePages())
                 <li>
-                    <a href="{{ $paginator->nextPageUrl() }}" rel="next" class="join-item btn btn-sm" aria-label="Next">Next</a>
+                    <a href="{{ request()->fullUrlWithQuery(['page' => $paginator->currentPage() + 1]) }}" rel="next" class="join-item btn btn-sm" aria-label="Next">Next</a>
                 </li>
             @else
                 <li>
