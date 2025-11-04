@@ -31,7 +31,7 @@ class UserFeedbackBanner extends Component
             $hasFeedback = Feedback::where('user_id', $user->id)
                 ->where('period', $this->period)
                 ->exists();
-            $this->showBanner = true;
+            $this->showBanner = ! $hasFeedback;
         }
     }
 
