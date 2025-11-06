@@ -61,6 +61,9 @@ class Combobox extends Component
 
     public ?string $optionMeta = null;
 
+    // Error key for validation messages from parent component
+    public ?string $errorKey = null;
+
     // NEW: Control dispatch on focus
     public bool $onfocusload = false;
 

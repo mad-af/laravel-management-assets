@@ -115,7 +115,7 @@
 
                 {{-- Livewire Pagination --}}
                 <div class="mt-4">
-                    {{ $assets->links(view: 'components.pagination.simple') }}
+                    {{ $claims->links(view: 'components.pagination.simple') }}
                 </div>
             </div>
         @endif

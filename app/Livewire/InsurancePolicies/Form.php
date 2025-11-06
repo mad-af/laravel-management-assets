@@ -123,7 +123,6 @@ class Form extends Component
                 $this->resetForm();
             }
         } catch (\Exception $e) {
-            dd($e);
             $this->error('Terjadi kesalahan: '.$e->getMessage());
         }
     }

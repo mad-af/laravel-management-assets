@@ -17,10 +17,11 @@
                         </x-button>
                     </x-slot:trigger>
 
-                    <x-menu-item title="Semua Status" wire:click="$set('statusFilter', '')" />
+                    <x-menu-item title="Semua Status" 
+                        link="{{ '?'.http_build_query(array_merge(request()->query(), ['statusFilter' => ''])) }}" />
                     @foreach($statuses as $status)
                         <x-menu-item title="{{ $status->label() }}"
-                            wire:click="$set('statusFilter', '{{ $status->value }}')" />
+                            link="{{ '?'.http_build_query(array_merge(request()->query(), ['statusFilter' => $status->value])) }}" />
                     @endforeach
                 </x-dropdown>
 
@@ -31,10 +32,11 @@
                         </x-button>
                     </x-slot:trigger>
 
-                    <x-menu-item title="Semua Kategori" wire:click="$set('categoryFilter', '')" />
+                    <x-menu-item title="Semua Kategori" 
+                        link="{{ '?'.http_build_query(array_merge(request()->query(), ['categoryFilter' => '', 'page' => 1])) }}" />
                     @foreach($categories as $category)
                         <x-menu-item title="{{ $category->name }}"
-                            wire:click="$set('categoryFilter', '{{ $category->id }}')" />
+                            link="{{ '?'.http_build_query(array_merge(request()->query(), ['categoryFilter' => $category->id, 'page' => 1])) }}" />
                     @endforeach
                 </x-dropdown>
 

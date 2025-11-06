@@ -13,7 +13,7 @@
             option-meta="code" 
             option-avatar="image"
             class="select-sm"
-            :required="true"
+            required
             :onfocusload="true"
         />
     </div>
