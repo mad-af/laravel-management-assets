@@ -20,8 +20,8 @@ class ConfirmReceipt extends Component
 
     public function confirmReceipt(): void
     {
-        if ($this->confirmation_text !== 'saya telah menerima asset') {
-            $this->addError('confirmation_text', 'Ketik tepat: "saya telah menerima asset" untuk konfirmasi.');
+        if ($this->confirmation_text !== 'Saya telah menerima asset') {
+            $this->addError('confirmation_text', 'Ketik tepat: "Saya telah menerima asset" untuk konfirmasi.');
 
             return;
         }
@@ -46,7 +46,7 @@ class ConfirmReceipt extends Component
     // Computed: apakah frasa konfirmasi cocok
     public function getIsConfirmedProperty(): bool
     {
-        return $this->confirmation_text === 'saya telah menerima asset';
+        return $this->confirmation_text === 'Saya telah menerima asset';
     }
 
     public function render()

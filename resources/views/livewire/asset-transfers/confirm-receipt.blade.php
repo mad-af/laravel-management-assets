@@ -1,5 +1,4 @@
-<div class="p-3 mt-6 border rounded-box bg-base-200 border-base-300">
-    <p class="mb-2 text-sm text-base-content/70">Untuk memastikan Anda benar-benar menerima aset.</p>
+<div class="mt-6 pb-24">
 
     <livewire:components.confirmation-phrase wire:model.live="confirmation_text" phrase="Saya telah menerima asset" />
     @error('confirmation_text')
