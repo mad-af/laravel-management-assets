@@ -44,9 +44,9 @@
     <tr>
       <td style="width:70%; vertical-align: top;">
         <div class="mb-2">
-          <div class="uppercase bold" style="font-size:16px; line-height:1.2;">PT. GAYA SUKSES MANDIRI KASEINDO</div>
+          <div class="uppercase bold" style="font-size:16px; line-height:1.2; text-transform: uppercase;">{{ $data->company_name }}</div>
         </div>
-        <div class="mb-0.5 small lh-tight">
+        {{-- <div class="mb-0.5 small lh-tight">
           <div class="semibold">Surabaya Office | Factory</div>
           <div>Jl. Raya Margomulyo 63A, Surabaya</div>
           <div>Tel: +62 31 7499 050 · surabaya@safeway.co.id</div>
@@ -60,7 +60,7 @@
           <div class="semibold">Semarang Office | Factory</div>
           <div>Kawasan Industri Candi, Blok XIC No. 2C, Semarang</div>
           <div>Tel: +62 24 7627 600 · semarang@safeway.co.id</div>
-        </div>
+        </div> --}}
       </td>
       <td class="right" style="width:30%; vertical-align: top;">
         <div class="uppercase title bold">WORK</div>
