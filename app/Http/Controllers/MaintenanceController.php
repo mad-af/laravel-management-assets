@@ -78,11 +78,12 @@ class MaintenanceController extends Controller
     public function generatePDF(AssetMaintenance $maintenance)
     {
         // Load relationships
-        $maintenance->load(['asset.vehicleProfile', 'employee', 'assignedUser']);
+        $maintenance->load(['asset.company', 'asset.vehicleProfile', 'employee', 'assignedUser']);
 
         // Prepare data for PDF template
         // dd($maintenance);
         $data = (object) [
+            'company_name' => optional(optional($maintenance->asset)->company)->name ?? 'PT. Gaya Sukses Mandiri Kaseindo',
             'work_order_no' => $maintenance->code,
             'vendor_name' => $maintenance->vendor_name ?? 'Workshop Maintenance',
             'workshop_address' => '', // Default since not stored in DB

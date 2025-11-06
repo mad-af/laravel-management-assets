@@ -161,7 +161,7 @@
         @foreach($data->maintenance->service_tasks as $index => $task)
           <tr>
             <td class="p-1 border center">{{ $index + 1 }}</td>
-            <td class="p-1 border">{{ $task }}</td>
+            <td class="p-1 border">{{ $task['task'] }}</td>
             <td class="p-1 border">&nbsp;</td>
           </tr>
         @endforeach
@@ -232,7 +232,7 @@
     <table class="xs">
       <tr>
         <td>
-          Diterbitkan oleh <span class="bold">PT. Gaya Sukses Mandiri Kaseindo</span> · Dokumen Rahasia – Untuk penggunaan internal dan klien.
+          Diterbitkan oleh <span class="bold capitalize">{{ $data->company_name }}</span> · Dokumen Rahasia – Untuk penggunaan internal dan klien.
         </td>
       </tr>
     </table>
