@@ -18,8 +18,10 @@
                 </button>
             </div>
 
+            @if(in_array($action, ['create', 'edit']))
             <!-- Policy Form -->
             <livewire:insurance-policies.form :asset_id="$assetId" :policyId="$editingPolicyId" :key="'policy-form-' . ($editingPolicyId ?? $assetId ?? 'new')" />
+            @endif
         </div>
     </div>
 </div>

@@ -115,12 +115,12 @@
                         
                         @if ($asset->latestActiveInsurancePolicy->status->value == 'active')
                         <li>
-                            <button wire:click="delete('{{ $policy->id }}')"
-                                wire:confirm="Apakah Anda yakin ingin menghapus polis ini?"
+                            <a 
+                                href="{{ route('insurance-claims.index', ['policy_id' => $policy->id, 'action' => 'create']) }}"
                                 class="flex gap-2 items-center p-2 text-sm rounded">
                                 <x-icon name="o-wallet" class="w-4 h-4" />
                                 Klaim Asuransi
-                            </button>
+                            </a>
                         </li>
                         @endif
                         

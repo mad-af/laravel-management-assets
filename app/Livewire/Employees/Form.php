@@ -6,6 +6,7 @@ use App\Models\Branch;
 use App\Models\Company;
 use App\Models\Employee;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use Livewire\Component;
 use Mary\Traits\Toast;
 
@@ -37,15 +38,22 @@ class Form extends Component
 
     public array $branches = [];
 
-    protected $rules = [
-        'company_id' => 'required|uuid|exists:companies,id',
-        'branch_id' => 'nullable|uuid|exists:branches,id',
-        'employee_number' => 'nullable|string|min:1|unique:employees,employee_number,NULL,id',
-        'full_name' => 'required|string|max:255',
-        'email' => 'nullable|email|max:255',
-        'phone' => 'nullable|string|max:50',
-        'is_active' => 'boolean',
-    ];
+    protected function rules(): array
+    {
+        return [
+            'company_id' => 'required|uuid|exists:companies,id',
+            'branch_id' => 'nullable|uuid|exists:branches,id',
+            // Abaikan record saat ini agar tidak gagal ketika nilai sama
+            'employee_number' => [
+                'nullable', 'string', 'min:1',
+                Rule::unique('employees', 'employee_number')->ignore($this->employeeId),
+            ],
+            'full_name' => 'required|string|max:255',
+            'email' => 'nullable|email|max:255',
+            'phone' => 'nullable|string|max:50',
+            'is_active' => 'boolean',
+        ];
+    }
 
     protected $listeners = [
         'editEmployee' => 'edit',
@@ -133,8 +141,7 @@ class Form extends Component
         // Pastikan opsi branch terisi sesuai company saat edit
         $this->loadBranches($this->company_id);
 
-        // Aturan unik untuk employee_number saat update
-        $this->rules['employee_number'] = 'nullable|integer|min:1|unique:employees,employee_number,'.$employee->id;
+        // Aturan validasi unik ditangani dinamis via rules() menggunakan ignore($this->employeeId)
     }
 
     public function save(): void
@@ -145,7 +152,8 @@ class Form extends Component
             if ($this->isEdit && $this->employeeId) {
                 $employee = Employee::findOrFail($this->employeeId);
 
-                $employee->update([
+                // Hanya update field yang berubah untuk menghindari konflik unik yang tidak perlu
+                $data = [
                     'company_id' => $this->company_id,
                     'branch_id' => $this->branch_id,
                     'employee_number' => $this->employee_number,
@@ -153,9 +161,18 @@ class Form extends Component
                     'email' => $this->email,
                     'phone' => $this->phone,
                     'is_active' => $this->is_active,
-                ]);
+                ];
 
-                $this->success('Employee updated successfully!');
+                $employee->fill($data);
+
+                if ($employee->isDirty()) {
+                    $employee->save();
+                    $this->success('Employee updated successfully!');
+                } else {
+                    // Tidak ada perubahan, tetap sukses tanpa menyentuh DB
+                    $this->success('No changes detected.');
+                }
+
                 $this->dispatch('employee-updated');
             } else {
                 Employee::create([
@@ -174,6 +191,8 @@ class Form extends Component
             }
         } catch (\Throwable $e) {
             $this->error('An error occurred: '.$e->getMessage());
+        } finally {
+            $this->dispatch('close-drawer');
         }
     }
 

@@ -90,9 +90,10 @@ class Form extends Component
         'imageFinalized' => 'handleImageFinalized',
     ];
 
-    public function mount($claimId = null)
+    public function mount($claimId = null, $policyId = null)
     {
         $this->claimId = $claimId;
+        $this->policy_id = $policyId;
         $this->loadOptions();
 
         if ($claimId) {

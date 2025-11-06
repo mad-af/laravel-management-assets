@@ -18,8 +18,10 @@
                 </button>
             </div>
 
-            <!-- Claim Form -->
-            <livewire:insurance-claims.form :claimId="$editingClaimId" :key="'claim-form-' . ($editingClaimId ?? 'new')" />
+        <!-- Claim Form -->
+            @if(in_array($action, ['create', 'edit']))
+            <livewire:insurance-claims.form :claimId="$editingClaimId" :policyId="$editingPolicyId" :key="'claim-form-' . ($editingClaimId ?? 'new')" />
+            @endif
         </div>
     </div>
 </div>

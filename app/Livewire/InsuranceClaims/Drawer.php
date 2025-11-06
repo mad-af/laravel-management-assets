@@ -13,9 +13,14 @@ class Drawer extends Component
     #[Url(as: 'claim_id')] // ?claim_id=123
     public ?string $claim_id = null;
 
+     #[Url(as: 'policy_id')] // ?policy_id=123
+    public ?string $policy_id = null;
+
     public bool $showDrawer = false;
 
     public ?string $editingClaimId = null;
+
+    public ?string $editingPolicyId = null;
 
     protected $listeners = [
         'close-drawer' => 'closeDrawer',
@@ -49,6 +54,10 @@ class Drawer extends Component
             $this->showDrawer = true;
             $this->editingClaimId = $this->claim_id;
         } // else: biarkan state tetap (jangan auto-tutup tiap update)
+
+        if ($this->policy_id) {
+            $this->editingPolicyId = $this->policy_id;
+        }
     }
 
     public function openEditDrawer($claimId)
@@ -73,11 +82,13 @@ class Drawer extends Component
     {
         $this->showDrawer = false;
         $this->editingClaimId = null;
+        $this->editingPolicyId = null;
         // $this->dispatch('resetForm');
 
         // hapus query di URL (Url-bound akan pushState)
         $this->action = null;
         $this->claim_id = null;
+        $this->policy_id = null;
     }
 
     public function editClaim($claimId)

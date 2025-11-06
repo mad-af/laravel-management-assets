@@ -160,7 +160,7 @@ class Form extends Component
         if (! empty($search)) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%$search%")
-                    ->orWhere('asset_tag', 'like', "%$search%");
+                    ->orWhere('tag_code', 'like', "%$search%");
             });
         }
 
