@@ -80,6 +80,17 @@
     <!-- Submit Button -->
     <div class="flex gap-2 justify-end pt-4">
         <x-button label="Batal" class="btn-ghost btn-sm" wire:click="$dispatch('close-drawer')" />
-        <x-button label="{{ $isEdit ? 'Update' : 'Simpan' }}" class="btn-primary btn-sm" type="submit" spinner="save" />
+        <x-button
+            label="{{ $isEdit ? 'Update' : 'Simpan' }}"
+            class="btn-primary btn-sm"
+            type="submit"
+            spinner="save"
+            :disabled="!$policy_id
+                || !$claim_no
+                || !$incident_date
+                || !$incident_type
+                || (($incident_type === 'other') && !$incident_other)
+                || ((!$isEdit && ($source !== \App\Enums\InsuranceClaimSource::MAINTENANCE->value)) && !$amount_paid)"
+        />
     </div>
 </form>
