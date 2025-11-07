@@ -85,6 +85,16 @@ class User extends Authenticatable
         return $this->belongsToMany(Company::class, 'user_companies', 'user_id', 'company_id');
     }
 
+    public function userBranches(): HasMany
+    {
+        return $this->hasMany(related: UserBranch::class);
+    }
+
+    public function branches(): BelongsToMany
+    {
+        return $this->belongsToMany(Branch::class, 'user_branches', 'user_id', 'branch_id');
+    }
+
     /**
      * Boot the model.
      */

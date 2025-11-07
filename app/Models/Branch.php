@@ -58,4 +58,14 @@ class Branch extends Model
     {
         return $this->hasMany(AssetTransfer::class, 'to_branch_id');
     }
+
+    public function userBranches(): HasMany
+    {
+        return $this->hasMany(UserBranch::class);
+    }
+
+    public function users(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'user_branches', 'branch_id', 'user_id');
+    }
 }

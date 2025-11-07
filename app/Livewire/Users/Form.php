@@ -3,8 +3,10 @@
 namespace App\Livewire\Users;
 
 use App\Enums\UserRole;
+use App\Models\Branch;
 use App\Models\Company;
 use App\Models\User;
+use App\Models\UserBranch;
 use App\Models\UserCompany;
 use Livewire\Component;
 use Mary\Traits\Toast;
@@ -27,6 +29,8 @@ class Form extends Component
 
     public array $company_ids = [];
 
+    public array $branch_ids = [];
+
     public $role = '';
 
     public $is_active = true;
@@ -40,6 +44,8 @@ class Form extends Component
     public array $companies = [];
 
     public $companySearchTerm = '';
+
+    public $companyBranches = [];
 
     protected function rules()
     {
@@ -95,17 +101,21 @@ class Form extends Component
             $this->isEdit = true;
             $this->loadUser();
         }
+
+        // Initialize branches list grouped by selected companies
+        $this->refreshCompanyBranches();
     }
 
     public function loadUser()
     {
         if ($this->userId) {
-            $user = User::with(['userCompanies.company'])->find($this->userId);
+            $user = User::with(['userCompanies.company', 'userBranches'])->find($this->userId);
             if ($user) {
                 $this->name = $user->name;
                 $this->email = $user->email;
                 $this->phone = $user->phone;
                 $this->company_ids = $user->userCompanies->pluck('company_id')->toArray();
+                $this->branch_ids = $user->userBranches->pluck('branch_id')->toArray();
                 $this->role = $user->role->value;
                 $this->is_active = $user->is_active;
 
@@ -137,9 +147,11 @@ class Form extends Component
         $this->password = '';
         $this->password_confirmation = '';
         $this->company_ids = [];
+        $this->branch_ids = [];
         $this->role = '';
         $this->is_active = true;
         $this->resetValidation();
+        $this->refreshCompanyBranches();
     }
 
     public function searchCompanies($value = '')
@@ -181,61 +193,94 @@ class Form extends Component
     {
         try {
 
-        $this->validate($this->rules());
+            $this->validate($this->rules());
 
-        if ($this->isEdit && $this->userId) {
-            // Update user
+            if ($this->isEdit && $this->userId) {
+                // Update user
 
-            $user = User::find($this->userId);
-            if (! $user) {
-                $this->error('Data Tidak Ditemukan', 'User tidak ditemukan.');
+                $user = User::find($this->userId);
+                if (! $user) {
+                    $this->error('Data Tidak Ditemukan', 'User tidak ditemukan.');
 
-                return;
+                    return;
+                }
+
+                $user->name = $this->name;
+                $user->email = $this->email;
+                $user->role = $this->role; // cast ke enum oleh model
+
+                // Password opsional saat edit
+                if (! empty($this->password)) {
+                    $user->password = $this->password; // otomatis di-hash oleh cast
+                }
+
+                $user->save();
+
+                // Sinkronisasi perusahaan via model UserCompany (mengisi kolom pivot 'id')
+                UserCompany::syncForUser($user, $this->company_ids ?? []);
+
+                // Sinkronisasi cabang via model UserBranch
+                UserBranch::syncForUser($user, $this->branch_ids ?? []);
+
+                // Bersihkan field password agar tidak tersisa di form
+                $this->password = '';
+                $this->password_confirmation = '';
+
+                $this->success('Berhasil Diperbarui', 'Data user telah diperbarui.');
+                $this->dispatch('user-updated', id: $user->id);
+            } else {
+                // Create user baru
+                $user = new User;
+                $user->name = $this->name;
+                $user->email = $this->email;
+                $user->role = $this->role; // cast ke enum oleh model
+                $user->save();
+
+                // Sinkronisasi perusahaan setelah user dibuat via model UserCompany
+                UserCompany::syncForUser($user, $this->company_ids ?? []);
+
+                // Sinkronisasi cabang via model UserBranch
+                UserBranch::syncForUser($user, $this->branch_ids ?? []);
+
+                $this->userId = $user->id;
+                $this->isEdit = true;
+
+                $this->success('Berhasil Ditambahkan', 'User baru telah dibuat.');
+                $this->dispatch('user-saved', id: $user->id);
             }
-
-            $user->name = $this->name;
-            $user->email = $this->email;
-            $user->role = $this->role; // cast ke enum oleh model
-
-            // Password opsional saat edit
-            if (! empty($this->password)) {
-                $user->password = $this->password; // otomatis di-hash oleh cast
-            }
-
-            $user->save();
-
-            // Sinkronisasi perusahaan via model UserCompany (mengisi kolom pivot 'id')
-            UserCompany::syncForUser($user, $this->company_ids ?? []);
-
-            // Bersihkan field password agar tidak tersisa di form
-            $this->password = '';
-            $this->password_confirmation = '';
-
-            $this->success('Berhasil Diperbarui', 'Data user telah diperbarui.');
-            $this->dispatch('user-updated', id: $user->id);
-        } else {
-            // Create user baru
-            $user = new User;
-            $user->name = $this->name;
-            $user->email = $this->email;
-            $user->role = $this->role; // cast ke enum oleh model
-            $user->save();
-
-            // Sinkronisasi perusahaan setelah user dibuat via model UserCompany
-            UserCompany::syncForUser($user, $this->company_ids ?? []);
-
-            $this->userId = $user->id;
-            $this->isEdit = true;
-
-            $this->success('Berhasil Ditambahkan', 'User baru telah dibuat.');
-            $this->dispatch('user-saved', id: $user->id);
+        } catch (\Exception $e) {
+            $this->error('Gagal Menyimpan', $e->getMessage());
+            dd($e);
         }
-    } catch (\Exception $e) {
-        $this->error('Gagal Menyimpan', $e->getMessage());
-        dd($e);
-    }}
+    }
 
     // Metode sinkronisasi dipindahkan ke App\Models\UserCompany::syncForUser()
+
+    public function updatedCompanyIds()
+    {
+        // Filter branch selections to only those within selected companies
+        if (! empty($this->branch_ids)) {
+            $validBranchIds = Branch::whereIn('company_id', $this->company_ids ?? [])
+                ->pluck('id')
+                ->toArray();
+            $this->branch_ids = array_values(array_intersect($this->branch_ids, $validBranchIds));
+        }
+
+        $this->refreshCompanyBranches();
+    }
+
+    protected function refreshCompanyBranches(): void
+    {
+        $ids = $this->company_ids ?? [];
+        $this->companyBranches = empty($ids)
+            ? collect([])
+            : Company::with(['branches' => function ($q) {
+                $q->orderByDesc('is_hq')->orderBy('name');
+            }])
+                ->whereIn('id', $ids)
+                ->orderBy('name')
+                ->get();
+    }
 
     public function render()
     {

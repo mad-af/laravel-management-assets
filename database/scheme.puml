@@ -39,6 +39,14 @@ table(user_companies) {
   updated_at : TIMESTAMP
 }
 
+table(user_branches) {
+  pk(id) : UUID
+  fk(user_id) : UUID
+  fk(branch_id) : UUID
+  created_at : TIMESTAMP
+  updated_at : TIMESTAMP
+}
+
 table(categories) {
   pk(id) : UUID
   name : VARCHAR [UNIQUE]
@@ -301,6 +309,9 @@ companies ||--o{ employees : "has many"
 
 users ||--o{ user_companies : "memberships"
 companies ||--o{ user_companies : "memberships"
+
+users ||--o{ user_branches : "memberships"
+branches ||--o{ user_branches : "memberships"
 
 categories ||--o{ assets : "has many"
 branches ||--o{ assets : "has many"
