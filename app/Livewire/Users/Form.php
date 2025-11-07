@@ -251,6 +251,8 @@ class Form extends Component
         } catch (\Exception $e) {
             $this->error('Gagal Menyimpan', $e->getMessage());
             dd($e);
+        } finally {
+            $this->dispatch('close-drawer');
         }
     }
 

@@ -22,23 +22,42 @@ class BranchSwitcher extends Component
     }
 
     /**
-     * Ambil daftar company milik user dan branch tiap company, lalu buat array grouped.
+     * Ambil daftar company milik user dan branch tiap company (dibatasi oleh user_branches), lalu buat array grouped.
      */
     protected function loadBranches(): void
     {
         $user = Auth::user();
 
-        // ambil id company milik user, sesuaikan jika relasi user->companies berbeda
-        $companyIds = method_exists($user, 'companies')
-            ? $user->companies()->pluck('company_id')
-            : collect();
+        // Ambil daftar company yang dimiliki user (via pivot user_companies)
+        $companyIds = collect();
+        if ($user) {
+            if (method_exists($user, 'userCompanies')) {
+                // gunakan relasi pivot untuk mendapatkan company_id secara langsung
+                $companyIds = $user->userCompanies()->pluck('company_id');
+            } elseif (method_exists($user, 'companies')) {
+                // fallback: gunakan belongsToMany ke Company lalu pluck id company
+                $companyIds = $user->companies()->pluck('companies.id');
+            }
+        }
+
+        // Ambil daftar branch yang dimiliki user (via pivot user_branches)
+        $allowedBranchIds = collect();
+        if ($user) {
+            if (method_exists($user, 'userBranches')) {
+                $allowedBranchIds = $user->userBranches()->pluck('branch_id');
+            } elseif (method_exists($user, 'branches')) {
+                $allowedBranchIds = $user->branches()->pluck('branches.id');
+            }
+        }
 
         $companies = Company::whereIn('id', $companyIds)->where('is_active', true)->get();
 
         $grouped = [];
 
         foreach ($companies as $company) {
+            // Filter branch berdasarkan branch yang memang dimiliki oleh user
             $branches = Branch::where('company_id', $company->id)
+                ->whereIn('id', $allowedBranchIds)
                 ->where('is_active', true)
                 ->orderByRaw('CASE WHEN id = ? THEN 0 ELSE 1 END', [$company->hq_branch_id])
                 ->orderBy('name')
