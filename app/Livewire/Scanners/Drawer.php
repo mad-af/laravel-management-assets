@@ -80,12 +80,7 @@ class Drawer extends Component
 
     public function closeDrawer()
     {
-        $this->showDrawer = false;
-        $this->dispatch('resetForm');
-
-        // hapus query di URL (Url-bound akan pushState)
-        $this->action = null;
-        $this->asset_id = null;
+        $this->redirect(route('scanners.index'), navigate: true);
     }
 
     public function render()

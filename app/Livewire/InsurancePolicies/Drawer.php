@@ -60,32 +60,32 @@ class Drawer extends Component
 
     public function openEditDrawer($policyId)
     {
-        $this->action = 'edit';
-        $this->policy_id = $policyId;
-        $this->applyActionFromUrl();
+        $this->redirect(route('insurance-policies.index', [
+            'action' => 'edit',
+            'policy_id' => $policyId,
+        ]), navigate: true);
     }
 
     public function openDrawer($assetId = '', $policyId = null)
     {
-        $this->asset_id = $assetId;
         if ($policyId) {
-            $this->action = 'edit';
-            $this->policy_id = $policyId;
+            $params = ['action' => 'edit', 'policy_id' => $policyId];
+            if (! empty($assetId)) {
+                $params['asset_id'] = $assetId;
+            }
+            $this->redirect(route('insurance-policies.index', $params), navigate: true);
         } else {
-            $this->action = 'create';
+            $params = ['action' => 'create'];
+            if (! empty($assetId)) {
+                $params['asset_id'] = $assetId;
+            }
+            $this->redirect(route('insurance-policies.index', $params), navigate: true);
         }
-        $this->applyActionFromUrl();
     }
 
     public function closeDrawer()
     {
-        $this->showDrawer = false;
-        $this->editingPolicyId = null;
-        // $this->dispatch('resetForm');
-
-        // hapus query di URL (Url-bound akan pushState)
-        $this->action = null;
-        $this->policy_id = null;
+        $this->redirect(route('insurance-policies.index'), navigate: true);
     }
 
     public function editPolicy($policyId)

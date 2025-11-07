@@ -2,18 +2,19 @@
 
 namespace App\Livewire\Users;
 
-use Livewire\Component;
 use Livewire\Attributes\Url;
+use Livewire\Component;
 
 class Drawer extends Component
 {
-    #[Url(as: 'action')]       // ?action=create|edit
+    #[Url(as: 'action')] // ?action=create|edit
     public ?string $action = null;
 
-    #[Url(as: 'user_id')]  // ?user_id=123
+    #[Url(as: 'user_id')] // ?user_id=123
     public ?string $user_id = null;
 
     public bool $showDrawer = false;
+
     public ?string $editingUserId = null;
 
     protected $listeners = [
@@ -47,26 +48,21 @@ class Drawer extends Component
 
     public function openEditDrawer($userId)
     {
-        $this->action = 'edit';
-        $this->user_id = $userId;
-        $this->applyActionFromUrl();
+        return $this->redirect(route('users.index', ['action' => 'edit', 'user_id' => $userId]), navigate: true);
     }
 
     public function openDrawer()
     {
-        $this->action = 'create';
-        $this->applyActionFromUrl();
+        // Redirect dengan Livewire navigate (SPA), update URL query action=create
+        return $this->redirect(route('users.index', ['action' => 'create']), navigate: true);
     }
 
     public function closeDrawer()
     {
-        $this->showDrawer = false;
-        $this->editingUserId = null;
+        // Reset form lalu redirect SPA ke index untuk menghapus query param
         $this->dispatch('resetForm');
 
-        // hapus query di URL (Url-bound akan pushState)
-        $this->action = null;
-        $this->user_id = null;
+        return $this->redirect(route('users.index'), navigate: true);
     }
 
     public function render()

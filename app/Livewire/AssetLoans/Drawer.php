@@ -64,41 +64,34 @@ class Drawer extends Component
 
     public function openEditDrawer($assetId, $assetLoanId)
     {
-        $this->action = 'edit';
-        $this->asset_loan_id = $assetLoanId;
-        $this->asset_id = $assetId;
-        $this->applyActionFromUrl();
+        $this->redirect(route('asset-loans.index', [
+            'action' => 'edit',
+            'asset_loan_id' => $assetLoanId,
+            'asset_id' => $assetId,
+        ]), navigate: true);
     }
 
     public function openReturnDrawer($assetId, $assetLoanId)
     {
-        $this->action = 'return';
-        $this->asset_loan_id = $assetLoanId;
-        $this->asset_id = $assetId;
-        $this->applyActionFromUrl();
+        $this->redirect(route('asset-loans.index', [
+            'action' => 'return',
+            'asset_loan_id' => $assetLoanId,
+            'asset_id' => $assetId,
+        ]), navigate: true);
     }
 
     public function openDrawer($assetId = '')
     {
+        $params = ['action' => 'create'];
         if (! empty($assetId)) {
-            $this->asset_id = $assetId;
+            $params['asset_id'] = $assetId;
         }
-
-        $this->action = 'create';
-        $this->applyActionFromUrl();
+        $this->redirect(route('asset-loans.index', $params), navigate: true);
     }
 
     public function closeDrawer()
     {
-        $this->showDrawer = false;
-        $this->editingAssetLoanId = null;
-        $this->editingAssetId = null;
-        // $this->dispatch('reset-form');
-
-        // hapus query di URL (Url-bound akan pushState)
-        $this->action = null;
-        $this->asset_loan_id = null;
-        $this->asset_id = null;
+        $this->redirect(route('asset-loans.index'), navigate: true);
     }
 
     public function editAssetLoan($assetId, $assetLoanId)

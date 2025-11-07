@@ -56,32 +56,29 @@ class Drawer extends Component
 
     public function openEditDrawer($assetId)
     {
-        $this->action = 'edit';
-        $this->asset_id = $assetId;
-        $this->applyActionFromUrl();
+        $this->redirect(route('assets.index', [
+            'action' => 'edit',
+            'asset_id' => $assetId,
+        ]), navigate: true);
     }
 
     public function openDrawer()
     {
-        $this->action = 'create';
-        $this->applyActionFromUrl();
+        $this->redirect(route('assets.index', [
+            'action' => 'create',
+        ]), navigate: true);
     }
 
     public function openBatchDrawer()
     {
-        $this->action = 'batch';
-        $this->applyActionFromUrl();
+        $this->redirect(route('assets.index', [
+            'action' => 'batch',
+        ]), navigate: true);
     }
 
     public function closeDrawer()
     {
-        $this->showDrawer = false;
-        $this->editingAssetId = null;
-        // $this->dispatch('resetForm');
-
-        // hapus query di URL (Url-bound akan pushState)
-        $this->action = null;
-        $this->asset_id = null;
+        $this->redirect(route('assets.index'), navigate: true);
     }
 
     public function editAsset($assetId)

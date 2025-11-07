@@ -62,33 +62,30 @@ class Drawer extends Component
 
     public function openEditDrawer($claimId)
     {
-        $this->action = 'edit';
-        $this->claim_id = $claimId;
-        $this->applyActionFromUrl();
+        $this->redirect(route('insurance-claims.index', [
+            'action' => 'edit',
+            'claim_id' => $claimId,
+        ]), navigate: true);
     }
 
     public function openDrawer($claimId = null)
     {
         if ($claimId) {
-            $this->action = 'edit';
-            $this->claim_id = $claimId;
+            $this->redirect(route('insurance-claims.index', [
+                'action' => 'edit',
+                'claim_id' => $claimId,
+                // keep policy_id in URL if already set separately
+            ]), navigate: true);
         } else {
-            $this->action = 'create';
+            $this->redirect(route('insurance-claims.index', [
+                'action' => 'create',
+            ]), navigate: true);
         }
-        $this->applyActionFromUrl();
     }
 
     public function closeDrawer()
     {
-        $this->showDrawer = false;
-        $this->editingClaimId = null;
-        $this->editingPolicyId = null;
-        // $this->dispatch('resetForm');
-
-        // hapus query di URL (Url-bound akan pushState)
-        $this->action = null;
-        $this->claim_id = null;
-        $this->policy_id = null;
+        $this->redirect(route('insurance-claims.index'), navigate: true);
     }
 
     public function editClaim($claimId)

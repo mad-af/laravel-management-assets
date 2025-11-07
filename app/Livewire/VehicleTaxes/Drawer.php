@@ -53,32 +53,27 @@ class Drawer extends Component
     #[On('open-drawer')]
     public function openDrawer($assetId = null)
     {
-        $this->action = 'tax-payment';
+        $params = ['action' => 'tax-payment'];
         if ($assetId) {
-            $this->asset_id = $assetId;
+            $params['asset_id'] = $assetId;
         }
-        $this->applyActionFromUrl();
+        $this->redirect(route('vehicle-taxes.index', $params), navigate: true);
     }
 
     #[On('open-tax-type-drawer')]
     public function openTaxTypeDrawer($assetId = null)
     {
-        $this->action = 'tax-type';
+        $params = ['action' => 'tax-type'];
         if ($assetId) {
-            $this->asset_id = $assetId;
+            $params['asset_id'] = $assetId;
         }
-        $this->applyActionFromUrl();
+        $this->redirect(route('vehicle-taxes.index', $params), navigate: true);
     }
 
     #[On('close-drawer')]
     public function closeDrawer()
     {
-        $this->showDrawer = false;
-        // $this->dispatch('resetForm');
-
-        // hapus query di URL (Url-bound akan pushState)
-        $this->action = null;
-        $this->asset_id = null;
+        $this->redirect(route('vehicle-taxes.index'), navigate: true);
     }
 
     public function render()

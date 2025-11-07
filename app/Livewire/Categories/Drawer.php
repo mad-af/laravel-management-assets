@@ -52,31 +52,30 @@ class Drawer extends Component
 
     public function openEditDrawer($categoryId)
     {
-        $this->action = 'edit';
-        $this->category_id = $categoryId;
-        $this->applyActionFromUrl();
+        $this->redirect(route('categories.index', [
+            'action' => 'edit',
+            'category_id' => $categoryId,
+        ]), navigate: true);
     }
 
     public function openDrawer($categoryId = null)
     {
         if ($categoryId) {
-            $this->action = 'edit';
-            $this->category_id = $categoryId;
+            $this->redirect(route('categories.index', [
+                'action' => 'edit',
+                'category_id' => $categoryId,
+            ]), navigate: true);
         } else {
-            $this->action = 'create';
+            $this->redirect(route('categories.index', [
+                'action' => 'create',
+            ]), navigate: true);
         }
-        $this->applyActionFromUrl();
     }
 
     public function closeDrawer()
     {
-        $this->showDrawer = false;
-        $this->editingCategoryId = null;
         $this->dispatch('resetForm');
-
-        // hapus query di URL (Url-bound akan pushState)
-        $this->action = null;
-        $this->category_id = null;
+        $this->redirect(route('categories.index'), navigate: true);
     }
 
     public function editCategory($categoryId)

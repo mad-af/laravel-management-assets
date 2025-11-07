@@ -53,31 +53,30 @@ class Drawer extends Component
 
     public function openEditDrawer($employeeId)
     {
-        $this->action = 'edit';
-        $this->employee_id = $employeeId;
-        $this->applyActionFromUrl();
+        $this->redirect(route('employees.index', [
+            'action' => 'edit',
+            'employee_id' => $employeeId,
+        ]), navigate: true);
     }
 
     public function openDrawer($employeeId = null)
     {
         if ($employeeId) {
-            $this->action = 'edit';
-            $this->employee_id = $employeeId;
+            $this->redirect(route('employees.index', [
+                'action' => 'edit',
+                'employee_id' => $employeeId,
+            ]), navigate: true);
         } else {
-            $this->action = 'create';
+            $this->redirect(route('employees.index', [
+                'action' => 'create',
+            ]), navigate: true);
         }
-        $this->applyActionFromUrl();
     }
 
     public function closeDrawer()
     {
-        $this->showDrawer = false;
-        $this->editingEmployeeId = null;
         $this->dispatch('resetForm');
-
-        // hapus query di URL (Url-bound akan pushState)
-        $this->action = null;
-        $this->employee_id = null;
+        $this->redirect(route('employees.index'), navigate: true);
     }
 
     public function editEmployee($employeeId)

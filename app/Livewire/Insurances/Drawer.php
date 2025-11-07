@@ -53,30 +53,30 @@ class Drawer extends Component
 
     public function openEditDrawer($insuranceId)
     {
-        $this->action = 'edit';
-        $this->insurance_id = $insuranceId;
-        $this->applyActionFromUrl();
+        $this->redirect(route('insurances.index', [
+            'action' => 'edit',
+            'insurance_id' => $insuranceId,
+        ]), navigate: true);
     }
 
     public function openDrawer($insuranceId = null)
     {
         if ($insuranceId) {
-            $this->action = 'edit';
-            $this->insurance_id = $insuranceId;
+            $this->redirect(route('insurances.index', [
+                'action' => 'edit',
+                'insurance_id' => $insuranceId,
+            ]), navigate: true);
         } else {
-            $this->action = 'create';
+            $this->redirect(route('insurances.index', [
+                'action' => 'create',
+            ]), navigate: true);
         }
-        $this->applyActionFromUrl();
     }
 
     public function closeDrawer()
     {
-        $this->showDrawer = false;
-        $this->editingInsuranceId = null;
         $this->dispatch('resetForm');
-
-        $this->action = null;
-        $this->insurance_id = null;
+        $this->redirect(route('insurances.index'), navigate: true);
     }
 
     public function render()

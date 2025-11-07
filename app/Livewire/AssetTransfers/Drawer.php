@@ -60,15 +60,17 @@ class Drawer extends Component
 
     public function openEditDrawer($transferId)
     {
-        $this->action = 'edit';
-        $this->transfer_id = $transferId;
-        $this->applyActionFromUrl();
+        $this->redirect(route('asset-transfers.index', [
+            'action' => 'edit',
+            'transfer_id' => $transferId,
+        ]), navigate: true);
     }
 
     public function openDrawer()
     {
-        $this->action = 'create';
-        $this->applyActionFromUrl();
+        $this->redirect(route('asset-transfers.index', [
+            'action' => 'create',
+        ]), navigate: true);
     }
 
     public function openTransferDetail(string $transferId, string $mode = 'detail'): void
@@ -115,15 +117,7 @@ class Drawer extends Component
 
     public function closeDrawer()
     {
-        $this->showDrawer = false;
-        $this->editingTransferId = null;
-        $this->detailMode = null;
-        $this->detailTransfer = null;
-        $this->detailInfoData = [];
-
-        // hapus query di URL (Url-bound akan pushState)
-        $this->action = null;
-        $this->transfer_id = null;
+        $this->redirect(route('asset-transfers.index'), navigate: true);
     }
 
     public function render()

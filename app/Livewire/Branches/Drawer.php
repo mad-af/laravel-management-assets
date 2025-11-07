@@ -2,18 +2,19 @@
 
 namespace App\Livewire\Branches;
 
-use Livewire\Component;
 use Livewire\Attributes\Url;
+use Livewire\Component;
 
 class Drawer extends Component
 {
-    #[Url(as: 'action')]       // ?action=create|edit
+    #[Url(as: 'action')] // ?action=create|edit
     public ?string $action = null;
 
-    #[Url(as: 'branch_id')]  // ?branch_id=123
+    #[Url(as: 'branch_id')] // ?branch_id=123
     public ?string $branch_id = null;
 
     public bool $showDrawer = false;
+
     public ?string $editingBranchId = null;
 
     protected $listeners = [
@@ -45,38 +46,37 @@ class Drawer extends Component
             $this->showDrawer = true;
             $this->editingBranchId = null;
         } elseif ($this->action === 'edit' && $this->branch_id) {
-            $this->showDrawer   = true;
+            $this->showDrawer = true;
             $this->editingBranchId = $this->branch_id;
         } // else: biarkan state tetap (jangan auto-tutup tiap update)
     }
 
     public function openEditDrawer($branchId)
     {
-        $this->action = 'edit';
-        $this->branch_id = $branchId;
-        $this->applyActionFromUrl();
+        $this->redirect(route('branches.index', [
+            'action' => 'edit',
+            'branch_id' => $branchId,
+        ]), navigate: true);
     }
 
     public function openDrawer($branchId = null)
     {
         if ($branchId) {
-            $this->action = 'edit';
-            $this->branch_id = $branchId;
+            $this->redirect(route('branches.index', [
+                'action' => 'edit',
+                'branch_id' => $branchId,
+            ]), navigate: true);
         } else {
-            $this->action = 'create';
+            $this->redirect(route('branches.index', [
+                'action' => 'create',
+            ]), navigate: true);
         }
-        $this->applyActionFromUrl();
     }
 
     public function closeDrawer()
     {
-        $this->showDrawer = false;
-        $this->editingBranchId = null;
         $this->dispatch('resetForm');
-
-        // hapus query di URL (Url-bound akan pushState)
-        $this->action = null;
-        $this->branch_id = null;
+        $this->redirect(route('branches.index'), navigate: true);
     }
 
     public function render()

@@ -52,26 +52,23 @@ class Drawer extends Component
 
     public function openEditDrawer($companyId)
     {
-        $this->action = 'edit';
-        $this->company_id = $companyId;
-        $this->applyActionFromUrl();
+        $this->redirect(route('companies.index', [
+            'action' => 'edit',
+            'company_id' => $companyId,
+        ]), navigate: true);
     }
 
     public function openDrawer()
     {
-        $this->action = 'create';
-        $this->applyActionFromUrl();
+        $this->redirect(route('companies.index', [
+            'action' => 'create',
+        ]), navigate: true);
     }
 
     public function closeDrawer()
     {
-        $this->showDrawer = false;
-        $this->editingCompanyId = null;
         $this->dispatch('resetForm');
-
-        // hapus query di URL (Url-bound akan pushState)
-        $this->action = null;
-        $this->company_id = null;
+        $this->redirect(route('companies.index'), navigate: true);
     }
 
     public function editCompany($companyId)
