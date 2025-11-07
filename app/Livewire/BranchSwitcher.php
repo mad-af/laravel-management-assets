@@ -4,6 +4,8 @@ namespace App\Livewire;
 
 use App\Models\Branch;
 use App\Models\Company;
+use App\Models\UserBranch;
+use App\Models\UserCompany;
 use App\Support\SessionKey;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -28,27 +30,15 @@ class BranchSwitcher extends Component
     {
         $user = Auth::user();
 
-        // Ambil daftar company yang dimiliki user (via pivot user_companies)
-        $companyIds = collect();
-        if ($user) {
-            if (method_exists($user, 'userCompanies')) {
-                // gunakan relasi pivot untuk mendapatkan company_id secara langsung
-                $companyIds = $user->userCompanies()->pluck('company_id');
-            } elseif (method_exists($user, 'companies')) {
-                // fallback: gunakan belongsToMany ke Company lalu pluck id company
-                $companyIds = $user->companies()->pluck('companies.id');
-            }
-        }
+        // Ambil daftar company/branch yang dimiliki user via tabel pivot secara langsung.
+        // Ini menghindari diagnostic "Undefined method" pada objek Auth::user().
+        $companyIds = $user
+            ? UserCompany::where('user_id', $user->id)->pluck('company_id')
+            : collect();
 
-        // Ambil daftar branch yang dimiliki user (via pivot user_branches)
-        $allowedBranchIds = collect();
-        if ($user) {
-            if (method_exists($user, 'userBranches')) {
-                $allowedBranchIds = $user->userBranches()->pluck('branch_id');
-            } elseif (method_exists($user, 'branches')) {
-                $allowedBranchIds = $user->branches()->pluck('branches.id');
-            }
-        }
+        $allowedBranchIds = $user
+            ? UserBranch::where('user_id', $user->id)->pluck('branch_id')
+            : collect();
 
         $companies = Company::whereIn('id', $companyIds)->where('is_active', true)->get();
 
