@@ -274,14 +274,37 @@ class Form extends Component
     protected function refreshCompanyBranches(): void
     {
         $ids = $this->company_ids ?? [];
-        $this->companyBranches = empty($ids)
-            ? collect([])
-            : Company::with(['branches' => function ($q) {
-                $q->orderByDesc('is_hq')->orderBy('name');
-            }])
-                ->whereIn('id', $ids)
-                ->orderBy('name')
-                ->get();
+
+        if (empty($ids)) {
+            $this->companyBranches = collect([]);
+
+            return;
+        }
+
+        // Ambil companies beserta branches aktifnya, lalu urutkan branches: HQ terlebih dahulu, kemudian nama
+        $companies = Company::with(['branches' => function ($q) {
+            $q->where('is_active', true);
+        }])
+            ->whereIn('id', $ids)
+            ->orderBy('name')
+            ->get();
+
+        // Sort branches per company: hq_branch_id di depan, lalu nama ascending
+        $companies->transform(function ($company) {
+            $sorted = $company->branches
+                ->sortBy(function ($branch) use ($company) {
+                    $isHqFirst = ((string) $branch->id === (string) $company->hq_branch_id) ? 0 : 1;
+
+                    return [$isHqFirst, $branch->name];
+                })
+                ->values();
+
+            $company->setRelation('branches', $sorted);
+
+            return $company;
+        });
+
+        $this->companyBranches = $companies;
     }
 
     public function render()
