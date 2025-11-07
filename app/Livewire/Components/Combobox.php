@@ -176,6 +176,7 @@ class Combobox extends Component
             $this->showDropdown = false;
             $this->selected = collect([$this->findOptionByValue($this->value)]);
         }
+        $this->search = '';
     }
 
     public function updatedOptions()

@@ -112,8 +112,8 @@ class KanbanColumn extends Component
 
     public function canPrintReport()
     {
-        // Laporan tidak bisa dicetak jika status adalah COMPLETED atau CANCELLED
-        return ! in_array($this->status, [MaintenanceStatus::COMPLETED, MaintenanceStatus::CANCELLED]);
+        // Laporan tidak bisa dicetak jika status adalah CANCELLED
+        return ! in_array($this->status, [MaintenanceStatus::CANCELLED]);
     }
 
     public function canEdit()

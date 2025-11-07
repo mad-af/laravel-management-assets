@@ -28,7 +28,7 @@
             <input type="search" class="z-50 w-full min-w-0"
                 placeholder="{{ $selected && count($selected) ? '' : $placeholder }}"
                 wire:model.live.debounce.600ms="search" wire:focus="onFocus"
-                wire:keydown.escape="$set('showDropdown', false)" @if($disabled) disabled @endif @if($required) required @endif />
+                wire:keydown.escape="$set('showDropdown', false)" @if($disabled) disabled @endif />
             <div class="z-50">
                 @if($clearable && ($search || $value))
                     <button type="button" class="btn btn-ghost btn-square btn-xs" wire:click.stop="clear">
