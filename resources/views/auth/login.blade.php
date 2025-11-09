@@ -91,6 +91,23 @@
                 Lupa password?
             </a>
         </div>
+
+        <!-- Info Akun Contoh -->
+        <div class="mt-6">
+            <div class="alert alert-info">
+                <div>
+                    <div class="font-semibold">Info Akun</div>
+                    <div class="mt-2 text-sm">Masuk dengan akun contoh berikut:</div>
+                    <ul class="mt-2 text-sm leading-relaxed">
+                        <li>
+                            <span class="font-mono block">admin@example.com</span>  
+                            <span class="font-mono block">password</span>
+                        </li>
+                    </ul>
+                    <div class="mt-2 text-xs text-base-content/70">Anda dapat mengubah atau menonaktifkan akun contoh ini di seeders.</div>
+                </div>
+            </div>
+        </div>
     </div>
 </x-card>
 
