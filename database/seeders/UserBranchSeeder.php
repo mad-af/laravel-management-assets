@@ -2,42 +2,50 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\User;
 use App\Models\Branch;
+use App\Models\User;
 use App\Models\UserBranch;
+use App\Models\UserCompany;
+use Illuminate\Database\Seeder;
 
 class UserBranchSeeder extends Seeder
 {
     /**
-     * Seed user_branches so each user is linked to all branches
-     * of the companies assigned to them via user_companies.
+     * Seed the user_branches pivot based on users' assigned companies.
      */
     public function run(): void
     {
-        // Load users with companies to reduce queries
-        User::with('userCompanies')
-            ->get()
-            ->each(function (User $user) {
-                // Company IDs assigned to this user
-                $companyIds = $user->userCompanies->pluck('company_id')->filter()->unique()->values()->all();
+        // Process users in chunks to avoid memory issues on large datasets
+        User::query()
+            ->select(['id'])
+            ->orderBy('id')
+            ->chunk(200, function ($users) {
+                foreach ($users as $user) {
+                    // Companies assigned to this user via pivot model
+                    $companyIds = UserCompany::query()
+                        ->where('user_id', $user->id)
+                        ->pluck('company_id')
+                        ->filter()
+                        ->unique()
+                        ->values()
+                        ->all();
 
-                if (empty($companyIds)) {
-                    // If no companies, clear any existing branches
-                    UserBranch::syncForUser($user, []);
-                    return;
+                    // All active branches under those companies
+                    $branchIds = [];
+                    if (! empty($companyIds)) {
+                        $branchIds = Branch::query()
+                            ->whereIn('company_id', $companyIds)
+                            ->where('is_active', true)
+                            ->pluck('id')
+                            ->filter()
+                            ->unique()
+                            ->values()
+                            ->all();
+                    }
+
+                    // Sync branches for the user (adds/removes as needed)
+                    UserBranch::syncForUser($user, $branchIds);
                 }
-
-                // All branch IDs under the assigned companies
-                $branchIds = Branch::whereIn('company_id', $companyIds)
-                    ->pluck('id')
-                    ->filter()
-                    ->unique()
-                    ->values()
-                    ->all();
-
-                // Sync branches for the user (create missing, remove extras)
-                UserBranch::syncForUser($user, $branchIds);
             });
     }
 }
