@@ -17,10 +17,11 @@
                         </x-button>
                     </x-slot:trigger>
 
-                    <x-menu-item title="Semua Status" wire:click="$set('statusFilter', '')" />
+                    <x-menu-item title="Semua Status" 
+                        link="{{ route('vehicles.index', ['statusFilter' => '']) }}" />
                     @foreach(\App\Enums\AssetStatus::cases() as $status)
                         <x-menu-item title="{{ $status->label() }}"
-                            wire:click="$set('statusFilter', '{{ $status->value }}')" />
+                            link="{{ route('vehicles.index', ['statusFilter' => $status->value]) }}" />
                     @endforeach
                 </x-dropdown>
             </div>
