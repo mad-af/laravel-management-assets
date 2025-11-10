@@ -42,12 +42,54 @@
             Loan Asset
         </a> --}}
 
-        <!-- Delete Asset -->
-        {{-- <button wire:click="deleteAsset" 
-                wire:confirm="Apakah Anda yakin ingin menghapus asset ini? Tindakan ini tidak dapat dibatalkan."
-                class="w-full btn btn-sm btn-error btn-outline">
-            <x-icon name="o-trash" class="w-4 h-4" />
-            Delete Asset
-        </button> --}}
+        @if($this->isAdmin)
+            @if($asset->status === \App\Enums\AssetStatus::INACTIVE)
+                <!-- Activate Asset -->
+                <button wire:click="openActivateConfirm" class="w-full btn btn-sm btn-success">
+                    <x-icon name="o-check" class="w-4 h-4" />
+                    Aktifkan Asset
+                </button>
+            @elseif ($asset->status === \App\Enums\AssetStatus::ACTIVE)
+                <!-- Deactivate Asset -->
+                <button wire:click="openDeactivateConfirm" class="w-full btn btn-sm btn-error btn-outline">
+                    <x-icon name="o-no-symbol" class="w-4 h-4" />
+                    Nonaktifkan Asset
+                </button>
+            @endif
+        @endif
     </div>
+
+    <!-- Confirmation Modal -->
+    @if($showConfirm)
+        <div class="fixed inset-0 z-50" style="display: block;">
+            <!-- Overlay -->
+            <div class="fixed inset-0 bg-black bg-opacity-50" wire:click="$set('showConfirm', false)"></div>
+
+            <!-- Modal -->
+            <div class="flex justify-center items-center px-4 py-6 min-h-screen">
+                <div class="relative mx-auto w-full max-w-md rounded-lg shadow-xl bg-base-100">
+                    <div class="p-6">
+                        <div class="flex gap-3 items-start">
+                            <div class="flex flex-shrink-0 justify-center items-center mt-0.5 w-10 h-10 rounded-full bg-info/20">
+                                <x-icon name="o-information-circle" class="w-6 h-6 text-info" />
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="text-sm font-semibold">Konfirmasi Aksi</h4>
+                                <p class="mt-1 text-sm text-base-content/80">
+                                    Untuk melanjutkan, ketik frasa konfirmasi yang diminta.
+                                </p>
+
+                                @include('livewire.components.confirmation-phrase', ['phrase' => $confirmationPhrase])
+
+                                <div class="flex gap-2 justify-end mt-4">
+                                    <x-button label="Batal" class="btn-ghost btn-sm" wire:click="$set('showConfirm', false)" />
+                                    <x-button label="Konfirmasi" class="btn-info btn-sm" wire:click="confirmStatusChange" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 </x-info-card>

@@ -2,18 +2,29 @@
 
 namespace App\Livewire\Assets;
 
+use App\Enums\AssetStatus;
+use App\Enums\UserRole;
 use App\Exports\AssetActivityLogExport;
 use App\Models\Asset;
-use App\Traits\WithAlert;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Maatwebsite\Excel\Facades\Excel;
+use Mary\Traits\Toast;
 
 class QuickActionsCard extends Component
 {
-    use WithAlert;
+    use Toast;
 
     public Asset $asset;
+
+    public bool $showConfirm = false;
+
+    public string $confirmationPhrase = '';
+
+    public string $value = '';
+
+    public string $confirmAction = '';
 
     public function mount(Asset $asset)
     {
@@ -31,14 +42,14 @@ class QuickActionsCard extends Component
             $assetName = $this->asset->name;
             $this->asset->delete();
 
-            $this->showSuccessAlert(
+            $this->success(
                 "Asset '{$assetName}' berhasil dihapus.",
                 'Asset Dihapus'
             );
 
             return redirect()->route('assets.index');
         } catch (\Exception $e) {
-            $this->showErrorAlert(
+            $this->error(
                 'Terjadi kesalahan saat menghapus asset.',
                 'Error'
             );
@@ -77,6 +88,77 @@ class QuickActionsCard extends Component
         $this->dispatch('print-qrbarcode', assets: $assetsData, html: $html);
     }
 
+    public function openDeactivateConfirm()
+    {
+        if (! $this->isAdmin) {
+            $this->error('Aksi ini hanya untuk Admin.', 'Tidak diizinkan');
+
+            return;
+        }
+
+        if ($this->asset->status === AssetStatus::INACTIVE) {
+            $this->showInfoAlert('Asset sudah berstatus tidak aktif.');
+
+            return;
+        }
+
+        $this->confirmAction = 'deactivate';
+        $this->confirmationPhrase = 'NONAKTIFKAN ASSET '.$this->asset->code;
+        $this->value = '';
+        $this->showConfirm = true;
+    }
+
+    public function openActivateConfirm()
+    {
+        if (! $this->isAdmin) {
+            $this->error('Aksi ini hanya untuk Admin.', 'Tidak diizinkan');
+
+            return;
+        }
+
+        if ($this->asset->status === AssetStatus::ACTIVE) {
+            $this->showInfoAlert('Asset sudah aktif.');
+
+            return;
+        }
+
+        $this->confirmAction = 'activate';
+        $this->confirmationPhrase = 'AKTIFKAN ASSET '.$this->asset->code;
+        $this->value = '';
+        $this->showConfirm = true;
+    }
+
+    public function confirmStatusChange()
+    {
+        if ($this->value !== $this->confirmationPhrase) {
+            $this->error('Frasa konfirmasi tidak cocok. Mohon ketik tepat sama.', 'Konfirmasi gagal');
+
+            return;
+        }
+
+        try {
+            if ($this->confirmAction === 'deactivate') {
+                $this->asset->status = AssetStatus::INACTIVE;
+                $this->asset->save();
+                $this->success("Status asset '{$this->asset->name}' diubah menjadi tidak aktif.", 'Berhasil');
+            } elseif ($this->confirmAction === 'activate') {
+                $this->asset->status = AssetStatus::ACTIVE;
+                $this->asset->save();
+                $this->success("Status asset '{$this->asset->name}' diubah menjadi aktif.", 'Berhasil');
+            } else {
+                $this->error('Aksi tidak dikenali.');
+            }
+        } catch (\Exception $e) {
+            $this->error('Terjadi kesalahan saat memperbarui status asset.', 'Error');
+
+            return;
+        }
+
+        // Tutup modal dan refresh model agar tombol berubah tanpa reload
+        $this->showConfirm = false;
+        $this->asset->refresh();
+    }
+
     public function downloadActivityLog()
     {
         try {
@@ -102,5 +184,12 @@ class QuickActionsCard extends Component
     public function render()
     {
         return view('livewire.assets.quick-actions-card');
+    }
+
+    public function getIsAdminProperty(): bool
+    {
+        $user = Auth::user();
+
+        return $user && $user->role === UserRole::ADMIN;
     }
 }
