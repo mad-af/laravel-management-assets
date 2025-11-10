@@ -154,9 +154,11 @@ class QuickActionsCard extends Component
             return;
         }
 
-        // Tutup modal dan refresh model agar tombol berubah tanpa reload
+        // Tutup modal, refresh model, dan jadwalkan reload setelah beberapa detik
+        // Catatan: gunakan JS setTimeout agar toast tampil dulu, tanpa blocking
         $this->showConfirm = false;
         $this->asset->refresh();
+        $this->js("setTimeout(() => window.dispatchEvent(new Event('reload-page')), 2000)");
     }
 
     public function downloadActivityLog()
