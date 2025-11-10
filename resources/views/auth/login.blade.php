@@ -3,12 +3,12 @@
 @section('title', 'Login')
 
 @section('content')
-<x-card title="Login" class="shadow-xl max-w-md w-full" shadow>
+<x-card title="Login" class="w-full max-w-md shadow-xl" shadow>
     <div class="p-6">
-        <h2 class="text-center text-2xl font-bold mb-6">Login</h2>
+        <h2 class="mb-6 text-2xl font-bold text-center">Login</h2>
         
         @if (session('status'))
-            <div class="alert alert-success mb-4">
+            <div class="mb-4 alert alert-success">
                 <i data-lucide="check-circle" class="w-4 h-4"></i>
                 {{ session('status') }}
             </div>
@@ -18,7 +18,7 @@
             @csrf
 
             <!-- Email -->
-            <div class="form-control mb-4">
+            <div class="mb-4 form-control">
                 <label class="label" for="email">
                     <span class="label-text">Email</span>
                 </label>
@@ -40,7 +40,7 @@
             </div>
 
             <!-- Password -->
-            <div class="form-control mb-4">
+            <div class="mb-4 form-control">
                 <label class="label" for="password">
                     <span class="label-text">Password</span>
                 </label>
@@ -55,7 +55,7 @@
                     >
                     <button 
                         type="button" 
-                        class="absolute inset-y-0 right-0 pr-3 flex items-center"
+                        class="flex absolute inset-y-0 right-0 items-center pr-3"
                         onclick="togglePassword('password')"
                     >
                         <i data-lucide="eye" class="w-4 h-4 text-base-content/50" id="password-eye"></i>
@@ -69,30 +69,31 @@
             </div>
 
             <!-- Remember Me -->
-            <div class="form-control mb-6">
-                <label class="label cursor-pointer justify-start">
-                    <input type="checkbox" name="remember" class="checkbox checkbox-primary mr-3" {{ old('remember') ? 'checked' : '' }}>
+            <div class="mb-6 form-control">
+                <label class="justify-start cursor-pointer label">
+                    <input type="checkbox" name="remember" class="mr-3 checkbox checkbox-primary" {{ old('remember') ? 'checked' : '' }}>
                     <span class="label-text">Ingat saya</span>
                 </label>
             </div>
 
             <!-- Submit Button -->
-            <div class="form-control mt-6">
-                <button type="submit" class="btn btn-primary w-full">
-                    <i data-lucide="log-in" class="w-4 h-4 mr-2"></i>
+            <div class="mt-6 form-control">
+                <button type="submit" class="w-full btn btn-primary">
+                    <i data-lucide="log-in" class="mr-2 w-4 h-4"></i>
                     Login
                 </button>
             </div>
         </form>
 
         <!-- Forgot Password -->
-        <div class="text-center mt-6">
-            <a href="{{ route('password.request') }}" class="link link-primary text-sm">
+        <div class="mt-6 text-center">
+            <a href="{{ route('password.request') }}" class="text-sm link link-primary">
                 Lupa password?
             </a>
         </div>
 
         <!-- Info Akun Contoh -->
+        @if (config('app.env') != 'production')
         <div class="mt-6">
             <div class="alert alert-info">
                 <div>
@@ -100,14 +101,15 @@
                     <div class="mt-2 text-sm">Masuk dengan akun contoh berikut:</div>
                     <ul class="mt-2 text-sm leading-relaxed">
                         <li>
-                            <span class="font-mono block">admin@example.com</span>  
-                            <span class="font-mono block">password</span>
+                            <span class="block font-mono">admin@example.com</span>  
+                            <span class="block font-mono">password</span>
                         </li>
                     </ul>
                     <div class="mt-2 text-xs text-base-content/70">Anda dapat mengubah atau menonaktifkan akun contoh ini di seeders.</div>
                 </div>
             </div>
         </div>
+        @endif
     </div>
 </x-card>
 
