@@ -43,10 +43,10 @@
   <table class="mb-3">
     <tr>
       <td style="width:70%; vertical-align: top;">
-        <div class="mb-2">
+        {{-- <div class="mb-2">
           <div class="uppercase bold" style="font-size:16px; line-height:1.2; text-transform: uppercase;">{{ $data->company_name }}</div>
         </div>
-        {{-- <div class="mb-0.5 small lh-tight">
+        <div class="mb-0.5 small lh-tight">
           <div class="semibold">Surabaya Office | Factory</div>
           <div>Jl. Raya Margomulyo 63A, Surabaya</div>
           <div>Tel: +62 31 7499 050 · surabaya@safeway.co.id</div>
@@ -232,7 +232,7 @@
     <table class="xs">
       <tr>
         <td>
-          Diterbitkan oleh <span class="bold capitalize">{{ $data->company_name }}</span> · Dokumen Rahasia – Untuk penggunaan internal dan klien.
+          Diterbitkan oleh <span class="capitalize bold">{{ $data->company_name }}</span> · Dokumen Rahasia – Untuk penggunaan internal dan klien.
         </td>
       </tr>
     </table>

@@ -37,13 +37,24 @@ class KanbanColumn extends Component
         // Get current branch ID from session
         $currentBranchId = session_get(SessionKey::BranchId);
 
+        $status = $this->status;
+
         $this->maintenances = AssetMaintenance::with(['asset', 'assignedUser'])
             ->whereHas('asset', function ($query) use ($currentBranchId) {
                 $query->when($currentBranchId, function ($q) use ($currentBranchId) {
                     $q->where('branch_id', $currentBranchId);
                 });
             })
-            ->where('status', $this->status)
+            ->where('status', $status)
+            ->when(in_array($status, [MaintenanceStatus::COMPLETED, MaintenanceStatus::CANCELLED]), function ($q) use ($status) {
+                $oneMonthAgo = now()->subMonth();
+                if ($status === MaintenanceStatus::COMPLETED) {
+                    $q->where('completed_at', '>=', $oneMonthAgo);
+                } else {
+                    // Untuk CANCELLED gunakan updated_at sebagai acuan waktu
+                    $q->where('updated_at', '>=', $oneMonthAgo);
+                }
+            })
             ->orderBy('priority')
             ->get();
     }
@@ -105,7 +116,7 @@ class KanbanColumn extends Component
         } else {
             $maintenance = AssetMaintenance::findOrFail($maintenanceId);
             $maintenance->update(['status' => $newStatus]);
-    
+
             $this->dispatch('reload-page');
         }
     }
