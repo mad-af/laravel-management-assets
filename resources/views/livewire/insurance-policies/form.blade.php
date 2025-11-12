@@ -6,6 +6,7 @@
             option-avatar="image" class="select-sm" required :onfocusload="true" />
     </div>
 
+    @if ($asset_id)
     <!-- Provider -->
     <div>
         <x-select label="Provider Asuransi" placeholder="Pilih provider" wire:model.live="insurance_id"
@@ -43,11 +44,7 @@
     <div class="flex gap-2 justify-end pt-4">
         <x-button label="Batal" class="btn-ghost btn-sm" wire:click="$dispatch('close-drawer')" />
         <x-button label="{{ $isEdit ? 'Update' : 'Simpan' }}" class="btn-primary btn-sm" type="submit" spinner="save"
-            :disabled="!$asset_id
-        || !$insurance_id
-        || !$policy_no
-        || !$policy_type
-        || !$start_date
-        || !$end_date" />
+            />
     </div>
+    @endif
 </form>
