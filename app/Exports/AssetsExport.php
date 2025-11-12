@@ -4,13 +4,13 @@ namespace App\Exports;
 
 use App\Models\Asset;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
-use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class AssetsExport implements FromCollection, WithHeadings, WithMapping, WithStyles, ShouldAutoSize
+class AssetsExport implements FromCollection, ShouldAutoSize, WithHeadings, WithMapping, WithStyles
 {
     protected $branchId;
 
@@ -30,9 +30,6 @@ class AssetsExport implements FromCollection, WithHeadings, WithMapping, WithSty
             ->get();
     }
 
-    /**
-     * @return array
-     */
     public function headings(): array
     {
         return [
@@ -48,17 +45,18 @@ class AssetsExport implements FromCollection, WithHeadings, WithMapping, WithSty
             'Nilai (Rp)',
             'Tanggal Pembelian',
             'Deskripsi',
-            'Plat Nomor',
-            'VIN',
-            'Odometer (KM)',
+            'Plat Nomor (Kendaraan)',
+            'VIN (Kendaraan)',
+            'Odometer (KM) (Kendaraan)',
+            'Tahun Pembelian (Kendaraan)',
+            'Tahun Produksi (Kendaraan)',
             'Terakhir Dilihat',
             'Dibuat Pada',
         ];
     }
 
     /**
-     * @param mixed $asset
-     * @return array
+     * @param  mixed  $asset
      */
     public function map($asset): array
     {
@@ -78,13 +76,14 @@ class AssetsExport implements FromCollection, WithHeadings, WithMapping, WithSty
             $asset->vehicleProfile->plate_no ?? '-',
             $asset->vehicleProfile->vin ?? '-',
             $asset->vehicleProfile->current_odometer_km ?? '-',
+            $asset->vehicleProfile->year_purchase ?? '-',
+            $asset->vehicleProfile->year_manufacture ?? '-',
             $asset->last_seen_at ? $asset->last_seen_at->format('d/m/Y H:i') : '-',
             $asset->created_at->format('d/m/Y H:i'),
         ];
     }
 
     /**
-     * @param Worksheet $sheet
      * @return array
      */
     public function styles(Worksheet $sheet)
