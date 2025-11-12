@@ -52,11 +52,64 @@ class MaintenancesMonthlySheet implements FromCollection, ShouldAutoSize, WithHe
             'Vendor',
             'Odometer (KM)',
             'Catatan',
+            'Service Tasks',
+            'Service Details',
         ];
     }
 
     public function map($m): array
     {
+        // Normalize service tasks to a readable string
+        $tasks = '-';
+        if (is_array($m->service_tasks) && !empty($m->service_tasks)) {
+            $tasks = implode('; ', array_map(function ($t) {
+                $text = is_array($t) ? ($t['task'] ?? '') : (string) $t;
+                $text = trim((string) $text);
+                if ($text === '') {
+                    return null;
+                }
+                $prefix = (is_array($t) && !empty($t['completed'])) ? '✓ ' : '';
+                return $prefix . $text;
+            }, array_filter($m->service_tasks, function ($t) {
+                // Keep only items that have some text value
+                if (is_array($t)) {
+                    return isset($t['task']) && trim((string) $t['task']) !== '';
+                }
+                return is_string($t) && trim($t) !== '';
+            })));
+            if ($tasks === '') {
+                $tasks = '-';
+            }
+        }
+
+        // Normalize service details to a readable string
+        $details = '-';
+        if (is_array($m->service_details) && !empty($m->service_details)) {
+            $details = implode('; ', array_map(function ($d) {
+                $name = '';
+                $qty = 0;
+                if (is_array($d)) {
+                    $name = trim((string) ($d['name'] ?? ''));
+                    $qty = (int) ($d['qty'] ?? 0);
+                } elseif (is_string($d)) {
+                    $name = trim($d);
+                    $qty = 1;
+                }
+                if ($name === '') {
+                    return null;
+                }
+                return $qty > 0 ? "$name ($qty)" : $name;
+            }, array_filter($m->service_details, function ($d) {
+                if (is_array($d)) {
+                    return isset($d['name']) && trim((string) $d['name']) !== '';
+                }
+                return is_string($d) && trim($d) !== '';
+            })));
+            if ($details === '') {
+                $details = '-';
+            }
+        }
+
         return [
             $m->code ?? '-',
             $m->asset->code ?? '-',
@@ -73,13 +126,15 @@ class MaintenancesMonthlySheet implements FromCollection, ShouldAutoSize, WithHe
             $m->vendor_name ?? '-',
             $m->odometer_km_at_service ?? '-',
             $m->notes ?? '-',
+            $tasks,
+            $details,
         ];
     }
 
     public function styles(Worksheet $sheet)
     {
         // Header style (row 1)
-        $sheet->getStyle('A1:O1')->applyFromArray([
+        $sheet->getStyle('A1:Q1')->applyFromArray([
             'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
             'fill' => [
                 'fillType'   => Fill::FILL_SOLID,
