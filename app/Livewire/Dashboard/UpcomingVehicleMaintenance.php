@@ -17,6 +17,7 @@ class UpcomingVehicleMaintenance extends Component
         $vehicles = Asset::query()
             ->forBranch($branchId)
             ->vehicles()
+            ->isOperational()
             ->with('vehicleProfile')
             ->get();
 

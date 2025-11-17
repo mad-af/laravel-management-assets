@@ -260,6 +260,14 @@ class Asset extends Model
     }
 
     /**
+     * Scope: aset operasional (bisa digunakan) — status bukan 'inactive' atau 'lost'.
+     */
+    public function scopeIsOperational(Builder $query): Builder
+    {
+        return $query->whereNotIn('status', ['inactive', 'lost']);
+    }
+
+    /**
      * Scope untuk filter berdasarkan branch tertentu
      */
     public function scopeForBranch(Builder $query, ?string $branchId = ''): Builder
