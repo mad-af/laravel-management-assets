@@ -7,10 +7,10 @@ use Livewire\Component;
 
 class ConfirmationPhrase extends Component
 {
+    public string $phrase = '';
+
     #[Modelable]
     public string $value = '';
-
-    public string $phrase = 'Data telah saya verifikasi';
 
     public function render()
     {

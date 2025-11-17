@@ -120,6 +120,10 @@ class AssetMaintenance extends Model
                     if ($newStatus === MaintenanceStatus::COMPLETED && $maintenance->asset->vehicleProfile) {
                         $updateData = [];
 
+                        if ($maintenance->completed_at) {
+                            $updateData['last_service_date'] = $maintenance->completed_at;
+                        }
+
                         if ($maintenance->next_service_target_odometer_km) {
                             $updateData['service_target_odometer_km'] = $maintenance->next_service_target_odometer_km;
                         }

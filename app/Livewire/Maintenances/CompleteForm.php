@@ -34,6 +34,9 @@ class CompleteForm extends Component
 
     public string $branchId;
 
+    // Confirmation phrase integration
+    public string $confirmation_text = '';
+
     protected function rules()
     {
         $rules = [
@@ -91,6 +94,9 @@ class CompleteForm extends Component
         if ($maintenanceId) {
             $this->loadMaintenance();
         }
+
+        // Reset confirmation input (consisten dengan TaxTypeForm)
+        $this->confirmation_text = '';
     }
 
     public function loadMaintenance()
@@ -110,6 +116,12 @@ class CompleteForm extends Component
     public function save()
     {
         try {
+            // Ensure confirmation phrase matched before saving
+            if (! $this->isConfirmed) {
+                $this->error('Ketik frasa konfirmasi dengan benar untuk menyimpan.');
+
+                return;
+            }
             $this->validate();
             $maintenance = AssetMaintenance::findOrFail($this->maintenanceId);
 
@@ -173,5 +185,10 @@ class CompleteForm extends Component
     public function render()
     {
         return view('livewire.maintenances.complete-form');
+    }
+
+    public function getIsConfirmedProperty(): bool
+    {
+        return $this->confirmation_text === 'Data telah saya verifikasi';
     }
 }

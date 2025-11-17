@@ -99,10 +99,15 @@
             </fieldset>
         </div>
 
+        <!-- Confirmation Phrase -->
+        <div class="pt-2">
+            <livewire:components.confirmation-phrase wire:model.live="confirmation_text" phrase="Data telah saya verifikasi" />
+        </div>
+
         <!-- Submit Button -->
         <div class="flex gap-2 justify-end pt-4">
             <x-button label="Batal" class="btn-ghost btn-sm" wire:click="$dispatch('close-drawer')" />
-            <x-button label="Selesaikan" class="btn-success btn-sm" type="submit" spinner="save" />
+            <x-button label="Selesaikan" class="btn-success btn-sm" type="submit" spinner="save" :disabled="!$this->isConfirmed" />
         </div>
 
     @else
