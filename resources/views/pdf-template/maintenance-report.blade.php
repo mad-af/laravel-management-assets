@@ -123,6 +123,7 @@
           </tr>
           <tr>
             <td class="lh-tight">
+              <div>Nama: {{ $data->asset->name ?? 'Tidak tersedia' }}</div>
               <div>Jenis: {{ $data->asset->brand ?? 'Tidak tersedia' }} - {{ $data->asset->type ?? 'Tidak tersedia' }}</div>
               <div>Kode Tag: {{ $data->asset->tag_code ?? 'Tidak tersedia' }}</div>
             </td>
