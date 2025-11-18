@@ -6,6 +6,7 @@ use App\Enums\VehicleOdometerSource;
 use App\Models\Asset;
 use App\Models\Category;
 use App\Models\VehicleOdometerLog;
+use App\Models\VehicleProfile;
 use App\Support\SessionKey;
 use App\Traits\WithAlert;
 use Livewire\Attributes\On;
@@ -131,8 +132,19 @@ class OdometerForm extends Component
             return ['value' => $value, 'label' => $label];
         })->values()->toArray();
 
+        $lastOdometerKm = null;
+        if (! empty($this->asset_id)) {
+            $profileKm = VehicleProfile::where('asset_id', $this->asset_id)->value('current_odometer_km');
+            $maxLogKm = VehicleOdometerLog::where('asset_id', $this->asset_id)->max('odometer_km');
+            if ($profileKm !== null || $maxLogKm !== null) {
+                $lastOdometerKm = max($profileKm ?? 0, $maxLogKm ?? 0);
+            }
+        }
+
         return view('livewire.vehicles.odometer-form', compact('sources'))
             ->with('odometerLogId', $this->odometerLogId)
-            ->with('isEdit', $this->isEdit);
+            ->with('isEdit', $this->isEdit)
+            ->with('lastOdometerKm', $lastOdometerKm)
+            ->with('unit', 'km');
     }
 }

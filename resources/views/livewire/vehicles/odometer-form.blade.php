@@ -17,6 +17,16 @@
         class="input-sm" />
 
     <!-- Odometer Reading -->
+    <div>
+        <fieldset class="p-4 rounded-lg border border-base-300 bg-base-200">
+            <legend class="px-2 text-xs font-medium">Odometer Terakhir</legend>
+            @if(!is_null($lastOdometerKm))
+                <p class="text-sm font-semibold">{{ number_format($lastOdometerKm, 0, ',', '.') }} {{ $unit }}</p>
+            @else
+                <p class="text-xs italic text-base-content/60">Belum ada data odometer tersimpan.</p>
+            @endif
+        </fieldset>
+    </div>
     <x-input name="odometer_km" label="Pembacaan Odometer (km)" class="input-sm" wire:model="odometer_km" type="number"
         min="0" placeholder="Masukkan pembacaan odometer" required />
 
