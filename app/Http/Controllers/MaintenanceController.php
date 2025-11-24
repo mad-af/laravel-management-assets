@@ -92,8 +92,9 @@ class MaintenanceController extends Controller
                 'address' => 'Jl. Maintenance No. 123',
             ],
             'asset' => (object) [
-                'brand' => $maintenance->asset->brand ?? 'Unknown',
-                'type' => $maintenance->asset->model ?? 'Unknown',
+                'name' => $maintenance->asset->name,
+                'brand' => $maintenance->asset->brand,
+                'type' => $maintenance->asset->model,
                 'tag_code' => $maintenance->asset->tag_code ?? 'N/A',
             ],
             'vehicle' => (object) [
