@@ -84,7 +84,7 @@ class TaxTypeForm extends Component
     #[On('combobox-load-assets')]
     public function loadAssets($search = '')
     {
-        $query = Asset::forBranch()->vehicles()->notValid();
+        $query = Asset::forBranch()->vehicles();
 
         if (! empty($search)) {
             $query->where(function ($q) use ($search) {
