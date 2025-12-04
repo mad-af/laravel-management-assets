@@ -50,5 +50,36 @@ class VehicleTaxType extends Model
                 VehicleTaxHistory::createFromTaxType($vehicleTaxType);
             }
         });
+
+        static::updated(function (VehicleTaxType $vehicleTaxType) {
+            if ($vehicleTaxType->isDirty('due_date')) {
+                $oldDue = $vehicleTaxType->getOriginal('due_date');
+                $newDue = $vehicleTaxType->due_date;
+
+                if ($oldDue) {
+                    $query = VehicleTaxHistory::query()
+                        ->where('vehicle_tax_type_id', $vehicleTaxType->id)
+                        ->whereDate('due_date', $oldDue);
+
+                    if ($newDue) {
+                        $query->update([
+                            'due_date' => $newDue,
+                            'year' => $newDue->year,
+                        ]);
+                    } else {
+                        $query->delete();
+                    }
+                }
+            }
+        });
+
+        static::deleted(function (VehicleTaxType $vehicleTaxType) {
+            if ($vehicleTaxType->due_date) {
+                VehicleTaxHistory::query()
+                    ->where('vehicle_tax_type_id', $vehicleTaxType->id)
+                    ->whereDate('due_date', $vehicleTaxType->due_date)
+                    ->delete();
+            }
+        });
     }
 }
