@@ -50,7 +50,7 @@ class KanbanColumn extends Component
                 $oneMonthAgo = now()->subMonth();
 
                 // Ambil kode maintenance yang harus selalu ditampilkan dari config/env
-                $alwaysShowCodesRaw = config('app.kanban_always_show_codes');
+                $alwaysShowCodesRaw = env('KANBAN_ALWAYS_SHOW_CODES', '');
                 $alwaysShowCodes = $alwaysShowCodesRaw 
                     ? array_filter(array_map('trim', explode(',', $alwaysShowCodesRaw))) 
                     : [];
