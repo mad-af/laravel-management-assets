@@ -50,17 +50,11 @@ class KanbanColumn extends Component
                 $oneMonthAgo = now()->subMonth();
 
                 // Ambil kode maintenance yang harus selalu ditampilkan dari config/env
-                $alwaysShowCodesRaw = env('KANBAN_ALWAYS_SHOW_CODES', '');
+                // PENTING: Gunakan config() bukan env() karena env() akan return null jika config dicache
+                $alwaysShowCodesRaw = config('app.kanban_always_show_codes') ?? 'WO-202511-014';
                 $alwaysShowCodes = $alwaysShowCodesRaw 
                     ? array_filter(array_map('trim', explode(',', $alwaysShowCodesRaw))) 
                     : [];
-
-                // Debug log untuk memastikan config terbaca
-                \Illuminate\Support\Facades\Log::info('KanbanColumn Debug', [
-                    'status' => $status->value,
-                    'config_raw' => $alwaysShowCodesRaw,
-                    'parsed_codes' => $alwaysShowCodes
-                ]);
 
                 $q->where(function($query) use ($status, $oneMonthAgo, $alwaysShowCodes) {
                     $query->where(function($dateQuery) use ($status, $oneMonthAgo) {
