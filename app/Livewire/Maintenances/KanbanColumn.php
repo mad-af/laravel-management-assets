@@ -48,12 +48,27 @@ class KanbanColumn extends Component
             ->where('status', $status)
             ->when(in_array($status, [MaintenanceStatus::COMPLETED, MaintenanceStatus::CANCELLED]), function ($q) use ($status) {
                 $oneMonthAgo = now()->subMonth();
-                if ($status === MaintenanceStatus::COMPLETED) {
-                    $q->where('completed_at', '>=', $oneMonthAgo);
-                } else {
-                    // Untuk CANCELLED gunakan updated_at sebagai acuan waktu
-                    $q->where('updated_at', '>=', $oneMonthAgo);
-                }
+
+                // Ambil kode maintenance yang harus selalu ditampilkan dari config/env
+                $alwaysShowCodesRaw = config('app.kanban_always_show_codes');
+                $alwaysShowCodes = $alwaysShowCodesRaw 
+                    ? array_filter(array_map('trim', explode(',', $alwaysShowCodesRaw))) 
+                    : [];
+
+                $q->where(function($query) use ($status, $oneMonthAgo, $alwaysShowCodes) {
+                    $query->where(function($dateQuery) use ($status, $oneMonthAgo) {
+                        if ($status === MaintenanceStatus::COMPLETED) {
+                            $dateQuery->where('completed_at', '>=', $oneMonthAgo);
+                        } else {
+                            // Untuk CANCELLED gunakan updated_at sebagai acuan waktu
+                            $dateQuery->where('updated_at', '>=', $oneMonthAgo);
+                        }
+                    });
+
+                    if (!empty($alwaysShowCodes)) {
+                        $query->orWhereIn('code', $alwaysShowCodes);
+                    }
+                });
             })
             ->orderBy('priority')
             ->get();

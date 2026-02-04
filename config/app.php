@@ -101,9 +101,11 @@ return [
 
     'previous_keys' => [
         ...array_filter(
-            explode(',', (string) env('APP_PREVIOUS_KEYS', ''))
+            explode(',', env('APP_PREVIOUS_KEYS', ''))
         ),
     ],
+
+    'kanban_always_show_codes' => env('KANBAN_ALWAYS_SHOW_CODES'),
 
     /*
     |--------------------------------------------------------------------------
