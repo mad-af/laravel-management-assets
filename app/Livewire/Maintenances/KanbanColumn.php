@@ -55,6 +55,13 @@ class KanbanColumn extends Component
                     ? array_filter(array_map('trim', explode(',', $alwaysShowCodesRaw))) 
                     : [];
 
+                // Debug log untuk memastikan config terbaca
+                \Illuminate\Support\Facades\Log::info('KanbanColumn Debug', [
+                    'status' => $status->value,
+                    'config_raw' => $alwaysShowCodesRaw,
+                    'parsed_codes' => $alwaysShowCodes
+                ]);
+
                 $q->where(function($query) use ($status, $oneMonthAgo, $alwaysShowCodes) {
                     $query->where(function($dateQuery) use ($status, $oneMonthAgo) {
                         if ($status === MaintenanceStatus::COMPLETED) {
