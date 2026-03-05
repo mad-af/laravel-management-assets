@@ -51,6 +51,12 @@
             </div>
         </div>
 
+        {{-- Date Filters --}}
+        <div class="grid grid-cols-1 gap-4 mb-4 sm:grid-cols-2">
+            <x-input wire:model.live="dateStart" type="date" label="Dari Tanggal" class="input-sm" />
+            <x-input wire:model.live="dateEnd" type="date" label="Sampai Tanggal" class="input-sm" />
+        </div>
+
         {{-- Table --}}
         <div>
             @php

@@ -1,0 +1,75 @@
+@extends('layouts.dashboard')
+
+@section('title', 'Asset Maintenance')
+
+@section('content')
+
+    <!-- Dashboard Content Header -->
+    <livewire:dashboard-content-header title="Perawatan Aset" description="Kelola dan pantau aktivitas perawatan aset"
+        button-text="Tambah Perawatan" button-icon="o-plus" button-action="openMaintenanceDrawer" :additional-buttons="[
+                            [
+                                'text' => 'Tampilan Kanban',
+                                'icon' => 'o-view-columns',
+                                'class' => 'btn-sm',
+                                'link' => route('maintenances.index')
+                            ],
+                            [
+                                'text' => 'Unduh Data Maintenace',
+                                    'icon' => 'o-document-arrow-down',
+                                    'class' => ' btn-sm',
+                                    'action' => 'downloadAssetMaintenance'
+                                ]
+                            ]" />
+
+    <livewire:maintenances.table />
+
+
+
+    <livewire:maintenances.drawer />
+
+    <!-- Insurance Claim Modal (Page-level) -->
+    <div x-data="{ showInsuranceClaimModal: false }"
+        x-on:open-insurance-claim-modal.window="showInsuranceClaimModal = true">
+        <div x-show="showInsuranceClaimModal" x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0" class="overflow-y-auto fixed inset-0 z-50" style="display: none;">
+            <!-- Overlay -->
+            <div class="fixed inset-0 bg-black bg-opacity-50"
+                @click="showInsuranceClaimModal = false; Livewire.dispatch('dismiss-insurance-claim-prompt')"></div>
+
+            <!-- Modal -->
+            <div class="flex justify-center items-center px-4 py-6 min-h-screen">
+                <div x-transition:enter="transition ease-out duration-300"
+                    x-transition:enter-start="opacity-0 transform scale-95"
+                    x-transition:enter-end="opacity-100 transform scale-100"
+                    x-transition:leave="transition ease-in duration-200"
+                    x-transition:leave-start="opacity-100 transform scale-100"
+                    x-transition:leave-end="opacity-0 transform scale-95"
+                    class="relative mx-auto w-full max-w-md rounded-lg shadow-xl bg-base-100">
+                    <div class="p-6">
+                        <div class="flex gap-3 items-start">
+                            <div
+                                class="flex flex-shrink-0 justify-center items-center mt-0.5 w-10 h-10 rounded-full bg-info/20">
+                                <x-icon name="o-information-circle" class="w-6 h-6 text-info" />
+                            </div>
+                            <div class="flex-1">
+                                <h4 class="text-sm font-semibold">Buka Form Klaim Asuransi?</h4>
+                                <p class="mt-1 text-sm text-base-content/80">
+                                    Klaim asuransi untuk maintenance ini telah dibuat. Ingin mengisi detail klaim sekarang?
+                                </p>
+                                <div class="flex gap-2 justify-end mt-4">
+                                    <x-button label="Nanti Saja" class="btn-ghost btn-sm"
+                                        @click="showInsuranceClaimModal = false; Livewire.dispatch('dismiss-insurance-claim-prompt')" />
+                                    <x-button label="Ya, Isi Sekarang" class="btn-info btn-sm"
+                                        @click="showInsuranceClaimModal = false; Livewire.dispatch('confirm-open-claim')" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+@endsection

@@ -7,12 +7,12 @@
     <!-- Dashboard Content Header -->
     <livewire:dashboard-content-header title="Perawatan Aset" description="Kelola dan pantau aktivitas perawatan aset"
         button-text="Tambah Perawatan" button-icon="o-plus" button-action="openMaintenanceDrawer" :additional-buttons="[
-                    // [
-                    //     'text' => 'Tukar Tampilan',
-                    //     'icon' => 'o-view-columns',
-                    //     'class' => 'btn-sm',
-                    //     'action' => 'toggleMaintenanceView()'
-                    // ],
+                    [
+                        'text' => 'Tampilan Tabel',
+                        'icon' => 'o-table-cells',
+                        'class' => 'btn-sm',
+                        'link' => route('maintenances.table')
+                    ],
                     [
                         'text' => 'Unduh Data Maintenace',
                         'icon' => 'o-document-arrow-down',

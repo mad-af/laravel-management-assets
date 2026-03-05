@@ -6,7 +6,7 @@
 import QRCode from "qrcode";
 import JsBarcode from "jsbarcode";
 
-// Listen for the print-qrbarcode event from Livewire (unchanged)
+// Listen for the print-qrbarcode event from LivewAeAEire (unchanged)
 document.addEventListener("livewire:init", () => {
     Livewire.on("print-qrbarcode", (event) => {
         const { assets, html } = event;

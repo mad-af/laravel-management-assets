@@ -139,6 +139,7 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->group(function () {
     })->name('scanners.index');
 
     // Maintenance Routes
+    Route::get('maintenances/table', [MaintenanceController::class, 'index1'])->name('maintenances.table');
     Route::get('maintenances', [MaintenanceController::class, 'index'])->name('maintenances.index');
     Route::post('maintenances', [MaintenanceController::class, 'store'])->name('maintenances.store');
     Route::get('maintenances/{maintenance}/edit', [MaintenanceController::class, 'edit'])->name('maintenances.edit');

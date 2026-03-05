@@ -20,7 +20,14 @@
         <!-- Additional Buttons (Livewire v3 workaround) -->
         @if(!empty($additionalButtons))
             @foreach($additionalButtons as $button)
-                @if(isset($button['action']))
+                @if(isset($button['link']))
+                    <a href="{{ $button['link'] }}" class="btn {{ $button['class'] ?? ' btn-sm' }}">
+                        @if(isset($button['icon']))
+                            <x-icon name="{{ $button['icon'] }}" class="w-4 h-4" />
+                        @endif
+                        {{ $button['text'] }}
+                    </a>
+                @elseif(isset($button['action']))
                     <x-button icon="{{ $button['icon'] ?? 'o-plus' }}" class="{{ $button['class'] ?? ' btn-sm' }}"
                         wire:click="executeAdditionalButtonAction('{{ $button['action'] }}')">
                         {{ $button['text'] }}

@@ -21,7 +21,11 @@ class Table extends Component
 
     public string $priorityFilter = '';
 
-    public int $perPage = 15;
+    public string $dateStart = '';
+
+    public string $dateEnd = '';
+
+    public int $perPage = 10;
 
     public array $selectedMaintenances = [];
 
@@ -30,6 +34,8 @@ class Table extends Component
         'statusFilter' => ['except' => ''],
         'typeFilter' => ['except' => ''],
         'priorityFilter' => ['except' => ''],
+        'dateStart' => ['except' => ''],
+        'dateEnd' => ['except' => ''],
     ];
 
     public function updatingSearch()
@@ -48,6 +54,16 @@ class Table extends Component
     }
 
     public function updatingPriorityFilter()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingDateStart()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingDateEnd()
     {
         $this->resetPage();
     }
@@ -81,6 +97,14 @@ class Table extends Component
 
         if ($this->priorityFilter) {
             $query->where('priority', $this->priorityFilter);
+        }
+
+        if ($this->dateStart) {
+            $query->whereDate('created_at', '>=', $this->dateStart);
+        }
+
+        if ($this->dateEnd) {
+            $query->whereDate('created_at', '<=', $this->dateEnd);
         }
 
         $maintenances = $query->paginate($this->perPage);

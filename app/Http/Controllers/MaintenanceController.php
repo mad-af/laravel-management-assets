@@ -24,6 +24,11 @@ class MaintenanceController extends Controller
         return view('dashboard.maintenances.index', compact('maintenances'));
     }
 
+    public function index1()
+    {
+        return view('dashboard.maintenances.index1');
+    }
+
     /**
      * Store a newly created maintenance record.
      */
