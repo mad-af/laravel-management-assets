@@ -15,11 +15,11 @@
                             ],
                             [
                                 'text' => 'Unduh Data Maintenace',
-                                    'icon' => 'o-document-arrow-down',
-                                    'class' => ' btn-sm',
-                                    'action' => 'downloadAssetMaintenance'
-                                ]
-                            ]" />
+                                'icon' => 'o-document-arrow-down',
+                                'class' => ' btn-sm',
+                                'action' => 'downloadAssetMaintenance'
+                            ]
+                        ]" />
 
     <livewire:maintenances.table />
 

@@ -68,6 +68,17 @@ class Table extends Component
         $this->resetPage();
     }
 
+    public function updateStatus($id, $status)
+    {
+        $maintenance = AssetMaintenance::find($id);
+        if ($maintenance) {
+            $maintenance->update([
+                'status' => $status,
+                'started_at' => $status === MaintenanceStatus::IN_PROGRESS->value ? now() : $maintenance->started_at,
+            ]);
+        }
+    }
+
     public function render()
     {
         $query = AssetMaintenance::with(['asset', 'employee'])

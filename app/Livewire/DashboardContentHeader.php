@@ -63,6 +63,10 @@ class DashboardContentHeader extends Component
 
     public function executeButtonAction()
     {
+        if (! $this->buttonAction) {
+            return;
+        }
+
         switch ($this->buttonAction) {
             case 'openUserDrawer':
             case 'openAssetTransferDrawer':
@@ -83,7 +87,11 @@ class DashboardContentHeader extends Component
                 $this->dispatch('open-odometer-drawer');
                 break;
             default:
-                $this->dispatch($this->buttonAction);
+                if (method_exists($this, $this->buttonAction)) {
+                    $this->{$this->buttonAction}();
+                } else {
+                    $this->dispatch($this->buttonAction);
+                }
                 break;
         }
     }

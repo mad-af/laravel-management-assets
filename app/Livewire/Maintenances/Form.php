@@ -206,7 +206,12 @@ class Form extends Component
         $this->estimated_completed_at = $maintenance->estimated_completed_at?->format('Y-m-d');
         $this->vendor_name = $maintenance->vendor_name;
         $this->notes = $maintenance->notes;
-        $this->service_tasks = $maintenance->service_tasks ?? [];
+        // Transform service tasks to simple array of strings for the form
+        $this->service_tasks = collect($maintenance->service_tasks ?? [])
+            ->map(fn ($item) => is_array($item) ? ($item['task'] ?? '') : $item)
+            ->filter()
+            ->values()
+            ->toArray();
 
         // Set default odometer if vehicle and not set
         if ($this->isVehicle && ! $this->odometer_km_at_service && $this->asset->vehicleProfile) {

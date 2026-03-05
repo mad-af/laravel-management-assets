@@ -19,7 +19,8 @@
                     </x-slot:trigger>
                     <x-menu-item title="Semua Status" wire:click="$set('statusFilter', '')" />
                     @foreach($statuses as $status)
-                        <x-menu-item title="{{ $status->label() }}" wire:click="$set('statusFilter', '{{ $status->value }}')" />
+                        <x-menu-item title="{{ $status->label() }}"
+                            wire:click="$set('statusFilter', '{{ $status->value }}')" />
                     @endforeach
                 </x-dropdown>
 
@@ -45,7 +46,8 @@
                     </x-slot:trigger>
                     <x-menu-item title="Semua Prioritas" wire:click="$set('priorityFilter', '')" />
                     @foreach($priorities as $priority)
-                        <x-menu-item title="{{ $priority->label() }}" wire:click="$set('priorityFilter', '{{ $priority->value }}')" />
+                        <x-menu-item title="{{ $priority->label() }}"
+                            wire:click="$set('priorityFilter', '{{ $priority->value }}')" />
                     @endforeach
                 </x-dropdown>
             </div>
@@ -71,7 +73,8 @@
                     ['key' => 'actions', 'label' => 'Aksi'],
                 ];
             @endphp
-            <x-table :headers="$headers" :rows="$maintenances" striped show-empty-text selectable wire:model="selectedMaintenances">
+            <x-table :headers="$headers" :rows="$maintenances" striped show-empty-text selectable
+                wire:model="selectedMaintenances">
 
                 @scope('cell_asset', $maintenance)
                 <div class="flex gap-2 items-center">
@@ -81,36 +84,40 @@
                             <x-icon name="o-photo" class="w-6 h-6 text-base-content/60" />
                         </div>
                     @else
-                        <x-avatar :image="asset('storage/'.$maintenance->asset->image)"
+                        <x-avatar :image="asset('storage/' . $maintenance->asset->image)"
                             class="!w-13 !rounded-lg !bg-base-300 !font-bold border-2 border-base-100">
                         </x-avatar>
                     @endif
                     <div>
-                        <div class="font-mono text-xs truncate text-base-content/60">{{ $maintenance->asset->code }}</div>      
+                        <div class="font-mono text-xs truncate text-base-content/60">{{ $maintenance->asset->code }}
+                        </div>
                         <div class="font-medium">{{ $maintenance->asset->name }}</div>
                         <div class="text-xs text-base-content/60">Tag: {{ $maintenance->asset->tag_code }}</div>
                     </div>
                 </div>
                 @endscope
 
-                
+
                 @scope('cell_title', $maintenance)
                 <div class="flex flex-col">
                     <div class="font-medium">{{ $maintenance->title }}</div>
                     <div class="text-xs whitespace-nowrap text-base-content/60">{{ $maintenance->code ?? '-' }}</div>
                 </div>
                 @endscope
-                
+
                 @scope('cell_type', $maintenance)
-                <x-badge value="{{ $maintenance->type->label() }}" class="badge-outline badge-{{ $maintenance->type->color() }} badge-sm" />
+                <x-badge value="{{ $maintenance->type->label() }}"
+                    class="badge-outline badge-{{ $maintenance->type->color() }} badge-sm" />
                 @endscope
 
                 @scope('cell_status', $maintenance)
-                <x-badge value="{{ $maintenance->status->label() }}" class="badge-{{ $maintenance->status->color() }} badge-sm" />
+                <x-badge value="{{ $maintenance->status->label() }}"
+                    class="badge-{{ $maintenance->status->color() }} badge-sm" />
                 @endscope
 
                 @scope('cell_priority', $maintenance)
-                <x-badge value="{{ $maintenance->priority->label() }}" class="badge-outline badge-{{ $maintenance->priority->color() }} badge-sm" />
+                <x-badge value="{{ $maintenance->priority->label() }}"
+                    class="badge-outline badge-{{ $maintenance->priority->color() }} badge-sm" />
                 @endscope
 
                 @scope('cell_schedule', $maintenance)
@@ -139,24 +146,59 @@
 
                 @scope('cell_actions', $maintenance)
                 <x-action-dropdown dropdown-id="maintenance-dropdown-{{ $maintenance->id }}" :model="$maintenance">
+                    {{-- Unduh PDF --}}
                     <li>
-                        <a href="{{ route('maintenances.pdf', $maintenance) }}" target="_blank" onclick="document.getElementById('maintenance-dropdown-{{ $maintenance->id }}').hidePopover()">
+                        <a href="{{ route('maintenances.pdf', $maintenance) }}" target="_blank"
+                            onclick="document.getElementById('maintenance-dropdown-{{ $maintenance->id }}').hidePopover()">
                             <x-icon name="o-document" class="w-4 h-4" />
-                            Unduh PDF
+                            Unduh Work Order
                         </a>
                     </li>
-                    {{-- <li>
-                        <button wire:click="$dispatch('open-edit-drawer', '{{ $maintenance->id }}')" onclick="document.getElementById('maintenance-dropdown-{{ $maintenance->id }}').hidePopover()" class="flex gap-2 items-center p-2 text-sm">
-                            <x-icon name="o-pencil" class="w-4 h-4" />
-                            Edit
-                        </button>
-                    </li>
-                    <li>
-                        <button wire:click="$dispatch('open-complete-drawer', '{{ $maintenance->id }}')" onclick="document.getElementById('maintenance-dropdown-{{ $maintenance->id }}').hidePopover()" class="flex gap-2 items-center p-2 text-sm">
-                            <x-icon name="o-check" class="w-4 h-4" />
-                            Selesaikan
-                        </button>
-                    </li> --}}
+
+                    {{-- Actions for OPEN status --}}
+                    @if($maintenance->status === \App\Enums\MaintenanceStatus::OPEN)
+                        <li>
+                            <button wire:click="$dispatch('open-edit-drawer', { maintenanceId: '{{ $maintenance->id }}' })"
+                                onclick="document.getElementById('maintenance-dropdown-{{ $maintenance->id }}').hidePopover()"
+                                class="flex gap-2 items-center p-2 text-sm">
+                                <x-icon name="o-pencil" class="w-4 h-4" />
+                                Edit
+                            </button>
+                        </li>
+                        <li>
+                            <button
+                                wire:click="updateStatus('{{ $maintenance->id }}', '{{ \App\Enums\MaintenanceStatus::IN_PROGRESS->value }}')"
+                                wire:confirm="Apakah Anda yakin ingin memulai pengerjaan maintenance ini?"
+                                onclick="document.getElementById('maintenance-dropdown-{{ $maintenance->id }}').hidePopover()"
+                                class="flex gap-2 items-center p-2 text-sm text-primary">
+                                <x-icon name="o-play" class="w-4 h-4" />
+                                Mulai Pengerjaan
+                            </button>
+                        </li>
+                    @endif
+
+                    {{-- Actions for IN_PROGRESS status --}}
+                    @if($maintenance->status === \App\Enums\MaintenanceStatus::IN_PROGRESS)
+                        <li>
+                            <button
+                                wire:click="$dispatch('open-complete-drawer', { maintenanceId: '{{ $maintenance->id }}' })"
+                                onclick="document.getElementById('maintenance-dropdown-{{ $maintenance->id }}').hidePopover()"
+                                class="flex gap-2 items-center p-2 text-sm text-success">
+                                <x-icon name="o-check" class="w-4 h-4" />
+                                Selesaikan
+                            </button>
+                        </li>
+                        <li>
+                            <button
+                                wire:click="updateStatus('{{ $maintenance->id }}', '{{ \App\Enums\MaintenanceStatus::CANCELLED->value }}')"
+                                wire:confirm="Apakah Anda yakin ingin membatalkan maintenance ini?"
+                                onclick="document.getElementById('maintenance-dropdown-{{ $maintenance->id }}').hidePopover()"
+                                class="flex gap-2 items-center p-2 text-sm text-error">
+                                <x-icon name="o-x-mark" class="w-4 h-4" />
+                                Batalkan
+                            </button>
+                        </li>
+                    @endif
                 </x-action-dropdown>
                 @endscope
             </x-table>
@@ -166,7 +208,8 @@
         @if($maintenances->count() > 0)
             <div class="flex flex-col gap-4 mt-4 lg:flex-row lg:items-center lg:justify-between">
                 <div class="text-sm text-base-content/70">
-                    Menampilkan {{ $maintenances->firstItem() }}-{{ $maintenances->lastItem() }} dari {{ $maintenances->total() }}
+                    Menampilkan {{ $maintenances->firstItem() }}-{{ $maintenances->lastItem() }} dari
+                    {{ $maintenances->total() }}
                     perawatan
                 </div>
 
