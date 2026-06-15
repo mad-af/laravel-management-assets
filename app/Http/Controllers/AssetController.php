@@ -350,7 +350,7 @@ class AssetController extends Controller
         }
 
         // Search by tag_code first, then by code
-        $asset = Asset::with(['category', 'branch', 'company'])
+        $asset = Asset::with(['category', 'branch', 'company', 'currentLoan.employee', 'currentLoan.employee.branch'])
             ->where('tag_code', $code)
             ->orWhere('code', $code)
             ->first();
@@ -372,6 +372,27 @@ class AssetController extends Controller
                     'ip_address' => $request->ip(),
                 ]),
             ]);
+
+            // Build current loan info (only if active loan exists)
+            $currentLoan = $asset->currentLoan;
+            $loanInfo = null;
+            if ($currentLoan) {
+                $loanInfo = [
+                    'id' => $currentLoan->id,
+                    'borrower_name' => $currentLoan->employee?->full_name
+                        ?? $currentLoan->borrower_name
+                        ?? null,
+                    'employee_number' => $currentLoan->employee?->employee_number,
+                    'employee_email' => $currentLoan->employee?->email,
+                    'employee_phone' => $currentLoan->employee?->phone,
+                    'employee_branch' => $currentLoan->employee?->branch?->name,
+                    'checkout_at' => $currentLoan->checkout_at?->format('Y-m-d H:i:s'),
+                    'due_at' => $currentLoan->due_at?->format('Y-m-d H:i:s'),
+                    'is_overdue' => $currentLoan->isOverdue(),
+                    'condition_out' => $currentLoan->condition_out?->value ?? $currentLoan->condition_out,
+                    'notes' => $currentLoan->notes,
+                ];
+            }
 
             return response()->json([
                 'found' => true,
@@ -400,6 +421,7 @@ class AssetController extends Controller
                         'name' => $asset->company->name,
                         'code' => $asset->company->code,
                     ] : null,
+                    'current_loan' => $loanInfo,
                     'last_seen_at' => $asset->last_seen_at?->format('Y-m-d H:i:s'),
                 ],
             ]);

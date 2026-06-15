@@ -42,6 +42,28 @@
         'badge_class' => 'badge-outline badge-'.$asset->condition->color()
     ];
 
+    // Add borrower info if asset is currently on loan
+    if ($asset->currentLoan) {
+        $borrowerName = $asset->currentLoan->employee?->full_name
+            ?? $asset->currentLoan->borrower_name
+            ?? null;
+
+        if ($borrowerName) {
+            $borrowerValue = $borrowerName;
+            if ($asset->currentLoan->due_at) {
+                $dueDate = \Carbon\Carbon::parse($asset->currentLoan->due_at)->locale('id')->translatedFormat('j F Y');
+                $isOverdue = $asset->currentLoan->isOverdue();
+                $overdueClass = $isOverdue ? ' text-error font-semibold' : '';
+                $overdueBadge = $isOverdue ? ' <span class="badge badge-error badge-sm">Terlambat</span>' : '';
+                $borrowerValue .= ' (Tempo: ' . $dueDate . ')' . $overdueBadge;
+            }
+            $items[] = [
+                'label' => 'Peminjam',
+                'value' => $borrowerValue,
+            ];
+        }
+    }
+
     // Add value if exists
     if ($asset->value) {
         $items[] = ['label' => 'Nilai Asset', 'value' => 'Rp ' . number_format($asset->value, 0, ',', '.')];

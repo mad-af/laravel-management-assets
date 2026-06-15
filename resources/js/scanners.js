@@ -247,6 +247,7 @@ class QRBarcodeScanner {
             branch: payload?.branch.name ?? "-",
             company: payload?.company.name ?? "-",
             status: payload?.status ?? "-",
+            borrower_name: payload?.current_loan?.borrower_name ?? "-",
         };
         this.scanHistory = JSON.parse(
             localStorage.getItem("scanHistory") || "[]"

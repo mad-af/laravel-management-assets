@@ -164,11 +164,12 @@
         </div>
         
         @if($this->isVehicle)
-            <!-- Odometer KM at Service -->
+            <!-- Odometer Increment at Service -->
             <div>
-                <x-input label="Odometer saat Service (KM)" wire:model="odometer_km_at_service"
-                    placeholder="Masukkan odometer..." type="number"
-                    min="{{ $this->asset?->vehicleProfile?->current_odometer_km ?? 0 }}" class="input-sm" required />
+                <x-input label="Penambahan Odometer (KM)" wire:model="odometer_km_at_service"
+                    placeholder="Masukkan KM yang ditambahkan..." type="number"
+                    min="0" class="input-sm"
+                    hint="Odometer saat ini: {{ number_format($this->asset?->vehicleProfile?->current_odometer_km ?? 0, 0, ',', '.') }} KM" />
             </div>
         @endif
 

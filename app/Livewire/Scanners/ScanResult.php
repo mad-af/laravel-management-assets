@@ -23,6 +23,7 @@ class ScanResult extends Component
         ['key' => 'Kategori', 'value' => '-'],
         ['key' => 'Lokasi', 'value' => '-'],
         ['key' => 'Status', 'value' => '-'],
+        ['key' => 'Peminjam', 'value' => '-'],
     ];
 
     public ?string $tagScanned = null;
@@ -47,6 +48,9 @@ class ScanResult extends Component
 
     public function updateRow()
     {
+        $borrowerName = $this->assetScanned['current_loan']['borrower_name'] ?? null;
+        $dueAt = $this->assetScanned['current_loan']['due_at'] ?? null;
+
         $this->rows = [
             ['key' => 'Tag Scanned', 'value' => $this->tagScanned ?? '-'],
             ['key' => 'Nama Aset', 'value' => $this->assetScanned['name'] ?? '-'],
@@ -54,6 +58,16 @@ class ScanResult extends Component
             ['key' => 'Cabang', 'value' => $this->assetScanned['branch']['name'] ?? '-'],
             ['key' => 'Status', 'value' => $this->assetScanned['status'] ?? '-'],
         ];
+
+        if ($borrowerName) {
+            $borrowerValue = $borrowerName;
+            if ($dueAt) {
+                $borrowerValue .= ' (Tempo: ' . \Carbon\Carbon::parse($dueAt)->locale('id')->translatedFormat('j F Y') . ')';
+            }
+            $this->rows[] = ['key' => 'Peminjam', 'value' => $borrowerValue];
+        } else {
+            $this->rows[] = ['key' => 'Peminjam', 'value' => '-'];
+        }
 
         if ($this->assetScanned) {
             $this->alert = (object) [

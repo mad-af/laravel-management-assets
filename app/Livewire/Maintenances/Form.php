@@ -101,13 +101,7 @@ class Form extends Component
 
         // Dynamic validation for odometer fields based on current vehicle odometer
         if ($this->isVehicle) {
-            $asset = Asset::with('vehicleProfile')->find($this->asset_id);
-            if ($asset && $asset->vehicleProfile && $asset->vehicleProfile->current_odometer_km) {
-                $minOdometer = $asset->vehicleProfile->current_odometer_km;
-                $rules['odometer_km_at_service'] = "required|integer|min:{$minOdometer}";
-            } else {
-                $rules['odometer_km_at_service'] = 'required|integer|min:0';
-            }
+            $rules['odometer_km_at_service'] = 'nullable|integer|min:0';
         }
 
         return $rules;
@@ -129,7 +123,8 @@ class Form extends Component
             'started_at.date' => 'Tanggal mulai harus berupa tanggal yang valid.',
             'estimated_completed_at.date' => 'Tanggal estimasi selesai harus berupa tanggal yang valid.',
             'next_service_date.date' => 'Tanggal service berikutnya harus berupa tanggal yang valid.',
-            'odometer_km_at_service.integer' => 'Odometer saat service harus berupa angka.',
+            'odometer_km_at_service.integer' => 'Penambahan odometer harus berupa angka.',
+            'odometer_km_at_service.min' => 'Penambahan odometer tidak boleh negatif.',
             'next_service_target_odometer_km.integer' => 'Target odometer service berikutnya harus berupa angka.',
         ];
 
@@ -137,7 +132,7 @@ class Form extends Component
         if ($this->isVehicle) {
             $asset = Asset::with('vehicleProfile')->find($this->asset_id);
             $currentOdometer = $asset->vehicleProfile->current_odometer_km ?? 0;
-            $messages['odometer_km_at_service.min'] = "Odometer saat service tidak boleh kurang dari odometer saat ini ({$currentOdometer} KM).";
+            $messages['next_service_target_odometer_km.min'] = "Target odometer service berikutnya tidak boleh kurang dari odometer saat ini ({$currentOdometer} KM).";
         }
 
         return $messages;
@@ -213,11 +208,6 @@ class Form extends Component
             ->values()
             ->toArray();
 
-        // Set default odometer if vehicle and not set
-        if ($this->isVehicle && ! $this->odometer_km_at_service && $this->asset->vehicleProfile) {
-            $this->odometer_km_at_service = $this->asset->vehicleProfile->current_odometer_km;
-        }
-
         // Load employees with selected employee included
         $this->loadEmployeesWithSelected($maintenance->employee);
 
@@ -257,6 +247,14 @@ class Form extends Component
 
         try {
             $this->validate();
+            $odometerAtService = null;
+            if ($this->isVehicle && $this->odometer_km_at_service !== '' && $this->odometer_km_at_service !== null) {
+                $asset = Asset::with('vehicleProfile')->find($this->asset_id);
+                $currentOdometer = (int) ($asset?->vehicleProfile?->current_odometer_km ?? 0);
+                $increment = (int) $this->odometer_km_at_service;
+                $odometerAtService = $currentOdometer + $increment;
+            }
+
             $data = [
                 'asset_id' => $this->asset_id,
                 'employee_id' => $this->employee_id ?: null,
@@ -267,7 +265,7 @@ class Form extends Component
                 'started_at' => $this->started_at ?: now(),
                 'estimated_completed_at' => $this->estimated_completed_at ?: null,
                 'vendor_name' => $this->vendor_name ?: null,
-                'odometer_km_at_service' => $this->odometer_km_at_service ?: null,
+                'odometer_km_at_service' => $odometerAtService,
                 'notes' => $this->notes,
                 'service_tasks' => array_values(array_filter($this->service_tasks, function ($task) {
                     return ! empty(trim($task));
