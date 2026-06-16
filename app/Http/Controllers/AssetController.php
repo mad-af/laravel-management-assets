@@ -422,6 +422,8 @@ class AssetController extends Controller
                         'code' => $asset->company->code,
                     ] : null,
                     'current_loan' => $loanInfo,
+                    'is_maintenance_overdue' => $asset->isMaintenanceOverdue(),
+                    'maintenance_overdue_info' => $asset->getMaintenanceOverdueInfo(),
                     'last_seen_at' => $asset->last_seen_at?->format('Y-m-d H:i:s'),
                 ],
             ]);

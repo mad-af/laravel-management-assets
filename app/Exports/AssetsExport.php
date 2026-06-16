@@ -50,6 +50,9 @@ class AssetsExport implements FromCollection, ShouldAutoSize, WithHeadings, With
             'Odometer (KM) (Kendaraan)',
             'Tahun Pembelian (Kendaraan)',
             'Tahun Produksi (Kendaraan)',
+            'Target Service Tanggal (Kendaraan)',
+            'Target Service KM (Kendaraan)',
+            'Status Perawatan (Kendaraan)',
             'Terakhir Dilihat',
             'Dibuat Pada',
         ];
@@ -60,6 +63,26 @@ class AssetsExport implements FromCollection, ShouldAutoSize, WithHeadings, With
      */
     public function map($asset): array
     {
+        // Build maintenance info for vehicles only
+        $hasServiceData = $asset->vehicleProfile
+            && ($asset->vehicleProfile->next_service_date || $asset->vehicleProfile->service_target_odometer_km);
+
+        $targetServiceTanggal = '';
+        $targetServiceKm = '';
+        $statusPerawatan = '';
+
+        if ($hasServiceData) {
+            $targetServiceTanggal = $asset->vehicleProfile->next_service_date
+                ? $asset->vehicleProfile->next_service_date->format('d/m/Y')
+                : '';
+            $targetServiceKm = $asset->vehicleProfile->service_target_odometer_km
+                ? number_format($asset->vehicleProfile->service_target_odometer_km, 0, ',', '.')
+                : '';
+
+            $overdueInfo = $asset->getMaintenanceOverdueInfo();
+            $statusPerawatan = $overdueInfo ? $overdueInfo['message'] : 'Normal';
+        }
+
         return [
             $asset->code,
             $asset->tag_code,
@@ -78,6 +101,9 @@ class AssetsExport implements FromCollection, ShouldAutoSize, WithHeadings, With
             $asset->vehicleProfile->current_odometer_km ?? '-',
             $asset->vehicleProfile->year_purchase ?? '-',
             $asset->vehicleProfile->year_manufacture ?? '-',
+            $targetServiceTanggal,
+            $targetServiceKm,
+            $statusPerawatan,
             $asset->last_seen_at ? $asset->last_seen_at->format('d/m/Y H:i') : '-',
             $asset->created_at->format('d/m/Y H:i'),
         ];

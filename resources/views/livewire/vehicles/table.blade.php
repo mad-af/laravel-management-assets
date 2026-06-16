@@ -105,6 +105,9 @@
                             <div class="text-xs {{ $odometerInfo['is_overdue'] ? 'text-error' : 'text-base-content/60' }}">
                                 {{ $odometerInfo['distance_info'] }}
                             </div>
+                            @if($odometerInfo['is_overdue'])
+                                <x-badge value="Terlambat" class="mt-1 badge-error badge-sm" />
+                            @endif
                         </div>
                     @else
                         <span class="text-sm">-</span>
@@ -124,6 +127,9 @@
                         <div class="text-xs {{ $serviceInfo['is_overdue'] ? 'text-error' : 'text-base-content/60' }}">
                             {{ $serviceInfo['time_info'] }}
                         </div>
+                        @if($serviceInfo['is_overdue'])
+                            <x-badge value="Terlambat" class="mt-1 badge-error badge-sm" />
+                        @endif
                     </div>
                 @else
                     <span class="text-sm">-</span>

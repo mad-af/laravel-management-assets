@@ -27,7 +27,10 @@ class UpcomingVehicleMaintenance extends Component
                 $asset->vehicleProfile->next_service_date || $asset->vehicleProfile->service_target_odometer_km
             );
         })->sortBy(function ($asset) {
-            // Urutkan berdasarkan tanggal terdekat atau selisih km menuju target
+            // Prioritaskan yang overdue (tanggal atau km)
+            if ($asset->isMaintenanceOverdue()) {
+                return [0, 0];
+            }
             $vp = $asset->vehicleProfile;
             $dateScore = $vp->next_service_date ? $vp->next_service_date->timestamp : PHP_INT_MAX;
             $kmDelta = $vp->service_target_odometer_km && $vp->current_odometer_km

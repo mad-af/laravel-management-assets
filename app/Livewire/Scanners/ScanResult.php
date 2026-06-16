@@ -50,6 +50,7 @@ class ScanResult extends Component
     {
         $borrowerName = $this->assetScanned['current_loan']['borrower_name'] ?? null;
         $dueAt = $this->assetScanned['current_loan']['due_at'] ?? null;
+        $maintenanceOverdue = $this->assetScanned['maintenance_overdue_info'] ?? null;
 
         $this->rows = [
             ['key' => 'Tag Scanned', 'value' => $this->tagScanned ?? '-'],
@@ -67,6 +68,13 @@ class ScanResult extends Component
             $this->rows[] = ['key' => 'Peminjam', 'value' => $borrowerValue];
         } else {
             $this->rows[] = ['key' => 'Peminjam', 'value' => '-'];
+        }
+
+        if ($maintenanceOverdue) {
+            $this->rows[] = [
+                'key' => 'Status Perawatan',
+                'value' => $maintenanceOverdue['message'],
+            ];
         }
 
         if ($this->assetScanned) {

@@ -18,10 +18,18 @@
                 </thead>
                 <tbody>
                     @foreach($vehicles as $i => $asset)
-                        @php $vp = $asset->vehicleProfile; @endphp
-                        <tr>
+                        @php
+                            $vp = $asset->vehicleProfile;
+                            $overdueInfo = $asset->getMaintenanceOverdueInfo();
+                        @endphp
+                        <tr class="{{ $overdueInfo ? 'bg-error/10' : '' }}">
                             <td>{{ $i + 1 }}</td>
-                            <td class="font-medium">{{ $asset->name }}</td>
+                            <td class="font-medium">
+                                {{ $asset->name }}
+                                @if($overdueInfo)
+                                    <x-badge value="Terlambat" class="ml-1 badge-error badge-sm" />
+                                @endif
+                            </td>
                             <td>
                                 @php
                                     $odometerInfo = $this->formatOdometerTargetInfo(
@@ -30,7 +38,7 @@
                                     );
                                 @endphp
                                 @if($odometerInfo)
-                                    <div class="{{ $odometerInfo['is_overdue'] ? 'text-error' : 'text-base-content/60' }}">
+                                    <div class="{{ $odometerInfo['is_overdue'] ? 'text-error font-semibold' : 'text-base-content/60' }}">
                                         {{ $odometerInfo['distance_info'] }}
                                     </div>
                                 @else
@@ -42,7 +50,7 @@
                                     $serviceInfo = $vp ? $this->formatNextServiceDate($vp->next_service_date) : null;
                                 @endphp
                                 @if($serviceInfo)
-                                    <div class="{{ $serviceInfo['is_overdue'] ? 'text-error' : 'text-base-content/60' }}">
+                                    <div class="{{ $serviceInfo['is_overdue'] ? 'text-error font-semibold' : 'text-base-content/60' }}">
                                         {{ $serviceInfo['time_info'] }}
                                     </div>
                                 @else

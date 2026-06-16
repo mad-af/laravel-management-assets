@@ -33,6 +33,7 @@ class DatabaseSeeder extends Seeder
                 AssetLogSeeder::class,
                 VehicleProfileSeeder::class,
                 AssetMaintenanceSeeder::class,
+                ComprehensiveTestSeeder::class,
                 // AssetSeeder2::class,
             ];
         }

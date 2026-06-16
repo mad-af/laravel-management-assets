@@ -361,4 +361,59 @@ class Asset extends Model
 
         return AssetLoanStatus::AVAILABLE;
     }
+
+    /**
+     * Check if vehicle maintenance is overdue based on next_service_date or odometer target.
+     */
+    public function isMaintenanceOverdue(): bool
+    {
+        $info = $this->getMaintenanceOverdueInfo();
+
+        return $info !== null;
+    }
+
+    /**
+     * Get maintenance overdue information for vehicle.
+     * Returns null if no overdue condition.
+     *
+     * @return array{type: string, days?: int, km?: int, message: string}|null
+     */
+    public function getMaintenanceOverdueInfo(): ?array
+    {
+        $profile = $this->vehicleProfile;
+        if (! $profile) {
+            return null;
+        }
+
+        $now = now();
+        $nextDate = $profile->next_service_date;
+        $nextKm = $profile->service_target_odometer_km;
+        $currentKm = (int) ($profile->current_odometer_km ?? 0);
+
+        $dateOverdue = $nextDate && $nextDate->isPast();
+        $kmOverdue = $nextKm && $currentKm >= (int) $nextKm;
+
+        if (! $dateOverdue && ! $kmOverdue) {
+            return null;
+        }
+
+        $parts = [];
+        if ($dateOverdue) {
+            $days = (int) $nextDate->startOfDay()->diffInDays($now->startOfDay(), false);
+            $parts[] = "Terlambat {$days} hari";
+        }
+        if ($kmOverdue) {
+            $excessKm = $currentKm - (int) $nextKm;
+            $parts[] = 'Terlambat ' . number_format($excessKm, 0, ',', '.') . ' km';
+        }
+
+        $type = ($dateOverdue && $kmOverdue) ? 'both' : ($dateOverdue ? 'date' : 'km');
+
+        return [
+            'type' => $type,
+            'days' => $dateOverdue ? (int) $nextDate->startOfDay()->diffInDays($now->startOfDay(), false) : null,
+            'km' => $kmOverdue ? ($currentKm - (int) $nextKm) : null,
+            'message' => implode(', ', $parts),
+        ];
+    }
 }

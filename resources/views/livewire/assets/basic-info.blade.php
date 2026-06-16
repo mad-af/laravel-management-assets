@@ -64,6 +64,33 @@
         }
     }
 
+    // Add maintenance overdue info (only for vehicles)
+    if ($asset->vehicleProfile) {
+        $overdueInfo = $asset->getMaintenanceOverdueInfo();
+        $nextServiceDate = $asset->vehicleProfile->next_service_date;
+        $nextServiceKm = $asset->vehicleProfile->service_target_odometer_km;
+
+        if ($overdueInfo) {
+            $items[] = [
+                'label' => 'Status Perawatan',
+                'value' => $overdueInfo['message'] . ' <span class="badge badge-error badge-sm">Terlambat</span>',
+            ];
+        } elseif ($nextServiceDate) {
+            $now = \Carbon\Carbon::now();
+            $days = (int) $nextServiceDate->startOfDay()->diffInDays($now->startOfDay(), false);
+            $badge = '';
+            if ($days <= 7 && $days > 0) {
+                $badge = ' <span class="badge badge-warning badge-sm">Segera (' . $days . ' hari lagi)</span>';
+            } elseif ($days > 0) {
+                $badge = ' <span class="badge badge-info badge-sm">' . $days . ' hari lagi</span>';
+            }
+            $items[] = [
+                'label' => 'Perawatan Berikutnya',
+                'value' => $nextServiceDate->locale('id')->translatedFormat('j F Y') . $badge,
+            ];
+        }
+    }
+
     // Add value if exists
     if ($asset->value) {
         $items[] = ['label' => 'Nilai Asset', 'value' => 'Rp ' . number_format($asset->value, 0, ',', '.')];
