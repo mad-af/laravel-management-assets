@@ -171,6 +171,13 @@
                     min="0" class="input-sm"
                     hint="Odometer saat ini: {{ number_format($this->asset?->vehicleProfile?->current_odometer_km ?? 0, 0, ',', '.') }} KM" />
             </div>
+
+            @if($this->asset?->vehicleProfile?->next_service_date)
+                <div class="mt-2 text-sm text-warning">
+                    <span class="font-semibold">📅 Service Berikutnya:</span>
+                    {{ $this->asset->vehicleProfile->next_service_date->locale('id')->translatedFormat('j F Y') }}
+                </div>
+            @endif
         @endif
 
         <!-- Service Tasks -->
