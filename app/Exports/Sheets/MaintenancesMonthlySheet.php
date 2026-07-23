@@ -51,6 +51,8 @@ class MaintenancesMonthlySheet implements FromCollection, ShouldAutoSize, WithHe
             'Teknisi',
             'Vendor',
             'Odometer (KM)',
+            'Tanggal Service Seharusnya',
+            'Status Terlambat',
             'Catatan',
             'Service Tasks',
             'Service Details',
@@ -125,6 +127,10 @@ class MaintenancesMonthlySheet implements FromCollection, ShouldAutoSize, WithHe
             $m->technician_name ?? '-',
             $m->vendor_name ?? '-',
             $m->odometer_km_at_service ?? '-',
+            $m->next_service_date_before ? $m->next_service_date_before->format('d/m/Y') : '-',
+            $m->type?->value === 'preventive' && $m->next_service_date_before && $m->next_service_date_before->isPast()
+                ? 'Terlambat (' . $m->next_service_date_before->startOfDay()->diffInDays(now()->startOfDay()) . ' hari)'
+                : '-',
             $m->notes ?? '-',
             $tasks,
             $details,
@@ -134,7 +140,7 @@ class MaintenancesMonthlySheet implements FromCollection, ShouldAutoSize, WithHe
     public function styles(Worksheet $sheet)
     {
         // Header style (row 1)
-        $sheet->getStyle('A1:Q1')->applyFromArray([
+        $sheet->getStyle('A1:S1')->applyFromArray([
             'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
             'fill' => [
                 'fillType'   => Fill::FILL_SOLID,

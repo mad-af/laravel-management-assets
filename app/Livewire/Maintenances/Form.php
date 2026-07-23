@@ -51,8 +51,6 @@ class Form extends Component
 
     public $vendor_name = '';
 
-    public $odometer_km_at_service = '';
-
     public $notes = '';
 
     public array $service_tasks = [];
@@ -99,11 +97,6 @@ class Form extends Component
             'notes' => 'nullable|string',
         ];
 
-        // Dynamic validation for odometer fields based on current vehicle odometer
-        if ($this->isVehicle) {
-            $rules['odometer_km_at_service'] = 'nullable|integer|min:0';
-        }
-
         return $rules;
     }
 
@@ -123,8 +116,6 @@ class Form extends Component
             'started_at.date' => 'Tanggal mulai harus berupa tanggal yang valid.',
             'estimated_completed_at.date' => 'Tanggal estimasi selesai harus berupa tanggal yang valid.',
             'next_service_date.date' => 'Tanggal service berikutnya harus berupa tanggal yang valid.',
-            'odometer_km_at_service.integer' => 'Penambahan odometer harus berupa angka.',
-            'odometer_km_at_service.min' => 'Penambahan odometer tidak boleh negatif.',
             'next_service_target_odometer_km.integer' => 'Target odometer service berikutnya harus berupa angka.',
         ];
 
@@ -247,13 +238,6 @@ class Form extends Component
 
         try {
             $this->validate();
-            $odometerAtService = null;
-            if ($this->isVehicle && $this->odometer_km_at_service !== '' && $this->odometer_km_at_service !== null) {
-                $asset = Asset::with('vehicleProfile')->find($this->asset_id);
-                $currentOdometer = (int) ($asset?->vehicleProfile?->current_odometer_km ?? 0);
-                $increment = (int) $this->odometer_km_at_service;
-                $odometerAtService = $currentOdometer + $increment;
-            }
 
             $data = [
                 'asset_id' => $this->asset_id,
@@ -265,12 +249,17 @@ class Form extends Component
                 'started_at' => $this->started_at ?: now(),
                 'estimated_completed_at' => $this->estimated_completed_at ?: null,
                 'vendor_name' => $this->vendor_name ?: null,
-                'odometer_km_at_service' => $odometerAtService,
                 'notes' => $this->notes,
                 'service_tasks' => array_values(array_filter($this->service_tasks, function ($task) {
                     return ! empty(trim($task));
                 })),
             ];
+
+            // Auto-set odometer_km_at_service from vehicleProfile.current_odometer_km
+            if ($this->isVehicle && $this->asset_id) {
+                $asset = Asset::with('vehicleProfile')->find($this->asset_id);
+                $data['odometer_km_at_service'] = $asset?->vehicleProfile?->current_odometer_km;
+            }
 
             if ($this->isEdit) {
                 $maintenance = AssetMaintenance::findOrFail($this->maintenanceId);

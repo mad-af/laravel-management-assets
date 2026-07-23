@@ -5,8 +5,13 @@
             <span class="badge badge-{{ $maintenance->priority->color() }} badge-xs">
                 {{ $maintenance->priority->label() }}
             </span>
-            <span class="badge badge-outline badge-{{ $maintenance->type->color() }} badge-xs">
-                {{ $maintenance->type->label() }}
+            <span class="flex gap-1 whitespace-nowrap">
+                @if($maintenance->type?->value === 'preventive' && $maintenance->next_service_date_before && $maintenance->next_service_date_before->isPast())
+                    <span class="badge badge-warning badge-xs">Terlambat</span>
+                @endif
+                <span class="badge badge-outline badge-{{ $maintenance->type->color() }} badge-xs">
+                    {{ $maintenance->type->label() }}
+                </span>
             </span>
         </div>
 
@@ -42,6 +47,12 @@
                 <div class="flex gap-1 items-center">
                     {{-- <x-icon name="o-currency-dollar" class="w-3 h-3" /> --}}
                     <span>Rp {{ number_format($maintenance->cost, 0, ',', '.') }}</span>
+                </div>
+            @endif
+            @if($maintenance->next_service_date && $maintenance->asset?->category?->name === 'Kendaraan')
+                <div class="flex gap-1 items-center">
+                    <x-icon name="o-calendar" class="w-3 h-3" />
+                    <span>Service berikutnya: {{ $maintenance->next_service_date->format('d M Y') }}</span>
                 </div>
             @endif
         </div>

@@ -34,6 +34,7 @@ class AssetMaintenance extends Model
         'odometer_km_at_service',
         'next_service_target_odometer_km',
         'next_service_date',
+        'next_service_date_before',
         'invoice_no',
         'service_tasks',
         'service_details',
@@ -47,6 +48,7 @@ class AssetMaintenance extends Model
         'estimated_completed_at' => 'datetime',
         'completed_at' => 'datetime',
         'next_service_date' => 'date',
+        'next_service_date_before' => 'date',
         'odometer_km_at_service' => 'integer',
         'next_service_target_odometer_km' => 'integer',
         'service_tasks' => ServiceTasksCast::class,
@@ -66,6 +68,32 @@ class AssetMaintenance extends Model
     public function assignedUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'technician_name', 'name');
+    }
+
+    public function isOverdue(): bool
+    {
+        if (! $this->estimated_completed_at) {
+            return false;
+        }
+
+        if (! in_array($this->status, [MaintenanceStatus::OPEN, MaintenanceStatus::IN_PROGRESS])) {
+            return false;
+        }
+
+        return now()->isAfter($this->estimated_completed_at);
+    }
+
+    public function getDaysOverdue(): ?int
+    {
+        if (! $this->estimated_completed_at) {
+            return null;
+        }
+
+        if (! $this->isOverdue()) {
+            return null;
+        }
+
+        return (int) $this->estimated_completed_at->startOfDay()->diffInDays(now()->startOfDay(), false);
     }
 
     /**
@@ -122,6 +150,12 @@ class AssetMaintenance extends Model
                         }
 
                         if ($maintenance->next_service_date) {
+                            // For PREVENTIVE maintenance, save the old next_service_date before updating
+                            if ($maintenance->type === MaintenanceType::PREVENTIVE) {
+                                $maintenance->next_service_date_before = $maintenance->asset->vehicleProfile->next_service_date;
+                                $maintenance->saveQuietly(['next_service_date_before']);
+                            }
+
                             $updateData['next_service_date'] = $maintenance->next_service_date;
                         }
 

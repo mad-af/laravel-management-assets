@@ -162,22 +162,19 @@
         <div>
             <x-input label="Nama Vendor" wire:model="vendor_name" placeholder="Masukkan nama vendor..." class="input-sm" />
         </div>
-        
-        @if($this->isVehicle)
-            <!-- Odometer at Service -->
-            <div>
-                <x-input label="Odometer Saat Service (KM)" wire:model="odometer_km_at_service"
-                    placeholder="Masukkan KM saat ini di odometer..." type="number"
-                    min="0" class="input-sm"
-                    hint="Odometer saat ini di sistem: {{ number_format($this->asset?->vehicleProfile?->current_odometer_km ?? 0, 0, ',', '.') }} KM" />
-            </div>
 
-            @if($this->asset?->vehicleProfile?->next_service_date)
-                <div class="mt-2 text-sm text-warning">
-                    <span class="font-semibold">📅 Service Berikutnya:</span>
-                    {{ $this->asset->vehicleProfile->next_service_date->locale('id')->translatedFormat('j F Y') }}
-                </div>
-            @endif
+        @if($this->isVehicle && $this->asset?->vehicleProfile?->next_service_date)
+            <div class="mt-2 text-sm text-warning">
+                <span class="font-semibold">📅 Service Berikutnya:</span>
+                {{ $this->asset->vehicleProfile->next_service_date->locale('id')->translatedFormat('j F Y') }}
+            </div>
+        @endif
+
+        @if($this->isVehicle && $this->asset?->vehicleProfile?->current_odometer_km)
+            <div class="mt-2 text-sm text-base-content/60">
+                <span class="font-semibold">Odometer Saat Ini:</span>
+                {{ number_format($this->asset->vehicleProfile->current_odometer_km, 0, ',', '.') }} km
+            </div>
         @endif
 
         <!-- Service Tasks -->
