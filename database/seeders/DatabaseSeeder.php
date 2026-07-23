@@ -34,6 +34,7 @@ class DatabaseSeeder extends Seeder
                 VehicleProfileSeeder::class,
                 AssetMaintenanceSeeder::class,
                 ComprehensiveTestSeeder::class,
+                BranchRandomTestSeeder::class,
                 // AssetSeeder2::class,
             ];
         }

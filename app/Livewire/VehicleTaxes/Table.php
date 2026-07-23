@@ -112,7 +112,7 @@ class Table extends Component
                 break;
         }
 
-        return $query->orderBy('name')->paginate(10);
+        return $query->orderBy('name')->paginate(2);
     }
 
     public function getTotalVehiclesProperty()

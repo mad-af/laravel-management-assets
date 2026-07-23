@@ -91,16 +91,9 @@ class AssetMaintenance extends Model
                 }
             }
 
-            // Create odometer log if maintenance has odometer data and asset is a vehicle
-            if ($maintenance->odometer_km_at_service && $maintenance->asset->vehicleProfile) {
-                VehicleOdometerLog::create([
-                    'asset_id' => $maintenance->asset_id,
-                    'odometer_km' => $maintenance->odometer_km_at_service,
-                    'read_at' => $maintenance->started_at ?? now(),
-                    'source' => \App\Enums\VehicleOdometerSource::SERVICE,
-                    'notes' => "Buat Maintenance: {$maintenance->title}",
-                ]);
-            }
+            // DO NOT create odometer log here anymore
+            // Odometer log should only be created when maintenance is completed
+            // to avoid prematurely updating current_odometer_km based on user input during WO creation
         });
 
         // When maintenance status is updated, check if we need to update asset status
