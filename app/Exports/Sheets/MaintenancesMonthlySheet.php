@@ -3,19 +3,20 @@
 namespace App\Exports\Sheets;
 
 use Illuminate\Support\Collection;
-use Maatwebsite\Excel\Columns\Text;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
-use Maatwebsite\Excel\Concerns\WithColumnTypes;
+use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
+use Maatwebsite\Excel\Events\AfterSheet;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class MaintenancesMonthlySheet implements FromCollection, ShouldAutoSize, WithColumnTypes, WithHeadings, WithMapping, WithStyles, WithTitle
+class MaintenancesMonthlySheet implements FromCollection, ShouldAutoSize, WithEvents, WithHeadings, WithMapping, WithStyles, WithTitle
 {
     protected string $title;
 
@@ -144,28 +145,18 @@ class MaintenancesMonthlySheet implements FromCollection, ShouldAutoSize, WithCo
         ];
     }
 
-    public function columns(): array
+    public function registerEvents(): array
     {
         return [
-            Text::make('Kode Perawatan'),
-            Text::make('Kode Asset'),
-            Text::make('Nama Asset'),
-            Text::make('Judul'),
-            Text::make('Tipe'),
-            Text::make('Status'),
-            Text::make('Prioritas'),
-            Text::make('Mulai'),
-            Text::make('Estimasi Selesai'),
-            Text::make('Selesai'),
-            Text::make('Biaya (Rp)'),
-            Text::make('Teknisi'),
-            Text::make('Vendor'),
-            Text::make('Odometer (KM)'),
-            Text::make('Tanggal Service Seharusnya'),
-            Text::make('Status Terlambat'),
-            Text::make('Catatan'),
-            Text::make('Service Tasks'),
-            Text::make('Service Details'),
+            AfterSheet::class => function (AfterSheet $event) {
+                $sheet = $event->sheet->getDelegate();
+                $highestRow = $sheet->getHighestRow();
+
+                for ($row = 2; $row <= $highestRow; $row++) {
+                    $cell = $sheet->getCell('K'.$row);
+                    $cell->setValueExplicit((string) $cell->getValue(), DataType::TYPE_STRING);
+                }
+            },
         ];
     }
 
