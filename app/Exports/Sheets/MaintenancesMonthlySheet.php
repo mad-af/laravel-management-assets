@@ -3,19 +3,22 @@
 namespace App\Exports\Sheets;
 
 use Illuminate\Support\Collection;
+use Maatwebsite\Excel\Columns\Text;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
+use Maatwebsite\Excel\Concerns\WithColumnTypes;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class MaintenancesMonthlySheet implements FromCollection, ShouldAutoSize, WithHeadings, WithMapping, WithStyles, WithTitle
+class MaintenancesMonthlySheet implements FromCollection, ShouldAutoSize, WithColumnTypes, WithHeadings, WithMapping, WithStyles, WithTitle
 {
     protected string $title;
+
     protected Collection $items;
 
     public function __construct(string $title, Collection $items)
@@ -63,20 +66,22 @@ class MaintenancesMonthlySheet implements FromCollection, ShouldAutoSize, WithHe
     {
         // Normalize service tasks to a readable string
         $tasks = '-';
-        if (is_array($m->service_tasks) && !empty($m->service_tasks)) {
+        if (is_array($m->service_tasks) && ! empty($m->service_tasks)) {
             $tasks = implode('; ', array_map(function ($t) {
                 $text = is_array($t) ? ($t['task'] ?? '') : (string) $t;
                 $text = trim((string) $text);
                 if ($text === '') {
                     return null;
                 }
-                $prefix = (is_array($t) && !empty($t['completed'])) ? '✓ ' : '';
-                return $prefix . $text;
+                $prefix = (is_array($t) && ! empty($t['completed'])) ? '✓ ' : '';
+
+                return $prefix.$text;
             }, array_filter($m->service_tasks, function ($t) {
                 // Keep only items that have some text value
                 if (is_array($t)) {
                     return isset($t['task']) && trim((string) $t['task']) !== '';
                 }
+
                 return is_string($t) && trim($t) !== '';
             })));
             if ($tasks === '') {
@@ -86,7 +91,7 @@ class MaintenancesMonthlySheet implements FromCollection, ShouldAutoSize, WithHe
 
         // Normalize service details to a readable string
         $details = '-';
-        if (is_array($m->service_details) && !empty($m->service_details)) {
+        if (is_array($m->service_details) && ! empty($m->service_details)) {
             $details = implode('; ', array_map(function ($d) {
                 $name = '';
                 $qty = 0;
@@ -100,11 +105,13 @@ class MaintenancesMonthlySheet implements FromCollection, ShouldAutoSize, WithHe
                 if ($name === '') {
                     return null;
                 }
+
                 return $qty > 0 ? "$name ($qty)" : $name;
             }, array_filter($m->service_details, function ($d) {
                 if (is_array($d)) {
                     return isset($d['name']) && trim((string) $d['name']) !== '';
                 }
+
                 return is_string($d) && trim($d) !== '';
             })));
             if ($details === '') {
@@ -117,9 +124,9 @@ class MaintenancesMonthlySheet implements FromCollection, ShouldAutoSize, WithHe
             $m->asset->code ?? '-',
             $m->asset->name ?? '-',
             $m->title ?? '-',
-            $m->type?->label() ?? (string)($m->type ?? '-'),
-            $m->status?->label() ?? (string)($m->status ?? '-'),
-            $m->priority?->label() ?? (string)($m->priority ?? '-'),
+            $m->type?->label() ?? (string) ($m->type ?? '-'),
+            $m->status?->label() ?? (string) ($m->status ?? '-'),
+            $m->priority?->label() ?? (string) ($m->priority ?? '-'),
             $m->started_at ? $m->started_at->format('d/m/Y') : '-',
             $m->estimated_completed_at ? $m->estimated_completed_at->format('d/m/Y') : '-',
             $m->completed_at ? $m->completed_at->format('d/m/Y') : '-',
@@ -129,11 +136,36 @@ class MaintenancesMonthlySheet implements FromCollection, ShouldAutoSize, WithHe
             $m->odometer_km_at_service ?? '-',
             $m->next_service_date_before ? $m->next_service_date_before->format('d/m/Y') : '-',
             $m->type?->value === 'preventive' && $m->next_service_date_before && $m->next_service_date_before->isPast()
-                ? 'Terlambat (' . $m->next_service_date_before->startOfDay()->diffInDays(now()->startOfDay()) . ' hari)'
+                ? 'Terlambat ('.$m->next_service_date_before->startOfDay()->diffInDays(now()->startOfDay()).' hari)'
                 : '-',
             $m->notes ?? '-',
             $tasks,
             $details,
+        ];
+    }
+
+    public function columns(): array
+    {
+        return [
+            Text::make('Kode Perawatan'),
+            Text::make('Kode Asset'),
+            Text::make('Nama Asset'),
+            Text::make('Judul'),
+            Text::make('Tipe'),
+            Text::make('Status'),
+            Text::make('Prioritas'),
+            Text::make('Mulai'),
+            Text::make('Estimasi Selesai'),
+            Text::make('Selesai'),
+            Text::make('Biaya (Rp)'),
+            Text::make('Teknisi'),
+            Text::make('Vendor'),
+            Text::make('Odometer (KM)'),
+            Text::make('Tanggal Service Seharusnya'),
+            Text::make('Status Terlambat'),
+            Text::make('Catatan'),
+            Text::make('Service Tasks'),
+            Text::make('Service Details'),
         ];
     }
 
@@ -143,12 +175,12 @@ class MaintenancesMonthlySheet implements FromCollection, ShouldAutoSize, WithHe
         $sheet->getStyle('A1:S1')->applyFromArray([
             'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
             'fill' => [
-                'fillType'   => Fill::FILL_SOLID,
+                'fillType' => Fill::FILL_SOLID,
                 'startColor' => ['rgb' => '1976D2'],
             ],
             'alignment' => [
                 'horizontal' => Alignment::HORIZONTAL_CENTER,
-                'vertical'   => Alignment::VERTICAL_CENTER,
+                'vertical' => Alignment::VERTICAL_CENTER,
             ],
         ]);
 
