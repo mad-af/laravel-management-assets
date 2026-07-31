@@ -131,7 +131,7 @@ class MaintenancesMonthlySheet implements FromCollection, ShouldAutoSize, WithEv
             $m->started_at ? $m->started_at->format('d/m/Y') : '-',
             $m->estimated_completed_at ? $m->estimated_completed_at->format('d/m/Y') : '-',
             $m->completed_at ? $m->completed_at->format('d/m/Y') : '-',
-            $m->cost ? number_format($m->cost, 0, ',', '.') : '-',
+            $m->cost ?? '-',
             $m->technician_name ?? '-',
             $m->vendor_name ?? '-',
             $m->odometer_km_at_service ?? '-',
@@ -154,7 +154,17 @@ class MaintenancesMonthlySheet implements FromCollection, ShouldAutoSize, WithEv
 
                 for ($row = 2; $row <= $highestRow; $row++) {
                     $cell = $sheet->getCell('K'.$row);
-                    $cell->setValueExplicit((string) $cell->getValue(), DataType::TYPE_STRING);
+                    $value = $cell->getValue();
+
+                    if (is_numeric($value) && $value > 0) {
+                        $formatted = number_format((float) $value, 0, ',', '.');
+                    } elseif ($value === null || $value === '' || $value == 0) {
+                        $formatted = '-';
+                    } else {
+                        $formatted = (string) $value;
+                    }
+
+                    $cell->setValueExplicit($formatted, DataType::TYPE_STRING);
                 }
             },
         ];
