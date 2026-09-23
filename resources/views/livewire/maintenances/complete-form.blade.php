@@ -13,6 +13,14 @@
         </div>
 
         @if($this->isVehicle)
+            <!-- Odometer KM at Service -->
+            <div>
+                <x-input label="Odometer Saat Servis (KM)" wire:model="odometer_km_at_service"
+                    placeholder="Masukkan odometer saat servis..." type="number"
+                    min="{{ $this->asset?->vehicleProfile?->current_odometer_km ?? 0 }}" class="input-sm"
+                    hint="Odometer kendaraan pada saat servis dilakukan" />
+            </div>
+
             <!-- Next Service Target Odometer KM -->
             <div>
                 <x-input label="Target Odometer Service Berikutnya (KM)" wire:model="next_service_target_odometer_km"

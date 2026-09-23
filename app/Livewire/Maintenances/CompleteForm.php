@@ -23,6 +23,8 @@ class CompleteForm extends Component
 
     public $next_service_date = '';
 
+    public $odometer_km_at_service = '';
+
     public $notes = '';
 
     // Helper properties
@@ -55,6 +57,7 @@ class CompleteForm extends Component
         // Dynamic validation for odometer fields based on current vehicle odometer
         if ($this->asset && $this->asset->vehicleProfile) {
             $minOdometer = $this->asset->vehicleProfile->current_odometer_km ?? 0;
+            $rules['odometer_km_at_service'] = "nullable|integer|min:{$minOdometer}";
             $rules['next_service_target_odometer_km'] = "nullable|integer|min:{$minOdometer}";
         }
 
@@ -80,6 +83,7 @@ class CompleteForm extends Component
         // Dynamic messages for odometer validation based on current vehicle odometer
         if ($this->asset && $this->asset->vehicleProfile && $this->asset->vehicleProfile->current_odometer_km) {
             $currentOdometer = $this->asset->vehicleProfile->current_odometer_km;
+            $messages['odometer_km_at_service.min'] = "Odometer saat servis tidak boleh kurang dari odometer sebelumnya ({$currentOdometer} KM).";
             $messages['next_service_target_odometer_km.min'] = "Target odometer service berikutnya tidak boleh kurang dari odometer saat ini ({$currentOdometer} KM).";
         }
 
@@ -109,6 +113,7 @@ class CompleteForm extends Component
         $this->next_service_target_odometer_km = $maintenance->next_service_target_odometer_km;
         $this->next_service_date = $maintenance->next_service_date?->format('Y-m-d');
         $this->invoice_no = $maintenance->invoice_no;
+        $this->odometer_km_at_service = $maintenance->odometer_km_at_service ?? $maintenance->asset->vehicleProfile?->current_odometer_km;
         $this->service_details = $maintenance->service_details ?? [];
         $this->service_tasks = $maintenance->service_tasks ?? [];
     }
@@ -137,6 +142,7 @@ class CompleteForm extends Component
 
             // Add odometer fields for vehicles
             if ($this->isVehicle) {
+                $data['odometer_km_at_service'] = $this->odometer_km_at_service ?: null;
                 $data['next_service_target_odometer_km'] = $this->next_service_target_odometer_km ?: null;
             }
 
