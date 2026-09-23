@@ -43,9 +43,9 @@ class Table extends Component
         try {
             $transfer = AssetTransfer::findOrFail($transferId);
 
-            // Check if transfer can be deleted (only draft status)
-            if ($transfer->status->value !== 'draft') {
-                $this->showErrorAlert('Hanya transfer dengan status draft yang dapat dihapus.', 'Error');
+            // Allow delete only if status is not DELIVERED (final state)
+            if ($transfer->status === \App\Enums\AssetTransferStatus::DELIVERED) {
+                $this->showErrorAlert('Transfer yang sudah terkirim tidak dapat dihapus.', 'Error');
 
                 return;
             }

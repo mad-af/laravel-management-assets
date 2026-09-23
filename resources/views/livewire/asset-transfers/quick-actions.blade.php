@@ -7,34 +7,23 @@
         </h2>
 
         <div class="mt-4 space-y-3">
-            @if($quickActionsData['status'] === \App\Enums\AssetTransferStatus::PENDING->value)
-                <button class="w-full btn  btn-primary btn-sm"
-                    onclick="if(confirm('Edit transfer?')) { @this.call('openEditModal') }">
-                    <x-icon name="o-pencil" class="w-4 h-4" />
-                    Edit Transfer
-                </button>
+            @php
+                $currentStatus = $quickActionsData['status'] ?? null;
+            @endphp
 
-                <button class="w-full btn  btn-success btn-sm"
-                    onclick="if(confirm('Approve this transfer?')) { @this.call('updateStatus', 'approved') }">
+            @if($currentStatus === 'shipped')
+                <button class="w-full btn btn-info btn-sm"
+                    onclick="if(confirm('Tandai transfer sebagai terkirim?')) { @this.call('updateStatus', 'delivered') }">
                     <x-icon name="o-check" class="w-4 h-4" />
-                    Approve
+                    Tandai Terkirim
                 </button>
-
-                <button class="w-full btn  btn-error btn-sm"
-                    onclick="if(confirm('Reject this transfer?')) { @this.call('updateStatus', 'rejected') }">
-                    <x-icon name="o-x-mark" class="w-4 h-4" />
-                    Reject
-                </button>
-            @elseif($quickActionsData['status'] === \App\Enums\AssetTransferStatus::APPROVED->value)
-                <button class="btn btn-info btn-sm"
-                    onclick="if(confirm('Start this transfer?')) { @this.call('updateStatus', 'in_progress') }">
-                    <x-icon name="o-truck" class="w-4 h-4" />
-                    Start Transfer
-                </button>
+            @elseif($currentStatus === 'delivered')
+                <div class="alert alert-success">
+                    <span>Transfer ini sudah selesai (terkirim).</span>
+                </div>
             @endif
 
-
-            <button class="w-full btn  btn-sm" wire:click="openEditModal">
+            <button class="w-full btn btn-sm" wire:click="openEditModal">
                 <x-icon name="o-pencil" class="w-4 h-4" />
                 Edit Transfer
             </button>

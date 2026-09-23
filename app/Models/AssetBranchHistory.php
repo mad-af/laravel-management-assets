@@ -13,6 +13,8 @@ class AssetBranchHistory extends Model
 
     protected $table = 'asset_branch_history';
 
+    public $timestamps = false;
+
     protected $fillable = [
         'asset_id',
         'from_branch_id',

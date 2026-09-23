@@ -81,6 +81,13 @@ class BranchSeeder extends Seeder
                 'address' => 'Jl. Gatot Subroto No. 456, Malang, Jawa Timur 60234',
                 'is_active' => true,
             ],
+            [
+                'id' => Str::uuid(),
+                'company_id' => $companies->where('code', 'IBT')->first()->id,
+                'name' => 'Cabang Boyolali',
+                'address' => 'Jl. Boyolali No. 123, Boyolali, Jawa Tengah 57311',
+                'is_active' => true,
+            ],
         ];
 
         foreach ($branches as $branch) {

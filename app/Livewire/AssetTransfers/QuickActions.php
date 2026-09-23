@@ -6,10 +6,11 @@ use App\Models\AssetTransfer;
 use App\Enums\AssetTransferStatus;
 use App\Traits\WithAlert;
 use Livewire\Component;
+use Mary\Traits\Toast;
 
 class QuickActions extends Component
 {
-    use WithAlert;
+    use WithAlert, Toast;
 
     public $quickActionsData;
 
@@ -23,30 +24,39 @@ class QuickActions extends Component
          $this->dispatch('open-edit-drawer', transferId: $this->quickActionsData['id']);
      }
 
-     public function updateStatus($status)
-     {
-         $transfer = AssetTransfer::find($this->quickActionsData['id']);
-         
-         if (!$transfer) {
-             $this->error('Transfer tidak ditemukan!');
-             return;
-         }
+public function updateStatus($status)
+    {
+        $transfer = AssetTransfer::find($this->quickActionsData['id']);
+        
+        if (!$transfer) {
+            $this->error('Transfer tidak ditemukan!');
+            return;
+        }
 
-         $transfer->update(['status' => $status]);
-         
-         $this->quickActionsData['status'] = $status;
-         
-         $statusMessages = [
-             'approved' => 'Transfer berhasil disetujui!',
-             'rejected' => 'Transfer berhasil ditolak!',
-             'in_progress' => 'Transfer berhasil dimulai!',
-             'completed' => 'Transfer berhasil diselesaikan!'
-         ];
-         
-         $this->success($statusMessages[$status] ?? 'Status berhasil diperbarui!');
-         
-         $this->dispatch('transfer-status-updated');
-     }
+        $statusMap = [
+            'shipped' => AssetTransferStatus::SHIPPED,
+            'delivered' => AssetTransferStatus::DELIVERED,
+        ];
+
+        if (!isset($statusMap[$status])) {
+            $this->error("Status '{$status}' tidak dikenali. Status valid: shipped, delivered.");
+            return;
+        }
+
+        $newStatus = $statusMap[$status];
+        $transfer->update(['status' => $newStatus]);
+        
+        $this->quickActionsData['status'] = $newStatus->value;
+        
+        $statusMessages = [
+            'shipped' => 'Transfer ditandai dikirim!',
+            'delivered' => 'Transfer ditandai terkirim!',
+        ];
+        
+        $this->success($statusMessages[$status] ?? 'Status berhasil diperbarui!');
+        
+        $this->dispatch('transfer-status-updated');
+    }
 
 
 

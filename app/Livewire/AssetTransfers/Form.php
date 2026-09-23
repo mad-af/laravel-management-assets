@@ -258,7 +258,6 @@ class Form extends Component
             $this->success($this->isEdit ? 'Transfer aset berhasil diupdate!' : 'Transfer aset berhasil dibuat!');
             $this->dispatch('close-drawer');
         } catch (\Exception $e) {
-            dd($e);
             Log::error('Asset transfer save failed', [
                 'error' => $e->getMessage(),
                 'user_id' => Auth::id(),

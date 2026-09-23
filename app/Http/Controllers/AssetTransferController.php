@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\AssetLocationChangeType;
-use App\Enums\AssetTransferPriority;
 use App\Enums\AssetTransferStatus;
 use App\Models\Asset;
 use App\Models\AssetTransfer;
@@ -288,17 +286,10 @@ class AssetTransferController extends Controller
                     'branch_id' => $item->to_branch_id,
                 ]);
 
-                // Update item status
-                $item->update([
-                    'transferred_at' => now(),
-                ]);
-
                 // Create branch history
                 $item->asset->branchHistories()->create([
                     'from_branch_id' => $item->from_branch_id,
                     'to_branch_id' => $item->to_branch_id,
-                    'changed_at' => now(),
-                    'changed_by' => Auth::id(),
                     'transfer_id' => $assetTransfer->id,
                     'remark' => 'Transfer: '.$assetTransfer->transfer_no,
                 ]);
