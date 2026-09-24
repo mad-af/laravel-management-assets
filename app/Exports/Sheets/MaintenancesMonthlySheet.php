@@ -22,10 +22,33 @@ class MaintenancesMonthlySheet implements FromCollection, ShouldAutoSize, WithEv
 
     protected Collection $items;
 
-    public function __construct(string $title, Collection $items)
+    /**
+     * Service schedule check per maintenance id (see MaintenancesMonthlyExport::buildServiceChecks).
+     *
+     * @var array<string, array>
+     */
+    protected array $serviceChecks;
+
+    // Column letters (keep in sync with headings())
+    private const COL_TARGET_DATE = 'H';
+
+    private const COL_ACTUAL_DATE = 'I';
+
+    private const COL_TARGET_KM = 'J';
+
+    private const COL_ACTUAL_KM = 'K';
+
+    private const COL_SERVICE_STATUS = 'L';
+
+    private const COL_COST = 'P';
+
+    private const COL_LAST = 'U';
+
+    public function __construct(string $title, Collection $items, array $serviceChecks = [])
     {
         $this->title = $title;
-        $this->items = $items;
+        $this->items = $items->values();
+        $this->serviceChecks = $serviceChecks;
     }
 
     public function title(): string
@@ -48,15 +71,17 @@ class MaintenancesMonthlySheet implements FromCollection, ShouldAutoSize, WithEv
             'Tipe',
             'Status',
             'Prioritas',
+            'Tanggal Service Seharusnya',
+            'Tanggal Service Aktual',
+            'Target KM Service',
+            'KM Aktual Saat Service',
+            'Status Service',
             'Mulai',
             'Estimasi Selesai',
             'Selesai',
             'Biaya (Rp)',
             'Teknisi',
             'Vendor',
-            'Odometer (KM)',
-            'Tanggal Service Seharusnya',
-            'Status Terlambat',
             'Catatan',
             'Service Tasks',
             'Service Details',
@@ -65,6 +90,16 @@ class MaintenancesMonthlySheet implements FromCollection, ShouldAutoSize, WithEv
 
     public function map($m): array
     {
+        $check = $this->serviceChecks[$m->id] ?? [
+            'target_date' => null,
+            'actual_date' => null,
+            'target_km' => null,
+            'actual_km' => null,
+            'late_days' => null,
+            'over_km' => null,
+            'evaluated' => false,
+        ];
+
         // Normalize service tasks to a readable string
         $tasks = '-';
         if (is_array($m->service_tasks) && ! empty($m->service_tasks)) {
@@ -128,17 +163,17 @@ class MaintenancesMonthlySheet implements FromCollection, ShouldAutoSize, WithEv
             $m->type?->label() ?? (string) ($m->type ?? '-'),
             $m->status?->label() ?? (string) ($m->status ?? '-'),
             $m->priority?->label() ?? (string) ($m->priority ?? '-'),
+            $check['target_date'] ? $check['target_date']->format('d/m/Y') : '-',
+            $check['actual_date'] ? $check['actual_date']->format('d/m/Y') : '-',
+            $check['target_km'] ?: '-',
+            $check['actual_km'] ?: '-',
+            $this->serviceStatusText($check),
             $m->started_at ? $m->started_at->format('d/m/Y') : '-',
             $m->estimated_completed_at ? $m->estimated_completed_at->format('d/m/Y') : '-',
             $m->completed_at ? $m->completed_at->format('d/m/Y') : '-',
             $m->cost ?? '-',
             $m->technician_name ?? '-',
             $m->vendor_name ?? '-',
-            $m->odometer_km_at_service ?? '-',
-            $m->next_service_date_before ? $m->next_service_date_before->format('d/m/Y') : '-',
-            $m->type?->value === 'preventive' && $m->next_service_date_before && $m->next_service_date_before->isPast()
-                ? 'Terlambat ('.$m->next_service_date_before->startOfDay()->diffInDays(now()->startOfDay()).' hari)'
-                : '-',
             $m->notes ?? '-',
             $tasks,
             $details,
@@ -152,8 +187,46 @@ class MaintenancesMonthlySheet implements FromCollection, ShouldAutoSize, WithEv
                 $sheet = $event->sheet->getDelegate();
                 $highestRow = $sheet->getHighestRow();
 
+                $late = [
+                    'fillType' => Fill::FILL_SOLID,
+                    'startColor' => ['rgb' => 'FFC7CE'],
+                ];
+                $onTime = [
+                    'fillType' => Fill::FILL_SOLID,
+                    'startColor' => ['rgb' => 'C6EFCE'],
+                ];
+
+                // Highlight service schedule: red when target date/KM was passed
+                foreach ($this->items as $index => $m) {
+                    $row = $index + 2;
+                    $check = $this->serviceChecks[$m->id] ?? null;
+                    if (! $check || ! $check['evaluated']) {
+                        continue;
+                    }
+
+                    if ($check['late_days']) {
+                        $sheet->getStyle(self::COL_ACTUAL_DATE.$row)->applyFromArray([
+                            'fill' => $late,
+                            'font' => ['bold' => true, 'color' => ['rgb' => '9C0006']],
+                        ]);
+                    }
+
+                    if ($check['over_km']) {
+                        $sheet->getStyle(self::COL_ACTUAL_KM.$row)->applyFromArray([
+                            'fill' => $late,
+                            'font' => ['bold' => true, 'color' => ['rgb' => '9C0006']],
+                        ]);
+                    }
+
+                    $isLate = $check['late_days'] || $check['over_km'];
+                    $sheet->getStyle(self::COL_SERVICE_STATUS.$row)->applyFromArray([
+                        'fill' => $isLate ? $late : $onTime,
+                        'font' => ['bold' => true, 'color' => ['rgb' => $isLate ? '9C0006' : '006100']],
+                    ]);
+                }
+
                 for ($row = 2; $row <= $highestRow; $row++) {
-                    $cell = $sheet->getCell('K'.$row);
+                    $cell = $sheet->getCell(self::COL_COST.$row);
                     $value = $cell->getValue();
 
                     if (is_numeric($value) && $value > 0) {
@@ -173,7 +246,7 @@ class MaintenancesMonthlySheet implements FromCollection, ShouldAutoSize, WithEv
     public function styles(Worksheet $sheet)
     {
         // Header style (row 1)
-        $sheet->getStyle('A1:S1')->applyFromArray([
+        $sheet->getStyle('A1:'.self::COL_LAST.'1')->applyFromArray([
             'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
             'fill' => [
                 'fillType' => Fill::FILL_SOLID,
@@ -190,6 +263,31 @@ class MaintenancesMonthlySheet implements FromCollection, ShouldAutoSize, WithEv
         $highestColumn = $sheet->getHighestColumn();
         $sheet->getStyle("A1:{$highestColumn}{$highestRow}")->getAlignment()->setWrapText(true);
 
+        // Thousand separator for KM columns (kept numeric so Excel can sort/filter)
+        $sheet->getStyle(self::COL_TARGET_KM.'2:'.self::COL_ACTUAL_KM.$highestRow)
+            ->getNumberFormat()->setFormatCode('#,##0');
+
+        // Service schedule headers stand out from the rest
+        $sheet->getStyle(self::COL_TARGET_DATE.'1:'.self::COL_SERVICE_STATUS.'1')
+            ->getFill()->getStartColor()->setRGB('E65100');
+
         return [];
+    }
+
+    private function serviceStatusText(array $check): string
+    {
+        if (! $check['evaluated']) {
+            return '-';
+        }
+
+        $issues = [];
+        if ($check['late_days']) {
+            $issues[] = 'Terlambat '.$check['late_days'].' hari';
+        }
+        if ($check['over_km']) {
+            $issues[] = 'Lewat '.number_format($check['over_km'], 0, ',', '.').' KM';
+        }
+
+        return $issues ? implode(', ', $issues) : 'Tepat Waktu';
     }
 }
