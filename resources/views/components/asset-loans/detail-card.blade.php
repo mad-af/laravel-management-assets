@@ -61,14 +61,10 @@
             <div>
                 <label class="text-sm font-semibold text-base-content/70">Condition Out</label>
                 <p class="mt-1">
-                    @if($assetLoan->condition_out === \App\Enums\LoanCondition::EXCELLENT)
-                    <span class="badge badge-success badge-sm">{{ \App\Enums\LoanCondition::EXCELLENT->label() }}</span>
-                @elseif($assetLoan->condition_out === \App\Enums\LoanCondition::GOOD)
-                    <span class="badge badge-info badge-sm">{{ \App\Enums\LoanCondition::GOOD->label() }}</span>
-                @elseif($assetLoan->condition_out === \App\Enums\LoanCondition::FAIR)
-                    <span class="badge badge-warning badge-sm">{{ \App\Enums\LoanCondition::FAIR->label() }}</span>
+                    @if($assetLoan->condition_out)
+                    <span class="badge badge-{{ $assetLoan->condition_out->color() }} badge-sm">{{ $assetLoan->condition_out->label() }}</span>
                 @else
-                    <span class="badge badge-error badge-sm">{{ \App\Enums\LoanCondition::POOR->label() }}</span>
+                    <span class="text-base-content/60">-</span>
                 @endif
                 </p>
             </div>
@@ -77,15 +73,11 @@
                 <div>
                     <label class="text-sm font-semibold text-base-content/70">Condition In</label>
                     <p class="mt-1">
-                        @if($assetLoan->condition_in === \App\Enums\LoanCondition::EXCELLENT)
-                        <span class="badge badge-success badge-sm">{{ \App\Enums\LoanCondition::EXCELLENT->label() }}</span>
-                    @elseif($assetLoan->condition_in === \App\Enums\LoanCondition::GOOD)
-                        <span class="badge badge-info badge-sm">{{ \App\Enums\LoanCondition::GOOD->label() }}</span>
-                    @elseif($assetLoan->condition_in === \App\Enums\LoanCondition::FAIR)
-                        <span class="badge badge-warning badge-sm">{{ \App\Enums\LoanCondition::FAIR->label() }}</span>
-                    @else
-                        <span class="badge badge-error badge-sm">{{ \App\Enums\LoanCondition::POOR->label() }}</span>
-                    @endif
+                        @if($assetLoan->condition_in)
+                    <span class="badge badge-{{ $assetLoan->condition_in->color() }} badge-sm">{{ $assetLoan->condition_in->label() }}</span>
+                @else
+                    <span class="text-base-content/60">-</span>
+                @endif
                     </p>
                 </div>
             @endif

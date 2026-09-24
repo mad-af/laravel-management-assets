@@ -20,12 +20,12 @@
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
             <!-- Asset Loan Info Card -->
             <div class="lg:col-span-2">
-                <x-asset-loans.detail-card :asset-loan="$asset-loan" />
+                <x-asset-loans.detail-card :asset-loan="$assetLoan" />
             </div>
 
             <!-- Quick Actions Card -->
             <div class="lg:col-span-1">
-                <x-asset-loans.quick-actions :asset-loan="$asset-loan" />
+                <x-asset-loans.quick-actions :asset-loan="$assetLoan" />
             </div>
         </div>
     </div>
