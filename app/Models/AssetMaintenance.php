@@ -124,6 +124,18 @@ class AssetMaintenance extends Model
             // to avoid prematurely updating current_odometer_km based on user input during WO creation
         });
 
+        // Snapshot the vehicle's service target before completion overwrites it,
+        // so it is saved in the same UPDATE as the status change
+        static::updating(function ($maintenance) {
+            if ($maintenance->isDirty('status')
+                && $maintenance->status === MaintenanceStatus::COMPLETED
+                && $maintenance->type === MaintenanceType::PREVENTIVE
+                && $maintenance->next_service_date
+                && $maintenance->asset?->vehicleProfile) {
+                $maintenance->next_service_date_before = $maintenance->asset->vehicleProfile->next_service_date;
+            }
+        });
+
         // When maintenance status is updated, check if we need to update asset status
         static::updated(function ($maintenance) {
             if ($maintenance->wasChanged('status')) {
@@ -150,12 +162,6 @@ class AssetMaintenance extends Model
                         }
 
                         if ($maintenance->next_service_date) {
-                            // For PREVENTIVE maintenance, save the old next_service_date before updating
-                            if ($maintenance->type === MaintenanceType::PREVENTIVE) {
-                                $maintenance->next_service_date_before = $maintenance->asset->vehicleProfile->next_service_date;
-                                $maintenance->saveQuietly(['next_service_date_before']);
-                            }
-
                             $updateData['next_service_date'] = $maintenance->next_service_date;
                         }
 

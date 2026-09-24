@@ -5,6 +5,7 @@ namespace App\Livewire\Maintenances;
 use App\Enums\MaintenanceStatus;
 use App\Models\AssetMaintenance;
 use App\Support\SessionKey;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Mary\Traits\Toast;
 
@@ -149,7 +150,8 @@ class CompleteForm extends Component
             // Add next service date
             $data['next_service_date'] = $this->next_service_date ?: null;
 
-            $maintenance->update($data);
+            // Maintenance and vehicle profile (next service date/KM) must update together
+            DB::transaction(fn () => $maintenance->update($data));
             $this->dispatch('close-completed-drawer');
 
             $this->success('Perawatan berhasil diselesaikan!');
