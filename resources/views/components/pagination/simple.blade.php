@@ -8,7 +8,7 @@
                 </li>
             @else
                 <li>
-                    <a wire:navigate href="{{ request()->fullUrlWithQuery(['page' => $paginator->currentPage() - 1]) }}" rel="prev" class="join-item btn btn-sm" aria-label="Prev">Prev</a>
+                    <button type="button" wire:click="previousPage('{{ $paginator->getPageName() }}')" wire:loading.attr="disabled" rel="prev" class="join-item btn btn-sm" aria-label="Prev">Prev</button>
                 </li>
             @endif
 
@@ -24,7 +24,7 @@
             {{-- First page shortcut --}}
             @if ($start > 1)
                 <li>
-                    <a wire:navigate href="{{ request()->fullUrlWithQuery(['page' => 1]) }}" class="join-item btn btn-sm">1</a>
+                    <button type="button" wire:click="gotoPage(1, '{{ $paginator->getPageName() }}')" wire:loading.attr="disabled" class="join-item btn btn-sm">1</button>
                 </li>
                 @if ($start > 2)
                     <li>
@@ -41,7 +41,7 @@
                     </li>
                 @else
                     <li>
-                        <a wire:navigate href="{{ request()->fullUrlWithQuery(['page' => $page]) }}" class="join-item btn btn-sm">{{ $page }}</a>
+                        <button type="button" wire:click="gotoPage({{ $page }}, '{{ $paginator->getPageName() }}')" wire:loading.attr="disabled" class="join-item btn btn-sm">{{ $page }}</button>
                     </li>
                 @endif
             @endfor
@@ -54,14 +54,14 @@
                     </li>
                 @endif
                 <li>
-                    <a wire:navigate href="{{ request()->fullUrlWithQuery(['page' => $last]) }}" class="join-item btn btn-sm">{{ $last }}</a>
+                    <button type="button" wire:click="gotoPage({{ $last }}, '{{ $paginator->getPageName() }}')" wire:loading.attr="disabled" class="join-item btn btn-sm">{{ $last }}</button>
                 </li>
             @endif
 
             {{-- Next Page Link --}}
             @if ($paginator->hasMorePages())
                 <li>
-                    <a wire:navigate href="{{ request()->fullUrlWithQuery(['page' => $paginator->currentPage() + 1]) }}" rel="next" class="join-item btn btn-sm" aria-label="Next">Next</a>
+                    <button type="button" wire:click="nextPage('{{ $paginator->getPageName() }}')" wire:loading.attr="disabled" rel="next" class="join-item btn btn-sm" aria-label="Next">Next</button>
                 </li>
             @else
                 <li>
