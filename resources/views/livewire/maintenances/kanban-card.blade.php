@@ -6,8 +6,8 @@
                 {{ $maintenance->priority->label() }}
             </span>
             <span class="flex gap-1 whitespace-nowrap">
-                @if($maintenance->type?->value === 'preventive' && $maintenance->next_service_date_before && $maintenance->next_service_date_before->isPast())
-                    <span class="badge badge-warning badge-xs">Terlambat</span>
+                @if($isServiceLate)
+                    <span class="badge badge-error badge-xs">Terlambat</span>
                 @endif
                 <span class="badge badge-outline badge-{{ $maintenance->type->color() }} badge-xs">
                     {{ $maintenance->type->label() }}
@@ -47,6 +47,12 @@
                 <div class="flex gap-1 items-center">
                     {{-- <x-icon name="o-currency-dollar" class="w-3 h-3" /> --}}
                     <span>Rp {{ number_format($maintenance->cost, 0, ',', '.') }}</span>
+                </div>
+            @endif
+            @if($isServiceLate)
+                <div class="flex gap-1 items-center font-medium text-error">
+                    <x-icon name="o-exclamation-triangle" class="w-3 h-3" />
+                    <span>{{ \App\Support\MaintenanceServiceCheck::statusText($serviceCheck) }}</span>
                 </div>
             @endif
             @if($maintenance->next_service_date && $maintenance->asset?->category?->name === 'Kendaraan')

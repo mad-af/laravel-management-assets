@@ -39,7 +39,7 @@ class KanbanColumn extends Component
 
         $status = $this->status;
 
-        $this->maintenances = AssetMaintenance::with(['asset', 'assignedUser'])
+        $this->maintenances = AssetMaintenance::with(['asset.vehicleProfile', 'assignedUser'])
             ->whereHas('asset', function ($query) use ($currentBranchId) {
                 $query->when($currentBranchId, function ($q) use ($currentBranchId) {
                     $q->where('branch_id', $currentBranchId);

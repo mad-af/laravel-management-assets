@@ -2,6 +2,7 @@
 
 namespace App\Exports\Sheets;
 
+use App\Support\MaintenanceServiceCheck;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
@@ -90,15 +91,7 @@ class MaintenancesMonthlySheet implements FromCollection, ShouldAutoSize, WithEv
 
     public function map($m): array
     {
-        $check = $this->serviceChecks[$m->id] ?? [
-            'target_date' => null,
-            'actual_date' => null,
-            'target_km' => null,
-            'actual_km' => null,
-            'late_days' => null,
-            'over_km' => null,
-            'evaluated' => false,
-        ];
+        $check = $this->serviceChecks[$m->id] ?? MaintenanceServiceCheck::EMPTY;
 
         // Normalize service tasks to a readable string
         $tasks = '-';
@@ -167,7 +160,7 @@ class MaintenancesMonthlySheet implements FromCollection, ShouldAutoSize, WithEv
             $check['actual_date'] ? $check['actual_date']->format('d/m/Y') : '-',
             $check['target_km'] ?: '-',
             $check['actual_km'] ?: '-',
-            $this->serviceStatusText($check),
+            MaintenanceServiceCheck::statusText($check),
             $m->started_at ? $m->started_at->format('d/m/Y') : '-',
             $m->estimated_completed_at ? $m->estimated_completed_at->format('d/m/Y') : '-',
             $m->completed_at ? $m->completed_at->format('d/m/Y') : '-',
@@ -218,7 +211,7 @@ class MaintenancesMonthlySheet implements FromCollection, ShouldAutoSize, WithEv
                         ]);
                     }
 
-                    $isLate = $check['late_days'] || $check['over_km'];
+                    $isLate = MaintenanceServiceCheck::isLate($check);
                     $sheet->getStyle(self::COL_SERVICE_STATUS.$row)->applyFromArray([
                         'fill' => $isLate ? $late : $onTime,
                         'font' => ['bold' => true, 'color' => ['rgb' => $isLate ? '9C0006' : '006100']],
@@ -272,22 +265,5 @@ class MaintenancesMonthlySheet implements FromCollection, ShouldAutoSize, WithEv
             ->getFill()->getStartColor()->setRGB('E65100');
 
         return [];
-    }
-
-    private function serviceStatusText(array $check): string
-    {
-        if (! $check['evaluated']) {
-            return '-';
-        }
-
-        $issues = [];
-        if ($check['late_days']) {
-            $issues[] = 'Terlambat '.$check['late_days'].' hari';
-        }
-        if ($check['over_km']) {
-            $issues[] = 'Lewat '.number_format($check['over_km'], 0, ',', '.').' KM';
-        }
-
-        return $issues ? implode(', ', $issues) : 'Tepat Waktu';
     }
 }
