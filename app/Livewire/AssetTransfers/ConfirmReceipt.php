@@ -6,9 +6,12 @@ use App\Enums\AssetTransferStatus;
 use App\Models\AssetTransfer;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
+use Mary\Traits\Toast;
 
 class ConfirmReceipt extends Component
 {
+    use Toast;
+
     public string $transferId;
 
     public string $confirmation_text = '';
@@ -33,6 +36,13 @@ class ConfirmReceipt extends Component
             return;
         }
 
+        if ($transfer->status === AssetTransferStatus::DELIVERED) {
+            $this->warning('Transfer ini sudah dikonfirmasi sebelumnya.');
+            $this->dispatch('close-drawer');
+
+            return;
+        }
+
         $transfer->update([
             'status' => AssetTransferStatus::DELIVERED,
             'delivery_at' => now(),
@@ -41,6 +51,8 @@ class ConfirmReceipt extends Component
         ]);
 
         $this->dispatch('transfer-updated');
+        $this->success('Penerimaan aset berhasil dikonfirmasi!');
+        $this->dispatch('close-drawer');
     }
 
     // Computed: apakah frasa konfirmasi cocok

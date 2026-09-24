@@ -73,8 +73,25 @@ if (document.readyState === "loading") {
     enhancedInitTheme();
 }
 
+// Close popover dropdown after a menu item (button/anchor) is clicked.
+// Defined globally because inline <script> in components is not executed
+// when the component is first rendered through a Livewire update.
+function closeDropdown(event, dropdownId) {
+    const clickedElement = event.target.closest("button, a");
+    if (clickedElement) {
+        // Small delay so the item's action can run first
+        setTimeout(() => {
+            const dropdown = document.getElementById(dropdownId);
+            if (dropdown) {
+                dropdown.hidePopover();
+            }
+        }, 100);
+    }
+}
+
 // Make functions globally available
 window.changeTheme = changeTheme;
+window.closeDropdown = closeDropdown;
 
 window.addEventListener("reload-page", () => {
     // Refresh hanya ke main route tanpa parameter dan query parameter

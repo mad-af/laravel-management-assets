@@ -14,19 +14,3 @@
         {{ $slot }}
     </ul>
 </div>
-
-<script>
-    function closeDropdown(event, dropdownId) {
-        // Cek apakah yang diklik adalah item menu (button atau anchor)
-        const clickedElement = event.target.closest('button, a');
-        if (clickedElement) {
-            // Tutup popover setelah sedikit delay untuk memungkinkan aksi selesai
-            setTimeout(() => {
-                const dropdown = document.getElementById(dropdownId);
-                if (dropdown) {
-                    dropdown.hidePopover();
-                }
-            }, 100);
-        }
-    }
-</script>
